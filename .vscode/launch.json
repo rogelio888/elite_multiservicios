@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "elite_multiservicios_flutter",
+            "cwd": "${workspaceFolder}/elite_multiservicios_flutter",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "elite_multiservicios_server",
+            "cwd": "${workspaceFolder}/elite_multiservicios_server",
+            "request": "launch",
+            "type": "dart",
+            "preLaunchTask": "docker_compose_up",
+            "program": "bin/main.dart",
+            "env": {
+                "SERVERPOD_PASSWORD_database": "REDACTED_DB_DEV_PASSWORD"
+            },
+            "args": [
+                "--apply-migrations"
+            ]
+        }
+    ],
+    "compounds": [
+        {
+            "name": "elite_multiservicios (full stack)",
+            "configurations": [
+                "elite_multiservicios_server",
+                "elite_multiservicios_flutter"
+            ],
+            "presentation": {
+                "order": 1
+            }
+        }
+    ]
+}

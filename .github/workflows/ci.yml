@@ -1,0 +1,87 @@
+name: Enterprise CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  code-quality:
+    name: Code Formatting & Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Workspace Dependencies
+        run: flutter pub get
+
+      - name: Check Formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze Serverpod Backend
+        working-directory: elite_multiservicios_server
+        run: dart analyze --fatal-infos
+
+      - name: Analyze Flutter Frontend
+        working-directory: elite_multiservicios_flutter
+        run: flutter analyze --fatal-infos
+
+  flutter-tests:
+    name: Flutter Unit & Widget Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Workspace Dependencies
+        run: flutter pub get
+
+      - name: Run Flutter Tests
+        working-directory: elite_multiservicios_flutter
+        run: flutter test
+
+  server-tests:
+    name: Serverpod Tests & Database Integration
+    runs-on: ubuntu-latest
+    env:
+      SERVERPOD_PASSWORD_database: 'REDACTED_DB_TEST_PASSWORD'
+      SERVERPOD_PASSWORD_redis: 'REDACTED_REDIS_TEST_PASSWORD'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Start PostgreSQL & Redis Containers
+        working-directory: elite_multiservicios_server
+        run: docker compose up --quiet-pull --build -d
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Run Server Unit & Integration Tests
+        working-directory: elite_multiservicios_server
+        run: dart test
+
+      - name: Tear Down Containers
+        if: always()
+        working-directory: elite_multiservicios_server
+        run: docker compose down -v

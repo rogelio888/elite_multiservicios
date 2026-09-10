@@ -1,0 +1,35 @@
+# Files and directories created by pub / Dart / Flutter
+.dart_tool/
+.packages
+pubspec_overrides.yaml
+build/
+doc/api/
+
+# Secrets and sensitive configuration files
+**/config/passwords.yaml
+!**/config/passwords.yaml.example
+**/config/firebase_service_account_key.json
+*.env
+*.env.*
+!*.env.example
+*.pem
+*.key
+*.cert
+
+# Flutter artifacts
+.flutter-plugins
+.flutter-plugins-dependencies
+elite_multiservicios_flutter/.flutter-plugins
+elite_multiservicios_flutter/.flutter-plugins-dependencies
+
+# Serverpod web build output
+elite_multiservicios_server/web/app/
+
+# IDE / OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+*.iml
