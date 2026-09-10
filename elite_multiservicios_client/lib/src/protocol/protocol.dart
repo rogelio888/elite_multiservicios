@@ -13,11 +13,25 @@
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'greetings/greeting.dart' as _i2;
+import 'modules/security/models/app_permission.dart' as _i3;
+import 'modules/security/models/app_role.dart' as _i4;
+import 'modules/security/models/app_user.dart' as _i5;
+import 'modules/security/models/audit_log.dart' as _i6;
+import 'modules/security/models/role_permission.dart' as _i7;
+import 'modules/security/models/user_role.dart' as _i8;
+import 'modules/security/models/user_session.dart' as _i9;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i3;
+    as _i10;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i4;
+    as _i11;
 export 'greetings/greeting.dart';
+export 'modules/security/models/app_permission.dart';
+export 'modules/security/models/app_role.dart';
+export 'modules/security/models/app_user.dart';
+export 'modules/security/models/audit_log.dart';
+export 'modules/security/models/role_permission.dart';
+export 'modules/security/models/user_role.dart';
+export 'modules/security/models/user_session.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -57,14 +71,56 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i2.Greeting) {
       return _i2.Greeting.fromJson(data) as T;
     }
+    if (t == _i3.AppPermission) {
+      return _i3.AppPermission.fromJson(data) as T;
+    }
+    if (t == _i4.AppRole) {
+      return _i4.AppRole.fromJson(data) as T;
+    }
+    if (t == _i5.AppUser) {
+      return _i5.AppUser.fromJson(data) as T;
+    }
+    if (t == _i6.AuditLog) {
+      return _i6.AuditLog.fromJson(data) as T;
+    }
+    if (t == _i7.RolePermission) {
+      return _i7.RolePermission.fromJson(data) as T;
+    }
+    if (t == _i8.UserRole) {
+      return _i8.UserRole.fromJson(data) as T;
+    }
+    if (t == _i9.UserSession) {
+      return _i9.UserSession.fromJson(data) as T;
+    }
     if (t == _i1.getType<_i2.Greeting?>()) {
       return (data != null ? _i2.Greeting.fromJson(data) : null) as T;
     }
+    if (t == _i1.getType<_i3.AppPermission?>()) {
+      return (data != null ? _i3.AppPermission.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i4.AppRole?>()) {
+      return (data != null ? _i4.AppRole.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i5.AppUser?>()) {
+      return (data != null ? _i5.AppUser.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i6.AuditLog?>()) {
+      return (data != null ? _i6.AuditLog.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i7.RolePermission?>()) {
+      return (data != null ? _i7.RolePermission.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i8.UserRole?>()) {
+      return (data != null ? _i8.UserRole.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i9.UserSession?>()) {
+      return (data != null ? _i9.UserSession.fromJson(data) : null) as T;
+    }
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
+      return _i10.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i4.Protocol().deserialize<T>(data, t);
+      return _i11.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -72,6 +128,13 @@ class Protocol extends _i1.SerializationManager {
   static String? getClassNameForType(Type type) {
     return switch (type) {
       _i2.Greeting => 'Greeting',
+      _i3.AppPermission => 'AppPermission',
+      _i4.AppRole => 'AppRole',
+      _i5.AppUser => 'AppUser',
+      _i6.AuditLog => 'AuditLog',
+      _i7.RolePermission => 'RolePermission',
+      _i8.UserRole => 'UserRole',
+      _i9.UserSession => 'UserSession',
       _ => null,
     };
   }
@@ -91,12 +154,26 @@ class Protocol extends _i1.SerializationManager {
     switch (data) {
       case _i2.Greeting():
         return 'Greeting';
+      case _i3.AppPermission():
+        return 'AppPermission';
+      case _i4.AppRole():
+        return 'AppRole';
+      case _i5.AppUser():
+        return 'AppUser';
+      case _i6.AuditLog():
+        return 'AuditLog';
+      case _i7.RolePermission():
+        return 'RolePermission';
+      case _i8.UserRole():
+        return 'UserRole';
+      case _i9.UserSession():
+        return 'UserSession';
     }
-    className = _i3.Protocol().getClassNameForObject(data);
+    className = _i10.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i4.Protocol().getClassNameForObject(data);
+    className = _i11.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -112,13 +189,34 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'Greeting') {
       return deserialize<_i2.Greeting>(data['data']);
     }
+    if (dataClassName == 'AppPermission') {
+      return deserialize<_i3.AppPermission>(data['data']);
+    }
+    if (dataClassName == 'AppRole') {
+      return deserialize<_i4.AppRole>(data['data']);
+    }
+    if (dataClassName == 'AppUser') {
+      return deserialize<_i5.AppUser>(data['data']);
+    }
+    if (dataClassName == 'AuditLog') {
+      return deserialize<_i6.AuditLog>(data['data']);
+    }
+    if (dataClassName == 'RolePermission') {
+      return deserialize<_i7.RolePermission>(data['data']);
+    }
+    if (dataClassName == 'UserRole') {
+      return deserialize<_i8.UserRole>(data['data']);
+    }
+    if (dataClassName == 'UserSession') {
+      return deserialize<_i9.UserSession>(data['data']);
+    }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i3.Protocol().deserializeByClassName(data);
+      return _i10.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i4.Protocol().deserializeByClassName(data);
+      return _i11.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -133,10 +231,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i3.Protocol().mapRecordToJson(record);
+      return _i10.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i4.Protocol().mapRecordToJson(record);
+      return _i11.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

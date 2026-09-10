@@ -1,20 +1,21 @@
 import 'package:serverpod/serverpod.dart';
 import 'audit_event.dart';
+import '../modules/security/repositories/audit_repository.dart';
 
 /// Servicio de auditoría y bitácora de eventos del sistema.
 /// Prepara la arquitectura para registrar eventos sin almacenar datos sensibles.
 abstract class AuditService {
-  /// Registra un evento en la bitácora del sistema.
+  /// Registra un evento en la bitácora del sistema y persiste en PostgreSQL.
   Future<void> logEvent(Session session, AuditEventRecord record);
 }
 
-/// Implementación base con logging estructurado en Serverpod.
+/// Implementación oficial con persistencia en base de datos PostgreSQL y logging de sesión.
 class ServerpodAuditService implements AuditService {
   const ServerpodAuditService();
 
   @override
   Future<void> logEvent(Session session, AuditEventRecord record) async {
-    // Registro estructurado en log de sesión de Serverpod
+    // 1. Registro estructurado en log de sesión de Serverpod
     final logMessage =
         '[AUDIT] [${record.action}] '
         'User: ${record.userIdentifier ?? record.userId ?? "ANONYMOUS"} | '
@@ -27,6 +28,18 @@ class ServerpodAuditService implements AuditService {
       session.log(logMessage, level: LogLevel.warning);
     } else {
       session.log(logMessage, level: LogLevel.info);
+    }
+
+    // 2. Persistencia en la tabla audit_log de PostgreSQL
+    try {
+      final repository = AuditRepository(session);
+      await repository.record(record);
+    } catch (e, stackTrace) {
+      session.log(
+        'Error al persistir evento de auditoría en PostgreSQL: $e',
+        level: LogLevel.error,
+        stackTrace: stackTrace,
+      );
     }
   }
 }

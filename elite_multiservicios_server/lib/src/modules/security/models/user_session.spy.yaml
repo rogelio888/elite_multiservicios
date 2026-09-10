@@ -1,0 +1,28 @@
+### Sesión activa de usuario para monitoreo y control de concurrencia.
+class: UserSession
+table: user_session
+fields:
+  ### ID del usuario propietario de la sesión.
+  userId: int, relation(parent=app_user, onDelete=Cascade)
+  ### Hash criptográfico del token de sesión (nunca el token plano).
+  sessionTokenHash: String
+  ### Dirección IP asociada a la sesión.
+  ipAddress: String?
+  ### Información de cliente/dispositivo (User-Agent).
+  deviceInfo: String?
+  ### Indicador de si la sesión ha sido revocada remotamente.
+  isRevoked: bool
+  ### Momento de inicio de sesión.
+  createdAt: DateTime
+  ### Momento de última actividad registrada.
+  lastActivityAt: DateTime
+  ### Momento límite de expiración de la sesión.
+  expiresAt: DateTime
+indexes:
+  user_session_token_hash_idx:
+    fields: sessionTokenHash
+    unique: true
+  user_session_user_idx:
+    fields: userId
+  user_session_expires_idx:
+    fields: expiresAt

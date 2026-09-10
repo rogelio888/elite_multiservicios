@@ -1,0 +1,14 @@
+### Tabla asociativa entre roles y permisos granulares (relación N:M).
+class: RolePermission
+table: role_permission
+fields:
+  ### ID del rol.
+  roleId: int, relation(parent=app_role, onDelete=Cascade)
+  ### ID del permiso granular asignado al rol.
+  permissionId: int, relation(parent=app_permission, onDelete=Cascade)
+  ### Fecha y hora de asignación.
+  assignedAt: DateTime
+indexes:
+  role_permission_composite_idx:
+    fields: roleId, permissionId
+    unique: true

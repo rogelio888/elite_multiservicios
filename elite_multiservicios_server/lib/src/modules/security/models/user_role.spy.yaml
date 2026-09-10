@@ -1,0 +1,14 @@
+### Tabla asociativa entre usuarios y roles (relación N:M).
+class: UserRole
+table: user_role
+fields:
+  ### ID del usuario asignado.
+  userId: int, relation(parent=app_user, onDelete=Cascade)
+  ### ID del rol asignado.
+  roleId: int, relation(parent=app_role, onDelete=Cascade)
+  ### Fecha y hora de asignación.
+  assignedAt: DateTime
+indexes:
+  user_role_composite_idx:
+    fields: userId, roleId
+    unique: true

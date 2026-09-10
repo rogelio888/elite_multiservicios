@@ -1,0 +1,16 @@
+### Rol de usuario para control de acceso (RBAC).
+class: AppRole
+table: app_role
+fields:
+  ### Nombre identificador del rol (ej. Administrador, Supervisor).
+  name: String
+  ### Descripción funcional de las responsabilidades del rol.
+  description: String
+  ### Indica si es un rol de sistema protegido contra edición o eliminación.
+  isSystemRole: bool
+  ### Fecha de registro.
+  createdAt: DateTime
+indexes:
+  app_role_name_idx:
+    fields: name
+    unique: true

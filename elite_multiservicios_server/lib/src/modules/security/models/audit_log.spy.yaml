@@ -1,0 +1,27 @@
+### Registro inmutable de auditoría y bitácora de eventos del sistema.
+class: AuditLog
+table: audit_log
+fields:
+  ### Tipo de acción ejecutada (ej. LOGIN_SUCCESS, USER_CREATED).
+  action: String
+  ### ID del usuario que realizó la acción (si estaba autenticado).
+  userId: int?, relation(parent=app_user, onDelete=SetNull)
+  ### Identificador textual del usuario (correo o username).
+  userIdentifier: String?
+  ### Recurso sobre el que operó (ej. user:#25, role:#3).
+  resource: String?
+  ### Dirección IP de origen de la solicitud.
+  ipAddress: String?
+  ### Resultado de la operación (SUCCESS, FAILURE, DENIED).
+  result: String
+  ### Metadatos adicionales serializados en formato JSON.
+  metadata: String?
+  ### Momento exacto del evento (UTC).
+  timestamp: DateTime
+indexes:
+  audit_log_timestamp_idx:
+    fields: timestamp
+  audit_log_action_idx:
+    fields: action
+  audit_log_user_idx:
+    fields: userId

@@ -1,0 +1,14 @@
+### Permiso granular del sistema.
+class: AppPermission
+table: app_permission
+fields:
+  ### Código canónico único del permiso (ej. users.create, audit.view).
+  code: String
+  ### Módulo al que pertenece el permiso (ej. users, rbac, audit).
+  module: String
+  ### Descripción de la operación autorizada.
+  description: String
+indexes:
+  app_permission_code_idx:
+    fields: code
+    unique: true

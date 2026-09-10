@@ -1,0 +1,22 @@
+### Entidad de usuario empresarial del sistema.
+class: AppUser
+table: app_user
+fields:
+  ### Correo electrónico corporativo único.
+  email: String
+  ### Nombre completo del usuario.
+  fullName: String
+  ### ID vinculado al subsistema de autenticación de Serverpod.
+  userInfoId: int?
+  ### Estado de activación de la cuenta.
+  isActive: bool
+  ### Indicador de eliminación lógica (Soft Delete).
+  isDeleted: bool
+  ### Fecha de creación del registro.
+  createdAt: DateTime
+  ### Fecha de última actualización.
+  updatedAt: DateTime
+indexes:
+  app_user_email_idx:
+    fields: email
+    unique: true
