@@ -15,10 +15,14 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../auth/email_idp_endpoint.dart' as _i2;
 import '../auth/jwt_refresh_endpoint.dart' as _i3;
 import '../greetings/greeting_endpoint.dart' as _i4;
+import '../modules/security/endpoints/audit_endpoint.dart' as _i5;
+import '../modules/security/endpoints/rbac_endpoint.dart' as _i6;
+import '../modules/security/endpoints/session_management_endpoint.dart' as _i7;
+import '../modules/security/endpoints/user_endpoint.dart' as _i8;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i5;
+    as _i9;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i6;
+    as _i10;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -40,6 +44,30 @@ class Endpoints extends _i1.EndpointDispatch {
         ..initialize(
           server,
           'greeting',
+          null,
+        ),
+      'audit': _i5.AuditEndpoint()
+        ..initialize(
+          server,
+          'audit',
+          null,
+        ),
+      'rbac': _i6.RbacEndpoint()
+        ..initialize(
+          server,
+          'rbac',
+          null,
+        ),
+      'sessionManagement': _i7.SessionManagementEndpoint()
+        ..initialize(
+          server,
+          'sessionManagement',
+          null,
+        ),
+      'user': _i8.UserEndpoint()
+        ..initialize(
+          server,
+          'user',
           null,
         ),
     };
@@ -271,9 +299,369 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i5.Endpoints()
+    connectors['audit'] = _i1.EndpointConnector(
+      name: 'audit',
+      endpoint: endpoints['audit']!,
+      methodConnectors: {
+        'listLogs': _i1.MethodConnector(
+          name: 'listLogs',
+          params: {
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+            'action': _i1.ParameterDescription(
+              name: 'action',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['audit'] as _i5.AuditEndpoint).listLogs(
+                session,
+                limit: params['limit'],
+                offset: params['offset'],
+                userId: params['userId'],
+                action: params['action'],
+              ),
+        ),
+      },
+    );
+    connectors['rbac'] = _i1.EndpointConnector(
+      name: 'rbac',
+      endpoint: endpoints['rbac']!,
+      methodConnectors: {
+        'listRoles': _i1.MethodConnector(
+          name: 'listRoles',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['rbac'] as _i6.RbacEndpoint).listRoles(session),
+        ),
+        'listPermissions': _i1.MethodConnector(
+          name: 'listPermissions',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['rbac'] as _i6.RbacEndpoint)
+                  .listPermissions(session),
+        ),
+        'assignRoleToUser': _i1.MethodConnector(
+          name: 'assignRoleToUser',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'roleId': _i1.ParameterDescription(
+              name: 'roleId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['rbac'] as _i6.RbacEndpoint).assignRoleToUser(
+                    session,
+                    userId: params['userId'],
+                    roleId: params['roleId'],
+                  ),
+        ),
+        'removeRoleFromUser': _i1.MethodConnector(
+          name: 'removeRoleFromUser',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'roleId': _i1.ParameterDescription(
+              name: 'roleId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['rbac'] as _i6.RbacEndpoint).removeRoleFromUser(
+                    session,
+                    userId: params['userId'],
+                    roleId: params['roleId'],
+                  ),
+        ),
+        'assignPermissionToRole': _i1.MethodConnector(
+          name: 'assignPermissionToRole',
+          params: {
+            'roleId': _i1.ParameterDescription(
+              name: 'roleId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'permissionId': _i1.ParameterDescription(
+              name: 'permissionId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['rbac'] as _i6.RbacEndpoint)
+                  .assignPermissionToRole(
+                    session,
+                    roleId: params['roleId'],
+                    permissionId: params['permissionId'],
+                  ),
+        ),
+        'getUserEffectivePermissions': _i1.MethodConnector(
+          name: 'getUserEffectivePermissions',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['rbac'] as _i6.RbacEndpoint)
+                  .getUserEffectivePermissions(
+                    session,
+                    params['userId'],
+                  ),
+        ),
+      },
+    );
+    connectors['sessionManagement'] = _i1.EndpointConnector(
+      name: 'sessionManagement',
+      endpoint: endpoints['sessionManagement']!,
+      methodConnectors: {
+        'listUserSessions': _i1.MethodConnector(
+          name: 'listUserSessions',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['sessionManagement']
+                          as _i7.SessionManagementEndpoint)
+                      .listUserSessions(
+                        session,
+                        params['userId'],
+                      ),
+        ),
+        'revokeSession': _i1.MethodConnector(
+          name: 'revokeSession',
+          params: {
+            'sessionId': _i1.ParameterDescription(
+              name: 'sessionId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['sessionManagement']
+                          as _i7.SessionManagementEndpoint)
+                      .revokeSession(
+                        session,
+                        params['sessionId'],
+                      ),
+        ),
+      },
+    );
+    connectors['user'] = _i1.EndpointConnector(
+      name: 'user',
+      endpoint: endpoints['user']!,
+      methodConnectors: {
+        'listUsers': _i1.MethodConnector(
+          name: 'listUsers',
+          params: {
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'includeDeleted': _i1.ParameterDescription(
+              name: 'includeDeleted',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _i8.UserEndpoint).listUsers(
+                session,
+                limit: params['limit'],
+                offset: params['offset'],
+                includeDeleted: params['includeDeleted'],
+              ),
+        ),
+        'getUser': _i1.MethodConnector(
+          name: 'getUser',
+          params: {
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _i8.UserEndpoint).getUser(
+                session,
+                params['id'],
+              ),
+        ),
+        'createUser': _i1.MethodConnector(
+          name: 'createUser',
+          params: {
+            'email': _i1.ParameterDescription(
+              name: 'email',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'fullName': _i1.ParameterDescription(
+              name: 'fullName',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'roleIds': _i1.ParameterDescription(
+              name: 'roleIds',
+              type: _i1.getType<List<int>>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _i8.UserEndpoint).createUser(
+                session,
+                email: params['email'],
+                fullName: params['fullName'],
+                roleIds: params['roleIds'],
+              ),
+        ),
+        'updateUser': _i1.MethodConnector(
+          name: 'updateUser',
+          params: {
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'fullName': _i1.ParameterDescription(
+              name: 'fullName',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _i8.UserEndpoint).updateUser(
+                session,
+                id: params['id'],
+                fullName: params['fullName'],
+              ),
+        ),
+        'setUserActive': _i1.MethodConnector(
+          name: 'setUserActive',
+          params: {
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'isActive': _i1.ParameterDescription(
+              name: 'isActive',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _i8.UserEndpoint).setUserActive(
+                session,
+                id: params['id'],
+                isActive: params['isActive'],
+              ),
+        ),
+        'deleteUser': _i1.MethodConnector(
+          name: 'deleteUser',
+          params: {
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _i8.UserEndpoint).deleteUser(
+                session,
+                params['id'],
+              ),
+        ),
+      },
+    );
+    modules['serverpod_auth_idp'] = _i9.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i6.Endpoints()
+    modules['serverpod_auth_core'] = _i10.Endpoints()
       ..initializeEndpoints(server);
   }
 }

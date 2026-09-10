@@ -11,3 +11,22 @@ jwtRefresh:
   - refreshAccessToken:
 greeting:
   - hello:
+audit:
+  - listLogs:
+rbac:
+  - listRoles:
+  - listPermissions:
+  - assignRoleToUser:
+  - removeRoleFromUser:
+  - assignPermissionToRole:
+  - getUserEffectivePermissions:
+sessionManagement:
+  - listUserSessions:
+  - revokeSession:
+user:
+  - listUsers:
+  - getUser:
+  - createUser:
+  - updateUser:
+  - setUserActive:
+  - deleteUser:

@@ -35,51 +35,44 @@ El módulo cuenta con persistencia real e integridad referencial estricta en Pos
 [app_user] (1) <---> (N) [user_session] (Monitoreo de sesiones)
 ```
 
-### Tablas e Índices Clave:
-1. **`app_user`**:
-   - `id`: PK bigserial.
-   - `email`: Text NOT NULL (Índice único: `app_user_email_idx`).
-   - `fullName`: Text NOT NULL.
-   - `userInfoId`: Bigint nullable (vínculo con `serverpod_user_info`).
-   - `isActive`: Boolean NOT NULL.
-   - `isDeleted`: Boolean NOT NULL (Soft Delete).
-   - `createdAt`, `updatedAt`: Timestamps UTC.
-2. **`app_role`**:
-   - `name`: Text NOT NULL (Índice único: `app_role_name_idx`).
-   - `description`: Text NOT NULL.
-   - `isSystemRole`: Boolean NOT NULL.
-3. **`app_permission`**:
-   - `code`: Text NOT NULL (Índice único: `app_permission_code_idx`).
-   - `module`: Text NOT NULL.
-   - `description`: Text NOT NULL.
-4. **`user_role`**:
-   - `userId`: FK $\rightarrow$ `app_user(id)` ON DELETE CASCADE.
-   - `roleId`: FK $\rightarrow$ `app_role(id)` ON DELETE CASCADE.
-   - Índice compuesto único: `user_role_composite_idx (userId, roleId)`.
-5. **`role_permission`**:
-   - `roleId`: FK $\rightarrow$ `app_role(id)` ON DELETE CASCADE.
-   - `permissionId`: FK $\rightarrow$ `app_permission(id)` ON DELETE CASCADE.
-   - Índice compuesto único: `role_permission_composite_idx (roleId, permissionId)`.
-6. **`audit_log`**:
-   - `action`, `resource`, `ipAddress`, `result`, `metadata`, `timestamp`.
-   - `userId`: FK $\rightarrow$ `app_user(id)` ON DELETE SET NULL.
-   - Índices: `timestamp`, `action`, `userId`.
-7. **`user_session`**:
-   - `userId`: FK $\rightarrow$ `app_user(id)` ON DELETE CASCADE.
-   - `sessionTokenHash`: Text NOT NULL (Índice único).
-   - `isRevoked`, `createdAt`, `lastActivityAt`, `expiresAt`.
+---
+
+## 3. Endpoints RPC Implementados (Serverpod)
+
+Todos los endpoints están fuertemente tipados, expuestos al cliente y blindados mediante `RbacGuard`:
+
+### 1. `UserEndpoint` (`client.user`)
+- `listUsers(limit, offset, includeDeleted)`: Requiere `users.view`.
+- `getUser(id)`: Requiere `users.view`.
+- `createUser(email, fullName, roleIds)`: Requiere `users.create`. Emite evento de bitácora `USER_CREATED`.
+- `updateUser(id, fullName)`: Requiere `users.update`. Emite evento de bitácora `USER_UPDATED`.
+- `setUserActive(id, isActive)`: Requiere `users.disable`. Emite `USER_DISABLED` o `USER_UPDATED`.
+- `deleteUser(id)`: Requiere `users.delete`. Borrado lógico con evento `USER_DISABLED`.
+
+### 2. `RbacEndpoint` (`client.rbac`)
+- `listRoles()`: Requiere `roles.view`.
+- `listPermissions()`: Requiere `permissions.view`.
+- `assignRoleToUser(userId, roleId)`: Requiere `roles.manage`. Emite `ROLE_UPDATED`.
+- `removeRoleFromUser(userId, roleId)`: Requiere `roles.manage`. Emite `ROLE_UPDATED`.
+- `assignPermissionToRole(roleId, permissionId)`: Requiere `permissions.assign`. Emite `PERMISSION_CHANGED`.
+- `getUserEffectivePermissions(userId)`: Requiere `roles.view`. Resuelve la jerarquía relacional completa en PostgreSQL.
+
+### 3. `AuditEndpoint` (`client.audit`)
+- `listLogs(limit, offset, userId, action)`: Requiere `audit.view`. Consulta la bitácora inmutable de PostgreSQL.
+
+### 4. `SessionManagementEndpoint` (`client.sessionManagement`)
+- `listUserSessions(userId)`: Requiere `sessions.view`.
+- `revokeSession(sessionId)`: Requiere `sessions.revoke`. Cierre forzado con emisión de `SESSION_REVOKED`.
 
 ---
 
-## 3. Repositorios de Persistencia Implementados
-- `UserRepository`: Búsqueda por email/ID, listado paginado, activación y soft delete.
-- `RbacRepository`: Asignación y revocación de roles/permisos, resolución de permisos efectivos por usuario mediante joins relacionales.
-- `AuditRepository`: Inserción de eventos de bitácora y consulta filtrada por usuario/acción.
-- `ServerpodAuditService`: Servicio transversal con logging de sesión y guardado automático en PostgreSQL.
+## 4. Seeds y Datos Reales
+- `SecuritySeed.seed(session)`: Inserta en PostgreSQL el catálogo oficial de permisos canónicos (`AppPermissions.all`) y crea el rol `Super Administrador` con asignación completa de permisos sin requerir datos mockeados.
 
 ---
 
-## 4. Estado de Implementación
+## 5. Estado de Implementación
 - **Fase 1**: Andamiaje base, CI/CD, Git Flow y directivas de seguridad backend-first (**COMPLETADO**).
 - **Fase 2**: Modelos `.spy.yaml`, generación de contratos, migraciones PostgreSQL aplicadas y repositorios relacionales (**COMPLETADO**).
-- **Fase 3 (Siguiente)**: Endpoints RPC de Serverpod (CRUD de usuarios, gestión de roles/permisos y consulta de bitácora) y protección estricta con `RbacGuard`.
+- **Fase 3**: Endpoints RPC de Serverpod con protección `RbacGuard`, logging automático y seeds de inicialización (**COMPLETADO**).
+- **Fase 4 (Siguiente)**: Interfaz de usuario en Flutter (Pantalla de Administración de Seguridad, gestión visual de usuarios, roles, permisos y bitácora consumiendo los endpoints RPC reales).

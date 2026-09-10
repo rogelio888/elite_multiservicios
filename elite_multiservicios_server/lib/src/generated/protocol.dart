@@ -25,6 +25,16 @@ import 'modules/security/models/audit_log.dart' as _i9;
 import 'modules/security/models/role_permission.dart' as _i10;
 import 'modules/security/models/user_role.dart' as _i11;
 import 'modules/security/models/user_session.dart' as _i12;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
+    as _i13;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
+    as _i14;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
+    as _i15;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
+    as _i16;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
+    as _i17;
 export 'greetings/greeting.dart';
 export 'modules/security/models/app_permission.dart';
 export 'modules/security/models/app_role.dart';
@@ -776,6 +786,36 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i12.UserSession?>()) {
       return (data != null ? _i12.UserSession.fromJson(data) : null) as T;
+    }
+    if (t == List<_i13.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i13.AuditLog>(e)).toList()
+          as T;
+    }
+    if (t == List<_i14.AppRole>) {
+      return (data as List).map((e) => deserialize<_i14.AppRole>(e)).toList()
+          as T;
+    }
+    if (t == List<_i15.AppPermission>) {
+      return (data as List)
+              .map((e) => deserialize<_i15.AppPermission>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
+    if (t == List<_i16.UserSession>) {
+      return (data as List)
+              .map((e) => deserialize<_i16.UserSession>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i17.AppUser>) {
+      return (data as List).map((e) => deserialize<_i17.AppUser>(e)).toList()
+          as T;
+    }
+    if (t == List<int>) {
+      return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);

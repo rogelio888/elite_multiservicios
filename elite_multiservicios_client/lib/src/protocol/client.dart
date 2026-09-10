@@ -19,7 +19,21 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
 import 'package:elite_multiservicios_client/src/protocol/greetings/greeting.dart'
     as _i5;
-import 'protocol.dart' as _i6;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log.dart'
+    as _i6;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_role.dart'
+    as _i7;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_permission.dart'
+    as _i8;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_role.dart'
+    as _i9;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/role_permission.dart'
+    as _i10;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_session.dart'
+    as _i11;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_user.dart'
+    as _i12;
+import 'protocol.dart' as _i13;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -260,6 +274,210 @@ class EndpointGreeting extends _i2.EndpointRef {
       );
 }
 
+/// Endpoint RPC para consulta de la bitácora de eventos y auditoría del sistema.
+/// {@category Endpoint}
+class EndpointAudit extends _i2.EndpointRef {
+  EndpointAudit(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'audit';
+
+  /// Lista los registros de bitácora paginados con filtros opcionales. Requiere audit.view.
+  _i3.Future<List<_i6.AuditLog>> listLogs({
+    required int limit,
+    required int offset,
+    int? userId,
+    String? action,
+  }) => caller.callServerEndpoint<List<_i6.AuditLog>>(
+    'audit',
+    'listLogs',
+    {
+      'limit': limit,
+      'offset': offset,
+      'userId': userId,
+      'action': action,
+    },
+  );
+}
+
+/// Endpoint RPC para administración de Roles y Permisos Granulares (RBAC).
+/// {@category Endpoint}
+class EndpointRbac extends _i2.EndpointRef {
+  EndpointRbac(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'rbac';
+
+  /// Lista los roles registrados en el sistema. Requiere roles.view.
+  _i3.Future<List<_i7.AppRole>> listRoles() =>
+      caller.callServerEndpoint<List<_i7.AppRole>>(
+        'rbac',
+        'listRoles',
+        {},
+      );
+
+  /// Lista el catálogo de permisos granulares. Requiere permissions.view.
+  _i3.Future<List<_i8.AppPermission>> listPermissions() =>
+      caller.callServerEndpoint<List<_i8.AppPermission>>(
+        'rbac',
+        'listPermissions',
+        {},
+      );
+
+  /// Asigna un rol a un usuario. Requiere roles.manage.
+  _i3.Future<_i9.UserRole> assignRoleToUser({
+    required int userId,
+    required int roleId,
+  }) => caller.callServerEndpoint<_i9.UserRole>(
+    'rbac',
+    'assignRoleToUser',
+    {
+      'userId': userId,
+      'roleId': roleId,
+    },
+  );
+
+  /// Remueve un rol asignado a un usuario. Requiere roles.manage.
+  _i3.Future<bool> removeRoleFromUser({
+    required int userId,
+    required int roleId,
+  }) => caller.callServerEndpoint<bool>(
+    'rbac',
+    'removeRoleFromUser',
+    {
+      'userId': userId,
+      'roleId': roleId,
+    },
+  );
+
+  /// Asigna un permiso granular a un rol. Requiere permissions.assign.
+  _i3.Future<_i10.RolePermission> assignPermissionToRole({
+    required int roleId,
+    required int permissionId,
+  }) => caller.callServerEndpoint<_i10.RolePermission>(
+    'rbac',
+    'assignPermissionToRole',
+    {
+      'roleId': roleId,
+      'permissionId': permissionId,
+    },
+  );
+
+  /// Obtiene la lista de códigos de permisos efectivos de un usuario.
+  _i3.Future<List<String>> getUserEffectivePermissions(int userId) =>
+      caller.callServerEndpoint<List<String>>(
+        'rbac',
+        'getUserEffectivePermissions',
+        {'userId': userId},
+      );
+}
+
+/// Endpoint RPC para el monitoreo y control de sesiones activas.
+/// {@category Endpoint}
+class EndpointSessionManagement extends _i2.EndpointRef {
+  EndpointSessionManagement(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'sessionManagement';
+
+  /// Lista las sesiones activas asociadas a un usuario. Requiere sessions.view.
+  _i3.Future<List<_i11.UserSession>> listUserSessions(int userId) =>
+      caller.callServerEndpoint<List<_i11.UserSession>>(
+        'sessionManagement',
+        'listUserSessions',
+        {'userId': userId},
+      );
+
+  /// Revoca de forma inmediata una sesión activa por su ID. Requiere sessions.revoke.
+  _i3.Future<bool> revokeSession(int sessionId) =>
+      caller.callServerEndpoint<bool>(
+        'sessionManagement',
+        'revokeSession',
+        {'sessionId': sessionId},
+      );
+}
+
+/// Endpoint RPC para administración del ciclo de vida de usuarios.
+/// Protegido con autorización backend-first estricta.
+/// {@category Endpoint}
+class EndpointUser extends _i2.EndpointRef {
+  EndpointUser(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'user';
+
+  /// Lista usuarios paginados. Requiere permiso users.view.
+  _i3.Future<List<_i12.AppUser>> listUsers({
+    required int limit,
+    required int offset,
+    required bool includeDeleted,
+  }) => caller.callServerEndpoint<List<_i12.AppUser>>(
+    'user',
+    'listUsers',
+    {
+      'limit': limit,
+      'offset': offset,
+      'includeDeleted': includeDeleted,
+    },
+  );
+
+  /// Obtiene el detalle de un usuario por ID. Requiere permiso users.view.
+  _i3.Future<_i12.AppUser?> getUser(int id) =>
+      caller.callServerEndpoint<_i12.AppUser?>(
+        'user',
+        'getUser',
+        {'id': id},
+      );
+
+  /// Crea un nuevo usuario empresarial y le asocia sus roles iniciales. Requiere users.create.
+  _i3.Future<_i12.AppUser> createUser({
+    required String email,
+    required String fullName,
+    required List<int> roleIds,
+  }) => caller.callServerEndpoint<_i12.AppUser>(
+    'user',
+    'createUser',
+    {
+      'email': email,
+      'fullName': fullName,
+      'roleIds': roleIds,
+    },
+  );
+
+  /// Actualiza información de un usuario. Requiere users.update.
+  _i3.Future<_i12.AppUser?> updateUser({
+    required int id,
+    required String fullName,
+  }) => caller.callServerEndpoint<_i12.AppUser?>(
+    'user',
+    'updateUser',
+    {
+      'id': id,
+      'fullName': fullName,
+    },
+  );
+
+  /// Activa o desactiva la cuenta de un usuario. Requiere users.disable.
+  _i3.Future<bool> setUserActive({
+    required int id,
+    required bool isActive,
+  }) => caller.callServerEndpoint<bool>(
+    'user',
+    'setUserActive',
+    {
+      'id': id,
+      'isActive': isActive,
+    },
+  );
+
+  /// Borrado lógico (Soft Delete) de un usuario. Requiere users.delete.
+  _i3.Future<bool> deleteUser(int id) => caller.callServerEndpoint<bool>(
+    'user',
+    'deleteUser',
+    {'id': id},
+  );
+}
+
 class Modules {
   Modules(Client client) {
     serverpod_auth_idp = _i1.Caller(client);
@@ -291,7 +509,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i6.Protocol(),
+         _i13.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -303,6 +521,10 @@ class Client extends _i2.ServerpodClientShared {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
     greeting = EndpointGreeting(this);
+    audit = EndpointAudit(this);
+    rbac = EndpointRbac(this);
+    sessionManagement = EndpointSessionManagement(this);
+    user = EndpointUser(this);
     modules = Modules(this);
   }
 
@@ -312,6 +534,14 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointGreeting greeting;
 
+  late final EndpointAudit audit;
+
+  late final EndpointRbac rbac;
+
+  late final EndpointSessionManagement sessionManagement;
+
+  late final EndpointUser user;
+
   late final Modules modules;
 
   @override
@@ -319,6 +549,10 @@ class Client extends _i2.ServerpodClientShared {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
     'greeting': greeting,
+    'audit': audit,
+    'rbac': rbac,
+    'sessionManagement': sessionManagement,
+    'user': user,
   };
 
   @override
