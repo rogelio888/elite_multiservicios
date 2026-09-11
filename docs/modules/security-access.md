@@ -71,8 +71,25 @@ Todos los endpoints están fuertemente tipados, expuestos al cliente y blindados
 
 ---
 
-## 5. Estado de Implementación
+## 5. Arquitectura de Interfaz de Usuario (Flutter)
+
+La interfaz de usuario del módulo está construida bajo una estética corporativa premium de alto nivel, soporte para temas claro/oscuro dinámicos y arquitectura responsiva:
+
+### Estructura de Componentes
+1. **`SecurityShellScreen`**: Contenedor principal con navegación por Sidebar corporativo colapsable, indicador de estado de conexión RPC y selector de tema dinámico.
+2. **`SecurityDashboardView`**: Métricas en tiempo real (`SecurityStatCard`), estadísticas de usuarios activos, sesiones e incidentes, y accesos rápidos a módulos de seguridad.
+3. **`UsersManagementView`**: Tabla responsiva de administración de usuarios, creación de cuentas con asignación de roles, activación/desactivación inmediata y borrado lógico con confirmación dialogada.
+4. **`RolesRbacView`**: Matriz de inspección de roles y permisos granulares, sincronizada directamente con la jerarquía relacional de Serverpod.
+5. **`AuditLogView`**: Bitácora de trazabilidad con badges de resultado (`StatusBadge`), filtros rápidos y diálogo de detalle de payload.
+6. **`ActiveSessionsView`**: Monitor de sesiones concurrentes con IP, dispositivo y revocación forzada en un clic.
+
+### Servicio de Consumo Backend
+- **`SecurityApiService`**: Capa desacoplada que consume directamente el cliente fuertemente tipado de Serverpod (`Client client`) contra PostgreSQL sin mocks.
+
+---
+
+## 6. Estado de Implementación
 - **Fase 1**: Andamiaje base, CI/CD, Git Flow y directivas de seguridad backend-first (**COMPLETADO**).
 - **Fase 2**: Modelos `.spy.yaml`, generación de contratos, migraciones PostgreSQL aplicadas y repositorios relacionales (**COMPLETADO**).
-- **Fase 3**: Endpoints RPC de Serverpod con protección `RbacGuard`, logging automático y seeds de inicialización (**COMPLETADO**).
-- **Fase 4 (Siguiente)**: Interfaz de usuario en Flutter (Pantalla de Administración de Seguridad, gestión visual de usuarios, roles, permisos y bitácora consumiendo los endpoints RPC reales).
+- **Fase 3**: Endpoints RPC de seguridad, RBAC Guard, auditoría en tiempo real y tests unitarios (**COMPLETADO**).
+- **Fase 4**: Interfaz de usuario corporativa Flutter, Dashboard, Gestión de Usuarios, RBAC Matrix, Bitácora y Sesiones (**COMPLETADO**).
