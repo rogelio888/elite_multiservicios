@@ -64,6 +64,8 @@ git checkout develop
 > dart pub get
 > ```
 
+> **Atajo con IA**: Si usas Antigravity, Cursor o Claude Code, puedes copiar y pegar el contenido de [SETUP_AI.md](SETUP_AI.md) y la IA configurará todo el entorno automáticamente.
+
 **Cómo saber que funcionó:** Verás el mensaje `Got dependencies in .!` sin errores de resolución.
 
 ---
@@ -360,6 +362,7 @@ git restore --staged .env elite_multiservicios_server/config/passwords.yaml
 
 ## 11. Recursos adicionales
 
+- [SETUP_AI.md](SETUP_AI.md) — Prompt auto-ejecutable para configurar el entorno con IA.
 - [docs/development/onboarding.md](docs/development/onboarding.md) — Guía detallada de onboarding en 5 pasos.
 - [docs/development/setup.md](docs/development/setup.md) — Manual de instalación y configuración técnica profunda.
 - [docs/development/coding-standards.md](docs/development/coding-standards.md) — Estándares oficiales de código Dart y Flutter.
