@@ -33,3 +33,6 @@ Thumbs.db
 *~
 .idea/
 *.iml
+
+# User temporary prompt files
+prompt*.md

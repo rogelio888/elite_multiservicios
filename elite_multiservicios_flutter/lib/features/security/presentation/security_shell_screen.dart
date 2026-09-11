@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 import 'views/security_dashboard_view.dart';
 import 'views/users_management_view.dart';
 import 'views/roles_rbac_view.dart';
@@ -8,11 +9,13 @@ import 'views/active_sessions_view.dart';
 class SecurityShellScreen extends StatefulWidget {
   final VoidCallback? onToggleTheme;
   final bool isDarkMode;
+  final AuthService? authService;
 
   const SecurityShellScreen({
     super.key,
     this.onToggleTheme,
     this.isDarkMode = false,
+    this.authService,
   });
 
   @override
@@ -20,8 +23,49 @@ class SecurityShellScreen extends StatefulWidget {
 }
 
 class _SecurityShellScreenState extends State<SecurityShellScreen> {
+  late final AuthService _authService;
   int _selectedIndex = 0;
   bool _isSidebarCollapsed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = widget.authService ?? AuthService();
+  }
+
+  Future<void> _confirmAndLogout() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.logout, color: Colors.redAccent, size: 22),
+            SizedBox(width: 10),
+            Text('Cerrar Sesión'),
+          ],
+        ),
+        content: const Text(
+          '¿Estás seguro de que deseas cerrar tu sesión actual? '
+          'La sesión se revocará en el servidor y se registrará en la bitácora de auditoría.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Cerrar Sesión'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await _authService.logout();
+    }
+  }
 
   final List<String> _titles = [
     'Dashboard General',
@@ -210,8 +254,29 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                   ),
                 ),
 
-                // Botón para colapsar Sidebar
+                // Botón de Cerrar Sesión en Sidebar
                 const Divider(color: Color(0xFF334155), height: 1),
+                ListTile(
+                  dense: true,
+                  leading: const Icon(
+                    Icons.logout,
+                    color: Colors.redAccent,
+                    size: 16,
+                  ),
+                  title: _isSidebarCollapsed
+                      ? null
+                      : const Text(
+                          'Cerrar Sesión',
+                          style: TextStyle(
+                            color: Colors.redAccent,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                  onTap: _confirmAndLogout,
+                ),
+
+                // Botón para colapsar Sidebar
                 ListTile(
                   dense: true,
                   leading: Icon(
@@ -281,15 +346,38 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                             tooltip: 'Cambiar Tema',
                             onPressed: widget.onToggleTheme,
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 8),
+                          if (_authService.currentUser != null) ...[
+                            Text(
+                              _authService.currentDisplayName ?? 'Usuario',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? const Color(0xFFE2E8F0)
+                                    : const Color(0xFF334155),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                          ],
                           const CircleAvatar(
-                            radius: 18,
+                            radius: 16,
                             backgroundColor: Color(0xFF1E3A8A),
                             child: Icon(
                               Icons.person,
                               color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.logout,
+                              color: Colors.redAccent,
                               size: 20,
                             ),
+                            tooltip: 'Cerrar Sesión',
+                            onPressed: _confirmAndLogout,
                           ),
                         ],
                       ),

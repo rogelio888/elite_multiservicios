@@ -22,9 +22,10 @@ abstract class AppUser implements _i1.SerializableModel {
     this.userInfoId,
     required this.isActive,
     required this.isDeleted,
+    bool? mustChangePassword,
     required this.createdAt,
     required this.updatedAt,
-  });
+  }) : mustChangePassword = mustChangePassword ?? true;
 
   factory AppUser({
     int? id,
@@ -33,6 +34,7 @@ abstract class AppUser implements _i1.SerializableModel {
     int? userInfoId,
     required bool isActive,
     required bool isDeleted,
+    bool? mustChangePassword,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _AppUserImpl;
@@ -45,6 +47,11 @@ abstract class AppUser implements _i1.SerializableModel {
       userInfoId: jsonSerialization['userInfoId'] as int?,
       isActive: _i1.BoolJsonExtension.fromJson(jsonSerialization['isActive']),
       isDeleted: _i1.BoolJsonExtension.fromJson(jsonSerialization['isDeleted']),
+      mustChangePassword: jsonSerialization['mustChangePassword'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['mustChangePassword'],
+            ),
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
@@ -74,6 +81,9 @@ abstract class AppUser implements _i1.SerializableModel {
   /// Indicador de eliminación lógica (Soft Delete).
   bool isDeleted;
 
+  /// Indicador de cambio obligatorio de contraseña temporal.
+  bool mustChangePassword;
+
   /// Fecha de creación del registro.
   DateTime createdAt;
 
@@ -90,6 +100,7 @@ abstract class AppUser implements _i1.SerializableModel {
     int? userInfoId,
     bool? isActive,
     bool? isDeleted,
+    bool? mustChangePassword,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -103,6 +114,7 @@ abstract class AppUser implements _i1.SerializableModel {
       if (userInfoId != null) 'userInfoId': userInfoId,
       'isActive': isActive,
       'isDeleted': isDeleted,
+      'mustChangePassword': mustChangePassword,
       'createdAt': createdAt.toJson(),
       'updatedAt': updatedAt.toJson(),
     };
@@ -124,6 +136,7 @@ class _AppUserImpl extends AppUser {
     int? userInfoId,
     required bool isActive,
     required bool isDeleted,
+    bool? mustChangePassword,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) : super._(
@@ -133,6 +146,7 @@ class _AppUserImpl extends AppUser {
          userInfoId: userInfoId,
          isActive: isActive,
          isDeleted: isDeleted,
+         mustChangePassword: mustChangePassword,
          createdAt: createdAt,
          updatedAt: updatedAt,
        );
@@ -148,6 +162,7 @@ class _AppUserImpl extends AppUser {
     Object? userInfoId = _Undefined,
     bool? isActive,
     bool? isDeleted,
+    bool? mustChangePassword,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -158,6 +173,7 @@ class _AppUserImpl extends AppUser {
       userInfoId: userInfoId is int? ? userInfoId : this.userInfoId,
       isActive: isActive ?? this.isActive,
       isDeleted: isDeleted ?? this.isDeleted,
+      mustChangePassword: mustChangePassword ?? this.mustChangePassword,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

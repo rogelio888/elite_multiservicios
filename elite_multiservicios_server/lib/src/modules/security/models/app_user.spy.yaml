@@ -12,6 +12,8 @@ fields:
   isActive: bool
   ### Indicador de eliminación lógica (Soft Delete).
   isDeleted: bool
+  ### Indicador de cambio obligatorio de contraseña temporal.
+  mustChangePassword: bool, default=true
   ### Fecha de creación del registro.
   createdAt: DateTime
   ### Fecha de última actualización.
