@@ -1,0 +1,17 @@
+title = "Elite Multiservicios Gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allow placeholders and CI dummy values"
+regexes = [
+  '''ci-dummy-not-real''',
+  '''REDACTED_[A-Z_]+''',
+  '''tu_password_[a-z_]+''',
+  '''your-google-cloud-project-id''',
+]
+paths = [
+  '''.env.example''',
+  '''config/passwords.yaml.example''',
+]

@@ -256,47 +256,59 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
 
                 // Botón de Cerrar Sesión en Sidebar
                 const Divider(color: Color(0xFF334155), height: 1),
-                ListTile(
-                  dense: true,
-                  leading: const Icon(
-                    Icons.logout,
-                    color: Colors.redAccent,
-                    size: 16,
-                  ),
-                  title: _isSidebarCollapsed
-                      ? null
-                      : const Text(
-                          'Cerrar Sesión',
-                          style: TextStyle(
-                            color: Colors.redAccent,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    dense: true,
+                    tileColor: isDark
+                        ? const Color(0xFF0F172A)
+                        : const Color(0xFF1E293B),
+                    leading: const Icon(
+                      Icons.logout,
+                      color: Colors.redAccent,
+                      size: 16,
+                    ),
+                    title: _isSidebarCollapsed
+                        ? null
+                        : const Text(
+                            'Cerrar Sesión',
+                            style: TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                  onTap: _confirmAndLogout,
+                    onTap: _confirmAndLogout,
+                  ),
                 ),
 
                 // Botón para colapsar Sidebar
-                ListTile(
-                  dense: true,
-                  leading: Icon(
-                    _isSidebarCollapsed
-                        ? Icons.arrow_forward_ios
-                        : Icons.arrow_back_ios,
-                    color: const Color(0xFF94A3B8),
-                    size: 16,
-                  ),
-                  title: _isSidebarCollapsed
-                      ? null
-                      : const Text(
-                          'Colapsar Menú',
-                          style: TextStyle(
-                            color: Color(0xFF94A3B8),
-                            fontSize: 12,
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    dense: true,
+                    tileColor: isDark
+                        ? const Color(0xFF0F172A)
+                        : const Color(0xFF1E293B),
+                    leading: Icon(
+                      _isSidebarCollapsed
+                          ? Icons.arrow_forward_ios
+                          : Icons.arrow_back_ios,
+                      color: const Color(0xFF94A3B8),
+                      size: 16,
+                    ),
+                    title: _isSidebarCollapsed
+                        ? null
+                        : const Text(
+                            'Colapsar Menú',
+                            style: TextStyle(
+                              color: Color(0xFF94A3B8),
+                              fontSize: 12,
+                            ),
                           ),
-                        ),
-                  onTap: () => setState(
-                    () => _isSidebarCollapsed = !_isSidebarCollapsed,
+                    onTap: () => setState(
+                      () => _isSidebarCollapsed = !_isSidebarCollapsed,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
