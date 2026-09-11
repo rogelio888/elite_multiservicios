@@ -23,9 +23,10 @@ abstract class AppUser
     this.userInfoId,
     required this.isActive,
     required this.isDeleted,
+    bool? mustChangePassword,
     required this.createdAt,
     required this.updatedAt,
-  });
+  }) : mustChangePassword = mustChangePassword ?? true;
 
   factory AppUser({
     int? id,
@@ -34,6 +35,7 @@ abstract class AppUser
     int? userInfoId,
     required bool isActive,
     required bool isDeleted,
+    bool? mustChangePassword,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _AppUserImpl;
@@ -46,6 +48,11 @@ abstract class AppUser
       userInfoId: jsonSerialization['userInfoId'] as int?,
       isActive: _i1.BoolJsonExtension.fromJson(jsonSerialization['isActive']),
       isDeleted: _i1.BoolJsonExtension.fromJson(jsonSerialization['isDeleted']),
+      mustChangePassword: jsonSerialization['mustChangePassword'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['mustChangePassword'],
+            ),
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
@@ -77,6 +84,9 @@ abstract class AppUser
   /// Indicador de eliminación lógica (Soft Delete).
   bool isDeleted;
 
+  /// Indicador de cambio obligatorio de contraseña temporal.
+  bool mustChangePassword;
+
   /// Fecha de creación del registro.
   DateTime createdAt;
 
@@ -96,6 +106,7 @@ abstract class AppUser
     int? userInfoId,
     bool? isActive,
     bool? isDeleted,
+    bool? mustChangePassword,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -109,6 +120,7 @@ abstract class AppUser
       if (userInfoId != null) 'userInfoId': userInfoId,
       'isActive': isActive,
       'isDeleted': isDeleted,
+      'mustChangePassword': mustChangePassword,
       'createdAt': createdAt.toJson(),
       'updatedAt': updatedAt.toJson(),
     };
@@ -124,6 +136,7 @@ abstract class AppUser
       if (userInfoId != null) 'userInfoId': userInfoId,
       'isActive': isActive,
       'isDeleted': isDeleted,
+      'mustChangePassword': mustChangePassword,
       'createdAt': createdAt.toJson(),
       'updatedAt': updatedAt.toJson(),
     };
@@ -169,6 +182,7 @@ class _AppUserImpl extends AppUser {
     int? userInfoId,
     required bool isActive,
     required bool isDeleted,
+    bool? mustChangePassword,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) : super._(
@@ -178,6 +192,7 @@ class _AppUserImpl extends AppUser {
          userInfoId: userInfoId,
          isActive: isActive,
          isDeleted: isDeleted,
+         mustChangePassword: mustChangePassword,
          createdAt: createdAt,
          updatedAt: updatedAt,
        );
@@ -193,6 +208,7 @@ class _AppUserImpl extends AppUser {
     Object? userInfoId = _Undefined,
     bool? isActive,
     bool? isDeleted,
+    bool? mustChangePassword,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -203,6 +219,7 @@ class _AppUserImpl extends AppUser {
       userInfoId: userInfoId is int? ? userInfoId : this.userInfoId,
       isActive: isActive ?? this.isActive,
       isDeleted: isDeleted ?? this.isDeleted,
+      mustChangePassword: mustChangePassword ?? this.mustChangePassword,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -234,6 +251,11 @@ class AppUserUpdateTable extends _i1.UpdateTable<AppUserTable> {
 
   _i1.ColumnValue<bool, bool> isDeleted(bool value) => _i1.ColumnValue(
     table.isDeleted,
+    value,
+  );
+
+  _i1.ColumnValue<bool, bool> mustChangePassword(bool value) => _i1.ColumnValue(
+    table.mustChangePassword,
     value,
   );
 
@@ -273,6 +295,11 @@ class AppUserTable extends _i1.Table<int?> {
       'isDeleted',
       this,
     );
+    mustChangePassword = _i1.ColumnBool(
+      'mustChangePassword',
+      this,
+      hasDefault: true,
+    );
     createdAt = _i1.ColumnDateTime(
       'createdAt',
       this,
@@ -300,6 +327,9 @@ class AppUserTable extends _i1.Table<int?> {
   /// Indicador de eliminación lógica (Soft Delete).
   late final _i1.ColumnBool isDeleted;
 
+  /// Indicador de cambio obligatorio de contraseña temporal.
+  late final _i1.ColumnBool mustChangePassword;
+
   /// Fecha de creación del registro.
   late final _i1.ColumnDateTime createdAt;
 
@@ -314,6 +344,7 @@ class AppUserTable extends _i1.Table<int?> {
     userInfoId,
     isActive,
     isDeleted,
+    mustChangePassword,
     createdAt,
     updatedAt,
   ];

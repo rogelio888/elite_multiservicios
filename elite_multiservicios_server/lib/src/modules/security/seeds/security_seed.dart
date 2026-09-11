@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:serverpod/serverpod.dart';
 import '../../../generated/protocol.dart';
 import '../../../authorization/permissions.dart';
@@ -73,8 +74,57 @@ class SecuritySeed {
       }
     }
 
+    // 4. Sembrado seguro del usuario Administrador Inicial
+    final adminEmail =
+        Platform.environment['SEED_ADMIN_EMAIL'] ??
+        'admin@elitemultiservicios.com';
+    final adminPassword = Platform.environment['SEED_ADMIN_PASSWORD'];
+
+    if (adminPassword == null || adminPassword.isEmpty) {
+      throw StateError(
+        'FATAL: La variable de entorno SEED_ADMIN_PASSWORD no está definida. '
+        'No se permite sembrar el usuario administrador sin una contraseña explícita.',
+      );
+    }
+
+    var adminUser = await AppUser.db.findFirstRow(
+      session,
+      where: (t) => t.email.equals(adminEmail),
+    );
+
+    adminUser ??= await AppUser.db.insertRow(
+      session,
+      AppUser(
+        email: adminEmail,
+        fullName: 'Administrador del Sistema',
+        isActive: true,
+        isDeleted: false,
+        mustChangePassword: true,
+        createdAt: DateTime.now().toUtc(),
+        updatedAt: DateTime.now().toUtc(),
+      ),
+    );
+
+    // Vincular rol Super Administrador al usuario creado
+    final existingUserRole = await UserRole.db.findFirstRow(
+      session,
+      where: (t) =>
+          t.userId.equals(adminUser!.id!) & t.roleId.equals(adminRole!.id!),
+    );
+
+    if (existingUserRole == null) {
+      await UserRole.db.insertRow(
+        session,
+        UserRole(
+          userId: adminUser.id!,
+          roleId: adminRole.id!,
+          assignedAt: DateTime.now().toUtc(),
+        ),
+      );
+    }
+
     session.log(
-      'Seed de seguridad completado exitosamente.',
+      'Seed de seguridad completado exitosamente con usuario admin: $adminEmail.',
       level: LogLevel.info,
     );
   }

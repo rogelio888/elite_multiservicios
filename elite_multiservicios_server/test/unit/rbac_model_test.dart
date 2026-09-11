@@ -13,6 +13,7 @@ void main() {
           fullName: 'Elite Developer',
           isActive: true,
           isDeleted: false,
+          mustChangePassword: true,
           createdAt: now,
           updatedAt: now,
         );
@@ -20,11 +21,13 @@ void main() {
         expect(user.email, equals('developer@elite.com'));
         expect(user.isActive, isTrue);
         expect(user.isDeleted, isFalse);
+        expect(user.mustChangePassword, isTrue);
 
         final json = user.toJson();
         expect(json['email'], equals('developer@elite.com'));
         expect(json['isActive'], isTrue);
         expect(json['isDeleted'], isFalse);
+        expect(json['mustChangePassword'], isTrue);
       },
     );
 

@@ -1,0 +1,19 @@
+# ==============================================================================
+# ELITE MULTISERVICIOS - CODEOWNERS
+# ==============================================================================
+# Define los revisores obligatorios por área de código para proteger las ramas.
+# ==============================================================================
+
+# Propietarios globales del repositorio
+*                               @elite-multiservicios/core-team
+
+# Backend (Serverpod, PostgreSQL, Modelos relacionales)
+/elite_multiservicios_server/   @elite-multiservicios/backend-leads
+/docs/architecture/             @elite-multiservicios/backend-leads
+
+# Frontend (Flutter, UI/UX, Componentes)
+/elite_multiservicios_flutter/  @elite-multiservicios/frontend-leads
+/docs/development/stitch-mcp.md @elite-multiservicios/frontend-leads
+
+# Gobernanza y Procesos Ágiles
+/docs/process/                  @elite-multiservicios/scrum-masters
