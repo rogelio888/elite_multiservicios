@@ -35,3 +35,16 @@ Una tarea o historia de usuario **SOLO** puede declararse **DONE** cuando se cum
 ```
 
 > **REGLA DE ORO**: "Ya escribí el código" o "funciona en mi máquina" **NO** significa DONE.
+
+---
+
+## 4. Estado de Sprints e Incrementos Funcionales
+
+### Sprint 1: Núcleo de Seguridad y Control de Accesos
+- **Objetivo**: Desarrollar la columna vertebral de seguridad con RBAC relacional, auditoría y UI completa.
+- **Entregables**:
+  - [x] **Fase 1**: Andamiaje Serverpod + Flutter + PostgreSQL + Docker Compose + CI/CD + Normas. (**DONE**)
+  - [x] **Fase 2**: Modelado relacional `.spy.yaml`, repositorios PostgreSQL y migraciones aplicadas. (**DONE**)
+  - [x] **Fase 3**: Endpoints RPC Serverpod, `RbacGuard`, Seeds de permisos y tests unitarios. (**DONE**)
+  - [x] **Fase 4**: UI Flutter (Dashboard, Gestión de Usuarios, RBAC Matrix, Bitácora y Sesiones). (**DONE**)
+
