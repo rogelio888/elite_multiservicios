@@ -22,3 +22,9 @@
      - `dart analyze` y `flutter analyze` con 0 errores y 0 warnings.
      - Pruebas unitarias aprobadas.
      - Reportar explícitamente qué fue VERIFICADO y qué NO FUE VERIFICADO con su MOTIVO.
+
+6. **Flujo de Diseño Obligatorio (Google Stitch)**:
+   - Toda interfaz de usuario DEBE partir de un diseño en Google Stitch.
+   - Prohibido diseñar interfaces directamente desde cero en Flutter sin prototipado previo en Stitch.
+   - Seguir el protocolo detallado en `.agents/rules/stitch_workflow.md`.
+
