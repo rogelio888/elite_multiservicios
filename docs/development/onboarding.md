@@ -26,7 +26,7 @@ Antes de iniciar con el Paso 1, asegúrate de tener instaladas las siguientes he
 
 ### Paso 1: Clonar el Repositorio y Ubicarse en Rama `develop`
 ```bash
-git clone <URL_DEL_REPOSITORIO>
+git clone https://github.com/rogelio888/elite_multiservicios.git
 cd elite_multiservicios
 git checkout develop
 ```

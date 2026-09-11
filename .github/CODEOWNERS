@@ -2,18 +2,23 @@
 # ELITE MULTISERVICIOS - CODEOWNERS
 # ==============================================================================
 # Define los revisores obligatorios por área de código para proteger las ramas.
+# Repositorio personal de GitHub: https://github.com/rogelio888/elite_multiservicios
 # ==============================================================================
 
-# Propietarios globales del repositorio
-*                               @elite-multiservicios/core-team
+# Propietario global y revisor por defecto
+*                               @rogelio888
 
-# Backend (Serverpod, PostgreSQL, Modelos relacionales)
-/elite_multiservicios_server/   @elite-multiservicios/backend-leads
-/docs/architecture/             @elite-multiservicios/backend-leads
+# Backend (Serverpod, PostgreSQL, Modelos relacionales, Migraciones)
+/elite_multiservicios_server/   @rogelio888
+/docs/architecture/             @rogelio888
 
-# Frontend (Flutter, UI/UX, Componentes)
-/elite_multiservicios_flutter/  @elite-multiservicios/frontend-leads
-/docs/development/stitch-mcp.md @elite-multiservicios/frontend-leads
+# Frontend (Flutter, UI/UX, Google Stitch)
+/elite_multiservicios_flutter/  @rogelio888
+/docs/development/stitch-mcp.md @rogelio888
 
-# Gobernanza y Procesos Ágiles
-/docs/process/                  @elite-multiservicios/scrum-masters
+# Clientes y contratos RPC
+/elite_multiservicios_client/   @rogelio888
+
+# Configuración CI/CD, Workflows y Gobernanza
+/.github/                       @rogelio888
+/docs/process/                  @rogelio888
