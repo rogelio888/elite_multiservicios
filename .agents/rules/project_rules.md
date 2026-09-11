@@ -28,3 +28,17 @@
    - Prohibido diseñar interfaces directamente desde cero en Flutter sin prototipado previo en Stitch.
    - Seguir el protocolo detallado en `.agents/rules/stitch_workflow.md`.
 
+---
+
+## Referencias obligatorias
+
+Toda IA o agente que trabaje en este repositorio debe consultar y respetar rigurosamente:
+
+- `.agents/rules/git_workflow.md` — Flujo Git detallado, protección de ramas y resolución de errores.
+- `.agents/rules/verification_rules.md` — Reglas de verificación empírica en terminal y servicios.
+- `.agents/rules/testing_rules.md` — Estándares y cobertura mínima obligatoria de pruebas.
+- `.agents/rules/stitch_workflow.md` — Flujo oficial de diseño UI con Google Stitch.
+- `.agents/skills/` — Skills y flujos operativos reutilizables (`verify-environment`, `create-feature`, `submit-pr`, etc.).
+- `.agents/checklists/` — Checklists mandatorios antes de commit y antes de merge.
+
+
