@@ -47,12 +47,14 @@ Para más detalles, consulta [docs/architecture/overview.md](docs/architecture/o
 ---
 
 ## 4. Stack Tecnológico
+- **Diseño & Prototipado UI/UX**: Google Stitch (origen obligatorio de interfaces vía MCP).
 - **Frontend**: Flutter (v3.41+ stable) & Dart.
 - **Backend**: Serverpod (v3.4.13) & Dart (v3.11+).
 - **Base de Datos**: PostgreSQL 16 (con soporte pgvector).
 - **Caché / Mensajería**: Redis 6.2+.
 - **Infraestructura Local**: Docker Desktop & Docker Compose.
 - **Control de Versiones**: Git & GitHub.
+- **IDE Asistido por IA**: Antigravity (integrado con Stitch MCP).
 - **Metodología**: Scrum & GitHub Projects.
 
 ---
@@ -211,6 +213,8 @@ El flujo configurado en `.github/workflows/ci.yml` ejecuta automáticamente en c
 2. **Cero Datos Falsos (No-Mock Policy)**: Prohibido el uso de mocks o datos simulados para aparentar funcionalidad terminada.
 3. **No Mentir en Validaciones**: Nunca declarar que los tests o la compilación pasan sin haberlos ejecutado empíricamente.
 4. **Respeto al Código Generado**: Prohibido editar manualmente el subpaquete `elite_multiservicios_client` o `lib/src/generated/`.
+5. **Origen de Diseño Mandatorio (Google Stitch)**: Toda pantalla de usuario debe partir de un prototipo oficial en Google Stitch vía MCP. Para instrucciones completas, consulta [docs/development/stitch-mcp.md](docs/development/stitch-mcp.md).
+
 
 ---
 

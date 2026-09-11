@@ -22,6 +22,7 @@ El equipo aplica el marco Scrum para la entrega continua de incrementos funciona
 Una tarea o historia de usuario **SOLO** puede declararse **DONE** cuando se cumplen la totalidad de las siguientes condiciones:
 
 ```
+[ ] Prototipo visual diseñado y aprobado en Google Stitch (obligatorio para interfaces UI/UX).
 [ ] Código fuente implementado respetando la arquitectura modular.
 [ ] Formateo estricto verificado (`dart format`).
 [ ] Cero errores y cero advertencias en análisis estático (`dart analyze` y `flutter analyze`).
