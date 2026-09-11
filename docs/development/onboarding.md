@@ -14,11 +14,11 @@ Antes de iniciar con el Paso 1, asegúrate de tener instaladas las siguientes he
 2. **Flutter SDK** (v3.24+ / v3.41.x canal stable) & **Dart SDK** (v3.8.0+ / v3.11.x)
 3. **Docker Desktop** (con Docker Compose y virtualización activa)
 4. **Node.js** (v18.0.0+ LTS) y **npx**
-5. **Google Cloud CLI (`gcloud`)** (para autenticación en Google Stitch)
-6. **Serverpod CLI** (v3.4.13):
+5. **Serverpod CLI** (v3.4.13):
    ```bash
    dart pub global activate serverpod_cli
    ```
+6. **Cuenta Google** con acceso a Google Stitch (para generar tu API Key)
 
 ---
 
@@ -48,30 +48,25 @@ cp elite_multiservicios_server/config/passwords.yaml.example elite_multiservicio
 cp .env.example .env
 ```
 
-Abre el archivo `.env` recién creado y define obligatoriamente tu contraseña provisional de administrador:
+Abre el archivo `.env` recién creado y define obligatoriamente tu clave de Stitch y tu contraseña de administrador:
 ```env
+STITCH_API_KEY=tu_clave_de_stitch_aqui
 SEED_ADMIN_EMAIL=admin@elitemultiservicios.com
 SEED_ADMIN_PASSWORD=TuPasswordSeguro123!
 ```
 
 ---
 
-### Paso 2.5: Configuración de Google Stitch MCP y Autenticación gcloud
-Google Stitch es la única fuente de verdad de UI/UX para el proyecto. Configura tus credenciales personales:
+### Paso 2.5: Configuración de Google Stitch MCP (Solo con STITCH_API_KEY)
+Google Stitch es la única fuente de verdad de UI/UX para el proyecto:
 
-1. Inicia sesión en Google Cloud con tus credenciales corporativas (Application Default Credentials):
-   ```bash
-   gcloud auth application-default login
-   ```
-2. Configura tu ID de proyecto en `.env` (o tu `STITCH_API_KEY` si utilizas clave directa):
-   ```env
-   GOOGLE_CLOUD_PROJECT=tu-id-de-proyecto-gcp
-   ```
+1. Obtén tu clave de API personal en la consola de Google Stitch (**Settings → API Keys**).
+2. Asegúrate de haberla pegado en tu `.env` local (`STITCH_API_KEY=...`).
 3. Verifica la disponibilidad del proxy MCP de Stitch ejecutando:
    ```bash
    npx -y @_davideast/stitch-mcp proxy
    ```
-   *(El comando debe inicializar el proxy sin arrojar errores de autenticación)*.
+   *(El comando debe inicializar el proxy sin errores)*.
 
 ---
 

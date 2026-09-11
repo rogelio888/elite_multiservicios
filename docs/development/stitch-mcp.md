@@ -26,23 +26,16 @@ Cada desarrollador o colaborador debe contar con las siguientes herramientas en 
      node -v
      npx -v
      ```
-2. **Google Cloud CLI (`gcloud`)**:
-   - Necesario para autenticación automática mediante Application Default Credentials (ADC).
-   - Instalar desde: [Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
-   - Verificar instalación:
-     ```bash
-     gcloud version
-     ```
-3. **Proyecto en Google Cloud con API de Stitch habilitada**:
-   - Contar con un Google Cloud Project ID con los permisos correspondientes.
-4. **IDE Antigravity**:
-   - Versión actualizada con soporte para Model Context Protocol (MCP).
+2. **Cuenta de Google Stitch & API Key**:
+   - Generar tu propia clave de API personal en la consola de Google Stitch.
+3. **IDE Antigravity**:
+   - Versión actualizada con soporte nativo para Model Context Protocol (MCP).
 
 ---
 
-## 3. Arquitectura del MCP y Configuración Reproducible
+## 3. Arquitectura del MCP y Configuración en el Repositorio
 
-El proyecto utiliza el paquete oficial de proxy stdio **`@_davideast/stitch-mcp`**. Esto permite que Antigravity ejecute el servidor MCP en segundo plano vía standard I/O sin necesidad de servicios remotos no autenticados.
+El proyecto utiliza el paquete oficial de proxy stdio **`@_davideast/stitch-mcp`**. Esto permite que Antigravity ejecute el servidor MCP en segundo plano vía standard I/O inyectando directamente tu API Key personal.
 
 ### Archivos de Configuración en el Repositorio
 
@@ -59,105 +52,49 @@ El repositorio provee la configuración lista para usar sin secretos en:
           "proxy"
         ],
         "env": {
-          "GOOGLE_CLOUD_PROJECT": "${GOOGLE_CLOUD_PROJECT}"
+          "STITCH_API_KEY": "${STITCH_API_KEY}"
         }
       }
     }
   }
   ```
-- [`config/mcp/stitch_mcp.json.example`](file:///c:/Users/rogel/OneDrive/Escritorio/Proyectos/elite_multiservicios/config/mcp/stitch_mcp.json.example): Plantilla de referencia para configuración en editores alternativos o configuración global de Antigravity.
+- [`config/mcp/stitch_mcp.json.example`](file:///c:/Users/rogel/OneDrive/Escritorio/Proyectos/elite_multiservicios/config/mcp/stitch_mcp.json.example): Plantilla de referencia protegida en Git.
 
 ---
 
-## 4. Paso a Paso: Autenticación Segura para Colaboradores
+## 4. Paso a Paso: Configuración de la Clave de API
 
-La autenticación es **estrictamente individual**. Jamás compartas tus credenciales ni las agregues a Git.
+La autenticación es **estrictamente individual y local**. Jamás compartas tu clave de API ni la subas a Git.
 
-### Paso 1: Clonar el Repositorio
+### Paso 1: Obtener tu STITCH_API_KEY
+1. Ingresa a la plataforma de Google Stitch con tu cuenta autorizada.
+2. Accede a **Settings / Configuración → API Keys**.
+3. Genera una nueva clave y cópiala de inmediato.
+
+### Paso 2: Crear o Editar tu `.env` Local
+En la raíz del proyecto, copia la plantilla `.env.example` a `.env` (el cual está protegido en `.gitignore`):
+
 ```bash
-git clone https://github.com/tu-organizacion/elite_multiservicios.git
-cd elite_multiservicios
+cp .env.example .env      # Linux/macOS
+copy .env.example .env    # Windows
 ```
 
-### Paso 2: Crear el Archivo de Entorno Local `.env`
-Copia la plantilla `.env.example` a un archivo local `.env` (el cual está protegido en `.gitignore`):
-```bash
-cp .env.example .env
-```
-
-Edita `.env` y configura el ID de tu proyecto de Google Cloud:
+Pega tu clave en `.env`:
 ```env
-GOOGLE_CLOUD_PROJECT=tu-google-cloud-project-id
+STITCH_API_KEY=tu_stitch_api_key_aqui
 ```
 
-### Paso 3: Autenticación en Google Cloud (Application Default Credentials)
-Ejecuta en tu terminal para autenticar tu cuenta de Google en tu entorno local:
+### Paso 3: Verificar Conectividad del Proxy
+Ejecuta en tu terminal para validar que la clave es reconocida por el proxy MCP:
 ```bash
-gcloud auth application-default login
-```
-Esto abrirá tu navegador para iniciar sesión con tu cuenta corporativa autorizada.
-
-### Paso 4: Habilitar el Servicio MCP de Stitch (Una sola vez por proyecto GCP)
-```bash
-gcloud beta services mcp enable stitch.googleapis.com
+npx -y @_davideast/stitch-mcp proxy
 ```
 
 ---
 
 ## 5. Verificación de Conexión en Antigravity
 
-Para verificar que Antigravity ha detectado e inicializado el servidor MCP:
-
-1. **Abrir el proyecto en Antigravity**.
-2. Ir a **Additional Options (...) > MCP Servers** en la interfaz de Antigravity.
-3. Confirmar que **stitch** figure en la lista con estado activo (`Connected` o `Ready`).
-4. En el chat con el agente, puedes comprobar preguntando:
-   > "¿Qué herramientas tienes disponibles del servidor MCP de Stitch?"
-5. El agente listará herramientas como:
-   - `stitch_list_projects`
-   - `stitch_get_screen`
-   - `stitch_generate_screen`
-
----
-
-## 6. Flujo de Trabajo Oficial: Diseño en Stitch → Implementación en Flutter
-
-El flujo obligatorio para cualquier requerimiento o pantalla nueva es:
-
-```text
-REQUISITO
-    ↓
-DISEÑO EN GOOGLE STITCH
-    ↓
-REVISIÓN DEL DISEÑO
-    ↓
-APROBACIÓN
-    ↓
-IMPLEMENTACIÓN EN FLUTTER
-    ↓
-PRUEBAS (0 errores)
-    ↓
-CODE REVIEW
-```
-
-### Cómo interactuar con la IA para utilizar Stitch:
-
-#### 1. Crear un nuevo diseño en Stitch
-> "Diseña en Google Stitch una pantalla de inicio de sesión corporativa para Elite Multiservicios con soporte para temas claro y oscuro, campo de correo empresarial, contraseña y branding institucional."
-
-#### 2. Consultar un diseño existente
-> "Consulta en Stitch el diseño de la pantalla de Gestión de Usuarios y extrae los tokens de color y la estructura de la tabla de datos."
-
-#### 3. Modificar un diseño existente
-> "En el diseño de Bitácora de Auditoría en Stitch, añade una columna para visualizar el identificador del usuario y un badge de resultado."
-
-#### 4. Implementar el diseño en Flutter
-> "Una vez aprobado el diseño de Login en Stitch, impleméntalo en Flutter dentro de `lib/features/security/presentation/login_screen.dart` utilizando los tokens del diseño y conectando con Serverpod."
-
----
-
-## 7. Políticas de Seguridad Innegociables
-
-- **PROHIBIDO** comitear claves de API o tokens a Git.
-- **PROHIBIDO** copiar o reutilizar credenciales de otro desarrollador.
-- **VERIFICAR** siempre que `.env` no aparezca en `git status` antes de hacer commit.
+1. Abre el workspace en Antigravity.
+2. Antigravity leerá automáticamente [.mcp.json](file:///c:/Users/rogel/OneDrive/Escritorio/Proyectos/elite_multiservicios/.mcp.json) e inyectará la variable `STITCH_API_KEY` desde tu `.env`.
+3. Ve a la barra de servidores MCP y confirma que `stitch` figure en estado verde (**Connected**).
+4. El agente Antigravity tendrá acceso a las herramientas del MCP de Stitch (`list_projects`, `get_screen`, etc.) para inspeccionar diseños canónicos.

@@ -8,7 +8,7 @@
         "proxy"
       ],
       "env": {
-        "GOOGLE_CLOUD_PROJECT": "${GOOGLE_CLOUD_PROJECT}"
+        "STITCH_API_KEY": "${STITCH_API_KEY}"
       }
     }
   }

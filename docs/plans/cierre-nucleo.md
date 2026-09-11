@@ -46,9 +46,10 @@ Antes de comenzar el onboarding, cada desarrollador debe tener instalado en su s
 - **Git** (v2.40+)
 - **Flutter SDK** (v3.24+ / v3.41.x canal stable)
 - **Dart SDK** (v3.8.0+ / v3.11.x)
-- **Docker Desktop** (con Docker Compose activo)
-- **Node.js** (v18.0.0+ LTS) y `npx`
-- **Google Cloud CLI (`gcloud`)** (para Application Default Credentials hacia Stitch)
+- **Docker Desktop** (para PostgreSQL 16 con pgvector y Redis 6.2)
+- **Node.js v18+ & npx** (para `@_davideast/stitch-mcp`)
+- **Cuenta Google Stitch** (con STITCH_API_KEY)
+- **Git**
 
 ### Fuera de Alcance Explícito de este Plan
 - Autenticación multifactor (2FA / MFA vía SMS o TOTP).
@@ -86,7 +87,7 @@ ETAPA A: CIERRE TÉCNICO DEL NÚCLEO (Fase 5 - Autenticación y Login)
 
 ETAPA B: KIT DE ONBOARDING DEL COLABORADOR Y GITHUB
 ├── 1. Guía de Onboarding en 5 pasos (docs/development/onboarding.md)
-├── 2. Paso de Google Stitch / gcloud ADC y verificación de MCP
+├── 2. Paso de Google Stitch MCP (STITCH_API_KEY)
 ├── 3. Plantillas de secretos (.env.example y passwords.yaml.example)
 ├── 4. Configuración obligatoria de GitHub: CI Pipeline + CODEOWNERS
 └── 5. Protección de ramas (main y develop blindadas contra CI)
@@ -182,8 +183,7 @@ ETAPA B: KIT DE ONBOARDING DEL COLABORADOR Y GITHUB
 - Actualizar la plantilla en la raíz para incluir las variables de seed de administración y Stitch:
   ```env
   # Google Stitch MCP Configuration
-  GOOGLE_CLOUD_PROJECT=tu-id-de-proyecto-gcp
-  STITCH_API_KEY=
+  STITCH_API_KEY=tu_stitch_api_key_aqui
 
   # Administrador Inicial para Seed de Base de Datos (Obligatorio en desarrollo)
   SEED_ADMIN_EMAIL=admin@elitemultiservicios.com
@@ -239,12 +239,9 @@ ETAPA B: KIT DE ONBOARDING DEL COLABORADOR Y GITHUB
     copy elite_multiservicios_server\config\passwords.yaml.example elite_multiservicios_server\config\passwords.yaml
     copy .env.example .env
     ```
-    *Editar `.env` y definir `SEED_ADMIN_PASSWORD=TuPasswordSeguro123!`.*
-  - **Paso 2.5: Configuración de Google Stitch y gcloud ADC**:
-    ```bash
-    gcloud auth application-default login
-    ```
-    *Configurar `GOOGLE_CLOUD_PROJECT` o `STITCH_API_KEY` en `.env` y verificar el proxy MCP:*
+    *Editar `.env` y definir `STITCH_API_KEY` y `SEED_ADMIN_PASSWORD=TuPasswordSeguro123!`.*
+  - **Paso 2.5: Configuración de Google Stitch MCP**:
+    *Configurar `STITCH_API_KEY` en `.env` y verificar el proxy MCP:*
     ```bash
     npx -y @_davideast/stitch-mcp proxy
     ```
@@ -289,9 +286,9 @@ ETAPA B: KIT DE ONBOARDING DEL COLABORADOR Y GITHUB
 2. **Corrección 2 (Persistencia de sesión)**: Se definió el uso de `FlutterAuthSessionManager` con almacenamiento seguro (`flutter_secure_storage` en desktop/móvil, `SharedPreferences` en web) y llamada obligatoria a `client.auth.initialize()` en `main.dart`.
 3. **Corrección 3 (Prerequisitos emailIdp y recalibración)**: Se añadió la sección de prerequisitos técnicos de `emailIdp` y se recalibró el alcance restante del núcleo a 15–20% justificando su complejidad técnica.
 4. **Corrección 4 (Logout server-side auditado)**: Se especificó la secuencia de 3 pasos para logout: revocación en `SessionManagementEndpoint`, registro del evento `LOGOUT` en `audit_log` y purga local con `signOut()`.
-5. **Corrección 5 (Paso de Stitch en Onboarding)**: Se incorporó el Paso 2.5 en la guía de onboarding para autenticación con `gcloud auth application-default login`, variables de entorno y verificación del proxy MCP.
+5. **Corrección 5 (Paso de Stitch en Onboarding)**: Se incorporó el Paso 2.5 en la guía de onboarding para configuración con `STITCH_API_KEY`, variables de entorno y verificación del proxy MCP.
 6. **Corrección 6 (Plantilla passwords.yaml.example)**: Se formalizó `passwords.yaml.example` en `elite_multiservicios_server/config/` con placeholders de desarrollo y confirmación de exclusión en `.gitignore`.
-7. **Corrección 7 (Plantilla .env.example actualizada)**: Se incluyeron las variables obligatorias `GOOGLE_CLOUD_PROJECT`, `STITCH_API_KEY`, `SEED_ADMIN_EMAIL` y `SEED_ADMIN_PASSWORD`.
+7. **Corrección 7 (Plantilla .env.example actualizada)**: Se incluyeron las variables obligatorias `STITCH_API_KEY`, `SEED_ADMIN_EMAIL` y `SEED_ADMIN_PASSWORD`.
 8. **Corrección 8 (CI + CODEOWNERS en GitHub)**: Se definieron las rutas de `.github/CODEOWNERS` y la integración continua obligatoria en `.github/workflows/ci.yml` como condición previa para proteger ramas.
 9. **Corrección 9 (Tests nuevos explícitos)**: Se incorporaron `login_screen_test.dart` y `auth_service_test.dart` al alcance de cambios y se actualizó la métrica a "17 + N pruebas aprobadas".
 10. **Corrección 10 (Consistencia de temas en Stitch)**: Se resolvió la coherencia declarando el diseño canónico en variante Light en Stitch y la derivación del modo Dark mediante tokens semánticos del Design System en Flutter.

@@ -15,11 +15,10 @@
 - [4. Levantar la infraestructura (PostgreSQL + Redis)](#4-levantar-la-infraestructura-postgresql--redis)
 - [5. Levantar el backend Serverpod](#5-levantar-el-backend-serverpod)
 - [6. Conectar tu API de Google Stitch (MCP)](#6-conectar-tu-api-de-google-stitch-mcp)
-  - [6.1 Crear tu API Key en Stitch](#61-crear-tu-api-key-en-stitch)
-  - [6.2 Autenticar Google Cloud localmente](#62-autenticar-google-cloud-localmente)
-  - [6.3 Pegar la configuración en tu .env local](#63-pegar-la-configuración-en-tu-env-local)
-  - [6.4 Verificar que Antigravity detecta el MCP](#64-verificar-que-antigravity-detecta-el-mcp)
-  - [6.5 Regla de oro](#65-regla-de-oro)
+  - [6.1 Obtener tu STITCH_API_KEY en Stitch](#61-obtener-tu-stitch_api_key-en-stitch)
+  - [6.2 Pegar tu STITCH_API_KEY en tu .env local](#62-pegar-tu-stitch_api_key-en-tu-env-local)
+  - [6.3 Verificar que Antigravity detecta el MCP](#63-verificar-que-antigravity-detecta-el-mcp)
+  - [6.4 Regla de oro](#64-regla-de-oro)
 - [7. Levantar la app Flutter](#7-levantar-la-app-flutter)
 - [8. Flujo Git obligatorio (NO trabajar directo en main)](#8-flujo-git-obligatorio-no-trabajar-directo-en-main)
   - [Regla de oro](#regla-de-oro)
@@ -43,9 +42,8 @@ Asegúrate de contar con las siguientes herramientas instaladas antes de iniciar
 | **Flutter SDK** | `v3.32.0+` (detectado: 3.41.x canal stable) | `flutter --version` |
 | **Docker Desktop** | Con Docker Compose v2+ | `docker compose version` |
 | **Node.js** | `v18.0.0+ LTS` (detectado: v22.x) | `node -v` y `npx -v` |
-| **Google Cloud CLI (`gcloud`)** | Última versión disponible | `gcloud --version` |
 | **Serverpod CLI** | `v3.4.13` | `serverpod --version` *(instalar con `dart pub global activate serverpod_cli`)* |
-| **Cuenta Google** | Corporativa con acceso a Google Stitch | Acceso validado en consola de Stitch |
+| **Cuenta Google Stitch** | Cuenta autorizada con API Key | Acceso validado en consola de Stitch |
 
 ---
 
@@ -82,9 +80,6 @@ copy .env.example .env
 
 Edita `.env` y completa los valores requeridos:
 ```env
-# Identificador de proyecto GCP para cuotas y servicios
-GOOGLE_CLOUD_PROJECT=tu-proyecto-gcp
-
 # Clave API directa de Google Stitch (ver sección 6)
 STITCH_API_KEY=tu_api_key_aqui
 
@@ -156,37 +151,28 @@ dart bin/main.dart --apply-migrations
 
 Google Stitch es la **única fuente de verdad de UI/UX** del proyecto. Queda prohibido diseñar interfaces desde cero en Flutter sin especificación previa en Stitch.
 
-### 6.1 Crear tu API Key en Stitch
-1. Entra a <!-- TODO: URL real de Stitch --> [https://stitch.withgoogle.com](https://stitch.withgoogle.com).
+### 6.1 Obtener tu STITCH_API_KEY en Stitch
+1. Entra a [https://stitch.withgoogle.com](https://stitch.withgoogle.com).
 2. Inicia sesión con tu cuenta corporativa autorizada.
 3. Dirígete a **Settings / Configuración → API Keys**.
 4. Crea una nueva clave API y cópiala inmediatamente (solo se muestra una vez).
 
-### 6.2 Autenticar Google Cloud localmente
-Configura tus credenciales Application Default Credentials (ADC):
-
-```bash
-gcloud auth application-default login
-```
-*(Esto abrirá el navegador para autenticar tu cuenta corporativa en tu máquina local).*
-
-### 6.3 Pegar la configuración en tu .env local
+### 6.2 Pegar tu STITCH_API_KEY en tu .env local
 Abre tu `.env` en la raíz del proyecto y confirma:
 ```env
-GOOGLE_CLOUD_PROJECT=tu-proyecto-gcp
 STITCH_API_KEY=tu_api_key_aqui
 ```
 
-### 6.4 Verificar que Antigravity detecta el MCP
+### 6.3 Verificar que Antigravity detecta el MCP
 1. Abre el IDE Antigravity en la carpeta raíz del proyecto.
 2. Comprueba que el archivo `.mcp.json` esté activo.
-3. Ejecuta manualmente el proxy para verificar conectividad si lo deseas:
+3. Ejecuta manualmente el proxy en una terminal si deseas verificar la conectividad de la clave:
    ```bash
    npx -y @_davideast/stitch-mcp proxy
    ```
 4. En el panel de MCP de Antigravity, valida que `stitch` figure con estado **Conectado** y exponga herramientas como `list_projects` y `get_screen`.
 
-### 6.5 Regla de oro
+### 6.4 Regla de oro
 > **Tu `STITCH_API_KEY` NUNCA se sube a Git.** Vive únicamente en tu `.env` local, el cual está estrictamente ignorado.
 
 ---
@@ -309,14 +295,13 @@ git restore --staged .env elite_multiservicios_server/config/passwords.yaml
 
 ### ¿Qué hacer si ya subiste un secreto a Git por error?
 1. **Avisar INMEDIATAMENTE al equipo de seguridad y Tech Lead**.
-2. **Rotar la clave comprometida**: Revócala en Stitch / Google Cloud y genera una nueva.
+2. **Rotar la clave comprometida**: Revócala en Stitch y genera una nueva.
 3. **Purgar el historial**: El owner del repositorio deberá emplear herramientas especializadas (`git-filter-repo` o `bfg`) para reescribir el historial antes de volver a sincronizar.
 
 ---
 
 ## 10. Protección de ramas en GitHub (configuración del owner)
 
-<!-- TODO: verificar configuraciones en la consola web de GitHub -->
 El owner del repositorio debe configurar las siguientes políticas en **GitHub → Settings → Branches**:
 
 ### Para rama `main`
@@ -349,10 +334,9 @@ Definidas formalmente en [.github/CODEOWNERS](.github/CODEOWNERS):
 |---|---|---|
 | `docker compose up` falla | Docker Desktop no está iniciado o sin virtualización | Iniciar Docker Desktop y verificar que el motor esté en verde. |
 | `dart bin/main.dart` no conecta a PostgreSQL | Contenedores aún iniciando o puerto ocupado | Verificar con `docker compose ps` que el puerto `8090` esté disponible y saludable. |
-| MCP de Stitch no aparece en Antigravity | `.env` sin `GOOGLE_CLOUD_PROJECT` o `STITCH_API_KEY` | Completar `.env` y reiniciar Antigravity para recargar variables. |
+| MCP de Stitch no aparece en Antigravity | `.env` sin `STITCH_API_KEY` | Completar `.env` con tu clave de Stitch y reiniciar Antigravity para recargar variables. |
 | El login falla con el usuario administrador | Seed no aplicado o credenciales no coinciden | Ejecutar `dart bin/main.dart --apply-migrations` con `SEED_ADMIN_PASSWORD` definido en `.env`. |
 | `git push` rechazado por GitHub | Push directo a rama protegida (`main`/`develop`) | Crear una rama de tarea (`feat/...`) y enviar los cambios mediante Pull Request. |
-| `gcloud` no se reconoce como comando | Google Cloud SDK no instalado o fuera del PATH | Instalar Google Cloud CLI y agregarlo a las variables de entorno del sistema. |
 
 ---
 
