@@ -85,20 +85,16 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Create CI .env with dummy credentials
-        working-directory: elite_multiservicios_server
-        shell: bash
-        run: |
-          cat > ../.env << 'EOF'
-          POSTGRES_DEV_PASSWORD=ci-dummy-not-real
-          REDIS_DEV_PASSWORD=ci-dummy-not-real
-          POSTGRES_TEST_PASSWORD=ci-dummy-not-real
-          REDIS_TEST_PASSWORD=ci-dummy-not-real
-          EOF
-
       - name: Start PostgreSQL & Redis Containers
         working-directory: elite_multiservicios_server
-        run: docker compose up --quiet-pull --build -d
+        env:
+          POSTGRES_DEV_PASSWORD: ci-dummy-not-real
+          REDIS_DEV_PASSWORD: ci-dummy-not-real
+          POSTGRES_TEST_PASSWORD: ci-dummy-not-real
+          REDIS_TEST_PASSWORD: ci-dummy-not-real
+        run: |
+          touch ../.env
+          docker compose up --quiet-pull --build -d
 
       - name: Wait for PostgreSQL and Redis to be ready
         working-directory: elite_multiservicios_server
