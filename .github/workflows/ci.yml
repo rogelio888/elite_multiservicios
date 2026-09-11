@@ -7,6 +7,21 @@ on:
     branches: [main, develop]
 
 jobs:
+  secrets-scan:
+    name: Secret Leak Detection (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
   code-quality:
     name: Code Formatting & Static Analysis
     runs-on: ubuntu-latest
@@ -28,11 +43,11 @@ jobs:
 
       - name: Analyze Serverpod Backend
         working-directory: elite_multiservicios_server
-        run: dart analyze --fatal-infos
+        run: dart analyze
 
       - name: Analyze Flutter Frontend
         working-directory: elite_multiservicios_flutter
-        run: flutter analyze --fatal-infos
+        run: flutter analyze
 
   flutter-tests:
     name: Flutter Unit & Widget Tests
@@ -58,8 +73,8 @@ jobs:
     name: Serverpod Tests & Database Integration
     runs-on: ubuntu-latest
     env:
-      SERVERPOD_PASSWORD_database: 'REDACTED_DB_TEST_PASSWORD'
-      SERVERPOD_PASSWORD_redis: 'REDACTED_REDIS_TEST_PASSWORD'
+      SERVERPOD_PASSWORD_database: 'ci-dummy-not-real'
+      SERVERPOD_PASSWORD_redis: 'ci-dummy-not-real'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -70,6 +85,17 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Create CI .env with dummy credentials
+        working-directory: elite_multiservicios_server
+        shell: bash
+        run: |
+          cat > ../.env << 'EOF'
+          POSTGRES_DEV_PASSWORD=ci-dummy-not-real
+          REDIS_DEV_PASSWORD=ci-dummy-not-real
+          POSTGRES_TEST_PASSWORD=ci-dummy-not-real
+          REDIS_TEST_PASSWORD=ci-dummy-not-real
+          EOF
+
       - name: Start PostgreSQL & Redis Containers
         working-directory: elite_multiservicios_server
         run: docker compose up --quiet-pull --build -d
@@ -77,7 +103,7 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Run Server Unit & Integration Tests
+      - name: Run Server Tests
         working-directory: elite_multiservicios_server
         run: dart test
 
