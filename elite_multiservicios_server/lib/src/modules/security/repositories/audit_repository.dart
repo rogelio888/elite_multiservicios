@@ -50,4 +50,75 @@ class AuditRepository {
       orderDescending: true,
     );
   }
+
+  /// Lista eventos de auditoría paginados con filtros avanzados.
+  Future<AuditLogPageResponse> listLogsPaged({
+    int page = 1,
+    int pageSize = 25,
+    String? action,
+    String? result,
+    int? userId,
+    DateTime? fromDate,
+    DateTime? toDate,
+    String? search,
+  }) async {
+    final effectivePage = page < 1 ? 1 : page;
+    final effectivePageSize = pageSize < 1 ? 25 : pageSize;
+    final offset = (effectivePage - 1) * effectivePageSize;
+
+    Expression whereBuilder(AuditLogTable t) {
+      Expression filter = Constant.bool(true);
+      if (action != null && action.isNotEmpty && action != 'TODAS') {
+        filter = filter & t.action.equals(action);
+      }
+      if (result != null && result.isNotEmpty && result != 'TODOS') {
+        filter = filter & t.result.equals(result);
+      }
+      if (userId != null) {
+        filter = filter & t.userId.equals(userId);
+      }
+      if (fromDate != null) {
+        filter = filter & (t.timestamp >= fromDate);
+      }
+      if (toDate != null) {
+        filter = filter & (t.timestamp <= toDate);
+      }
+      if (search != null && search.trim().isNotEmpty) {
+        final s = '%${search.trim().toLowerCase()}%';
+        filter =
+            filter &
+            (t.userIdentifier.ilike(s) |
+                t.resource.ilike(s) |
+                t.ipAddress.ilike(s) |
+                t.action.ilike(s));
+      }
+      return filter;
+    }
+
+    final totalCount = await AuditLog.db.count(
+      session,
+      where: whereBuilder,
+    );
+
+    final totalPages = totalCount == 0
+        ? 1
+        : (totalCount / effectivePageSize).ceil();
+
+    final items = await AuditLog.db.find(
+      session,
+      where: whereBuilder,
+      limit: effectivePageSize,
+      offset: offset,
+      orderBy: (t) => t.timestamp,
+      orderDescending: true,
+    );
+
+    return AuditLogPageResponse(
+      items: items,
+      totalCount: totalCount,
+      page: effectivePage,
+      totalPages: totalPages,
+      pageSize: effectivePageSize,
+    );
+  }
 }

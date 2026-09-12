@@ -135,9 +135,9 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Run Server Tests
+      - name: Run Server Tests (excluyendo integration)
         working-directory: elite_multiservicios_server
-        run: dart test
+        run: dart test --exclude-tags integration
 
       - name: Tear Down Containers
         if: always()

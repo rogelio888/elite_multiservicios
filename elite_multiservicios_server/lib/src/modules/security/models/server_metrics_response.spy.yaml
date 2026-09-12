@@ -1,0 +1,9 @@
+class: ServerMetricsResponse
+fields:
+  uptimeSeconds: int
+  memoryRssBytes: int
+  databaseLatencyMs: int
+  activeSessionsCount: int
+  failedLoginsLast24h: int
+  serverTimestamp: DateTime
+  serverVersion: String

@@ -5,6 +5,7 @@ import 'views/users_management_view.dart';
 import 'views/roles_rbac_view.dart';
 import 'views/audit_log_view.dart';
 import 'views/active_sessions_view.dart';
+import 'views/server_metrics_view.dart';
 
 class SecurityShellScreen extends StatefulWidget {
   final VoidCallback? onToggleTheme;
@@ -73,6 +74,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'Roles y Permisos RBAC',
     'Bitácora de Auditoría',
     'Sesiones Activas',
+    'Telemetría y Métricas',
   ];
 
   @override
@@ -86,6 +88,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       (Icons.security_outlined, Icons.security, 'Roles & RBAC'),
       (Icons.history_edu_outlined, Icons.history_edu, 'Auditoría'),
       (Icons.devices_outlined, Icons.devices, 'Sesiones'),
+      (Icons.analytics_outlined, Icons.analytics, 'Métricas'),
     ];
 
     Widget currentView;
@@ -106,6 +109,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         break;
       case 4:
         currentView = const ActiveSessionsView();
+        break;
+      case 5:
+        currentView = const ServerMetricsView();
         break;
       default:
         currentView = const Center(child: Text('Vista no encontrada'));

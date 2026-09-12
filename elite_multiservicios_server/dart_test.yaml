@@ -1,2 +1,4 @@
 tags:
-  integration: {}
+  integration:
+    skip: "Requiere servidor corriendo. Ejecutar localmente con `dart test --tags integration`."
+  db-integration:

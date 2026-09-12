@@ -11,3 +11,4 @@
 20260912161438857-add-login-lockout-fields
 20260912173251823-add-mfa-and-trusted-devices
 20260912175841329-add-mfa-verified-to-user-session
+20260912191516390-add-audit-log-page-and-index

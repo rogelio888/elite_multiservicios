@@ -1,0 +1,7 @@
+class: AuditLogPageResponse
+fields:
+  items: List<AuditLog>
+  totalCount: int
+  page: int
+  totalPages: int
+  pageSize: int
