@@ -13,6 +13,7 @@ greeting:
   - hello:
 audit:
   - listLogs:
+  - listLogsPaged:
 mfa:
   - checkRequired:
   - verifyMfa:
@@ -30,6 +31,8 @@ sessionManagement:
   - revokeSession:
   - logout:
   - markMfaVerified:
+systemMetrics:
+  - getMetrics:
 user:
   - listUsers:
   - getUser:

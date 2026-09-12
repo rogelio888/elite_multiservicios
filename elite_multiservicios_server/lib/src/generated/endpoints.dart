@@ -19,11 +19,12 @@ import '../modules/security/endpoints/audit_endpoint.dart' as _i5;
 import '../modules/security/endpoints/mfa_endpoint.dart' as _i6;
 import '../modules/security/endpoints/rbac_endpoint.dart' as _i7;
 import '../modules/security/endpoints/session_management_endpoint.dart' as _i8;
-import '../modules/security/endpoints/user_endpoint.dart' as _i9;
+import '../modules/security/endpoints/system_metrics_endpoint.dart' as _i9;
+import '../modules/security/endpoints/user_endpoint.dart' as _i10;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i10;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i11;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i12;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -71,7 +72,13 @@ class Endpoints extends _i1.EndpointDispatch {
           'sessionManagement',
           null,
         ),
-      'user': _i9.UserEndpoint()
+      'systemMetrics': _i9.SystemMetricsEndpoint()
+        ..initialize(
+          server,
+          'systemMetrics',
+          null,
+        ),
+      'user': _i10.UserEndpoint()
         ..initialize(
           server,
           'user',
@@ -345,6 +352,67 @@ class Endpoints extends _i1.EndpointDispatch {
                 userId: params['userId'],
                 action: params['action'],
               ),
+        ),
+        'listLogsPaged': _i1.MethodConnector(
+          name: 'listLogsPaged',
+          params: {
+            'page': _i1.ParameterDescription(
+              name: 'page',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'pageSize': _i1.ParameterDescription(
+              name: 'pageSize',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'action': _i1.ParameterDescription(
+              name: 'action',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'result': _i1.ParameterDescription(
+              name: 'result',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+            'fromDate': _i1.ParameterDescription(
+              name: 'fromDate',
+              type: _i1.getType<DateTime?>(),
+              nullable: true,
+            ),
+            'toDate': _i1.ParameterDescription(
+              name: 'toDate',
+              type: _i1.getType<DateTime?>(),
+              nullable: true,
+            ),
+            'search': _i1.ParameterDescription(
+              name: 'search',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['audit'] as _i5.AuditEndpoint).listLogsPaged(
+                    session,
+                    page: params['page'],
+                    pageSize: params['pageSize'],
+                    action: params['action'],
+                    result: params['result'],
+                    userId: params['userId'],
+                    fromDate: params['fromDate'],
+                    toDate: params['toDate'],
+                    search: params['search'],
+                  ),
         ),
       },
     );
@@ -651,6 +719,23 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['systemMetrics'] = _i1.EndpointConnector(
+      name: 'systemMetrics',
+      endpoint: endpoints['systemMetrics']!,
+      methodConnectors: {
+        'getMetrics': _i1.MethodConnector(
+          name: 'getMetrics',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['systemMetrics'] as _i9.SystemMetricsEndpoint)
+                      .getMetrics(session),
+        ),
+      },
+    );
     connectors['user'] = _i1.EndpointConnector(
       name: 'user',
       endpoint: endpoints['user']!,
@@ -678,7 +763,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i9.UserEndpoint).listUsers(
+              ) async => (endpoints['user'] as _i10.UserEndpoint).listUsers(
                 session,
                 limit: params['limit'],
                 offset: params['offset'],
@@ -698,7 +783,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i9.UserEndpoint).getUser(
+              ) async => (endpoints['user'] as _i10.UserEndpoint).getUser(
                 session,
                 params['id'],
               ),
@@ -726,7 +811,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i9.UserEndpoint).createUser(
+              ) async => (endpoints['user'] as _i10.UserEndpoint).createUser(
                 session,
                 email: params['email'],
                 fullName: params['fullName'],
@@ -751,7 +836,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i9.UserEndpoint).updateUser(
+              ) async => (endpoints['user'] as _i10.UserEndpoint).updateUser(
                 session,
                 id: params['id'],
                 fullName: params['fullName'],
@@ -775,7 +860,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i9.UserEndpoint).setUserActive(
+              ) async => (endpoints['user'] as _i10.UserEndpoint).setUserActive(
                 session,
                 id: params['id'],
                 isActive: params['isActive'],
@@ -794,7 +879,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i9.UserEndpoint).deleteUser(
+              ) async => (endpoints['user'] as _i10.UserEndpoint).deleteUser(
                 session,
                 params['id'],
               ),
@@ -806,9 +891,8 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i9.UserEndpoint).getCurrentUser(
-                session,
-              ),
+              ) async => (endpoints['user'] as _i10.UserEndpoint)
+                  .getCurrentUser(session),
         ),
         'changePassword': _i1.MethodConnector(
           name: 'changePassword',
@@ -828,17 +912,18 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i9.UserEndpoint).changePassword(
-                session,
-                currentPassword: params['currentPassword'],
-                newPassword: params['newPassword'],
-              ),
+              ) async =>
+                  (endpoints['user'] as _i10.UserEndpoint).changePassword(
+                    session,
+                    currentPassword: params['currentPassword'],
+                    newPassword: params['newPassword'],
+                  ),
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i10.Endpoints()
+    modules['serverpod_auth_idp'] = _i11.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i11.Endpoints()
+    modules['serverpod_auth_core'] = _i12.Endpoints()
       ..initializeEndpoints(server);
   }
 }

@@ -22,32 +22,36 @@ import 'modules/security/models/app_permission.dart' as _i6;
 import 'modules/security/models/app_role.dart' as _i7;
 import 'modules/security/models/app_user.dart' as _i8;
 import 'modules/security/models/audit_log.dart' as _i9;
-import 'modules/security/models/mfa_challenge.dart' as _i10;
-import 'modules/security/models/mfa_challenge_response.dart' as _i11;
-import 'modules/security/models/mfa_verify_response.dart' as _i12;
-import 'modules/security/models/role_permission.dart' as _i13;
-import 'modules/security/models/trusted_device.dart' as _i14;
-import 'modules/security/models/user_role.dart' as _i15;
-import 'modules/security/models/user_session.dart' as _i16;
+import 'modules/security/models/audit_log_page_response.dart' as _i10;
+import 'modules/security/models/mfa_challenge.dart' as _i11;
+import 'modules/security/models/mfa_challenge_response.dart' as _i12;
+import 'modules/security/models/mfa_verify_response.dart' as _i13;
+import 'modules/security/models/role_permission.dart' as _i14;
+import 'modules/security/models/server_metrics_response.dart' as _i15;
+import 'modules/security/models/trusted_device.dart' as _i16;
+import 'modules/security/models/user_role.dart' as _i17;
+import 'modules/security/models/user_session.dart' as _i18;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
-    as _i17;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
-    as _i18;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
     as _i19;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
     as _i20;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
     as _i21;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
+    as _i22;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
+    as _i23;
 export 'greetings/greeting.dart';
 export 'modules/security/models/app_permission.dart';
 export 'modules/security/models/app_role.dart';
 export 'modules/security/models/app_user.dart';
 export 'modules/security/models/audit_log.dart';
+export 'modules/security/models/audit_log_page_response.dart';
 export 'modules/security/models/mfa_challenge.dart';
 export 'modules/security/models/mfa_challenge_response.dart';
 export 'modules/security/models/mfa_verify_response.dart';
 export 'modules/security/models/role_permission.dart';
+export 'modules/security/models/server_metrics_response.dart';
 export 'modules/security/models/trusted_device.dart';
 export 'modules/security/models/user_role.dart';
 export 'modules/security/models/user_session.dart';
@@ -433,6 +437,19 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'userId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'audit_log_result_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'result',
             ),
           ],
           type: 'btree',
@@ -1052,26 +1069,32 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i9.AuditLog) {
       return _i9.AuditLog.fromJson(data) as T;
     }
-    if (t == _i10.MfaChallenge) {
-      return _i10.MfaChallenge.fromJson(data) as T;
+    if (t == _i10.AuditLogPageResponse) {
+      return _i10.AuditLogPageResponse.fromJson(data) as T;
     }
-    if (t == _i11.MfaChallengeResponse) {
-      return _i11.MfaChallengeResponse.fromJson(data) as T;
+    if (t == _i11.MfaChallenge) {
+      return _i11.MfaChallenge.fromJson(data) as T;
     }
-    if (t == _i12.MfaVerifyResponse) {
-      return _i12.MfaVerifyResponse.fromJson(data) as T;
+    if (t == _i12.MfaChallengeResponse) {
+      return _i12.MfaChallengeResponse.fromJson(data) as T;
     }
-    if (t == _i13.RolePermission) {
-      return _i13.RolePermission.fromJson(data) as T;
+    if (t == _i13.MfaVerifyResponse) {
+      return _i13.MfaVerifyResponse.fromJson(data) as T;
     }
-    if (t == _i14.TrustedDevice) {
-      return _i14.TrustedDevice.fromJson(data) as T;
+    if (t == _i14.RolePermission) {
+      return _i14.RolePermission.fromJson(data) as T;
     }
-    if (t == _i15.UserRole) {
-      return _i15.UserRole.fromJson(data) as T;
+    if (t == _i15.ServerMetricsResponse) {
+      return _i15.ServerMetricsResponse.fromJson(data) as T;
     }
-    if (t == _i16.UserSession) {
-      return _i16.UserSession.fromJson(data) as T;
+    if (t == _i16.TrustedDevice) {
+      return _i16.TrustedDevice.fromJson(data) as T;
+    }
+    if (t == _i17.UserRole) {
+      return _i17.UserRole.fromJson(data) as T;
+    }
+    if (t == _i18.UserSession) {
+      return _i18.UserSession.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.Greeting?>()) {
       return (data != null ? _i5.Greeting.fromJson(data) : null) as T;
@@ -1088,53 +1111,65 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i9.AuditLog?>()) {
       return (data != null ? _i9.AuditLog.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.MfaChallenge?>()) {
-      return (data != null ? _i10.MfaChallenge.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.MfaChallengeResponse?>()) {
-      return (data != null ? _i11.MfaChallengeResponse.fromJson(data) : null)
+    if (t == _i1.getType<_i10.AuditLogPageResponse?>()) {
+      return (data != null ? _i10.AuditLogPageResponse.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i12.MfaVerifyResponse?>()) {
-      return (data != null ? _i12.MfaVerifyResponse.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i11.MfaChallenge?>()) {
+      return (data != null ? _i11.MfaChallenge.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i13.RolePermission?>()) {
-      return (data != null ? _i13.RolePermission.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i14.TrustedDevice?>()) {
-      return (data != null ? _i14.TrustedDevice.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i15.UserRole?>()) {
-      return (data != null ? _i15.UserRole.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i16.UserSession?>()) {
-      return (data != null ? _i16.UserSession.fromJson(data) : null) as T;
-    }
-    if (t == List<_i17.AuditLog>) {
-      return (data as List).map((e) => deserialize<_i17.AuditLog>(e)).toList()
+    if (t == _i1.getType<_i12.MfaChallengeResponse?>()) {
+      return (data != null ? _i12.MfaChallengeResponse.fromJson(data) : null)
           as T;
     }
-    if (t == List<_i18.AppRole>) {
-      return (data as List).map((e) => deserialize<_i18.AppRole>(e)).toList()
+    if (t == _i1.getType<_i13.MfaVerifyResponse?>()) {
+      return (data != null ? _i13.MfaVerifyResponse.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i14.RolePermission?>()) {
+      return (data != null ? _i14.RolePermission.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i15.ServerMetricsResponse?>()) {
+      return (data != null ? _i15.ServerMetricsResponse.fromJson(data) : null)
           as T;
     }
-    if (t == List<_i19.AppPermission>) {
+    if (t == _i1.getType<_i16.TrustedDevice?>()) {
+      return (data != null ? _i16.TrustedDevice.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i17.UserRole?>()) {
+      return (data != null ? _i17.UserRole.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i18.UserSession?>()) {
+      return (data != null ? _i18.UserSession.fromJson(data) : null) as T;
+    }
+    if (t == List<_i9.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i9.AuditLog>(e)).toList()
+          as T;
+    }
+    if (t == List<_i19.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i19.AuditLog>(e)).toList()
+          as T;
+    }
+    if (t == List<_i20.AppRole>) {
+      return (data as List).map((e) => deserialize<_i20.AppRole>(e)).toList()
+          as T;
+    }
+    if (t == List<_i21.AppPermission>) {
       return (data as List)
-              .map((e) => deserialize<_i19.AppPermission>(e))
+              .map((e) => deserialize<_i21.AppPermission>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i20.UserSession>) {
+    if (t == List<_i22.UserSession>) {
       return (data as List)
-              .map((e) => deserialize<_i20.UserSession>(e))
+              .map((e) => deserialize<_i22.UserSession>(e))
               .toList()
           as T;
     }
-    if (t == List<_i21.AppUser>) {
-      return (data as List).map((e) => deserialize<_i21.AppUser>(e)).toList()
+    if (t == List<_i23.AppUser>) {
+      return (data as List).map((e) => deserialize<_i23.AppUser>(e)).toList()
           as T;
     }
     if (t == List<int>) {
@@ -1159,13 +1194,15 @@ class Protocol extends _i1.SerializationManagerServer {
       _i7.AppRole => 'AppRole',
       _i8.AppUser => 'AppUser',
       _i9.AuditLog => 'AuditLog',
-      _i10.MfaChallenge => 'MfaChallenge',
-      _i11.MfaChallengeResponse => 'MfaChallengeResponse',
-      _i12.MfaVerifyResponse => 'MfaVerifyResponse',
-      _i13.RolePermission => 'RolePermission',
-      _i14.TrustedDevice => 'TrustedDevice',
-      _i15.UserRole => 'UserRole',
-      _i16.UserSession => 'UserSession',
+      _i10.AuditLogPageResponse => 'AuditLogPageResponse',
+      _i11.MfaChallenge => 'MfaChallenge',
+      _i12.MfaChallengeResponse => 'MfaChallengeResponse',
+      _i13.MfaVerifyResponse => 'MfaVerifyResponse',
+      _i14.RolePermission => 'RolePermission',
+      _i15.ServerMetricsResponse => 'ServerMetricsResponse',
+      _i16.TrustedDevice => 'TrustedDevice',
+      _i17.UserRole => 'UserRole',
+      _i18.UserSession => 'UserSession',
       _ => null,
     };
   }
@@ -1193,19 +1230,23 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'AppUser';
       case _i9.AuditLog():
         return 'AuditLog';
-      case _i10.MfaChallenge():
+      case _i10.AuditLogPageResponse():
+        return 'AuditLogPageResponse';
+      case _i11.MfaChallenge():
         return 'MfaChallenge';
-      case _i11.MfaChallengeResponse():
+      case _i12.MfaChallengeResponse():
         return 'MfaChallengeResponse';
-      case _i12.MfaVerifyResponse():
+      case _i13.MfaVerifyResponse():
         return 'MfaVerifyResponse';
-      case _i13.RolePermission():
+      case _i14.RolePermission():
         return 'RolePermission';
-      case _i14.TrustedDevice():
+      case _i15.ServerMetricsResponse():
+        return 'ServerMetricsResponse';
+      case _i16.TrustedDevice():
         return 'TrustedDevice';
-      case _i15.UserRole():
+      case _i17.UserRole():
         return 'UserRole';
-      case _i16.UserSession():
+      case _i18.UserSession():
         return 'UserSession';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1244,26 +1285,32 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'AuditLog') {
       return deserialize<_i9.AuditLog>(data['data']);
     }
+    if (dataClassName == 'AuditLogPageResponse') {
+      return deserialize<_i10.AuditLogPageResponse>(data['data']);
+    }
     if (dataClassName == 'MfaChallenge') {
-      return deserialize<_i10.MfaChallenge>(data['data']);
+      return deserialize<_i11.MfaChallenge>(data['data']);
     }
     if (dataClassName == 'MfaChallengeResponse') {
-      return deserialize<_i11.MfaChallengeResponse>(data['data']);
+      return deserialize<_i12.MfaChallengeResponse>(data['data']);
     }
     if (dataClassName == 'MfaVerifyResponse') {
-      return deserialize<_i12.MfaVerifyResponse>(data['data']);
+      return deserialize<_i13.MfaVerifyResponse>(data['data']);
     }
     if (dataClassName == 'RolePermission') {
-      return deserialize<_i13.RolePermission>(data['data']);
+      return deserialize<_i14.RolePermission>(data['data']);
+    }
+    if (dataClassName == 'ServerMetricsResponse') {
+      return deserialize<_i15.ServerMetricsResponse>(data['data']);
     }
     if (dataClassName == 'TrustedDevice') {
-      return deserialize<_i14.TrustedDevice>(data['data']);
+      return deserialize<_i16.TrustedDevice>(data['data']);
     }
     if (dataClassName == 'UserRole') {
-      return deserialize<_i15.UserRole>(data['data']);
+      return deserialize<_i17.UserRole>(data['data']);
     }
     if (dataClassName == 'UserSession') {
-      return deserialize<_i16.UserSession>(data['data']);
+      return deserialize<_i18.UserSession>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1309,16 +1356,16 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i8.AppUser.t;
       case _i9.AuditLog:
         return _i9.AuditLog.t;
-      case _i10.MfaChallenge:
-        return _i10.MfaChallenge.t;
-      case _i13.RolePermission:
-        return _i13.RolePermission.t;
-      case _i14.TrustedDevice:
-        return _i14.TrustedDevice.t;
-      case _i15.UserRole:
-        return _i15.UserRole.t;
-      case _i16.UserSession:
-        return _i16.UserSession.t;
+      case _i11.MfaChallenge:
+        return _i11.MfaChallenge.t;
+      case _i14.RolePermission:
+        return _i14.RolePermission.t;
+      case _i16.TrustedDevice:
+        return _i16.TrustedDevice.t;
+      case _i17.UserRole:
+        return _i17.UserRole.t;
+      case _i18.UserSession:
+        return _i18.UserSession.t;
     }
     return null;
   }

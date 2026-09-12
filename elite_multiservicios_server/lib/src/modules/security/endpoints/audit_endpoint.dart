@@ -24,4 +24,31 @@ class AuditEndpoint extends Endpoint {
       action: action,
     );
   }
+
+  /// Lista los registros de auditoría de forma paginada con filtros avanzados. Requiere audit.view.
+  Future<AuditLogPageResponse> listLogsPaged(
+    Session session, {
+    int page = 1,
+    int pageSize = 25,
+    String? action,
+    String? result,
+    int? userId,
+    DateTime? fromDate,
+    DateTime? toDate,
+    String? search,
+  }) async {
+    await RbacGuard.requirePermission(session, AppPermissions.auditView);
+
+    final repo = AuditRepository(session);
+    return await repo.listLogsPaged(
+      page: page,
+      pageSize: pageSize,
+      action: action,
+      result: result,
+      userId: userId,
+      fromDate: fromDate,
+      toDate: toDate,
+      search: search,
+    );
+  }
 }

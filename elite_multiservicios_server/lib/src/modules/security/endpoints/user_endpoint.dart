@@ -11,6 +11,7 @@ import '../../../audit/audit_service.dart';
 import '../../../exceptions/app_exception.dart';
 import '../repositories/user_repository.dart';
 import '../repositories/rbac_repository.dart';
+import '../services/password_policy_validator.dart';
 
 /// Endpoint RPC para administración del ciclo de vida de usuarios.
 /// Protegido con autorización backend-first estricta.
@@ -232,10 +233,12 @@ class UserEndpoint extends Endpoint {
       throw Exception('La contraseña actual es incorrecta');
     }
 
-    // 3. Validar la nueva contraseña (mínimo 8 caracteres)
-    if (newPassword.trim().length < 8) {
-      throw Exception('La nueva contraseña debe tener al menos 8 caracteres');
-    }
+    // 3. Validar la nueva contraseña contra políticas corporativas
+    PasswordPolicyValidator.validate(
+      password: newPassword,
+      email: emailAccount.email,
+      fullName: appUser.fullName,
+    );
 
     // 4. Actualizar la contraseña en Serverpod Auth IDP
     await AuthServices.instance.emailIdp.admin.setPassword(

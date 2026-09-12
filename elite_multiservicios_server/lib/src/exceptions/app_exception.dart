@@ -122,3 +122,15 @@ class MfaRequiredException extends AppException {
         'Esta operación requiere verificación previa de autenticación multifactor (MFA).',
   ]) : super(code: 'MFA_REQUIRED');
 }
+
+/// La contraseña no cumple con las políticas corporativas de seguridad.
+class PasswordPolicyException extends AppException {
+  final List<String> errors;
+
+  PasswordPolicyException({required this.errors})
+    : super(
+        'La contraseña no cumple con las políticas de seguridad.',
+        code: 'PASSWORD_POLICY_VIOLATION',
+        details: {'errors': errors},
+      );
+}

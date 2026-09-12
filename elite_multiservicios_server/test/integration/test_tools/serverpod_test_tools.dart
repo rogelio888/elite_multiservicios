@@ -20,22 +20,26 @@ import 'package:elite_multiservicios_server/src/generated/greetings/greeting.dar
     as _i5;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
     as _i6;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/mfa_challenge_response.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log_page_response.dart'
     as _i7;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/mfa_verify_response.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/mfa_challenge_response.dart'
     as _i8;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/mfa_verify_response.dart'
     as _i9;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
     as _i10;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_role.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
     as _i11;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/role_permission.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_role.dart'
     as _i12;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/role_permission.dart'
     as _i13;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
     as _i14;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/server_metrics_response.dart'
+    as _i15;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
+    as _i16;
 import 'package:elite_multiservicios_server/src/generated/protocol.dart';
 import 'package:elite_multiservicios_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -164,6 +168,8 @@ class TestEndpoints {
 
   late final _SessionManagementEndpoint sessionManagement;
 
+  late final _SystemMetricsEndpoint systemMetrics;
+
   late final _UserEndpoint user;
 }
 
@@ -199,6 +205,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     sessionManagement = _SessionManagementEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    systemMetrics = _SystemMetricsEndpoint(
       endpoints,
       serializationManager,
     );
@@ -617,6 +627,53 @@ class _AuditEndpoint {
       }
     });
   }
+
+  _i3.Future<_i7.AuditLogPageResponse> listLogsPaged(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int page,
+    required int pageSize,
+    String? action,
+    String? result,
+    int? userId,
+    DateTime? fromDate,
+    DateTime? toDate,
+    String? search,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'audit',
+            method: 'listLogsPaged',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'audit',
+          methodName: 'listLogsPaged',
+          parameters: _i1.testObjectToJson({
+            'page': page,
+            'pageSize': pageSize,
+            'action': action,
+            'result': result,
+            'userId': userId,
+            'fromDate': fromDate,
+            'toDate': toDate,
+            'search': search,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i7.AuditLogPageResponse>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _MfaEndpoint {
@@ -629,7 +686,7 @@ class _MfaEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i7.MfaChallengeResponse?> checkRequired(
+  _i3.Future<_i8.MfaChallengeResponse?> checkRequired(
     _i1.TestSessionBuilder sessionBuilder, {
     required bool rememberMe,
     String? trustedDeviceToken,
@@ -656,7 +713,7 @@ class _MfaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i7.MfaChallengeResponse?>);
+                as _i3.Future<_i8.MfaChallengeResponse?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -664,7 +721,7 @@ class _MfaEndpoint {
     });
   }
 
-  _i3.Future<_i8.MfaVerifyResponse> verifyMfa(
+  _i3.Future<_i9.MfaVerifyResponse> verifyMfa(
     _i1.TestSessionBuilder sessionBuilder, {
     required String challengeId,
     required String code,
@@ -693,7 +750,7 @@ class _MfaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i8.MfaVerifyResponse>);
+                as _i3.Future<_i9.MfaVerifyResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -743,7 +800,7 @@ class _RbacEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i9.AppRole>> listRoles(
+  _i3.Future<List<_i10.AppRole>> listRoles(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -765,7 +822,7 @@ class _RbacEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i9.AppRole>>);
+                as _i3.Future<List<_i10.AppRole>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -773,7 +830,7 @@ class _RbacEndpoint {
     });
   }
 
-  _i3.Future<List<_i10.AppPermission>> listPermissions(
+  _i3.Future<List<_i11.AppPermission>> listPermissions(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -795,7 +852,7 @@ class _RbacEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i10.AppPermission>>);
+                as _i3.Future<List<_i11.AppPermission>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -803,7 +860,7 @@ class _RbacEndpoint {
     });
   }
 
-  _i3.Future<_i11.UserRole> assignRoleToUser(
+  _i3.Future<_i12.UserRole> assignRoleToUser(
     _i1.TestSessionBuilder sessionBuilder, {
     required int userId,
     required int roleId,
@@ -830,7 +887,7 @@ class _RbacEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i11.UserRole>);
+                as _i3.Future<_i12.UserRole>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -873,7 +930,7 @@ class _RbacEndpoint {
     });
   }
 
-  _i3.Future<_i12.RolePermission> assignPermissionToRole(
+  _i3.Future<_i13.RolePermission> assignPermissionToRole(
     _i1.TestSessionBuilder sessionBuilder, {
     required int roleId,
     required int permissionId,
@@ -900,7 +957,7 @@ class _RbacEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i12.RolePermission>);
+                as _i3.Future<_i13.RolePermission>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -987,7 +1044,7 @@ class _SessionManagementEndpoint {
     });
   }
 
-  _i3.Future<List<_i13.UserSession>> listUserSessions(
+  _i3.Future<List<_i14.UserSession>> listUserSessions(
     _i1.TestSessionBuilder sessionBuilder,
     int userId,
   ) async {
@@ -1010,7 +1067,7 @@ class _SessionManagementEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i13.UserSession>>);
+                as _i3.Future<List<_i14.UserSession>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1108,6 +1165,47 @@ class _SessionManagementEndpoint {
   }
 }
 
+class _SystemMetricsEndpoint {
+  _SystemMetricsEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i15.ServerMetricsResponse> getMetrics(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'systemMetrics',
+            method: 'getMetrics',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'systemMetrics',
+          methodName: 'getMetrics',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i15.ServerMetricsResponse>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _UserEndpoint {
   _UserEndpoint(
     this._endpointDispatch,
@@ -1118,7 +1216,7 @@ class _UserEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i14.AppUser>> listUsers(
+  _i3.Future<List<_i16.AppUser>> listUsers(
     _i1.TestSessionBuilder sessionBuilder, {
     required int limit,
     required int offset,
@@ -1147,7 +1245,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i14.AppUser>>);
+                as _i3.Future<List<_i16.AppUser>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1155,7 +1253,7 @@ class _UserEndpoint {
     });
   }
 
-  _i3.Future<_i14.AppUser?> getUser(
+  _i3.Future<_i16.AppUser?> getUser(
     _i1.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
@@ -1178,7 +1276,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i14.AppUser?>);
+                as _i3.Future<_i16.AppUser?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1186,7 +1284,7 @@ class _UserEndpoint {
     });
   }
 
-  _i3.Future<_i14.AppUser> createUser(
+  _i3.Future<_i16.AppUser> createUser(
     _i1.TestSessionBuilder sessionBuilder, {
     required String email,
     required String fullName,
@@ -1215,7 +1313,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i14.AppUser>);
+                as _i3.Future<_i16.AppUser>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1223,7 +1321,7 @@ class _UserEndpoint {
     });
   }
 
-  _i3.Future<_i14.AppUser?> updateUser(
+  _i3.Future<_i16.AppUser?> updateUser(
     _i1.TestSessionBuilder sessionBuilder, {
     required int id,
     required String fullName,
@@ -1250,7 +1348,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i14.AppUser?>);
+                as _i3.Future<_i16.AppUser?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1324,7 +1422,7 @@ class _UserEndpoint {
     });
   }
 
-  _i3.Future<_i14.AppUser> getCurrentUser(
+  _i3.Future<_i16.AppUser> getCurrentUser(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1346,7 +1444,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i14.AppUser>);
+                as _i3.Future<_i16.AppUser>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

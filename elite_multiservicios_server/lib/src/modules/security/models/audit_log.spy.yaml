@@ -25,3 +25,6 @@ indexes:
     fields: action
   audit_log_user_idx:
     fields: userId
+  audit_log_result_idx:
+    fields: result
+

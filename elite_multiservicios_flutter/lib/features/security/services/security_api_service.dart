@@ -150,6 +150,28 @@ class SecurityApiService {
     );
   }
 
+  Future<AuditLogPageResponse> listAuditLogsPaged({
+    int page = 1,
+    int pageSize = 25,
+    String? action,
+    String? result,
+    int? userId,
+    DateTime? fromDate,
+    DateTime? toDate,
+    String? search,
+  }) async {
+    return await _client.audit.listLogsPaged(
+      page: page,
+      pageSize: pageSize,
+      action: action,
+      result: result,
+      userId: userId,
+      fromDate: fromDate,
+      toDate: toDate,
+      search: search,
+    );
+  }
+
   // --- Monitoreo de Sesiones ---
   Future<List<UserSession>> listUserSessions(int userId) async {
     return await _client.sessionManagement.listUserSessions(userId);
@@ -157,5 +179,10 @@ class SecurityApiService {
 
   Future<bool> revokeSession(int sessionId) async {
     return await _client.sessionManagement.revokeSession(sessionId);
+  }
+
+  // --- Telemetría y Métricas del Servidor ---
+  Future<ServerMetricsResponse> getServerMetrics() async {
+    return await _client.systemMetrics.getMetrics();
   }
 }

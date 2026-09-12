@@ -32,7 +32,7 @@ void main() {
     testWidgets(
       'renders title, 3 password fields, submit button and compliance footnote',
       (tester) async {
-        tester.view.physicalSize = const Size(1280, 800);
+        tester.view.physicalSize = const Size(1920, 1200);
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
@@ -64,7 +64,7 @@ void main() {
     );
 
     testWidgets('evaluates password strength dynamically', (tester) async {
-      tester.view.physicalSize = const Size(1280, 800);
+      tester.view.physicalSize = const Size(1920, 1200);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
@@ -89,7 +89,7 @@ void main() {
     testWidgets(
       'validates required fields and mismatched passwords',
       (tester) async {
-        tester.view.physicalSize = const Size(1280, 800);
+        tester.view.physicalSize = const Size(1920, 1200);
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
@@ -128,7 +128,7 @@ void main() {
     testWidgets(
       'submits successfully and triggers onPasswordChanged callback',
       (tester) async {
-        tester.view.physicalSize = const Size(1280, 800);
+        tester.view.physicalSize = const Size(1920, 1200);
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
@@ -163,7 +163,7 @@ void main() {
     );
 
     testWidgets('shows error banner when changePassword fails', (tester) async {
-      tester.view.physicalSize = const Size(1280, 800);
+      tester.view.physicalSize = const Size(1920, 1200);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);

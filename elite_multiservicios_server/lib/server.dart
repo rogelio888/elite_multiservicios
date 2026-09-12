@@ -7,8 +7,10 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
 import 'src/modules/security/seeds/security_seed.dart';
+import 'src/modules/security/services/password_policy_validator.dart';
 import 'src/services/mail_service.dart';
 import 'src/web/routes/app_config_route.dart';
+import 'src/web/routes/health_route.dart';
 import 'src/web/routes/root.dart';
 
 /// The starting point of the Serverpod server.
@@ -32,6 +34,7 @@ void run(List<String> args) async {
       EmailIdpConfigFromPasswords(
         sendRegistrationVerificationCode: _sendRegistrationCode,
         sendPasswordResetVerificationCode: _sendPasswordResetCode,
+        passwordValidationFunction: PasswordPolicyValidator.isValidForIdp,
       ),
     ],
   );
@@ -40,6 +43,7 @@ void run(List<String> args) async {
   // These are used by the default page.
   pod.webServer.addRoute(RootRoute(), '/');
   pod.webServer.addRoute(RootRoute(), '/index.html');
+  pod.webServer.addRoute(HealthRoute(), '/health');
 
   // Serve all files in the web/static relative directory under /.
   // These are used by the default web page.

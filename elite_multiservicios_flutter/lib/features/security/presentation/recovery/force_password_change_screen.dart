@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../services/auth_service.dart';
 import '../widgets/auth_branding_panel.dart';
+import '../widgets/password_requirements_widget.dart';
 
 /// Niveles de seguridad para la nueva contraseña.
 enum PasswordStrength { empty, weak, medium, strong }
@@ -390,6 +391,11 @@ class _ForcePasswordChangeScreenState extends State<ForcePasswordChangeScreen> {
               },
             ),
             _buildStrengthMeter(isDark),
+            const SizedBox(height: 12),
+            PasswordRequirementsWidget(
+              password: _newPasswordController.text,
+              isCompact: true,
+            ),
             const SizedBox(height: 20),
 
             // Campo: Confirmar Nueva Contraseña
