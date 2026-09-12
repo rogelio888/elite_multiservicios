@@ -22,25 +22,37 @@ import 'modules/security/models/app_permission.dart' as _i6;
 import 'modules/security/models/app_role.dart' as _i7;
 import 'modules/security/models/app_user.dart' as _i8;
 import 'modules/security/models/audit_log.dart' as _i9;
-import 'modules/security/models/role_permission.dart' as _i10;
-import 'modules/security/models/user_role.dart' as _i11;
-import 'modules/security/models/user_session.dart' as _i12;
+import 'modules/security/models/audit_log_page_response.dart' as _i10;
+import 'modules/security/models/mfa_challenge.dart' as _i11;
+import 'modules/security/models/mfa_challenge_response.dart' as _i12;
+import 'modules/security/models/mfa_verify_response.dart' as _i13;
+import 'modules/security/models/role_permission.dart' as _i14;
+import 'modules/security/models/server_metrics_response.dart' as _i15;
+import 'modules/security/models/trusted_device.dart' as _i16;
+import 'modules/security/models/user_role.dart' as _i17;
+import 'modules/security/models/user_session.dart' as _i18;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
-    as _i13;
+    as _i19;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
-    as _i14;
+    as _i20;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
-    as _i15;
+    as _i21;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
-    as _i16;
+    as _i22;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
-    as _i17;
+    as _i23;
 export 'greetings/greeting.dart';
 export 'modules/security/models/app_permission.dart';
 export 'modules/security/models/app_role.dart';
 export 'modules/security/models/app_user.dart';
 export 'modules/security/models/audit_log.dart';
+export 'modules/security/models/audit_log_page_response.dart';
+export 'modules/security/models/mfa_challenge.dart';
+export 'modules/security/models/mfa_challenge_response.dart';
+export 'modules/security/models/mfa_verify_response.dart';
 export 'modules/security/models/role_permission.dart';
+export 'modules/security/models/server_metrics_response.dart';
+export 'modules/security/models/trusted_device.dart';
 export 'modules/security/models/user_role.dart';
 export 'modules/security/models/user_session.dart';
 
@@ -235,6 +247,32 @@ class Protocol extends _i1.SerializationManagerServer {
           columnDefault: 'true',
         ),
         _i2.ColumnDefinition(
+          name: 'failedLoginAttempts',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '0',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastFailedLoginAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lockedUntil',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'mfaEnabled',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
           name: 'createdAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
@@ -405,6 +443,145 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isPrimary: false,
         ),
+        _i2.IndexDefinition(
+          indexName: 'audit_log_result_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'result',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'mfa_challenge',
+      dartName: 'MfaChallenge',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'mfa_challenge_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'challengeId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'codeHash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'attempts',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '0',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isUsed',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'expiresAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'mfa_challenge_fk_0',
+          columns: ['userId'],
+          referenceTable: 'app_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'mfa_challenge_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'mfa_challenge_challenge_id_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'challengeId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'mfa_challenge_user_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'mfa_challenge_expires_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'expiresAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
       ],
       managed: true,
     ),
@@ -491,6 +668,124 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'trusted_device',
+      dartName: 'TrustedDevice',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'trusted_device_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deviceToken',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deviceInfo',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'ipAddress',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'expiresAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'trusted_device_fk_0',
+          columns: ['userId'],
+          referenceTable: 'app_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'trusted_device_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'trusted_device_token_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'deviceToken',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'trusted_device_user_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'trusted_device_expires_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'expiresAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
           isPrimary: false,
         ),
       ],
@@ -628,6 +923,19 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'bool',
         ),
         _i2.ColumnDefinition(
+          name: 'mfaVerified',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'revokedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
           name: 'createdAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
@@ -761,14 +1069,32 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i9.AuditLog) {
       return _i9.AuditLog.fromJson(data) as T;
     }
-    if (t == _i10.RolePermission) {
-      return _i10.RolePermission.fromJson(data) as T;
+    if (t == _i10.AuditLogPageResponse) {
+      return _i10.AuditLogPageResponse.fromJson(data) as T;
     }
-    if (t == _i11.UserRole) {
-      return _i11.UserRole.fromJson(data) as T;
+    if (t == _i11.MfaChallenge) {
+      return _i11.MfaChallenge.fromJson(data) as T;
     }
-    if (t == _i12.UserSession) {
-      return _i12.UserSession.fromJson(data) as T;
+    if (t == _i12.MfaChallengeResponse) {
+      return _i12.MfaChallengeResponse.fromJson(data) as T;
+    }
+    if (t == _i13.MfaVerifyResponse) {
+      return _i13.MfaVerifyResponse.fromJson(data) as T;
+    }
+    if (t == _i14.RolePermission) {
+      return _i14.RolePermission.fromJson(data) as T;
+    }
+    if (t == _i15.ServerMetricsResponse) {
+      return _i15.ServerMetricsResponse.fromJson(data) as T;
+    }
+    if (t == _i16.TrustedDevice) {
+      return _i16.TrustedDevice.fromJson(data) as T;
+    }
+    if (t == _i17.UserRole) {
+      return _i17.UserRole.fromJson(data) as T;
+    }
+    if (t == _i18.UserSession) {
+      return _i18.UserSession.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.Greeting?>()) {
       return (data != null ? _i5.Greeting.fromJson(data) : null) as T;
@@ -785,40 +1111,65 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i9.AuditLog?>()) {
       return (data != null ? _i9.AuditLog.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.RolePermission?>()) {
-      return (data != null ? _i10.RolePermission.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.UserRole?>()) {
-      return (data != null ? _i11.UserRole.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i12.UserSession?>()) {
-      return (data != null ? _i12.UserSession.fromJson(data) : null) as T;
-    }
-    if (t == List<_i13.AuditLog>) {
-      return (data as List).map((e) => deserialize<_i13.AuditLog>(e)).toList()
+    if (t == _i1.getType<_i10.AuditLogPageResponse?>()) {
+      return (data != null ? _i10.AuditLogPageResponse.fromJson(data) : null)
           as T;
     }
-    if (t == List<_i14.AppRole>) {
-      return (data as List).map((e) => deserialize<_i14.AppRole>(e)).toList()
+    if (t == _i1.getType<_i11.MfaChallenge?>()) {
+      return (data != null ? _i11.MfaChallenge.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i12.MfaChallengeResponse?>()) {
+      return (data != null ? _i12.MfaChallengeResponse.fromJson(data) : null)
           as T;
     }
-    if (t == List<_i15.AppPermission>) {
+    if (t == _i1.getType<_i13.MfaVerifyResponse?>()) {
+      return (data != null ? _i13.MfaVerifyResponse.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i14.RolePermission?>()) {
+      return (data != null ? _i14.RolePermission.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i15.ServerMetricsResponse?>()) {
+      return (data != null ? _i15.ServerMetricsResponse.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i16.TrustedDevice?>()) {
+      return (data != null ? _i16.TrustedDevice.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i17.UserRole?>()) {
+      return (data != null ? _i17.UserRole.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i18.UserSession?>()) {
+      return (data != null ? _i18.UserSession.fromJson(data) : null) as T;
+    }
+    if (t == List<_i9.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i9.AuditLog>(e)).toList()
+          as T;
+    }
+    if (t == List<_i19.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i19.AuditLog>(e)).toList()
+          as T;
+    }
+    if (t == List<_i20.AppRole>) {
+      return (data as List).map((e) => deserialize<_i20.AppRole>(e)).toList()
+          as T;
+    }
+    if (t == List<_i21.AppPermission>) {
       return (data as List)
-              .map((e) => deserialize<_i15.AppPermission>(e))
+              .map((e) => deserialize<_i21.AppPermission>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i16.UserSession>) {
+    if (t == List<_i22.UserSession>) {
       return (data as List)
-              .map((e) => deserialize<_i16.UserSession>(e))
+              .map((e) => deserialize<_i22.UserSession>(e))
               .toList()
           as T;
     }
-    if (t == List<_i17.AppUser>) {
-      return (data as List).map((e) => deserialize<_i17.AppUser>(e)).toList()
+    if (t == List<_i23.AppUser>) {
+      return (data as List).map((e) => deserialize<_i23.AppUser>(e)).toList()
           as T;
     }
     if (t == List<int>) {
@@ -843,9 +1194,15 @@ class Protocol extends _i1.SerializationManagerServer {
       _i7.AppRole => 'AppRole',
       _i8.AppUser => 'AppUser',
       _i9.AuditLog => 'AuditLog',
-      _i10.RolePermission => 'RolePermission',
-      _i11.UserRole => 'UserRole',
-      _i12.UserSession => 'UserSession',
+      _i10.AuditLogPageResponse => 'AuditLogPageResponse',
+      _i11.MfaChallenge => 'MfaChallenge',
+      _i12.MfaChallengeResponse => 'MfaChallengeResponse',
+      _i13.MfaVerifyResponse => 'MfaVerifyResponse',
+      _i14.RolePermission => 'RolePermission',
+      _i15.ServerMetricsResponse => 'ServerMetricsResponse',
+      _i16.TrustedDevice => 'TrustedDevice',
+      _i17.UserRole => 'UserRole',
+      _i18.UserSession => 'UserSession',
       _ => null,
     };
   }
@@ -873,11 +1230,23 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'AppUser';
       case _i9.AuditLog():
         return 'AuditLog';
-      case _i10.RolePermission():
+      case _i10.AuditLogPageResponse():
+        return 'AuditLogPageResponse';
+      case _i11.MfaChallenge():
+        return 'MfaChallenge';
+      case _i12.MfaChallengeResponse():
+        return 'MfaChallengeResponse';
+      case _i13.MfaVerifyResponse():
+        return 'MfaVerifyResponse';
+      case _i14.RolePermission():
         return 'RolePermission';
-      case _i11.UserRole():
+      case _i15.ServerMetricsResponse():
+        return 'ServerMetricsResponse';
+      case _i16.TrustedDevice():
+        return 'TrustedDevice';
+      case _i17.UserRole():
         return 'UserRole';
-      case _i12.UserSession():
+      case _i18.UserSession():
         return 'UserSession';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -916,14 +1285,32 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'AuditLog') {
       return deserialize<_i9.AuditLog>(data['data']);
     }
+    if (dataClassName == 'AuditLogPageResponse') {
+      return deserialize<_i10.AuditLogPageResponse>(data['data']);
+    }
+    if (dataClassName == 'MfaChallenge') {
+      return deserialize<_i11.MfaChallenge>(data['data']);
+    }
+    if (dataClassName == 'MfaChallengeResponse') {
+      return deserialize<_i12.MfaChallengeResponse>(data['data']);
+    }
+    if (dataClassName == 'MfaVerifyResponse') {
+      return deserialize<_i13.MfaVerifyResponse>(data['data']);
+    }
     if (dataClassName == 'RolePermission') {
-      return deserialize<_i10.RolePermission>(data['data']);
+      return deserialize<_i14.RolePermission>(data['data']);
+    }
+    if (dataClassName == 'ServerMetricsResponse') {
+      return deserialize<_i15.ServerMetricsResponse>(data['data']);
+    }
+    if (dataClassName == 'TrustedDevice') {
+      return deserialize<_i16.TrustedDevice>(data['data']);
     }
     if (dataClassName == 'UserRole') {
-      return deserialize<_i11.UserRole>(data['data']);
+      return deserialize<_i17.UserRole>(data['data']);
     }
     if (dataClassName == 'UserSession') {
-      return deserialize<_i12.UserSession>(data['data']);
+      return deserialize<_i18.UserSession>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -969,12 +1356,16 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i8.AppUser.t;
       case _i9.AuditLog:
         return _i9.AuditLog.t;
-      case _i10.RolePermission:
-        return _i10.RolePermission.t;
-      case _i11.UserRole:
-        return _i11.UserRole.t;
-      case _i12.UserSession:
-        return _i12.UserSession.t;
+      case _i11.MfaChallenge:
+        return _i11.MfaChallenge.t;
+      case _i14.RolePermission:
+        return _i14.RolePermission.t;
+      case _i16.TrustedDevice:
+        return _i16.TrustedDevice.t;
+      case _i17.UserRole:
+        return _i17.UserRole.t;
+      case _i18.UserSession:
+        return _i18.UserSession.t;
     }
     return null;
   }

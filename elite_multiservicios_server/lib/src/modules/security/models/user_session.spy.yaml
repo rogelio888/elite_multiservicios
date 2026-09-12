@@ -12,6 +12,10 @@ fields:
   deviceInfo: String?
   ### Indicador de si la sesión ha sido revocada remotamente.
   isRevoked: bool
+  ### Indicador de autenticación multifactor (MFA) verificada en esta sesión.
+  mfaVerified: bool, default=false
+  ### Momento de revocación de la sesión.
+  revokedAt: DateTime?
   ### Momento de inicio de sesión.
   createdAt: DateTime
   ### Momento de última actividad registrada.

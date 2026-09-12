@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elite Multiservicios - Verificar Código</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col md:flex-row overflow-x-hidden antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- Panel Izquierdo (Branding & Plataforma - 60% en Desktop) -->
+  <div class="relative w-full md:w-[60%] bg-gradient-to-br from-[#0B0F19] to-[#1E293B] p-8 md:p-16 lg:p-20 flex flex-col justify-between min-h-[460px] md:min-h-screen border-b md:border-b-0 md:border-r border-slate-800/80">
+    <!-- Contenido Superior / Principal -->
+    <div class="max-w-xl">
+      <!-- Logo Oficial transparente sin fondo ni bordes -->
+      <div class="mb-3">
+        <img 
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmpr7sOrVMZKZzigrg-bkR1NMQeNv07qDMnMi0Fj5mNQpWM35rCknW6gRVVPkS3vzqCUaKe7m9V0LyQ6RuJtvp9MV91YDc4IGIfvzo-aOvJzUxsI8o5gGaak4ZF-ak5d2jWAwkGR9sso2J9tUie0xNoEfRag8AEJX4w9kYfHo6yMuf5XoN0EgcG9oozSpG44-K8B-w3OAv8dLXPoOsLC9YjIAYMZulr6q0IaKj1qynp8N9nfwp-iDjEPz9MSWfpS3c-sPdZi2pxsA" 
+          alt="Elite Multiservicios" 
+          class="w-[200px] h-auto object-contain select-none"
+        />
+      </div>
+
+      <!-- Slogan oficial -->
+      <div class="text-[12px] uppercase font-medium text-[#94A3B8] tracking-[4px] mb-12">
+        ENTRE TODOS ES MEJOR
+      </div>
+
+      <!-- Titular de la plataforma -->
+      <h1 class="text-white text-2xl md:text-[30px] font-bold leading-tight tracking-tight mb-4">
+        Plataforma empresarial de administración
+      </h1>
+
+      <!-- Descripción institucional -->
+      <p class="text-[#94A3B8] text-[14px] leading-relaxed max-w-lg mb-8">
+        Gestión centralizada, seguridad biométrica y cumplimiento operativo de nivel empresarial para todas tus sedes.
+      </p>
+
+      <!-- Badges tipo pill (únicamente 2 badges simples) -->
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Badge ISO 27001 -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/40 border border-white/15 text-[13px] text-white backdrop-blur-sm">
+          <svg class="w-4 h-4 text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span class="font-medium">ISO 27001 Certificada</span>
+        </div>
+
+        <!-- Badge TLS 1.3 -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/40 border border-white/15 text-[13px] text-white backdrop-blur-sm">
+          <svg class="w-4 h-4 text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <span class="font-medium">TLS 1.3</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copyright en pie de panel -->
+    <div class="mt-12 pt-6 text-[13px] text-slate-500">
+      &copy; 2026 Elite Multiservicios. Todos los derechos reservados.
+    </div>
+  </div>
+
+  <!-- Panel Derecho (Formulario de Verificación - 40% en Desktop) -->
+  <div class="w-full md:w-[40%] bg-[#F8FAFC] flex items-center justify-center p-6 md:p-10 lg:p-12 min-h-screen">
+    <!-- Tarjeta Blanca de 440px -->
+    <div class="w-full max-w-[440px] bg-white rounded-[12px] border border-slate-200 shadow-xl p-8 sm:p-10 transition-all">
+      
+      <!-- Encabezado de la tarjeta -->
+      <div class="mb-6">
+        <h2 class="text-[24px] font-bold text-[#0F172A] tracking-tight mb-2">
+          Verificar Código
+        </h2>
+        <p class="text-[14px] text-[#64748B] leading-relaxed">
+          Ingresá el código de 8 dígitos que enviamos a <span class="text-slate-800 font-semibold">admin@elitemultiservicios.com</span>
+        </p>
+      </div>
+
+      <!-- Formulario de Código de 8 dígitos -->
+      <form onsubmit="event.preventDefault();" class="space-y-6">
+        
+        <!-- Casillas de verificación uniformes (40x48px cada una en fila horizontal) -->
+        <div class="flex items-center justify-between gap-1 sm:gap-2">
+          <input 
+            type="text" 
+            maxlength="1" 
+            value="7" 
+            class="w-[40px] h-[48px] text-center font-bold text-[20px] text-slate-800 bg-white border border-slate-300 rounded-[8px] focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/20 outline-none transition"
+          />
+          <input 
+            type="text" 
+            maxlength="1" 
+            value="2" 
+            class="w-[40px] h-[48px] text-center font-bold text-[20px] text-slate-800 bg-white border border-slate-300 rounded-[8px] focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/20 outline-none transition"
+          />
+          <input 
+            type="text" 
+            maxlength="1" 
+            value="9" 
+            class="w-[40px] h-[48px] text-center font-bold text-[20px] text-slate-800 bg-white border border-slate-300 rounded-[8px] focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/20 outline-none transition"
+          />
+          <input 
+            type="text" 
+            maxlength="1" 
+            value="4" 
+            class="w-[40px] h-[48px] text-center font-bold text-[20px] text-slate-800 bg-white border border-slate-300 rounded-[8px] focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/20 outline-none transition"
+          />
+          <input 
+            type="text" 
+            maxlength="1" 
+            placeholder="" 
+            class="w-[40px] h-[48px] text-center font-bold text-[20px] text-slate-800 bg-white border border-slate-300 rounded-[8px] focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/20 outline-none transition"
+          />
+          <input 
+            type="text" 
+            maxlength="1" 
+            placeholder="" 
+            class="w-[40px] h-[48px] text-center font-bold text-[20px] text-slate-800 bg-white border border-slate-300 rounded-[8px] focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/20 outline-none transition"
+          />
+          <input 
+            type="text" 
+            maxlength="1" 
+            placeholder="" 
+            class="w-[40px] h-[48px] text-center font-bold text-[20px] text-slate-800 bg-white border border-slate-300 rounded-[8px] focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/20 outline-none transition"
+          />
+          <input 
+            type="text" 
+            maxlength="1" 
+            placeholder="" 
+            class="w-[40px] h-[48px] text-center font-bold text-[20px] text-slate-800 bg-white border border-slate-300 rounded-[8px] focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/20 outline-none transition"
+          />
+        </div>
+
+        <!-- Enlace de reenvío de código -->
+        <div class="text-center text-[13px] text-[#64748B]">
+          ¿No recibiste el código? <button type="button" class="text-[#1E3A8A] font-semibold hover:underline cursor-pointer">Reenviar en 60s</button>
+        </div>
+
+        <!-- Botón primario de acción -->
+        <button 
+          type="submit" 
+          class="w-full h-[48px] bg-[#1E3A8A] hover:bg-[#1e40af] text-white font-semibold text-[15px] rounded-[8px] flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer"
+        >
+          <span>Verificar código</span>
+          <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+
+        <!-- Link inferior para volver al login -->
+        <div class="text-center pt-2">
+          <a href="#" class="inline-flex items-center gap-1.5 text-[14px] text-[#1E3A8A] hover:text-[#1e40af] font-medium hover:underline transition">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Volver al inicio de sesión</span>
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

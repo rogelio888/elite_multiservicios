@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
 import '../../../generated/protocol.dart';
 import '../../../authorization/permissions.dart';
 
@@ -87,23 +89,77 @@ class SecuritySeed {
       );
     }
 
+    // 4.1 Sembrado en subsistema de autenticación Serverpod IDP (si no existe)
+    final existingAuthAccount = await AuthServices.instance.emailIdp.admin
+        .findAccount(session, email: adminEmail);
+
+    if (existingAuthAccount == null) {
+      session.log(
+        'Creando credenciales Auth IDP para $adminEmail...',
+        level: LogLevel.info,
+      );
+
+      // A. Crear usuario base de autenticación en Serverpod Core
+      final authUser = await AuthServices.instance.authUsers.create(
+        session,
+        scopes: {Scope('admin')},
+      );
+
+      // B. Crear credencial de correo y contraseña hasheada en Serverpod IDP
+      await AuthServices.instance.emailIdp.admin.createEmailAuthentication(
+        session,
+        authUserId: authUser.id,
+        email: adminEmail,
+        password: adminPassword,
+      );
+
+      // C. Crear perfil de usuario en Serverpod Core (necesario ya que createEmailAuthentication no lo crea)
+      await AuthServices.instance.userProfiles.createUserProfile(
+        session,
+        authUser.id,
+        UserProfileData(
+          email: adminEmail,
+          fullName: 'Administrador del Sistema',
+          userName: 'admin',
+        ),
+      );
+    } else {
+      session.log(
+        'Credenciales Auth IDP para $adminEmail ya existen. Sincronizando contraseña con SEED_ADMIN_PASSWORD...',
+      );
+      await AuthServices.instance.emailIdp.admin.setPassword(
+        session,
+        email: adminEmail,
+        password: adminPassword,
+      );
+    }
+
     var adminUser = await AppUser.db.findFirstRow(
       session,
       where: (t) => t.email.equals(adminEmail),
     );
 
-    adminUser ??= await AppUser.db.insertRow(
-      session,
-      AppUser(
-        email: adminEmail,
-        fullName: 'Administrador del Sistema',
-        isActive: true,
-        isDeleted: false,
-        mustChangePassword: true,
-        createdAt: DateTime.now().toUtc(),
-        updatedAt: DateTime.now().toUtc(),
-      ),
-    );
+    if (adminUser == null) {
+      adminUser = await AppUser.db.insertRow(
+        session,
+        AppUser(
+          email: adminEmail,
+          fullName: 'Administrador del Sistema',
+          isActive: true,
+          isDeleted: false,
+          mustChangePassword: true,
+          mfaEnabled: true,
+          createdAt: DateTime.now().toUtc(),
+          updatedAt: DateTime.now().toUtc(),
+        ),
+      );
+    } else if (!adminUser.mfaEnabled) {
+      adminUser = await AppUser.db.updateRow(
+        session,
+        adminUser.copyWith(mfaEnabled: true),
+        columns: (t) => [t.mfaEnabled],
+      );
+    }
 
     // Vincular rol Super Administrador al usuario creado
     final existingUserRole = await UserRole.db.findFirstRow(

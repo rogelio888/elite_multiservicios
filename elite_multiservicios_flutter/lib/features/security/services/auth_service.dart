@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
@@ -7,6 +9,37 @@ import 'security_api_service.dart';
 /// Servicio reactivo para orquestar la autenticación de usuarios, gestión de tokens JWT
 /// y auditoría server-side de cierre de sesión en Elite Multiservicios.
 class AuthService extends ChangeNotifier {
+  static const _trustedDeviceKey = 'trusted_device_token';
+  final _secureStorage = const FlutterSecureStorage();
+
+  bool _isMfaPending = false;
+  bool get isMfaPending => _isMfaPending;
+
+  bool _isCheckingMfa = false;
+  bool get isCheckingMfa => _isCheckingMfa;
+
+  bool _currentRememberMe = false;
+  bool get currentRememberMe => _currentRememberMe;
+
+  MfaChallengeResponse? _currentMfaChallenge;
+  MfaChallengeResponse? get currentMfaChallenge => _currentMfaChallenge;
+
+  void setMfaPending(
+    MfaChallengeResponse? challenge, {
+    bool rememberMe = false,
+  }) {
+    _currentMfaChallenge = challenge;
+    _isMfaPending = challenge != null;
+    _currentRememberMe = rememberMe;
+    notifyListeners();
+  }
+
+  void clearMfaPending() {
+    _currentMfaChallenge = null;
+    _isMfaPending = false;
+    notifyListeners();
+  }
+
   final Client _client;
   final SecurityApiService _securityApi;
 
@@ -49,7 +82,10 @@ class AuthService extends ChangeNotifier {
   Future<bool> login({
     required String email,
     required String password,
+    bool rememberMe = false,
   }) async {
+    _isCheckingMfa = true;
+    _currentRememberMe = rememberMe;
     try {
       final authSuccess = await _client.emailIdp.login(
         email: email.trim(),
@@ -58,32 +94,183 @@ class AuthService extends ChangeNotifier {
 
       // Actualizar el session manager con los tokens JWT y credenciales recibidas
       await _client.auth.updateSignedInUser(authSuccess);
-      notifyListeners();
+
+      // Registrar sesión en base de datos para auditoría y monitoreo
+      try {
+        final token = authSuccess.token;
+        final expiresAt =
+            authSuccess.tokenExpiresAt ??
+            DateTime.now().toUtc().add(const Duration(days: 30));
+        await _client.sessionManagement.registerSession(
+          sessionTokenHash: _hashToken(token),
+          expiresAt: expiresAt,
+          mfaVerified: false,
+        );
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error registrando sesión: $e');
+        }
+      }
+
+      // Verificar inmediatamente si MFA es requerido para este usuario
+      final mfaChallenge = await checkMfaRequired(rememberMe: rememberMe);
+      if (mfaChallenge != null) {
+        setMfaPending(mfaChallenge, rememberMe: rememberMe);
+      } else {
+        clearMfaPending();
+      }
+
       return true;
     } catch (e) {
+      clearMfaPending();
       if (kDebugMode) {
         print('Error en login: $e');
       }
       rethrow;
+    } finally {
+      _isCheckingMfa = false;
+      notifyListeners();
     }
   }
 
-  /// Flujo de Logout Server-Side auditado (Corrección 4 del plan):
-  /// 1. Revoca la sesión en base de datos mediante sessionManagement si se proporciona activeSessionId.
+  /// Paso 1: Inicia la solicitud de recuperación. Envía un código por email.
+  /// Retorna el `passwordResetRequestId` para los siguientes pasos.
+  Future<UuidValue> startPasswordReset(String email) async {
+    return await _client.emailIdp.startPasswordReset(email: email.trim());
+  }
+
+  /// Paso 2: Verifica el código de 8 dígitos recibido por email.
+  /// Retorna el `finishPasswordResetToken` que autoriza el cambio.
+  Future<String> verifyPasswordResetCode({
+    required UuidValue passwordResetRequestId,
+    required String verificationCode,
+  }) async {
+    return await _client.emailIdp.verifyPasswordResetCode(
+      passwordResetRequestId: passwordResetRequestId,
+      verificationCode: verificationCode.trim(),
+    );
+  }
+
+  /// Paso 3: Aplica la nueva contraseña.
+  Future<void> finishPasswordReset({
+    required String finishPasswordResetToken,
+    required String newPassword,
+  }) async {
+    await _client.emailIdp.finishPasswordReset(
+      finishPasswordResetToken: finishPasswordResetToken,
+      newPassword: newPassword,
+    );
+  }
+
+  /// Obtiene el AppUser asociado a la sesión actual.
+  Future<AppUser> getCurrentUser() async {
+    return await _client.user.getCurrentUser();
+  }
+
+  /// Cambia la contraseña del usuario autenticado.
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await _client.user.changePassword(
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    );
+  }
+
+  /// Verifica si el usuario autenticado requiere MFA.
+  /// Si sí, retorna el challenge. Si no, retorna null.
+  Future<MfaChallengeResponse?> checkMfaRequired({
+    required bool rememberMe,
+  }) async {
+    final trustedToken = await getTrustedDeviceToken();
+    return await _client.mfa.checkRequired(
+      rememberMe: rememberMe,
+      trustedDeviceToken: trustedToken,
+    );
+  }
+
+  /// Verifica el código MFA.
+  Future<MfaVerifyResponse> verifyMfa({
+    required String challengeId,
+    required String code,
+    required bool rememberMe,
+  }) async {
+    final response = await _client.mfa.verifyMfa(
+      challengeId: challengeId,
+      code: code,
+      rememberMe: rememberMe,
+    );
+    // Si el backend devolvió un trustedDeviceToken, guardarlo
+    if (response.trustedDeviceToken != null) {
+      await saveTrustedDeviceToken(response.trustedDeviceToken!);
+    }
+    return response;
+  }
+
+  /// Reenvía un nuevo código MFA.
+  Future<void> resendMfaCode({required String challengeId}) async {
+    await _client.mfa.resendMfaCode(challengeId: challengeId);
+  }
+
+  /// Guarda el token de dispositivo de confianza.
+  Future<void> saveTrustedDeviceToken(String token) async {
+    try {
+      await _secureStorage.write(key: _trustedDeviceKey, value: token);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error guardando trusted device token: $e');
+      }
+    }
+  }
+
+  /// Lee el token de dispositivo de confianza.
+  Future<String?> getTrustedDeviceToken() async {
+    try {
+      return await _secureStorage.read(key: _trustedDeviceKey);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error leyendo trusted device token: $e');
+      }
+      return null;
+    }
+  }
+
+  /// Elimina el token de dispositivo de confianza.
+  Future<void> clearTrustedDeviceToken() async {
+    try {
+      await _secureStorage.delete(key: _trustedDeviceKey);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error eliminando trusted device token: $e');
+      }
+    }
+  }
+
+  /// Flujo de Logout Server-Side auditado:
+  /// 1. Revoca la sesión en base de datos y registra el evento LOGOUT en el servidor.
   /// 2. Purga los tokens JWT locales de almacenamiento seguro mediante client.auth.signOutDevice().
   Future<void> logout({int? activeSessionId}) async {
+    clearMfaPending();
     try {
-      if (activeSessionId != null) {
-        try {
-          await _client.sessionManagement.revokeSession(activeSessionId);
-        } catch (_) {
-          // Si la sesión remota ya no existe o falló la red, continuar con la purga local
+      // 1. Intentar revocar en el servidor (best-effort)
+      try {
+        await _client.sessionManagement.logout();
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error revocando sesión en servidor: $e');
         }
+        // Continuar con la purga local aunque falle la red
       }
     } finally {
+      // 2. Purgar tokens locales
       await _client.auth.signOutDevice();
       notifyListeners();
     }
+  }
+
+  static String _hashToken(String token) {
+    return sha256.convert(utf8.encode(token)).toString();
   }
 
   @override

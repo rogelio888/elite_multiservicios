@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../services/auth_service.dart';
+import 'recovery/forgot_password_screen.dart';
+import 'widgets/auth_branding_panel.dart';
 
 /// Pantalla de inicio de sesión empresarial diseñada según los tokens y estructura
 /// canónica de Google Stitch, con adaptación dinámica para temas claro y oscuro.
@@ -29,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late final AuthService _authService;
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _rememberMe = false;
   String? _errorMessage;
 
   @override
@@ -56,24 +60,44 @@ class _LoginScreenState extends State<LoginScreen> {
       final success = await _authService.login(
         email: _emailController.text,
         password: _passwordController.text,
+        rememberMe: _rememberMe,
       );
 
-      if (mounted) {
-        if (success) {
-          widget.onLoginSuccess?.call();
-        } else {
-          setState(() {
-            _errorMessage =
-                'Credenciales inválidas. Verifica tu correo corporativo y contraseña.';
-            _isLoading = false;
-          });
-        }
+      if (!mounted) return;
+
+      if (!success) {
+        setState(() {
+          _errorMessage =
+              'Credenciales inválidas. Verifica tu correo corporativo y contraseña.';
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Login exitoso: AuthService ya procesó checkMfaRequired y seteó el estado.
+      // main.dart se encarga de reaccionar y mostrar MfaVerificationScreen o el Dashboard.
+      if (!_authService.isMfaPending) {
+        widget.onLoginSuccess?.call();
       }
     } catch (e) {
       if (mounted) {
-        setState(() {
-          _errorMessage =
+        final errorStr = e.toString();
+        String errorMsg;
+        if (errorStr.contains('ACCOUNT_LOCKED') ||
+            errorStr.contains('bloqueada') ||
+            errorStr.contains('tooManyAttempts') ||
+            errorStr.contains('AccountLockedException')) {
+          errorMsg =
+              'Tu cuenta está temporalmente bloqueada por múltiples intentos fallidos. Intentá de nuevo en unos minutos.';
+        } else if (errorStr.contains('invalidCredentials')) {
+          errorMsg =
+              'Credenciales inválidas. Verifica tu correo corporativo y contraseña.';
+        } else {
+          errorMsg =
               'No fue posible conectar con el servidor. Revisa tu conexión o el estado del servicio.';
+        }
+        setState(() {
+          _errorMessage = errorMsg;
           _isLoading = false;
         });
       }
@@ -89,17 +113,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final formContent = Container(
       width: isDesktop ? 460 : double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+      padding: EdgeInsets.symmetric(
+        horizontal: isDesktop ? 36 : 24,
+        vertical: isDesktop ? 44 : 32,
+      ),
       decoration: BoxDecoration(
         color: theme.cardTheme.color,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark ? const Color(0xFF1F2937) : const Color(0xFFE2E8F0),
-        ),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
-            blurRadius: 24,
+            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.08),
+            blurRadius: 32,
             offset: const Offset(0, 8),
           ),
         ],
@@ -131,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Ingresa tus credenciales corporativas autorizadas',
+                        'Accede a tu cuenta corporativa',
                         style: TextStyle(
                           fontSize: 13,
                           color: isDark
@@ -160,17 +184,17 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.redAccent.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  color: AppTheme.statusError.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: Colors.redAccent.withValues(alpha: 0.4),
+                    color: AppTheme.statusError.withValues(alpha: 0.4),
                   ),
                 ),
                 child: Row(
                   children: [
                     const Icon(
                       Icons.error_outline,
-                      color: Colors.redAccent,
+                      color: AppTheme.statusError,
                       size: 20,
                     ),
                     const SizedBox(width: 10),
@@ -178,7 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         _errorMessage!,
                         style: const TextStyle(
-                          color: Colors.redAccent,
+                          color: AppTheme.statusError,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
@@ -262,15 +286,86 @@ class _LoginScreenState extends State<LoginScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 16),
+
+            // Checkbox Recordarme + Link ¿Olvidaste tu contraseña?
+            Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: Checkbox(
+                          value: _rememberMe,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          onChanged: (v) =>
+                              setState(() => _rememberMe = v ?? false),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Recordarme',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Flexible(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => ForgotPasswordScreen(
+                              authService: _authService,
+                            ),
+                          ),
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        '¿Olvidaste tu contraseña?',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: isDark
+                              ? AppTheme.accentBlue
+                              : AppTheme.primaryBlue,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
 
             // Botón de Inicio de Sesión
             FilledButton(
               onPressed: _isLoading ? null : _handleLogin,
               style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
               child: _isLoading
@@ -282,12 +377,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text(
-                      'Iniciar Sesión',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  : const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Iniciar Sesión',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward, size: 18),
+                      ],
                     ),
             ),
             const SizedBox(height: 20),
@@ -295,9 +398,9 @@ class _LoginScreenState extends State<LoginScreen> {
             // Pie informativo
             Center(
               child: Text(
-                'Acceso restringido • Sistema Empresarial Elite Multiservicios',
+                '¿No tienes cuenta? Contacta a tu administrador',
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 12,
                   color: isDark
                       ? const Color(0xFF64748B)
                       : const Color(0xFF94A3B8),
@@ -309,69 +412,42 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
 
+    final desktopBranding = AuthBrandingPanel(isDesktop: true, isDark: isDark);
+    final mobileBranding = AuthBrandingPanel(isDesktop: false, isDark: isDark);
+
+    if (isDesktop) {
+      return Scaffold(
+        body: Row(
+          children: [
+            desktopBranding,
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 48,
+                    vertical: 24,
+                  ),
+                  child: formContent,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
-            child: isDesktop
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Panel izquierdo de branding
-                      Container(
-                        width: 440,
-                        padding: const EdgeInsets.all(48),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                color: const Color(
-                                  0xFF1E3A8A,
-                                ).withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: const Icon(
-                                Icons.security,
-                                color: Color(0xFF1E3A8A),
-                                size: 36,
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              'ELITE MULTISERVICIOS',
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -0.8,
-                                color: isDark
-                                    ? Colors.white
-                                    : const Color(0xFF0F172A),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Plataforma Integral de Gestión y Seguridad Corporativa con trazabilidad inmutable y control RBAC.',
-                              style: TextStyle(
-                                fontSize: 15,
-                                height: 1.5,
-                                color: isDark
-                                    ? const Color(0xFF94A3B8)
-                                    : const Color(0xFF64748B),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 48),
-                      // Formulario derecho
-                      formContent,
-                    ],
-                  )
-                : formContent,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                mobileBranding,
+                formContent,
+              ],
+            ),
           ),
         ),
       ),

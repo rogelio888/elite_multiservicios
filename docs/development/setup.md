@@ -35,12 +35,11 @@ flutter pub get
 ```
 
 ### Paso 3: Configurar Secretos Locales
-1. Navega a `elite_multiservicios_server/config/`.
-2. Si no existe `passwords.yaml`, copia el archivo de ejemplo:
+1. Copia el archivo de ejemplo para las contraseñas del servidor:
    ```bash
-   cp config/passwords.yaml.example config/passwords.yaml
+   cp elite_multiservicios_server/config/passwords.yaml.example elite_multiservicios_server/config/passwords.yaml
    ```
-3. Verifica las credenciales locales de desarrollo y pruebas.
+2. Verifica las credenciales locales de desarrollo y pruebas.
 
 ### Paso 4: Iniciar Base de Datos y Servicios (Docker)
 Inicia PostgreSQL y Redis mediante Docker Compose:

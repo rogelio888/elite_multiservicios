@@ -1,0 +1,125 @@
+# ==============================================================================
+# Elite Multiservicios - Infrastructure as Code (Render Blueprint)
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # Backend: Serverpod Monolith (Docker)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: elite-backend
+    runtime: docker
+    repo: https://github.com/rogelio888/elite_multiservicios
+    plan: free
+    region: ohio
+    branch: main
+    dockerfilePath: ./elite_multiservicios_server/Dockerfile
+    dockerContext: ./elite_multiservicios_server
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: SERVERPOD_MODE
+        value: production
+      - key: DATABASE_HOST
+        fromDatabase:
+          name: elite-postgres
+          property: host
+      - key: DATABASE_PORT
+        fromDatabase:
+          name: elite-postgres
+          property: port
+      - key: DATABASE_NAME
+        fromDatabase:
+          name: elite-postgres
+          property: database
+      - key: DATABASE_USER
+        fromDatabase:
+          name: elite-postgres
+          property: user
+      - key: DATABASE_PASSWORD
+        fromDatabase:
+          name: elite-postgres
+          property: password
+      - key: SERVERPOD_PASSWORD_database
+        fromDatabase:
+          name: elite-postgres
+          property: password
+      - key: REDIS_HOST
+        fromService:
+          type: keyvalue
+          name: elite-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: keyvalue
+          name: elite-redis
+          property: port
+      - key: SERVERPOD_PASSWORD_redis
+        fromService:
+          type: keyvalue
+          name: elite-redis
+          property: connectionString
+      - key: SERVERPOD_PASSWORD_emailSecretHashPepper
+        generateValue: true
+      - key: SERVERPOD_PASSWORD_jwtHmacSha512PrivateKey
+        generateValue: true
+      - key: SERVERPOD_PASSWORD_jwtRefreshTokenHashPepper
+        generateValue: true
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "465"
+      - key: SMTP_USERNAME
+        value: resend
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM_EMAIL
+        value: noreply@elitemultiservicios.com
+      - key: SMTP_FROM_NAME
+        value: Elite Multiservicios
+      - key: SEED_ADMIN_EMAIL
+        value: admin@elitemultiservicios.com
+      - key: SEED_ADMIN_PASSWORD
+        sync: false
+      - key: SEED_ON_START
+        value: "true"
+
+  # ----------------------------------------------------------------------------
+  # Frontend: Flutter Web (Docker + Nginx SPA)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: elite-frontend
+    runtime: docker
+    repo: https://github.com/rogelio888/elite_multiservicios
+    plan: free
+    region: ohio
+    branch: main
+    dockerfilePath: ./elite_multiservicios_flutter/Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    autoDeployTrigger: commit
+    envVars:
+      - key: SERVER_URL
+        sync: false
+
+  # ----------------------------------------------------------------------------
+  # Cache & PubSub: Key Value (Redis)
+  # ----------------------------------------------------------------------------
+  - type: keyvalue
+    name: elite-redis
+    plan: free
+    region: ohio
+    maxmemoryPolicy: noeviction
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
+
+databases:
+  # ----------------------------------------------------------------------------
+  # Relational Database: Render Postgres
+  # ----------------------------------------------------------------------------
+  - name: elite-postgres
+    plan: free
+    region: ohio
+    databaseName: elite_multiservicios
+    user: elite_user

@@ -1,11 +1,17 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as auth_idp;
 import '../../../generated/protocol.dart';
 import '../../../authorization/permissions.dart';
 import '../../../authorization/rbac_guard.dart';
 import '../../../audit/audit_event.dart';
 import '../../../audit/audit_service.dart';
+import '../../../exceptions/app_exception.dart';
 import '../repositories/user_repository.dart';
 import '../repositories/rbac_repository.dart';
+import '../services/password_policy_validator.dart';
 
 /// Endpoint RPC para administración del ciclo de vida de usuarios.
 /// Protegido con autorización backend-first estricta.
@@ -47,6 +53,7 @@ class UserEndpoint extends Endpoint {
     required String fullName,
     List<int> roleIds = const [],
   }) async {
+    await RbacGuard.requireMfaVerified(session);
     final caller = await RbacGuard.requirePermission(
       session,
       AppPermissions.usersCreate,
@@ -100,6 +107,7 @@ class UserEndpoint extends Endpoint {
     required int id,
     required String fullName,
   }) async {
+    await RbacGuard.requireMfaVerified(session);
     final caller = await RbacGuard.requirePermission(
       session,
       AppPermissions.usersUpdate,
@@ -131,6 +139,7 @@ class UserEndpoint extends Endpoint {
     required int id,
     required bool isActive,
   }) async {
+    await RbacGuard.requireMfaVerified(session);
     final caller = await RbacGuard.requirePermission(
       session,
       AppPermissions.usersDisable,
@@ -158,6 +167,7 @@ class UserEndpoint extends Endpoint {
 
   /// Borrado lógico (Soft Delete) de un usuario. Requiere users.delete.
   Future<bool> deleteUser(Session session, int id) async {
+    await RbacGuard.requireMfaVerified(session);
     final caller = await RbacGuard.requirePermission(
       session,
       AppPermissions.usersDelete,
@@ -179,5 +189,125 @@ class UserEndpoint extends Endpoint {
     );
 
     return true;
+  }
+
+  /// Retorna el AppUser asociado a la sesión autenticada actual.
+  Future<AppUser> getCurrentUser(Session session) async {
+    final authUserIdStr = session.authenticated?.userIdentifier;
+    if (authUserIdStr == null) {
+      throw const UnauthorizedException('Usuario no autenticado');
+    }
+    return await _resolveAuthenticatedAppUser(session, authUserIdStr);
+  }
+
+  /// Cambia la contraseña del usuario autenticado.
+  Future<void> changePassword(
+    Session session, {
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await RbacGuard.requireMfaVerified(session);
+    // 1. Resolver el AppUser
+    final authUserIdStr = session.authenticated?.userIdentifier;
+    if (authUserIdStr == null) {
+      throw const UnauthorizedException('Usuario no autenticado');
+    }
+    final appUser = await _resolveAuthenticatedAppUser(session, authUserIdStr);
+
+    // 2. Validar la contraseña actual usando Serverpod Auth IDP
+    final authUuid = UuidValue.fromString(authUserIdStr);
+    final emailAccount = await auth_idp.EmailAccount.db.findFirstRow(
+      session,
+      where: (t) => t.authUserId.equals(authUuid),
+    );
+    if (emailAccount == null) {
+      throw Exception('Cuenta de autenticación no encontrada');
+    }
+
+    final isCurrentValid = await AuthServices.instance.emailIdp.utils.hashUtil
+        .validateHashFromString(
+          secret: currentPassword,
+          hashString: emailAccount.passwordHash,
+        );
+    if (!isCurrentValid) {
+      throw Exception('La contraseña actual es incorrecta');
+    }
+
+    // 3. Validar la nueva contraseña contra políticas corporativas
+    PasswordPolicyValidator.validate(
+      password: newPassword,
+      email: emailAccount.email,
+      fullName: appUser.fullName,
+    );
+
+    // 4. Actualizar la contraseña en Serverpod Auth IDP
+    await AuthServices.instance.emailIdp.admin.setPassword(
+      session,
+      email: emailAccount.email,
+      password: newPassword,
+    );
+
+    // 5. Actualizar `mustChangePassword: false` en AppUser
+    final now = DateTime.now().toUtc();
+    await AppUser.db.updateRow(
+      session,
+      appUser.copyWith(
+        mustChangePassword: false,
+        updatedAt: now,
+      ),
+    );
+
+    // 6. Registrar en audit_log
+    await _auditService.logEvent(
+      session,
+      AuditEventRecord(
+        action: AuditEventType.passwordChanged,
+        userId: appUser.id,
+        userIdentifier: authUserIdStr,
+        resource: 'user:#${appUser.id}',
+        ipAddress: session.request?.remoteInfo,
+        result: AuditResult.success,
+        metadata: {'changedAt': now.toIso8601String()},
+      ),
+    );
+  }
+
+  /// Resuelve la entidad AppUser vinculada a las credenciales autenticadas en la sesión.
+  Future<AppUser> _resolveAuthenticatedAppUser(
+    Session session,
+    String authUserIdStr,
+  ) async {
+    AppUser? appUser;
+    UuidValue? authUuid;
+    try {
+      authUuid = UuidValue.fromString(authUserIdStr);
+    } catch (_) {}
+
+    if (authUuid != null) {
+      final emailAccount = await auth_idp.EmailAccount.db.findFirstRow(
+        session,
+        where: (t) => t.authUserId.equals(authUuid),
+      );
+      if (emailAccount != null) {
+        appUser = await AppUser.db.findFirstRow(
+          session,
+          where: (t) => t.email.equals(emailAccount.email),
+        );
+      }
+    } else {
+      final id = int.tryParse(authUserIdStr);
+      if (id != null) {
+        appUser = await AppUser.db.findFirstRow(
+          session,
+          where: (t) => t.id.equals(id) | t.userInfoId.equals(id),
+        );
+      }
+    }
+
+    if (appUser == null || appUser.id == null) {
+      throw Exception('AppUser no encontrado para el usuario autenticado');
+    }
+
+    return appUser;
   }
 }

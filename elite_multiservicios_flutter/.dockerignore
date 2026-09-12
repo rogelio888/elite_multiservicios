@@ -1,0 +1,11 @@
+.dart_tool/
+.packages
+build/
+test/
+.vscode/
+.idea/
+*.iml
+.git/
+.gitignore
+Dockerfile
+.dockerignore

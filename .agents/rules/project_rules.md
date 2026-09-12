@@ -28,3 +28,29 @@
    - Prohibido diseñar interfaces directamente desde cero en Flutter sin prototipado previo en Stitch.
    - Seguir el protocolo detallado en `.agents/rules/stitch_workflow.md`.
 
+7. **NUNCA exponer secretos en el chat** (crítica):
+   - Los secretos viven SOLO en `.env` local.
+   - **ANTES de cada comando**: verificar que no contenga un valor de `.env` visible.
+   - **SI** el comando necesita un secreto: leerlo del `.env` como variable local.
+   - **SI** vas a diagnosticar un MCP: usar el panel de MCP, NO curl/fetch directo con la key hardcodeada.
+   - **SI** expusiste un secreto: avisar al humano INMEDIATAMENTE.
+   - Aplicar la skill `.agents/skills/use-secrets-safely/SKILL.md`.
+
+---
+
+## Referencias obligatorias
+
+Toda IA o agente que trabaje en este repositorio debe consultar y respetar rigurosamente:
+
+- `.agents/rules/git_workflow.md` — Flujo Git detallado, protección de ramas y resolución de errores.
+- `.agents/rules/verification_rules.md` — Reglas de verificación empírica en terminal y servicios.
+- `.agents/rules/testing_rules.md` — Estándares y cobertura mínima obligatoria de pruebas.
+- `.agents/rules/stitch_workflow.md` — Flujo oficial de diseño UI con Google Stitch.
+- `.agents/rules/stitch_fidelity.md` — Regla de fidelidad absoluta al diseño de Stitch.
+- `.agents/rules/render_cli.md` — Uso del Render CLI para deploy y gestión de servicios.
+- `.agents/rules/secrets_management.md` — Protocolo mandatorio de gestión y protección de secretos.
+- `.agents/skills/implement-from-stitch/SKILL.md` — Flujo paso a paso para implementar pantallas desde Stitch.
+- `.agents/skills/` — Skills y flujos operativos reutilizables (`verify-environment`, `create-feature`, `submit-pr`, etc.).
+- `.agents/checklists/` — Checklists mandatorios antes de commit y antes de merge.
+
+

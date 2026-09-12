@@ -6,13 +6,20 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
+import 'src/modules/security/seeds/security_seed.dart';
+import 'src/modules/security/services/password_policy_validator.dart';
+import 'src/services/mail_service.dart';
 import 'src/web/routes/app_config_route.dart';
+import 'src/web/routes/health_route.dart';
 import 'src/web/routes/root.dart';
 
 /// The starting point of the Serverpod server.
 void run(List<String> args) async {
+  final shouldSeed = args.contains('--seed');
+  final serverpodArgs = args.where((arg) => arg != '--seed').toList();
+
   // Initialize Serverpod and connect it with your generated code.
-  final pod = Serverpod(args, Protocol(), Endpoints());
+  final pod = Serverpod(serverpodArgs, Protocol(), Endpoints());
 
   // Initialize authentication services for the server.
   // Token managers will be used to validate and issue authentication keys,
@@ -27,6 +34,7 @@ void run(List<String> args) async {
       EmailIdpConfigFromPasswords(
         sendRegistrationVerificationCode: _sendRegistrationCode,
         sendPasswordResetVerificationCode: _sendPasswordResetCode,
+        passwordValidationFunction: PasswordPolicyValidator.isValidForIdp,
       ),
     ],
   );
@@ -35,6 +43,7 @@ void run(List<String> args) async {
   // These are used by the default page.
   pod.webServer.addRoute(RootRoute(), '/');
   pod.webServer.addRoute(RootRoute(), '/index.html');
+  pod.webServer.addRoute(HealthRoute(), '/health');
 
   // Serve all files in the web/static relative directory under /.
   // These are used by the default web page.
@@ -75,28 +84,50 @@ void run(List<String> args) async {
 
   // Start the server.
   await pod.start();
+
+  // Ejecutar sembrado de base de datos si se especificó el flag --seed
+  if (shouldSeed) {
+    final session = await pod.createSession();
+    try {
+      await SecuritySeed.seed(session);
+    } catch (e, stackTrace) {
+      session.log(
+        'Error ejecutando seed: $e',
+        level: LogLevel.error,
+        exception: e,
+        stackTrace: stackTrace,
+      );
+      rethrow;
+    } finally {
+      await session.close();
+    }
+  }
 }
 
-void _sendRegistrationCode(
+Future<void> _sendRegistrationCode(
   Session session, {
   required String email,
   required UuidValue accountRequestId,
   required String verificationCode,
   required Transaction? transaction,
-}) {
-  // NOTE: Here you call your mail service to send the verification code to
-  // the user. For testing, we will just log the verification code.
-  session.log('[EmailIdp] Registration code ($email): $verificationCode');
+}) async {
+  await MailService.sendRegistrationCode(
+    session,
+    email: email,
+    verificationCode: verificationCode,
+  );
 }
 
-void _sendPasswordResetCode(
+Future<void> _sendPasswordResetCode(
   Session session, {
   required String email,
   required UuidValue passwordResetRequestId,
   required String verificationCode,
   required Transaction? transaction,
-}) {
-  // NOTE: Here you call your mail service to send the verification code to
-  // the user. For testing, we will just log the verification code.
-  session.log('[EmailIdp] Password reset code ($email): $verificationCode');
+}) async {
+  await MailService.sendPasswordResetCode(
+    session,
+    email: email,
+    verificationCode: verificationCode,
+  );
 }

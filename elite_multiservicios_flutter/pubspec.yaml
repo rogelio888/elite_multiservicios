@@ -33,11 +33,14 @@ dependencies:
     path: ../elite_multiservicios_client
   serverpod_flutter: 3.4.13
   serverpod_auth_idp_flutter: 3.4.13
+  google_fonts: ^6.2.1
+  crypto: ^3.0.3
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
   flutter_test:
     sdk: flutter
+  mocktail: ^1.0.5
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -62,6 +65,7 @@ flutter:
   # https://flutter.dev/assets-and-images/#from-packages
   assets:
     - assets/config.json
+    - assets/images/
 dependency_overrides:
   flutter_secure_storage: ^10.0.0
 
