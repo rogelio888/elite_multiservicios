@@ -32,3 +32,5 @@ user:
   - updateUser:
   - setUserActive:
   - deleteUser:
+  - getCurrentUser:
+  - changePassword:

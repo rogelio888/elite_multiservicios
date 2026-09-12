@@ -35,9 +35,9 @@ import 'package:elite_multiservicios_client/src/protocol/modules/security/models
     as _i12;
 import 'protocol.dart' as _i13;
 
-/// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
-/// are made available on the server and enable the corresponding sign-in widget
-/// on the client.
+/// Endpoint de autenticación mediante correo y contraseña.
+/// Extiende [EmailIdpBaseEndpoint] para incorporar auditoría de login fallido
+/// y bloqueo de cuentas por intentos excesivos (soft lock 15 min, hard lock 24 h).
 /// {@category Endpoint}
 class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
   EndpointEmailIdp(_i2.EndpointCaller caller) : super(caller);
@@ -45,15 +45,6 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
   @override
   String get name => 'emailIdp';
 
-  /// Logs in the user and returns a new session.
-  ///
-  /// Throws an [EmailAccountLoginException] in case of errors, with reason:
-  /// - [EmailAccountLoginExceptionReason.invalidCredentials] if the email or
-  ///   password is incorrect.
-  /// - [EmailAccountLoginExceptionReason.tooManyAttempts] if there have been
-  ///   too many failed login attempts.
-  ///
-  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
   _i3.Future<_i4.AuthSuccess> login({
     required String email,
@@ -499,6 +490,27 @@ class EndpointUser extends _i2.EndpointRef {
     'user',
     'deleteUser',
     {'id': id},
+  );
+
+  /// Retorna el AppUser asociado a la sesión autenticada actual.
+  _i3.Future<_i12.AppUser> getCurrentUser() =>
+      caller.callServerEndpoint<_i12.AppUser>(
+        'user',
+        'getCurrentUser',
+        {},
+      );
+
+  /// Cambia la contraseña del usuario autenticado.
+  _i3.Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) => caller.callServerEndpoint<void>(
+    'user',
+    'changePassword',
+    {
+      'currentPassword': currentPassword,
+      'newPassword': newPassword,
+    },
   );
 }
 

@@ -116,6 +116,22 @@ class AuthService extends ChangeNotifier {
     );
   }
 
+  /// Obtiene el AppUser asociado a la sesión actual.
+  Future<AppUser> getCurrentUser() async {
+    return await _client.user.getCurrentUser();
+  }
+
+  /// Cambia la contraseña del usuario autenticado.
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await _client.user.changePassword(
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    );
+  }
+
   /// Flujo de Logout Server-Side auditado:
   /// 1. Revoca la sesión en base de datos y registra el evento LOGOUT en el servidor.
   /// 2. Purga los tokens JWT locales de almacenamiento seguro mediante client.auth.signOutDevice().

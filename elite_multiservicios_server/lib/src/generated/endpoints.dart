@@ -696,6 +696,41 @@ class Endpoints extends _i1.EndpointDispatch {
                 params['id'],
               ),
         ),
+        'getCurrentUser': _i1.MethodConnector(
+          name: 'getCurrentUser',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _i8.UserEndpoint).getCurrentUser(
+                session,
+              ),
+        ),
+        'changePassword': _i1.MethodConnector(
+          name: 'changePassword',
+          params: {
+            'currentPassword': _i1.ParameterDescription(
+              name: 'currentPassword',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'newPassword': _i1.ParameterDescription(
+              name: 'newPassword',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _i8.UserEndpoint).changePassword(
+                session,
+                currentPassword: params['currentPassword'],
+                newPassword: params['newPassword'],
+              ),
+        ),
       },
     );
     modules['serverpod_auth_idp'] = _i9.Endpoints()

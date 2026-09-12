@@ -6,27 +6,30 @@ import '../widgets/auth_branding_panel.dart';
 /// Niveles de seguridad para la nueva contraseña.
 enum PasswordStrength { empty, weak, medium, strong }
 
-/// Pantalla para el establecimiento de una nueva contraseña tras validar el código
-/// (Paso 3 del flujo de recuperación de contraseña empresarial).
-class ResetPasswordScreen extends StatefulWidget {
+/// Pantalla obligatoria de cambio de contraseña cuando un usuario recién creado
+/// o con reseteo administrativo inicia sesión con `mustChangePassword = true`.
+class ForcePasswordChangeScreen extends StatefulWidget {
   final AuthService authService;
-  final String finishPasswordResetToken;
+  final VoidCallback onPasswordChanged;
 
-  const ResetPasswordScreen({
+  const ForcePasswordChangeScreen({
     super.key,
     required this.authService,
-    required this.finishPasswordResetToken,
+    required this.onPasswordChanged,
   });
 
   @override
-  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  State<ForcePasswordChangeScreen> createState() =>
+      _ForcePasswordChangeScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+class _ForcePasswordChangeScreenState extends State<ForcePasswordChangeScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  bool _obscureCurrentPassword = true;
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
@@ -42,6 +45,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   void dispose() {
     _newPasswordController.removeListener(_onPasswordChanged);
+    _currentPasswordController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -64,8 +68,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     return PasswordStrength.medium;
   }
 
-  Future<void> _handleSave() async {
+  Future<void> _handleUpdatePassword() async {
     if (!_formKey.currentState!.validate()) return;
+
+    if (_newPasswordController.text != _confirmPasswordController.text) {
+      setState(() {
+        _errorMessage = 'Las nuevas contraseñas no coinciden.';
+      });
+      return;
+    }
+
+    if (_newPasswordController.text.length < 8) {
+      setState(() {
+        _errorMessage = 'La nueva contraseña debe tener al menos 8 caracteres.';
+      });
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -73,115 +91,32 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     });
 
     try {
-      await widget.authService.finishPasswordReset(
-        finishPasswordResetToken: widget.finishPasswordResetToken,
+      await widget.authService.changePassword(
+        currentPassword: _currentPasswordController.text,
         newPassword: _newPasswordController.text,
       );
 
       if (mounted) {
         setState(() => _isLoading = false);
-        _showSuccessDialog();
+        widget.onPasswordChanged();
       }
     } catch (e) {
       if (mounted) {
+        String msg = 'No pudimos actualizar la contraseña. Intentá de nuevo.';
+        final errorStr = e.toString();
+        if (errorStr.contains('contraseña actual es incorrecta') ||
+            errorStr.contains('incorrecta')) {
+          msg = 'La contraseña actual es incorrecta.';
+        } else if (errorStr.contains('al menos 8 caracteres')) {
+          msg = 'La nueva contraseña debe tener al menos 8 caracteres.';
+        }
+
         setState(() {
-          _errorMessage =
-              'No pudimos actualizar la contraseña. Intentá de nuevo.';
+          _errorMessage = msg;
           _isLoading = false;
         });
       }
     }
-  }
-
-  void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        final theme = Theme.of(dialogContext);
-        final isDark = theme.brightness == Brightness.dark;
-
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          backgroundColor: theme.cardTheme.color,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 28,
-                vertical: 32,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF10B981).withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.check_circle_outline,
-                      color: Color(0xFF10B981),
-                      size: 36,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Contraseña actualizada',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Ya podés iniciar sesión con tu nueva contraseña corporativa.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF64748B),
-                      height: 1.4,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 28),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: () {
-                        Navigator.of(dialogContext).popUntil(
-                          (route) => route.isFirst,
-                        );
-                      },
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Volver al inicio de sesión',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Widget _buildStrengthMeter(bool isDark) {
@@ -288,26 +223,49 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Ícono superior en círculo translúcido
+            Center(
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E3A8A).withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: const Color(0xFF2563EB).withValues(alpha: 0.3),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.lock_reset,
+                  size: 24,
+                  color: Color(0xFF2563EB),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
             // Cabecera del Formulario
             Text(
-              'Nueva Contraseña',
+              'Cambio de Contraseña Obligatorio',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 22,
                 fontWeight: FontWeight.w800,
                 color: isDark ? Colors.white : const Color(0xFF0F172A),
                 letterSpacing: -0.5,
               ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 6),
             Text(
-              'Elegí una contraseña segura para tu cuenta',
+              'Por seguridad, debés cambiar tu contraseña temporal antes de continuar.',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 13,
                 color: isDark
                     ? const Color(0xFF94A3B8)
                     : const Color(0xFF64748B),
                 height: 1.4,
               ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 28),
 
@@ -346,6 +304,48 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               const SizedBox(height: 20),
             ],
 
+            // Campo: Contraseña Actual
+            Text(
+              'CONTRASEÑA ACTUAL',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+                letterSpacing: 0.5,
+                color: isDark
+                    ? const Color(0xFFCBD5E1)
+                    : const Color(0xFF334155),
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _currentPasswordController,
+              obscureText: _obscureCurrentPassword,
+              decoration: InputDecoration(
+                hintText: '••••••••',
+                prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureCurrentPassword
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    size: 20,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureCurrentPassword = !_obscureCurrentPassword;
+                    });
+                  },
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Ingresá tu contraseña actual';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 20),
+
             // Campo: Nueva Contraseña
             Text(
               'NUEVA CONTRASEÑA',
@@ -363,8 +363,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               controller: _newPasswordController,
               obscureText: _obscureNewPassword,
               decoration: InputDecoration(
-                hintText: '••••••••',
-                prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                hintText: 'Mínimo 8 caracteres',
+                prefixIcon: const Icon(Icons.key_outlined, size: 20),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscureNewPassword
@@ -372,17 +372,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         : Icons.visibility_off_outlined,
                     size: 20,
                   ),
-                  tooltip: _obscureNewPassword
-                      ? 'Mostrar contraseña'
-                      : 'Ocultar contraseña',
-                  onPressed: () => setState(
-                    () => _obscureNewPassword = !_obscureNewPassword,
-                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureNewPassword = !_obscureNewPassword;
+                    });
+                  },
                 ),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'La nueva contraseña es obligatoria';
+                  return 'Ingresá la nueva contraseña';
                 }
                 if (value.length < 8) {
                   return 'La contraseña debe tener al menos 8 caracteres';
@@ -390,14 +389,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 return null;
               },
             ),
-
-            // Medidor de Fuerza de Contraseña
             _buildStrengthMeter(isDark),
             const SizedBox(height: 20),
 
-            // Campo: Confirmar Contraseña
+            // Campo: Confirmar Nueva Contraseña
             Text(
-              'CONFIRMAR CONTRASEÑA',
+              'CONFIRMAR NUEVA CONTRASEÑA',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
@@ -412,7 +409,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               controller: _confirmPasswordController,
               obscureText: _obscureConfirmPassword,
               decoration: InputDecoration(
-                hintText: '••••••••',
+                hintText: 'Repetí la nueva contraseña',
                 prefixIcon: const Icon(Icons.lock_outline, size: 20),
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -421,17 +418,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         : Icons.visibility_off_outlined,
                     size: 20,
                   ),
-                  tooltip: _obscureConfirmPassword
-                      ? 'Mostrar contraseña'
-                      : 'Ocultar contraseña',
-                  onPressed: () => setState(
-                    () => _obscureConfirmPassword = !_obscureConfirmPassword,
-                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                    });
+                  },
                 ),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Por favor confirma la contraseña';
+                  return 'Confirmá la nueva contraseña';
                 }
                 if (value != _newPasswordController.text) {
                   return 'Las contraseñas no coinciden';
@@ -441,9 +437,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             ),
             const SizedBox(height: 28),
 
-            // Botón Primario: Guardar contraseña
+            // Botón de Actualizar
             FilledButton(
-              onPressed: _isLoading ? null : _handleSave,
+              onPressed: _isLoading ? null : _handleUpdatePassword,
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
@@ -452,57 +448,55 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
               child: _isLoading
                   ? const SizedBox(
-                      height: 20,
                       width: 20,
+                      height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         color: Colors.white,
                       ),
                     )
-                  : const FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Guardar contraseña',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
+                  : const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Actualizar y continuar',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
                           ),
-                          SizedBox(width: 8),
-                          Icon(Icons.arrow_forward, size: 18),
-                        ],
-                      ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward, size: 18),
+                      ],
                     ),
             ),
             const SizedBox(height: 20),
 
-            // Enlace Inferior: Cancelar y volver al login
-            Center(
-              child: TextButton.icon(
-                onPressed: () =>
-                    Navigator.of(context).popUntil((route) => route.isFirst),
-                icon: const Icon(Icons.arrow_back, size: 16),
-                label: const Text(
-                  'Cancelar y volver al login',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+            // Nota de cumplimiento al pie (sin link de regreso)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 14,
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
+                ),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    'Este cambio es obligatorio. La contraseña debe tener al menos 8 caracteres.',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-                style: TextButton.styleFrom(
-                  foregroundColor: isDark
-                      ? AppTheme.accentBlue
-                      : AppTheme.primaryBlue,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                ),
-              ),
+              ],
             ),
           ],
         ),

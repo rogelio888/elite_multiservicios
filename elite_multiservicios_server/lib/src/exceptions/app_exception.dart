@@ -51,3 +51,18 @@ class ValidationException extends AppException {
     this.fieldErrors = const {},
   }) : super(code: 'VALIDATION_FAILED', details: fieldErrors);
 }
+
+/// Excepción para cuentas temporalmente bloqueadas por exceso de intentos fallidos.
+class AccountLockedException extends AppException {
+  final int minutesRemaining;
+
+  AccountLockedException({
+    required this.minutesRemaining,
+    String? message,
+  }) : super(
+         message ??
+             'Cuenta temporalmente bloqueada. Intente de nuevo en $minutesRemaining minutos.',
+         code: 'ACCOUNT_LOCKED',
+         details: {'minutesRemaining': minutesRemaining},
+       );
+}

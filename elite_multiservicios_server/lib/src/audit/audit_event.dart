@@ -11,6 +11,8 @@ abstract class AuditEventType {
   static const String permissionChanged = 'PERMISSION_CHANGED';
   static const String passwordChanged = 'PASSWORD_CHANGED';
   static const String sessionRevoked = 'SESSION_REVOKED';
+  static const String accountLocked = 'ACCOUNT_LOCKED';
+  static const String accountUnlocked = 'ACCOUNT_UNLOCKED';
 }
 
 /// Estado o resultado del evento de auditoría.

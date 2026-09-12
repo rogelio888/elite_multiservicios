@@ -14,6 +14,12 @@ fields:
   isDeleted: bool
   ### Indicador de cambio obligatorio de contraseña temporal.
   mustChangePassword: bool, default=true
+  ### Número de intentos fallidos consecutivos de inicio de sesión.
+  failedLoginAttempts: int, default=0
+  ### Fecha y hora del último intento fallido de inicio de sesión.
+  lastFailedLoginAt: DateTime?
+  ### Fecha y hora hasta la cual la cuenta permanece bloqueada.
+  lockedUntil: DateTime?
   ### Fecha de creación del registro.
   createdAt: DateTime
   ### Fecha de última actualización.
