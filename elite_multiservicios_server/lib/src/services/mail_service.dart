@@ -92,6 +92,51 @@ class MailService {
     );
   }
 
+  /// Envía el código de verificación para autenticación multifactor (MFA).
+  static Future<void> sendMfaCode(
+    Session session, {
+    required String email,
+    required String code,
+  }) async {
+    const subject =
+        'Código de verificación de seguridad (MFA) - Elite Multiservicios';
+    final html =
+        '''
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #1e293b; }
+    .card { max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 32px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .header { font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 16px; text-align: center; }
+    .desc { font-size: 14px; line-height: 1.6; color: #475569; margin-bottom: 24px; }
+    .code-box { background: #eff6ff; border-radius: 8px; padding: 16px; text-align: center; font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #1e3a8a; margin-bottom: 24px; }
+    .footer { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">Elite Multiservicios</div>
+    <p class="desc">Se ha solicitado el inicio de sesión en tu cuenta empresarial. Utiliza el siguiente código de verificación de 6 dígitos para completar el acceso:</p>
+    <div class="code-box">$code</div>
+    <p class="desc">Este código expira en 5 minutos. Si no solicitaste este código, ignorá este mensaje.</p>
+    <div class="footer">Elite Multiservicios • Sistema de Seguridad y Gestión Centralizada</div>
+  </div>
+</body>
+</html>
+''';
+
+    await _send(
+      session: session,
+      to: email,
+      subject: subject,
+      htmlContent: html,
+      textFallback:
+          'Tu código de verificación de seguridad (MFA) es: $code. Expira en 5 minutos. Si no solicitaste este código, ignorá este mensaje.',
+    );
+  }
+
   /// Despacha un correo electrónico vía SMTP configurado en session.passwords.
   static Future<void> _send({
     required Session session,

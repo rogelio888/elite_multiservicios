@@ -21,19 +21,23 @@ import 'package:elite_multiservicios_client/src/protocol/greetings/greeting.dart
     as _i5;
 import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log.dart'
     as _i6;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_role.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_challenge_response.dart'
     as _i7;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_permission.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_verify_response.dart'
     as _i8;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_role.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_role.dart'
     as _i9;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/role_permission.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_permission.dart'
     as _i10;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_session.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_role.dart'
     as _i11;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_user.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/role_permission.dart'
     as _i12;
-import 'protocol.dart' as _i13;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_session.dart'
+    as _i13;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_user.dart'
+    as _i14;
+import 'protocol.dart' as _i15;
 
 /// Endpoint de autenticación mediante correo y contraseña.
 /// Extiende [EmailIdpBaseEndpoint] para incorporar auditoría de login fallido
@@ -291,6 +295,58 @@ class EndpointAudit extends _i2.EndpointRef {
   );
 }
 
+/// Endpoint RPC para la gestión de autenticación multifactor (MFA) y dispositivos de confianza.
+/// {@category Endpoint}
+class EndpointMfa extends _i2.EndpointRef {
+  EndpointMfa(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'mfa';
+
+  /// Verifica si el usuario autenticado requiere MFA.
+  /// Si sí, genera un challenge, envía el email y devuelve el challengeId.
+  /// Si no, devuelve null.
+  _i3.Future<_i7.MfaChallengeResponse?> checkRequired({
+    required bool rememberMe,
+    String? trustedDeviceToken,
+  }) => caller.callServerEndpoint<_i7.MfaChallengeResponse?>(
+    'mfa',
+    'checkRequired',
+    {
+      'rememberMe': rememberMe,
+      'trustedDeviceToken': trustedDeviceToken,
+    },
+  );
+
+  /// Verifica el código MFA. Si es correcto:
+  /// - Marca el challenge como usado.
+  /// - Si rememberMe, crea un TrustedDevice y devuelve el token.
+  /// - Devuelve true si OK.
+  /// Si es incorrecto, incrementa attempts y devuelve error.
+  _i3.Future<_i8.MfaVerifyResponse> verifyMfa({
+    required String challengeId,
+    required String code,
+    required bool rememberMe,
+  }) => caller.callServerEndpoint<_i8.MfaVerifyResponse>(
+    'mfa',
+    'verifyMfa',
+    {
+      'challengeId': challengeId,
+      'code': code,
+      'rememberMe': rememberMe,
+    },
+  );
+
+  /// Reenvía un nuevo código para el mismo challenge.
+  /// Rate limited: solo si pasó 1 minuto desde el último envío.
+  _i3.Future<void> resendMfaCode({required String challengeId}) =>
+      caller.callServerEndpoint<void>(
+        'mfa',
+        'resendMfaCode',
+        {'challengeId': challengeId},
+      );
+}
+
 /// Endpoint RPC para administración de Roles y Permisos Granulares (RBAC).
 /// {@category Endpoint}
 class EndpointRbac extends _i2.EndpointRef {
@@ -300,26 +356,26 @@ class EndpointRbac extends _i2.EndpointRef {
   String get name => 'rbac';
 
   /// Lista los roles registrados en el sistema. Requiere roles.view.
-  _i3.Future<List<_i7.AppRole>> listRoles() =>
-      caller.callServerEndpoint<List<_i7.AppRole>>(
+  _i3.Future<List<_i9.AppRole>> listRoles() =>
+      caller.callServerEndpoint<List<_i9.AppRole>>(
         'rbac',
         'listRoles',
         {},
       );
 
   /// Lista el catálogo de permisos granulares. Requiere permissions.view.
-  _i3.Future<List<_i8.AppPermission>> listPermissions() =>
-      caller.callServerEndpoint<List<_i8.AppPermission>>(
+  _i3.Future<List<_i10.AppPermission>> listPermissions() =>
+      caller.callServerEndpoint<List<_i10.AppPermission>>(
         'rbac',
         'listPermissions',
         {},
       );
 
   /// Asigna un rol a un usuario. Requiere roles.manage.
-  _i3.Future<_i9.UserRole> assignRoleToUser({
+  _i3.Future<_i11.UserRole> assignRoleToUser({
     required int userId,
     required int roleId,
-  }) => caller.callServerEndpoint<_i9.UserRole>(
+  }) => caller.callServerEndpoint<_i11.UserRole>(
     'rbac',
     'assignRoleToUser',
     {
@@ -342,10 +398,10 @@ class EndpointRbac extends _i2.EndpointRef {
   );
 
   /// Asigna un permiso granular a un rol. Requiere permissions.assign.
-  _i3.Future<_i10.RolePermission> assignPermissionToRole({
+  _i3.Future<_i12.RolePermission> assignPermissionToRole({
     required int roleId,
     required int permissionId,
-  }) => caller.callServerEndpoint<_i10.RolePermission>(
+  }) => caller.callServerEndpoint<_i12.RolePermission>(
     'rbac',
     'assignPermissionToRole',
     {
@@ -377,18 +433,20 @@ class EndpointSessionManagement extends _i2.EndpointRef {
   _i3.Future<int> registerSession({
     required String sessionTokenHash,
     required DateTime expiresAt,
+    bool? mfaVerified,
   }) => caller.callServerEndpoint<int>(
     'sessionManagement',
     'registerSession',
     {
       'sessionTokenHash': sessionTokenHash,
       'expiresAt': expiresAt,
+      'mfaVerified': mfaVerified,
     },
   );
 
   /// Lista las sesiones activas asociadas a un usuario. Requiere sessions.view.
-  _i3.Future<List<_i11.UserSession>> listUserSessions(int userId) =>
-      caller.callServerEndpoint<List<_i11.UserSession>>(
+  _i3.Future<List<_i13.UserSession>> listUserSessions(int userId) =>
+      caller.callServerEndpoint<List<_i13.UserSession>>(
         'sessionManagement',
         'listUserSessions',
         {'userId': userId},
@@ -410,6 +468,13 @@ class EndpointSessionManagement extends _i2.EndpointRef {
     'logout',
     {},
   );
+
+  /// Marca la sesión activa actual del usuario autenticado como verificada con MFA.
+  _i3.Future<void> markMfaVerified() => caller.callServerEndpoint<void>(
+    'sessionManagement',
+    'markMfaVerified',
+    {},
+  );
 }
 
 /// Endpoint RPC para administración del ciclo de vida de usuarios.
@@ -422,11 +487,11 @@ class EndpointUser extends _i2.EndpointRef {
   String get name => 'user';
 
   /// Lista usuarios paginados. Requiere permiso users.view.
-  _i3.Future<List<_i12.AppUser>> listUsers({
+  _i3.Future<List<_i14.AppUser>> listUsers({
     required int limit,
     required int offset,
     required bool includeDeleted,
-  }) => caller.callServerEndpoint<List<_i12.AppUser>>(
+  }) => caller.callServerEndpoint<List<_i14.AppUser>>(
     'user',
     'listUsers',
     {
@@ -437,19 +502,19 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Obtiene el detalle de un usuario por ID. Requiere permiso users.view.
-  _i3.Future<_i12.AppUser?> getUser(int id) =>
-      caller.callServerEndpoint<_i12.AppUser?>(
+  _i3.Future<_i14.AppUser?> getUser(int id) =>
+      caller.callServerEndpoint<_i14.AppUser?>(
         'user',
         'getUser',
         {'id': id},
       );
 
   /// Crea un nuevo usuario empresarial y le asocia sus roles iniciales. Requiere users.create.
-  _i3.Future<_i12.AppUser> createUser({
+  _i3.Future<_i14.AppUser> createUser({
     required String email,
     required String fullName,
     required List<int> roleIds,
-  }) => caller.callServerEndpoint<_i12.AppUser>(
+  }) => caller.callServerEndpoint<_i14.AppUser>(
     'user',
     'createUser',
     {
@@ -460,10 +525,10 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Actualiza información de un usuario. Requiere users.update.
-  _i3.Future<_i12.AppUser?> updateUser({
+  _i3.Future<_i14.AppUser?> updateUser({
     required int id,
     required String fullName,
-  }) => caller.callServerEndpoint<_i12.AppUser?>(
+  }) => caller.callServerEndpoint<_i14.AppUser?>(
     'user',
     'updateUser',
     {
@@ -493,8 +558,8 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Retorna el AppUser asociado a la sesión autenticada actual.
-  _i3.Future<_i12.AppUser> getCurrentUser() =>
-      caller.callServerEndpoint<_i12.AppUser>(
+  _i3.Future<_i14.AppUser> getCurrentUser() =>
+      caller.callServerEndpoint<_i14.AppUser>(
         'user',
         'getCurrentUser',
         {},
@@ -545,7 +610,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i13.Protocol(),
+         _i15.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -558,6 +623,7 @@ class Client extends _i2.ServerpodClientShared {
     jwtRefresh = EndpointJwtRefresh(this);
     greeting = EndpointGreeting(this);
     audit = EndpointAudit(this);
+    mfa = EndpointMfa(this);
     rbac = EndpointRbac(this);
     sessionManagement = EndpointSessionManagement(this);
     user = EndpointUser(this);
@@ -571,6 +637,8 @@ class Client extends _i2.ServerpodClientShared {
   late final EndpointGreeting greeting;
 
   late final EndpointAudit audit;
+
+  late final EndpointMfa mfa;
 
   late final EndpointRbac rbac;
 
@@ -586,6 +654,7 @@ class Client extends _i2.ServerpodClientShared {
     'jwtRefresh': jwtRefresh,
     'greeting': greeting,
     'audit': audit,
+    'mfa': mfa,
     'rbac': rbac,
     'sessionManagement': sessionManagement,
     'user': user,

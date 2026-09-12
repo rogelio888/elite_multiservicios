@@ -23,11 +23,12 @@ abstract class UserSession
     this.ipAddress,
     this.deviceInfo,
     required this.isRevoked,
+    bool? mfaVerified,
     this.revokedAt,
     required this.createdAt,
     required this.lastActivityAt,
     required this.expiresAt,
-  });
+  }) : mfaVerified = mfaVerified ?? false;
 
   factory UserSession({
     int? id,
@@ -36,6 +37,7 @@ abstract class UserSession
     String? ipAddress,
     String? deviceInfo,
     required bool isRevoked,
+    bool? mfaVerified,
     DateTime? revokedAt,
     required DateTime createdAt,
     required DateTime lastActivityAt,
@@ -50,6 +52,9 @@ abstract class UserSession
       ipAddress: jsonSerialization['ipAddress'] as String?,
       deviceInfo: jsonSerialization['deviceInfo'] as String?,
       isRevoked: _i1.BoolJsonExtension.fromJson(jsonSerialization['isRevoked']),
+      mfaVerified: jsonSerialization['mfaVerified'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['mfaVerified']),
       revokedAt: jsonSerialization['revokedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['revokedAt']),
@@ -87,6 +92,9 @@ abstract class UserSession
   /// Indicador de si la sesión ha sido revocada remotamente.
   bool isRevoked;
 
+  /// Indicador de autenticación multifactor (MFA) verificada en esta sesión.
+  bool mfaVerified;
+
   /// Momento de revocación de la sesión.
   DateTime? revokedAt;
 
@@ -112,6 +120,7 @@ abstract class UserSession
     String? ipAddress,
     String? deviceInfo,
     bool? isRevoked,
+    bool? mfaVerified,
     DateTime? revokedAt,
     DateTime? createdAt,
     DateTime? lastActivityAt,
@@ -127,6 +136,7 @@ abstract class UserSession
       if (ipAddress != null) 'ipAddress': ipAddress,
       if (deviceInfo != null) 'deviceInfo': deviceInfo,
       'isRevoked': isRevoked,
+      'mfaVerified': mfaVerified,
       if (revokedAt != null) 'revokedAt': revokedAt?.toJson(),
       'createdAt': createdAt.toJson(),
       'lastActivityAt': lastActivityAt.toJson(),
@@ -144,6 +154,7 @@ abstract class UserSession
       if (ipAddress != null) 'ipAddress': ipAddress,
       if (deviceInfo != null) 'deviceInfo': deviceInfo,
       'isRevoked': isRevoked,
+      'mfaVerified': mfaVerified,
       if (revokedAt != null) 'revokedAt': revokedAt?.toJson(),
       'createdAt': createdAt.toJson(),
       'lastActivityAt': lastActivityAt.toJson(),
@@ -191,6 +202,7 @@ class _UserSessionImpl extends UserSession {
     String? ipAddress,
     String? deviceInfo,
     required bool isRevoked,
+    bool? mfaVerified,
     DateTime? revokedAt,
     required DateTime createdAt,
     required DateTime lastActivityAt,
@@ -202,6 +214,7 @@ class _UserSessionImpl extends UserSession {
          ipAddress: ipAddress,
          deviceInfo: deviceInfo,
          isRevoked: isRevoked,
+         mfaVerified: mfaVerified,
          revokedAt: revokedAt,
          createdAt: createdAt,
          lastActivityAt: lastActivityAt,
@@ -219,6 +232,7 @@ class _UserSessionImpl extends UserSession {
     Object? ipAddress = _Undefined,
     Object? deviceInfo = _Undefined,
     bool? isRevoked,
+    bool? mfaVerified,
     Object? revokedAt = _Undefined,
     DateTime? createdAt,
     DateTime? lastActivityAt,
@@ -231,6 +245,7 @@ class _UserSessionImpl extends UserSession {
       ipAddress: ipAddress is String? ? ipAddress : this.ipAddress,
       deviceInfo: deviceInfo is String? ? deviceInfo : this.deviceInfo,
       isRevoked: isRevoked ?? this.isRevoked,
+      mfaVerified: mfaVerified ?? this.mfaVerified,
       revokedAt: revokedAt is DateTime? ? revokedAt : this.revokedAt,
       createdAt: createdAt ?? this.createdAt,
       lastActivityAt: lastActivityAt ?? this.lastActivityAt,
@@ -265,6 +280,11 @@ class UserSessionUpdateTable extends _i1.UpdateTable<UserSessionTable> {
 
   _i1.ColumnValue<bool, bool> isRevoked(bool value) => _i1.ColumnValue(
     table.isRevoked,
+    value,
+  );
+
+  _i1.ColumnValue<bool, bool> mfaVerified(bool value) => _i1.ColumnValue(
+    table.mfaVerified,
     value,
   );
 
@@ -316,6 +336,11 @@ class UserSessionTable extends _i1.Table<int?> {
       'isRevoked',
       this,
     );
+    mfaVerified = _i1.ColumnBool(
+      'mfaVerified',
+      this,
+      hasDefault: true,
+    );
     revokedAt = _i1.ColumnDateTime(
       'revokedAt',
       this,
@@ -351,6 +376,9 @@ class UserSessionTable extends _i1.Table<int?> {
   /// Indicador de si la sesión ha sido revocada remotamente.
   late final _i1.ColumnBool isRevoked;
 
+  /// Indicador de autenticación multifactor (MFA) verificada en esta sesión.
+  late final _i1.ColumnBool mfaVerified;
+
   /// Momento de revocación de la sesión.
   late final _i1.ColumnDateTime revokedAt;
 
@@ -371,6 +399,7 @@ class UserSessionTable extends _i1.Table<int?> {
     ipAddress,
     deviceInfo,
     isRevoked,
+    mfaVerified,
     revokedAt,
     createdAt,
     lastActivityAt,

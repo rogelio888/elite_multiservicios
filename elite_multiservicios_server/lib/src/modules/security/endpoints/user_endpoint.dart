@@ -52,6 +52,7 @@ class UserEndpoint extends Endpoint {
     required String fullName,
     List<int> roleIds = const [],
   }) async {
+    await RbacGuard.requireMfaVerified(session);
     final caller = await RbacGuard.requirePermission(
       session,
       AppPermissions.usersCreate,
@@ -105,6 +106,7 @@ class UserEndpoint extends Endpoint {
     required int id,
     required String fullName,
   }) async {
+    await RbacGuard.requireMfaVerified(session);
     final caller = await RbacGuard.requirePermission(
       session,
       AppPermissions.usersUpdate,
@@ -136,6 +138,7 @@ class UserEndpoint extends Endpoint {
     required int id,
     required bool isActive,
   }) async {
+    await RbacGuard.requireMfaVerified(session);
     final caller = await RbacGuard.requirePermission(
       session,
       AppPermissions.usersDisable,
@@ -163,6 +166,7 @@ class UserEndpoint extends Endpoint {
 
   /// Borrado lógico (Soft Delete) de un usuario. Requiere users.delete.
   Future<bool> deleteUser(Session session, int id) async {
+    await RbacGuard.requireMfaVerified(session);
     final caller = await RbacGuard.requirePermission(
       session,
       AppPermissions.usersDelete,
@@ -201,6 +205,7 @@ class UserEndpoint extends Endpoint {
     required String currentPassword,
     required String newPassword,
   }) async {
+    await RbacGuard.requireMfaVerified(session);
     // 1. Resolver el AppUser
     final authUserIdStr = session.authenticated?.userIdentifier;
     if (authUserIdStr == null) {

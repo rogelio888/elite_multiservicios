@@ -124,7 +124,14 @@ class SecuritySeed {
         ),
       );
     } else {
-      session.log('Credenciales Auth IDP para $adminEmail ya existen.');
+      session.log(
+        'Credenciales Auth IDP para $adminEmail ya existen. Sincronizando contraseña con SEED_ADMIN_PASSWORD...',
+      );
+      await AuthServices.instance.emailIdp.admin.setPassword(
+        session,
+        email: adminEmail,
+        password: adminPassword,
+      );
     }
 
     var adminUser = await AppUser.db.findFirstRow(
@@ -132,18 +139,27 @@ class SecuritySeed {
       where: (t) => t.email.equals(adminEmail),
     );
 
-    adminUser ??= await AppUser.db.insertRow(
-      session,
-      AppUser(
-        email: adminEmail,
-        fullName: 'Administrador del Sistema',
-        isActive: true,
-        isDeleted: false,
-        mustChangePassword: true,
-        createdAt: DateTime.now().toUtc(),
-        updatedAt: DateTime.now().toUtc(),
-      ),
-    );
+    if (adminUser == null) {
+      adminUser = await AppUser.db.insertRow(
+        session,
+        AppUser(
+          email: adminEmail,
+          fullName: 'Administrador del Sistema',
+          isActive: true,
+          isDeleted: false,
+          mustChangePassword: true,
+          mfaEnabled: true,
+          createdAt: DateTime.now().toUtc(),
+          updatedAt: DateTime.now().toUtc(),
+        ),
+      );
+    } else if (!adminUser.mfaEnabled) {
+      adminUser = await AppUser.db.updateRow(
+        session,
+        adminUser.copyWith(mfaEnabled: true),
+        columns: (t) => [t.mfaEnabled],
+      );
+    }
 
     // Vincular rol Super Administrador al usuario creado
     final existingUserRole = await UserRole.db.findFirstRow(

@@ -1,0 +1,17 @@
+class: TrustedDevice
+table: trusted_device
+fields:
+  userId: int, relation(parent=app_user, onDelete=Cascade)
+  deviceToken: String
+  deviceInfo: String?
+  ipAddress: String?
+  expiresAt: DateTime
+  createdAt: DateTime
+indexes:
+  trusted_device_token_idx:
+    fields: deviceToken
+    unique: true
+  trusted_device_user_idx:
+    fields: userId
+  trusted_device_expires_idx:
+    fields: expiresAt

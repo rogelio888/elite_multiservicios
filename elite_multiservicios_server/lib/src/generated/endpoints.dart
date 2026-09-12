@@ -16,13 +16,14 @@ import '../auth/email_idp_endpoint.dart' as _i2;
 import '../auth/jwt_refresh_endpoint.dart' as _i3;
 import '../greetings/greeting_endpoint.dart' as _i4;
 import '../modules/security/endpoints/audit_endpoint.dart' as _i5;
-import '../modules/security/endpoints/rbac_endpoint.dart' as _i6;
-import '../modules/security/endpoints/session_management_endpoint.dart' as _i7;
-import '../modules/security/endpoints/user_endpoint.dart' as _i8;
+import '../modules/security/endpoints/mfa_endpoint.dart' as _i6;
+import '../modules/security/endpoints/rbac_endpoint.dart' as _i7;
+import '../modules/security/endpoints/session_management_endpoint.dart' as _i8;
+import '../modules/security/endpoints/user_endpoint.dart' as _i9;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i9;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i10;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i11;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -52,19 +53,25 @@ class Endpoints extends _i1.EndpointDispatch {
           'audit',
           null,
         ),
-      'rbac': _i6.RbacEndpoint()
+      'mfa': _i6.MfaEndpoint()
+        ..initialize(
+          server,
+          'mfa',
+          null,
+        ),
+      'rbac': _i7.RbacEndpoint()
         ..initialize(
           server,
           'rbac',
           null,
         ),
-      'sessionManagement': _i7.SessionManagementEndpoint()
+      'sessionManagement': _i8.SessionManagementEndpoint()
         ..initialize(
           server,
           'sessionManagement',
           null,
         ),
-      'user': _i8.UserEndpoint()
+      'user': _i9.UserEndpoint()
         ..initialize(
           server,
           'user',
@@ -341,6 +348,84 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['mfa'] = _i1.EndpointConnector(
+      name: 'mfa',
+      endpoint: endpoints['mfa']!,
+      methodConnectors: {
+        'checkRequired': _i1.MethodConnector(
+          name: 'checkRequired',
+          params: {
+            'rememberMe': _i1.ParameterDescription(
+              name: 'rememberMe',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+            'trustedDeviceToken': _i1.ParameterDescription(
+              name: 'trustedDeviceToken',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['mfa'] as _i6.MfaEndpoint).checkRequired(
+                session,
+                rememberMe: params['rememberMe'],
+                trustedDeviceToken: params['trustedDeviceToken'],
+              ),
+        ),
+        'verifyMfa': _i1.MethodConnector(
+          name: 'verifyMfa',
+          params: {
+            'challengeId': _i1.ParameterDescription(
+              name: 'challengeId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'code': _i1.ParameterDescription(
+              name: 'code',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'rememberMe': _i1.ParameterDescription(
+              name: 'rememberMe',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['mfa'] as _i6.MfaEndpoint).verifyMfa(
+                session,
+                challengeId: params['challengeId'],
+                code: params['code'],
+                rememberMe: params['rememberMe'],
+              ),
+        ),
+        'resendMfaCode': _i1.MethodConnector(
+          name: 'resendMfaCode',
+          params: {
+            'challengeId': _i1.ParameterDescription(
+              name: 'challengeId',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['mfa'] as _i6.MfaEndpoint).resendMfaCode(
+                session,
+                challengeId: params['challengeId'],
+              ),
+        ),
+      },
+    );
     connectors['rbac'] = _i1.EndpointConnector(
       name: 'rbac',
       endpoint: endpoints['rbac']!,
@@ -353,7 +438,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rbac'] as _i6.RbacEndpoint).listRoles(session),
+                  (endpoints['rbac'] as _i7.RbacEndpoint).listRoles(session),
         ),
         'listPermissions': _i1.MethodConnector(
           name: 'listPermissions',
@@ -362,7 +447,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i6.RbacEndpoint)
+              ) async => (endpoints['rbac'] as _i7.RbacEndpoint)
                   .listPermissions(session),
         ),
         'assignRoleToUser': _i1.MethodConnector(
@@ -384,7 +469,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rbac'] as _i6.RbacEndpoint).assignRoleToUser(
+                  (endpoints['rbac'] as _i7.RbacEndpoint).assignRoleToUser(
                     session,
                     userId: params['userId'],
                     roleId: params['roleId'],
@@ -409,7 +494,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rbac'] as _i6.RbacEndpoint).removeRoleFromUser(
+                  (endpoints['rbac'] as _i7.RbacEndpoint).removeRoleFromUser(
                     session,
                     userId: params['userId'],
                     roleId: params['roleId'],
@@ -433,7 +518,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i6.RbacEndpoint)
+              ) async => (endpoints['rbac'] as _i7.RbacEndpoint)
                   .assignPermissionToRole(
                     session,
                     roleId: params['roleId'],
@@ -453,7 +538,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i6.RbacEndpoint)
+              ) async => (endpoints['rbac'] as _i7.RbacEndpoint)
                   .getUserEffectivePermissions(
                     session,
                     params['userId'],
@@ -478,6 +563,11 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<DateTime>(),
               nullable: false,
             ),
+            'mfaVerified': _i1.ParameterDescription(
+              name: 'mfaVerified',
+              type: _i1.getType<bool?>(),
+              nullable: true,
+            ),
           },
           call:
               (
@@ -485,11 +575,12 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i7.SessionManagementEndpoint)
+                          as _i8.SessionManagementEndpoint)
                       .registerSession(
                         session,
                         sessionTokenHash: params['sessionTokenHash'],
                         expiresAt: params['expiresAt'],
+                        mfaVerified: params['mfaVerified'],
                       ),
         ),
         'listUserSessions': _i1.MethodConnector(
@@ -507,7 +598,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i7.SessionManagementEndpoint)
+                          as _i8.SessionManagementEndpoint)
                       .listUserSessions(
                         session,
                         params['userId'],
@@ -528,7 +619,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i7.SessionManagementEndpoint)
+                          as _i8.SessionManagementEndpoint)
                       .revokeSession(
                         session,
                         params['sessionId'],
@@ -543,8 +634,20 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i7.SessionManagementEndpoint)
+                          as _i8.SessionManagementEndpoint)
                       .logout(session),
+        ),
+        'markMfaVerified': _i1.MethodConnector(
+          name: 'markMfaVerified',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['sessionManagement']
+                          as _i8.SessionManagementEndpoint)
+                      .markMfaVerified(session),
         ),
       },
     );
@@ -575,7 +678,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i8.UserEndpoint).listUsers(
+              ) async => (endpoints['user'] as _i9.UserEndpoint).listUsers(
                 session,
                 limit: params['limit'],
                 offset: params['offset'],
@@ -595,7 +698,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i8.UserEndpoint).getUser(
+              ) async => (endpoints['user'] as _i9.UserEndpoint).getUser(
                 session,
                 params['id'],
               ),
@@ -623,7 +726,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i8.UserEndpoint).createUser(
+              ) async => (endpoints['user'] as _i9.UserEndpoint).createUser(
                 session,
                 email: params['email'],
                 fullName: params['fullName'],
@@ -648,7 +751,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i8.UserEndpoint).updateUser(
+              ) async => (endpoints['user'] as _i9.UserEndpoint).updateUser(
                 session,
                 id: params['id'],
                 fullName: params['fullName'],
@@ -672,7 +775,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i8.UserEndpoint).setUserActive(
+              ) async => (endpoints['user'] as _i9.UserEndpoint).setUserActive(
                 session,
                 id: params['id'],
                 isActive: params['isActive'],
@@ -691,7 +794,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i8.UserEndpoint).deleteUser(
+              ) async => (endpoints['user'] as _i9.UserEndpoint).deleteUser(
                 session,
                 params['id'],
               ),
@@ -703,7 +806,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i8.UserEndpoint).getCurrentUser(
+              ) async => (endpoints['user'] as _i9.UserEndpoint).getCurrentUser(
                 session,
               ),
         ),
@@ -725,7 +828,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i8.UserEndpoint).changePassword(
+              ) async => (endpoints['user'] as _i9.UserEndpoint).changePassword(
                 session,
                 currentPassword: params['currentPassword'],
                 newPassword: params['newPassword'],
@@ -733,9 +836,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i9.Endpoints()
+    modules['serverpod_auth_idp'] = _i10.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i10.Endpoints()
+    modules['serverpod_auth_core'] = _i11.Endpoints()
       ..initializeEndpoints(server);
   }
 }

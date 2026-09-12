@@ -13,6 +13,10 @@ greeting:
   - hello:
 audit:
   - listLogs:
+mfa:
+  - checkRequired:
+  - verifyMfa:
+  - resendMfaCode:
 rbac:
   - listRoles:
   - listPermissions:
@@ -25,6 +29,7 @@ sessionManagement:
   - listUserSessions:
   - revokeSession:
   - logout:
+  - markMfaVerified:
 user:
   - listUsers:
   - getUser:

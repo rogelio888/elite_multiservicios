@@ -1,0 +1,18 @@
+class: MfaChallenge
+table: mfa_challenge
+fields:
+  userId: int, relation(parent=app_user, onDelete=Cascade)
+  challengeId: String
+  codeHash: String
+  attempts: int, default=0
+  isUsed: bool, default=false
+  expiresAt: DateTime
+  createdAt: DateTime
+indexes:
+  mfa_challenge_challenge_id_idx:
+    fields: challengeId
+    unique: true
+  mfa_challenge_user_idx:
+    fields: userId
+  mfa_challenge_expires_idx:
+    fields: expiresAt

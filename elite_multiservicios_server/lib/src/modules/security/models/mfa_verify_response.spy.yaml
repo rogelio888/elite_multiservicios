@@ -1,0 +1,4 @@
+class: MfaVerifyResponse
+fields:
+  success: bool
+  trustedDeviceToken: String?

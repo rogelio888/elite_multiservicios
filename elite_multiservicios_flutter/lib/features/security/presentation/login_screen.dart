@@ -60,26 +60,32 @@ class _LoginScreenState extends State<LoginScreen> {
       final success = await _authService.login(
         email: _emailController.text,
         password: _passwordController.text,
+        rememberMe: _rememberMe,
       );
 
-      if (mounted) {
-        if (success) {
-          widget.onLoginSuccess?.call();
-        } else {
-          setState(() {
-            _errorMessage =
-                'Credenciales inválidas. Verifica tu correo corporativo y contraseña.';
-            _isLoading = false;
-          });
-        }
+      if (!mounted) return;
+
+      if (!success) {
+        setState(() {
+          _errorMessage =
+              'Credenciales inválidas. Verifica tu correo corporativo y contraseña.';
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Login exitoso: AuthService ya procesó checkMfaRequired y seteó el estado.
+      // main.dart se encarga de reaccionar y mostrar MfaVerificationScreen o el Dashboard.
+      if (!_authService.isMfaPending) {
+        widget.onLoginSuccess?.call();
       }
     } catch (e) {
       if (mounted) {
         final errorStr = e.toString();
         String errorMsg;
-        if (errorStr.contains('tooManyAttempts') ||
-            errorStr.contains('ACCOUNT_LOCKED') ||
+        if (errorStr.contains('ACCOUNT_LOCKED') ||
             errorStr.contains('bloqueada') ||
+            errorStr.contains('tooManyAttempts') ||
             errorStr.contains('AccountLockedException')) {
           errorMsg =
               'Tu cuenta está temporalmente bloqueada por múltiples intentos fallidos. Intentá de nuevo en unos minutos.';
