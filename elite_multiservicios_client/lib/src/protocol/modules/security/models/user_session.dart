@@ -22,6 +22,7 @@ abstract class UserSession implements _i1.SerializableModel {
     this.ipAddress,
     this.deviceInfo,
     required this.isRevoked,
+    this.revokedAt,
     required this.createdAt,
     required this.lastActivityAt,
     required this.expiresAt,
@@ -34,6 +35,7 @@ abstract class UserSession implements _i1.SerializableModel {
     String? ipAddress,
     String? deviceInfo,
     required bool isRevoked,
+    DateTime? revokedAt,
     required DateTime createdAt,
     required DateTime lastActivityAt,
     required DateTime expiresAt,
@@ -47,6 +49,9 @@ abstract class UserSession implements _i1.SerializableModel {
       ipAddress: jsonSerialization['ipAddress'] as String?,
       deviceInfo: jsonSerialization['deviceInfo'] as String?,
       isRevoked: _i1.BoolJsonExtension.fromJson(jsonSerialization['isRevoked']),
+      revokedAt: jsonSerialization['revokedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['revokedAt']),
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
@@ -79,6 +84,9 @@ abstract class UserSession implements _i1.SerializableModel {
   /// Indicador de si la sesión ha sido revocada remotamente.
   bool isRevoked;
 
+  /// Momento de revocación de la sesión.
+  DateTime? revokedAt;
+
   /// Momento de inicio de sesión.
   DateTime createdAt;
 
@@ -98,6 +106,7 @@ abstract class UserSession implements _i1.SerializableModel {
     String? ipAddress,
     String? deviceInfo,
     bool? isRevoked,
+    DateTime? revokedAt,
     DateTime? createdAt,
     DateTime? lastActivityAt,
     DateTime? expiresAt,
@@ -112,6 +121,7 @@ abstract class UserSession implements _i1.SerializableModel {
       if (ipAddress != null) 'ipAddress': ipAddress,
       if (deviceInfo != null) 'deviceInfo': deviceInfo,
       'isRevoked': isRevoked,
+      if (revokedAt != null) 'revokedAt': revokedAt?.toJson(),
       'createdAt': createdAt.toJson(),
       'lastActivityAt': lastActivityAt.toJson(),
       'expiresAt': expiresAt.toJson(),
@@ -134,6 +144,7 @@ class _UserSessionImpl extends UserSession {
     String? ipAddress,
     String? deviceInfo,
     required bool isRevoked,
+    DateTime? revokedAt,
     required DateTime createdAt,
     required DateTime lastActivityAt,
     required DateTime expiresAt,
@@ -144,6 +155,7 @@ class _UserSessionImpl extends UserSession {
          ipAddress: ipAddress,
          deviceInfo: deviceInfo,
          isRevoked: isRevoked,
+         revokedAt: revokedAt,
          createdAt: createdAt,
          lastActivityAt: lastActivityAt,
          expiresAt: expiresAt,
@@ -160,6 +172,7 @@ class _UserSessionImpl extends UserSession {
     Object? ipAddress = _Undefined,
     Object? deviceInfo = _Undefined,
     bool? isRevoked,
+    Object? revokedAt = _Undefined,
     DateTime? createdAt,
     DateTime? lastActivityAt,
     DateTime? expiresAt,
@@ -171,6 +184,7 @@ class _UserSessionImpl extends UserSession {
       ipAddress: ipAddress is String? ? ipAddress : this.ipAddress,
       deviceInfo: deviceInfo is String? ? deviceInfo : this.deviceInfo,
       isRevoked: isRevoked ?? this.isRevoked,
+      revokedAt: revokedAt is DateTime? ? revokedAt : this.revokedAt,
       createdAt: createdAt ?? this.createdAt,
       lastActivityAt: lastActivityAt ?? this.lastActivityAt,
       expiresAt: expiresAt ?? this.expiresAt,

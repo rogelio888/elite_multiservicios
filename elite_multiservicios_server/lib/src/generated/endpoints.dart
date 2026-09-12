@@ -465,6 +465,33 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'sessionManagement',
       endpoint: endpoints['sessionManagement']!,
       methodConnectors: {
+        'registerSession': _i1.MethodConnector(
+          name: 'registerSession',
+          params: {
+            'sessionTokenHash': _i1.ParameterDescription(
+              name: 'sessionTokenHash',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'expiresAt': _i1.ParameterDescription(
+              name: 'expiresAt',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['sessionManagement']
+                          as _i7.SessionManagementEndpoint)
+                      .registerSession(
+                        session,
+                        sessionTokenHash: params['sessionTokenHash'],
+                        expiresAt: params['expiresAt'],
+                      ),
+        ),
         'listUserSessions': _i1.MethodConnector(
           name: 'listUserSessions',
           params: {
@@ -506,6 +533,18 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['sessionId'],
                       ),
+        ),
+        'logout': _i1.MethodConnector(
+          name: 'logout',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['sessionManagement']
+                          as _i7.SessionManagementEndpoint)
+                      .logout(session),
         ),
       },
     );

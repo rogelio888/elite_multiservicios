@@ -380,6 +380,21 @@ class EndpointSessionManagement extends _i2.EndpointRef {
   @override
   String get name => 'sessionManagement';
 
+  /// Registra la sesión actual del usuario autenticado en la tabla `user_session`.
+  /// Se invoca después de un login exitoso.
+  /// Retorna el `id` de la sesión creada.
+  _i3.Future<int> registerSession({
+    required String sessionTokenHash,
+    required DateTime expiresAt,
+  }) => caller.callServerEndpoint<int>(
+    'sessionManagement',
+    'registerSession',
+    {
+      'sessionTokenHash': sessionTokenHash,
+      'expiresAt': expiresAt,
+    },
+  );
+
   /// Lista las sesiones activas asociadas a un usuario. Requiere sessions.view.
   _i3.Future<List<_i11.UserSession>> listUserSessions(int userId) =>
       caller.callServerEndpoint<List<_i11.UserSession>>(
@@ -395,6 +410,15 @@ class EndpointSessionManagement extends _i2.EndpointRef {
         'revokeSession',
         {'sessionId': sessionId},
       );
+
+  /// Cierra la sesión actual del usuario autenticado.
+  /// Marca la fila en `user_session` como revocada y registra el evento en `audit_log`.
+  /// Retorna `true` si se revocó correctamente, `false` si no se encontró la sesión.
+  _i3.Future<bool> logout() => caller.callServerEndpoint<bool>(
+    'sessionManagement',
+    'logout',
+    {},
+  );
 }
 
 /// Endpoint RPC para administración del ciclo de vida de usuarios.
