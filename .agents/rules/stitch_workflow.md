@@ -47,3 +47,9 @@ PRUEBAS AUTOMATIZADAS (0 errores en analyze/test/format)
          ↓
 CODE REVIEW & MERGE
 ```
+
+---
+
+## 3. Fidelidad visual
+
+Ver `.agents/rules/stitch_fidelity.md` para las reglas de fidelidad pixel-perfect.

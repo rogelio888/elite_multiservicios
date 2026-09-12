@@ -38,6 +38,8 @@ Toda IA o agente que trabaje en este repositorio debe consultar y respetar rigur
 - `.agents/rules/verification_rules.md` — Reglas de verificación empírica en terminal y servicios.
 - `.agents/rules/testing_rules.md` — Estándares y cobertura mínima obligatoria de pruebas.
 - `.agents/rules/stitch_workflow.md` — Flujo oficial de diseño UI con Google Stitch.
+- `.agents/rules/stitch_fidelity.md` — Regla de fidelidad absoluta al diseño de Stitch.
+- `.agents/skills/implement-from-stitch/SKILL.md` — Flujo paso a paso para implementar pantallas desde Stitch.
 - `.agents/skills/` — Skills y flujos operativos reutilizables (`verify-environment`, `create-feature`, `submit-pr`, etc.).
 - `.agents/checklists/` — Checklists mandatorios antes de commit y antes de merge.
 
