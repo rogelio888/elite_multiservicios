@@ -1,0 +1,41 @@
+# Dart
+.dart_tool/
+.packages
+build/
+pubspec.lock.bak
+
+# Tests
+test/
+
+# Config local (NO subir al contenedor)
+config/passwords.yaml
+config/development.yaml
+
+# Env
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Docs
+docs/
+*.md
+!README.md
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yaml
+docker-compose.*.yaml
+
+# Binarios temporales
+bin/server
+bin/server.exe
+bin/*.snapshot

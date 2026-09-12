@@ -9,20 +9,21 @@ import 'features/security/presentation/recovery/mfa_verification_screen.dart';
 import 'features/security/presentation/security_shell_screen.dart';
 import 'features/security/services/auth_service.dart';
 
+/// URL del backend. Configurable por --dart-define.
+/// En desarrollo, default es localhost.
+/// En producción, se pasa: --dart-define=SERVER_URL=https://elite-backend.onrender.com/
+const String _serverUrl = String.fromEnvironment(
+  'SERVER_URL',
+  defaultValue: 'http://localhost:8080/',
+);
+
 /// Cliente global fuertemente tipado para comunicación RPC con Serverpod.
-Client client = Client('http://localhost:8080/')
+Client client = Client(_serverUrl)
   ..connectivityMonitor = FlutterConnectivityMonitor()
   ..authSessionManager = FlutterAuthSessionManager();
-late String serverUrl;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  serverUrl = await getServerUrl();
-
-  client = Client(serverUrl)
-    ..connectivityMonitor = FlutterConnectivityMonitor()
-    ..authSessionManager = FlutterAuthSessionManager();
 
   // Inicialización obligatoria de credenciales y tokens JWT antes de resolver la vista
   await client.auth.initialize();

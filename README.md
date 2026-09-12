@@ -235,12 +235,20 @@ Abre [http://localhost:8082/](http://localhost:8082/) en tu navegador para ver l
 
 En una nueva terminal, navega a la carpeta de la aplicación cliente:
 
-```bash
+### Desarrollo local
+```powershell
 cd elite_multiservicios_flutter
-flutter pub get
-flutter run -d chrome    # Para entorno Web
+flutter run -d chrome
+# O usando el script:
+.\scripts\run_development.ps1
 # o para escritorio Windows:
 flutter run -d windows
+```
+
+### Build para producción
+```powershell
+cd elite_multiservicios_flutter
+.\scripts\build_production.ps1 -ServerUrl "https://elite-backend.onrender.com/"
 ```
 
 ### Credenciales iniciales para pruebas
