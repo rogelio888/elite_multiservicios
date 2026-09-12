@@ -6,13 +6,17 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
+import 'src/modules/security/seeds/security_seed.dart';
 import 'src/web/routes/app_config_route.dart';
 import 'src/web/routes/root.dart';
 
 /// The starting point of the Serverpod server.
 void run(List<String> args) async {
+  final shouldSeed = args.contains('--seed');
+  final serverpodArgs = args.where((arg) => arg != '--seed').toList();
+
   // Initialize Serverpod and connect it with your generated code.
-  final pod = Serverpod(args, Protocol(), Endpoints());
+  final pod = Serverpod(serverpodArgs, Protocol(), Endpoints());
 
   // Initialize authentication services for the server.
   // Token managers will be used to validate and issue authentication keys,
@@ -75,6 +79,24 @@ void run(List<String> args) async {
 
   // Start the server.
   await pod.start();
+
+  // Ejecutar sembrado de base de datos si se especificó el flag --seed
+  if (shouldSeed) {
+    final session = await pod.createSession();
+    try {
+      await SecuritySeed.seed(session);
+    } catch (e, stackTrace) {
+      session.log(
+        'Error ejecutando seed: $e',
+        level: LogLevel.error,
+        exception: e,
+        stackTrace: stackTrace,
+      );
+      rethrow;
+    } finally {
+      await session.close();
+    }
+  }
 }
 
 void _sendRegistrationCode(

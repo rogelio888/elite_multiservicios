@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
 import '../../../generated/protocol.dart';
 import '../../../authorization/permissions.dart';
 
@@ -85,6 +87,44 @@ class SecuritySeed {
         'FATAL: La variable de entorno SEED_ADMIN_PASSWORD no está definida. '
         'No se permite sembrar el usuario administrador sin una contraseña explícita.',
       );
+    }
+
+    // 4.1 Sembrado en subsistema de autenticación Serverpod IDP (si no existe)
+    final existingAuthAccount = await AuthServices.instance.emailIdp.admin
+        .findAccount(session, email: adminEmail);
+
+    if (existingAuthAccount == null) {
+      session.log(
+        'Creando credenciales Auth IDP para $adminEmail...',
+        level: LogLevel.info,
+      );
+
+      // A. Crear usuario base de autenticación en Serverpod Core
+      final authUser = await AuthServices.instance.authUsers.create(
+        session,
+        scopes: {Scope('admin')},
+      );
+
+      // B. Crear credencial de correo y contraseña hasheada en Serverpod IDP
+      await AuthServices.instance.emailIdp.admin.createEmailAuthentication(
+        session,
+        authUserId: authUser.id,
+        email: adminEmail,
+        password: adminPassword,
+      );
+
+      // C. Crear perfil de usuario en Serverpod Core (necesario ya que createEmailAuthentication no lo crea)
+      await AuthServices.instance.userProfiles.createUserProfile(
+        session,
+        authUser.id,
+        UserProfileData(
+          email: adminEmail,
+          fullName: 'Administrador del Sistema',
+          userName: 'admin',
+        ),
+      );
+    } else {
+      session.log('Credenciales Auth IDP para $adminEmail ya existen.');
     }
 
     var adminUser = await AppUser.db.findFirstRow(
