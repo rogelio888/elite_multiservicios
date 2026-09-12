@@ -1,13 +1,20 @@
-# Build from the project root with:
-# docker build -f elite_multiservicios_server/Dockerfile .
+# ==============================================================================
+# Elite Multiservicios - Backend Serverpod
+# ==============================================================================
+# Multi-stage build para minimizar el tamaño de la imagen final.
+# ==============================================================================
 
-# Build stage
-FROM dart:3.8.0 AS build
+# ------------------------------------------------------------------------------
+# Stage 1: Builder
+# ------------------------------------------------------------------------------
+FROM dart:stable AS builder
 
-# Create a minimal workspace that preserves locked server dependency versions.
 WORKDIR /app
-COPY pubspec.lock .
-COPY elite_multiservicios_server elite_multiservicios_server
+
+# Copiar archivos del servidor al workspace de compilación
+COPY . ./elite_multiservicios_server/
+
+# Configurar un workspace mínimo para compilar el backend de forma aislada
 RUN printf '%s\n' \
   'name: _' \
   'environment:' \
@@ -15,43 +22,42 @@ RUN printf '%s\n' \
   'workspace:' \
   '  - elite_multiservicios_server' \
   > pubspec.yaml
+
+# Resolver dependencias del workspace
 RUN dart pub get
 
-# Compile the server executable.
+# Compilar a ejecutable nativo
 WORKDIR /app/elite_multiservicios_server
-RUN dart compile exe bin/main.dart -o bin/server
+RUN mkdir -p /app/bin && dart compile exe bin/main.dart -o /app/bin/server
 
-# Add a fallback for the copy of possibly missing directories.
-RUN mkdir -p config web migrations
+# ------------------------------------------------------------------------------
+# Stage 2: Runtime
+# ------------------------------------------------------------------------------
+FROM debian:bookworm-slim
 
-# Final stage
-FROM alpine:latest
+# Instalar dependencias runtime y herramientas necesarias (curl para healthcheck)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Environment variables
-ENV runmode=production
-ENV serverid=default
-ENV logging=normal
-ENV role=monolith
+# Copiar ejecutable binario nativo
+COPY --from=builder /app/bin/server /app/bin/server
 
-# Copy runtime dependencies
-COPY --from=build /runtime/ /
+# Copiar archivos de configuración, recursos web, migraciones y protocolo
+COPY --from=builder /app/elite_multiservicios_server/config/ /app/config/
+COPY --from=builder /app/elite_multiservicios_server/migrations/ /app/migrations/
+COPY --from=builder /app/elite_multiservicios_server/web/ /app/web/
+COPY --from=builder /app/elite_multiservicios_server/lib/src/generated/protocol.yaml /app/lib/src/generated/protocol.yaml
 
-# Copy compiled server executable
-COPY --from=build /app/elite_multiservicios_server/bin/server server
+# Puertos expuestos: 8080 (API), 8081 (Insights), 8082 (Web)
+EXPOSE 8080 8081 8082
 
-# Copy configuration files and resources
-COPY --from=build /app/elite_multiservicios_server/config/ config/
-COPY --from=build /app/elite_multiservicios_server/web/ web/
-COPY --from=build /app/elite_multiservicios_server/migrations/ migrations/
+# Healthcheck contra el WebServer en puerto 8082 (/health)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8082/health || exit 1
 
-# This file is required to enable the endpoint log filter in Insights.
-COPY --from=build /app/elite_multiservicios_server/lib/src/generated/protocol.yaml lib/src/generated/protocol.yaml
-
-# Expose ports
-EXPOSE 8080
-EXPOSE 8081
-EXPOSE 8082
-
-# Define the entrypoint command
-ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role
+# Comando de arranque
+CMD ["/app/bin/server", "--apply-migrations", "--mode", "production"]
