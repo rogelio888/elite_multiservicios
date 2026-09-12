@@ -82,25 +82,30 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Widget _buildBadge(String label) {
+  Widget _buildBadge(IconData icon, String label) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
+        color: const Color(0xFF1E3A8A).withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.3),
-          width: 1,
+          color: const Color(0xFF2563EB).withValues(alpha: 0.5),
         ),
       ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-          letterSpacing: 0.5,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: const Color(0xFF60A5FA)),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -115,19 +120,16 @@ class _LoginScreenState extends State<LoginScreen> {
     final formContent = Container(
       width: isDesktop ? 460 : double.infinity,
       padding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? 32 : 24,
-        vertical: isDesktop ? 40 : 28,
+        horizontal: isDesktop ? 36 : 24,
+        vertical: isDesktop ? 44 : 32,
       ),
       decoration: BoxDecoration(
         color: theme.cardTheme.color,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
-        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
-            blurRadius: 24,
+            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.08),
+            blurRadius: 32,
             offset: const Offset(0, 8),
           ),
         ],
@@ -375,12 +377,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text(
-                      'Iniciar Sesión',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  : const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Iniciar Sesión',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward, size: 18),
+                      ],
                     ),
             ),
             const SizedBox(height: 20),
@@ -403,13 +413,16 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     final desktopBranding = Container(
-      width: 440,
+      width: 480,
       padding: const EdgeInsets.all(48),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppTheme.primaryBlue, AppTheme.primaryHover],
+          colors: [
+            Color(0xFF0B0F19), // casi negro
+            Color(0xFF1E293B), // slate oscuro
+          ],
         ),
       ),
       child: Column(
@@ -418,7 +431,7 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           Image.asset(
             'assets/images/logo.png',
-            width: 200,
+            width: 160,
             fit: BoxFit.contain,
           ),
           const SizedBox(height: 8),
@@ -433,31 +446,45 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          Text(
+          const SizedBox(height: 40),
+          const Text(
             'ENTRE TODOS ES MEJOR',
             style: TextStyle(
               fontSize: 12,
               letterSpacing: 4,
-              fontWeight: FontWeight.w500,
-              color: Colors.white.withValues(alpha: 0.8),
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF94A3B8),
             ),
           ),
-          const SizedBox(height: 32),
-          Text(
-            'Plataforma Integral de Gestión y Seguridad Corporativa con trazabilidad inmutable y control RBAC.',
+          const SizedBox(height: 16),
+          const Text(
+            'Plataforma empresarial de\nadministración',
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 30,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Gestión centralizada, seguridad biométrica y cumplimiento operativo de nivel empresarial para todas tus sedes.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF94A3B8),
               height: 1.5,
-              color: Colors.white.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 48),
-          Row(
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
             children: [
-              _buildBadge('ISO 27001'),
-              const SizedBox(width: 12),
-              _buildBadge('TLS 1.3'),
+              _buildBadge(
+                Icons.verified_user_outlined,
+                'ISO 27001 Certificada',
+              ),
+              _buildBadge(Icons.lock_outline, 'TLS 1.3'),
             ],
           ),
           const Spacer(),
@@ -476,7 +503,7 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         Image.asset(
           'assets/images/logo.png',
-          width: 120,
+          width: 130,
           fit: BoxFit.contain,
         ),
         const SizedBox(height: 8),
@@ -491,17 +518,17 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Text(
           'ENTRE TODOS ES MEJOR',
           style: TextStyle(
-            fontSize: 10,
-            letterSpacing: 3,
-            fontWeight: FontWeight.w500,
+            fontSize: 11,
+            letterSpacing: 3.5,
+            fontWeight: FontWeight.w600,
             color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
           ),
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 28),
       ],
     );
 
