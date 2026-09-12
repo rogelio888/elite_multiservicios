@@ -4,6 +4,25 @@
 
 ---
 
+## Arranque rápido (recomendado)
+
+**En vez de seguir todos los pasos manualmente, decile a tu IA:**
+
+> "Prepara mi entorno para empezar a trabajar"
+
+La IA ejecutará la skill `bootstrap-environment` que:
+1. Verifica Docker, Flutter, Dart.
+2. Levanta los contenedores.
+3. Carga las variables del `.env`.
+4. Aplica migraciones.
+5. Ejecuta el seed del admin.
+6. Levanta el backend.
+7. Levanta Flutter.
+
+En 2-3 minutos tenés todo corriendo.
+
+## Arranque manual (si preferís hacerlo paso a paso)
+
 ## Cómo usar este archivo
 
 **Opción A — Colaborador con IA en IDE**:

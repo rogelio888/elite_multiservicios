@@ -4,6 +4,18 @@
 
 ---
 
+## ⚡ Arranque rápido con IA (Recomendado)
+
+Si estás trabajando con un asistente de IA (Antigravity, Cursor, Claude Code), no necesitas configurar cada servicio manualmente. Solo indícale:
+
+> *"Prepara mi entorno para empezar a trabajar"*
+
+La IA activará la skill `.agents/skills/bootstrap-environment`, levantará Docker, aplicará migraciones, ejecutará el seed del administrador con Serverpod Auth y dejará corriendo el backend y Flutter automáticamente.
+
+Si prefieres realizar el proceso manual paso a paso, sigue la guía detallada a continuación.
+
+---
+
 ## Tabla de contenidos
 
 - [1. Requisitos previos](#1-requisitos-previos)
