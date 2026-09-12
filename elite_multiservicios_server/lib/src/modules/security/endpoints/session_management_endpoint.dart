@@ -6,6 +6,7 @@ import '../../../authorization/permissions.dart';
 import '../../../authorization/rbac_guard.dart';
 import '../../../audit/audit_event.dart';
 import '../../../audit/audit_service.dart';
+import '../../../exceptions/app_exception.dart';
 
 /// Endpoint RPC para el monitoreo y control de sesiones activas.
 class SessionManagementEndpoint extends Endpoint {
@@ -22,6 +23,7 @@ class SessionManagementEndpoint extends Endpoint {
     Session session, {
     required String sessionTokenHash,
     required DateTime expiresAt,
+    bool? mfaVerified,
   }) async {
     // 1. Obtener identificador del usuario autenticado
     final authUserIdStr = session.authenticated?.userIdentifier;
@@ -46,6 +48,7 @@ class SessionManagementEndpoint extends Endpoint {
         ipAddress: ipAddress,
         deviceInfo: deviceInfo,
         isRevoked: false,
+        mfaVerified: mfaVerified ?? false,
         createdAt: now,
         lastActivityAt: now,
         expiresAt: expiresAt.toUtc(),
@@ -175,6 +178,34 @@ class SessionManagementEndpoint extends Endpoint {
     );
 
     return true;
+  }
+
+  /// Marca la sesión activa actual del usuario autenticado como verificada con MFA.
+  Future<void> markMfaVerified(Session session) async {
+    final authUserIdStr = session.authenticated?.userIdentifier;
+    if (authUserIdStr == null) {
+      throw const UnauthorizedException('Usuario no autenticado.');
+    }
+
+    final appUser = await _resolveAuthenticatedAppUser(session, authUserIdStr);
+
+    final activeSession = await UserSession.db.findFirstRow(
+      session,
+      where: (t) => t.userId.equals(appUser.id!) & t.isRevoked.equals(false),
+      orderBy: (t) => t.createdAt,
+      orderDescending: true,
+    );
+
+    if (activeSession == null) return;
+
+    await UserSession.db.updateRow(
+      session,
+      activeSession.copyWith(
+        mfaVerified: true,
+        lastActivityAt: DateTime.now().toUtc(),
+      ),
+      columns: (t) => [t.mfaVerified, t.lastActivityAt],
+    );
   }
 
   /// Resuelve la entidad AppUser vinculada a las credenciales autenticadas en la sesión.

@@ -20,6 +20,8 @@ fields:
   lastFailedLoginAt: DateTime?
   ### Fecha y hora hasta la cual la cuenta permanece bloqueada.
   lockedUntil: DateTime?
+  ### Indicador de autenticación multifactor (MFA) activada.
+  mfaEnabled: bool, default=false
   ### Fecha de creación del registro.
   createdAt: DateTime
   ### Fecha de última actualización.

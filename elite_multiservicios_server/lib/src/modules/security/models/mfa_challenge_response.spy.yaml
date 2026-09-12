@@ -1,0 +1,5 @@
+class: MfaChallengeResponse
+fields:
+  challengeId: String
+  emailHint: String
+  expiresAt: DateTime

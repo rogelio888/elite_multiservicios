@@ -5,6 +5,7 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'core/theme/app_theme.dart';
 import 'features/security/presentation/login_screen.dart';
 import 'features/security/presentation/recovery/force_password_change_screen.dart';
+import 'features/security/presentation/recovery/mfa_verification_screen.dart';
 import 'features/security/presentation/security_shell_screen.dart';
 import 'features/security/services/auth_service.dart';
 
@@ -38,15 +39,20 @@ class EliteMultiserviciosApp extends StatefulWidget {
 
 class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
   ThemeMode _themeMode = ThemeMode.system;
+  late final AuthService _authService;
 
   @override
   void initState() {
     super.initState();
+    _authService = AuthService();
+    _authService.addListener(_onAuthChanged);
     client.auth.authInfoListenable.addListener(_onAuthChanged);
   }
 
   @override
   void dispose() {
+    _authService.removeListener(_onAuthChanged);
+    _authService.dispose();
     client.auth.authInfoListenable.removeListener(_onAuthChanged);
     super.dispose();
   }
@@ -82,13 +88,15 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
       themeMode: _themeMode,
       home: !isSignedIn
           ? LoginScreen(
+              authService: _authService,
               isDarkMode: isDark,
               onToggleTheme: _toggleTheme,
             )
           : FutureBuilder<AppUser>(
               future: client.user.getCurrentUser(),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
+                if (snapshot.connectionState == ConnectionState.waiting ||
+                    _authService.isCheckingMfa) {
                   return const Scaffold(
                     body: Center(child: CircularProgressIndicator()),
                   );
@@ -100,12 +108,32 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
                   );
                 }
                 final user = snapshot.data!;
+
+                // 1. Cambio obligatorio de contraseña
                 if (user.mustChangePassword) {
                   return ForcePasswordChangeScreen(
-                    authService: AuthService(),
+                    authService: _authService,
                     onPasswordChanged: () => setState(() {}),
                   );
                 }
+
+                // 2. MFA pendiente
+                if (_authService.isMfaPending &&
+                    _authService.currentMfaChallenge != null) {
+                  final challenge = _authService.currentMfaChallenge!;
+                  return MfaVerificationScreen(
+                    authService: _authService,
+                    challengeId: challenge.challengeId,
+                    emailHint: challenge.emailHint,
+                    rememberMe: _authService.currentRememberMe,
+                    onMfaSuccess: () {
+                      _authService.clearMfaPending();
+                      setState(() {});
+                    },
+                  );
+                }
+
+                // 3. Dashboard
                 return SecurityShellScreen(
                   isDarkMode: isDark,
                   onToggleTheme: _toggleTheme,

@@ -26,10 +26,12 @@ abstract class AppUser implements _i1.SerializableModel {
     int? failedLoginAttempts,
     this.lastFailedLoginAt,
     this.lockedUntil,
+    bool? mfaEnabled,
     required this.createdAt,
     required this.updatedAt,
   }) : mustChangePassword = mustChangePassword ?? true,
-       failedLoginAttempts = failedLoginAttempts ?? 0;
+       failedLoginAttempts = failedLoginAttempts ?? 0,
+       mfaEnabled = mfaEnabled ?? false;
 
   factory AppUser({
     int? id,
@@ -42,6 +44,7 @@ abstract class AppUser implements _i1.SerializableModel {
     int? failedLoginAttempts,
     DateTime? lastFailedLoginAt,
     DateTime? lockedUntil,
+    bool? mfaEnabled,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _AppUserImpl;
@@ -70,6 +73,9 @@ abstract class AppUser implements _i1.SerializableModel {
           : _i1.DateTimeJsonExtension.fromJson(
               jsonSerialization['lockedUntil'],
             ),
+      mfaEnabled: jsonSerialization['mfaEnabled'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['mfaEnabled']),
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
@@ -111,6 +117,9 @@ abstract class AppUser implements _i1.SerializableModel {
   /// Fecha y hora hasta la cual la cuenta permanece bloqueada.
   DateTime? lockedUntil;
 
+  /// Indicador de autenticación multifactor (MFA) activada.
+  bool mfaEnabled;
+
   /// Fecha de creación del registro.
   DateTime createdAt;
 
@@ -131,6 +140,7 @@ abstract class AppUser implements _i1.SerializableModel {
     int? failedLoginAttempts,
     DateTime? lastFailedLoginAt,
     DateTime? lockedUntil,
+    bool? mfaEnabled,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -149,6 +159,7 @@ abstract class AppUser implements _i1.SerializableModel {
       if (lastFailedLoginAt != null)
         'lastFailedLoginAt': lastFailedLoginAt?.toJson(),
       if (lockedUntil != null) 'lockedUntil': lockedUntil?.toJson(),
+      'mfaEnabled': mfaEnabled,
       'createdAt': createdAt.toJson(),
       'updatedAt': updatedAt.toJson(),
     };
@@ -174,6 +185,7 @@ class _AppUserImpl extends AppUser {
     int? failedLoginAttempts,
     DateTime? lastFailedLoginAt,
     DateTime? lockedUntil,
+    bool? mfaEnabled,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) : super._(
@@ -187,6 +199,7 @@ class _AppUserImpl extends AppUser {
          failedLoginAttempts: failedLoginAttempts,
          lastFailedLoginAt: lastFailedLoginAt,
          lockedUntil: lockedUntil,
+         mfaEnabled: mfaEnabled,
          createdAt: createdAt,
          updatedAt: updatedAt,
        );
@@ -206,6 +219,7 @@ class _AppUserImpl extends AppUser {
     int? failedLoginAttempts,
     Object? lastFailedLoginAt = _Undefined,
     Object? lockedUntil = _Undefined,
+    bool? mfaEnabled,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -222,6 +236,7 @@ class _AppUserImpl extends AppUser {
           ? lastFailedLoginAt
           : this.lastFailedLoginAt,
       lockedUntil: lockedUntil is DateTime? ? lockedUntil : this.lockedUntil,
+      mfaEnabled: mfaEnabled ?? this.mfaEnabled,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
