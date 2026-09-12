@@ -23,9 +23,13 @@ abstract class AppUser implements _i1.SerializableModel {
     required this.isActive,
     required this.isDeleted,
     bool? mustChangePassword,
+    int? failedLoginAttempts,
+    this.lastFailedLoginAt,
+    this.lockedUntil,
     required this.createdAt,
     required this.updatedAt,
-  }) : mustChangePassword = mustChangePassword ?? true;
+  }) : mustChangePassword = mustChangePassword ?? true,
+       failedLoginAttempts = failedLoginAttempts ?? 0;
 
   factory AppUser({
     int? id,
@@ -35,6 +39,9 @@ abstract class AppUser implements _i1.SerializableModel {
     required bool isActive,
     required bool isDeleted,
     bool? mustChangePassword,
+    int? failedLoginAttempts,
+    DateTime? lastFailedLoginAt,
+    DateTime? lockedUntil,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _AppUserImpl;
@@ -51,6 +58,17 @@ abstract class AppUser implements _i1.SerializableModel {
           ? null
           : _i1.BoolJsonExtension.fromJson(
               jsonSerialization['mustChangePassword'],
+            ),
+      failedLoginAttempts: jsonSerialization['failedLoginAttempts'] as int?,
+      lastFailedLoginAt: jsonSerialization['lastFailedLoginAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['lastFailedLoginAt'],
+            ),
+      lockedUntil: jsonSerialization['lockedUntil'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['lockedUntil'],
             ),
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
@@ -84,6 +102,15 @@ abstract class AppUser implements _i1.SerializableModel {
   /// Indicador de cambio obligatorio de contraseña temporal.
   bool mustChangePassword;
 
+  /// Número de intentos fallidos consecutivos de inicio de sesión.
+  int failedLoginAttempts;
+
+  /// Fecha y hora del último intento fallido de inicio de sesión.
+  DateTime? lastFailedLoginAt;
+
+  /// Fecha y hora hasta la cual la cuenta permanece bloqueada.
+  DateTime? lockedUntil;
+
   /// Fecha de creación del registro.
   DateTime createdAt;
 
@@ -101,6 +128,9 @@ abstract class AppUser implements _i1.SerializableModel {
     bool? isActive,
     bool? isDeleted,
     bool? mustChangePassword,
+    int? failedLoginAttempts,
+    DateTime? lastFailedLoginAt,
+    DateTime? lockedUntil,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -115,6 +145,10 @@ abstract class AppUser implements _i1.SerializableModel {
       'isActive': isActive,
       'isDeleted': isDeleted,
       'mustChangePassword': mustChangePassword,
+      'failedLoginAttempts': failedLoginAttempts,
+      if (lastFailedLoginAt != null)
+        'lastFailedLoginAt': lastFailedLoginAt?.toJson(),
+      if (lockedUntil != null) 'lockedUntil': lockedUntil?.toJson(),
       'createdAt': createdAt.toJson(),
       'updatedAt': updatedAt.toJson(),
     };
@@ -137,6 +171,9 @@ class _AppUserImpl extends AppUser {
     required bool isActive,
     required bool isDeleted,
     bool? mustChangePassword,
+    int? failedLoginAttempts,
+    DateTime? lastFailedLoginAt,
+    DateTime? lockedUntil,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) : super._(
@@ -147,6 +184,9 @@ class _AppUserImpl extends AppUser {
          isActive: isActive,
          isDeleted: isDeleted,
          mustChangePassword: mustChangePassword,
+         failedLoginAttempts: failedLoginAttempts,
+         lastFailedLoginAt: lastFailedLoginAt,
+         lockedUntil: lockedUntil,
          createdAt: createdAt,
          updatedAt: updatedAt,
        );
@@ -163,6 +203,9 @@ class _AppUserImpl extends AppUser {
     bool? isActive,
     bool? isDeleted,
     bool? mustChangePassword,
+    int? failedLoginAttempts,
+    Object? lastFailedLoginAt = _Undefined,
+    Object? lockedUntil = _Undefined,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -174,6 +217,11 @@ class _AppUserImpl extends AppUser {
       isActive: isActive ?? this.isActive,
       isDeleted: isDeleted ?? this.isDeleted,
       mustChangePassword: mustChangePassword ?? this.mustChangePassword,
+      failedLoginAttempts: failedLoginAttempts ?? this.failedLoginAttempts,
+      lastFailedLoginAt: lastFailedLoginAt is DateTime?
+          ? lastFailedLoginAt
+          : this.lastFailedLoginAt,
+      lockedUntil: lockedUntil is DateTime? ? lockedUntil : this.lockedUntil,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

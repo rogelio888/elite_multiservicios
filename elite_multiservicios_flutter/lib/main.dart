@@ -4,7 +4,9 @@ import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'core/theme/app_theme.dart';
 import 'features/security/presentation/login_screen.dart';
+import 'features/security/presentation/recovery/force_password_change_screen.dart';
 import 'features/security/presentation/security_shell_screen.dart';
+import 'features/security/services/auth_service.dart';
 
 /// Cliente global fuertemente tipado para comunicación RPC con Serverpod.
 Client client = Client('http://localhost:8080/')
@@ -78,14 +80,37 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: _themeMode,
-      home: isSignedIn
-          ? SecurityShellScreen(
+      home: !isSignedIn
+          ? LoginScreen(
               isDarkMode: isDark,
               onToggleTheme: _toggleTheme,
             )
-          : LoginScreen(
-              isDarkMode: isDark,
-              onToggleTheme: _toggleTheme,
+          : FutureBuilder<AppUser>(
+              future: client.user.getCurrentUser(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  );
+                }
+                if (snapshot.hasError || !snapshot.hasData) {
+                  return SecurityShellScreen(
+                    isDarkMode: isDark,
+                    onToggleTheme: _toggleTheme,
+                  );
+                }
+                final user = snapshot.data!;
+                if (user.mustChangePassword) {
+                  return ForcePasswordChangeScreen(
+                    authService: AuthService(),
+                    onPasswordChanged: () => setState(() {}),
+                  );
+                }
+                return SecurityShellScreen(
+                  isDarkMode: isDark,
+                  onToggleTheme: _toggleTheme,
+                );
+              },
             ),
     );
   }
