@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
@@ -58,6 +60,23 @@ class AuthService extends ChangeNotifier {
 
       // Actualizar el session manager con los tokens JWT y credenciales recibidas
       await _client.auth.updateSignedInUser(authSuccess);
+
+      // Registrar sesión en base de datos para auditoría y monitoreo
+      try {
+        final token = authSuccess.token;
+        final expiresAt =
+            authSuccess.tokenExpiresAt ??
+            DateTime.now().toUtc().add(const Duration(days: 30));
+        await _client.sessionManagement.registerSession(
+          sessionTokenHash: _hashToken(token),
+          expiresAt: expiresAt,
+        );
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error registrando sesión: $e');
+        }
+      }
+
       notifyListeners();
       return true;
     } catch (e) {
@@ -97,22 +116,29 @@ class AuthService extends ChangeNotifier {
     );
   }
 
-  /// Flujo de Logout Server-Side auditado (Corrección 4 del plan):
-  /// 1. Revoca la sesión en base de datos mediante sessionManagement si se proporciona activeSessionId.
+  /// Flujo de Logout Server-Side auditado:
+  /// 1. Revoca la sesión en base de datos y registra el evento LOGOUT en el servidor.
   /// 2. Purga los tokens JWT locales de almacenamiento seguro mediante client.auth.signOutDevice().
   Future<void> logout({int? activeSessionId}) async {
     try {
-      if (activeSessionId != null) {
-        try {
-          await _client.sessionManagement.revokeSession(activeSessionId);
-        } catch (_) {
-          // Si la sesión remota ya no existe o falló la red, continuar con la purga local
+      // 1. Intentar revocar en el servidor (best-effort)
+      try {
+        await _client.sessionManagement.logout();
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error revocando sesión en servidor: $e');
         }
+        // Continuar con la purga local aunque falle la red
       }
     } finally {
+      // 2. Purgar tokens locales
       await _client.auth.signOutDevice();
       notifyListeners();
     }
+  }
+
+  static String _hashToken(String token) {
+    return sha256.convert(utf8.encode(token)).toString();
   }
 
   @override
