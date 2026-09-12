@@ -1,53 +1,36 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../services/auth_service.dart';
-import 'recovery/forgot_password_screen.dart';
+import '../../services/auth_service.dart';
+import 'verify_code_screen.dart';
 
-/// Pantalla de inicio de sesión empresarial diseñada según los tokens y estructura
-/// canónica de Google Stitch, con adaptación dinámica para temas claro y oscuro.
-class LoginScreen extends StatefulWidget {
-  final AuthService? authService;
-  final VoidCallback? onLoginSuccess;
-  final VoidCallback? onToggleTheme;
-  final bool isDarkMode;
+/// Pantalla de recuperación de contraseña empresarial (Paso 1: Solicitud de Código)
+/// diseñada según las directivas del Design System y clonando el branding de LoginScreen.
+class ForgotPasswordScreen extends StatefulWidget {
+  final AuthService authService;
 
-  const LoginScreen({
+  const ForgotPasswordScreen({
     super.key,
-    this.authService,
-    this.onLoginSuccess,
-    this.onToggleTheme,
-    this.isDarkMode = false,
+    required this.authService,
   });
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
 
-  late final AuthService _authService;
   bool _isLoading = false;
-  bool _obscurePassword = true;
-  bool _rememberMe = false;
   String? _errorMessage;
-
-  @override
-  void initState() {
-    super.initState();
-    _authService = widget.authService ?? AuthService();
-  }
 
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleSendCode() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -56,27 +39,26 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final success = await _authService.login(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
+      final email = _emailController.text.trim();
+      final requestId = await widget.authService.startPasswordReset(email);
 
       if (mounted) {
-        if (success) {
-          widget.onLoginSuccess?.call();
-        } else {
-          setState(() {
-            _errorMessage =
-                'Credenciales inválidas. Verifica tu correo corporativo y contraseña.';
-            _isLoading = false;
-          });
-        }
+        setState(() => _isLoading = false);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => VerifyCodeScreen(
+              authService: widget.authService,
+              passwordResetRequestId: requestId,
+              email: email,
+            ),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
         setState(() {
           _errorMessage =
-              'No fue posible conectar con el servidor. Revisa tu conexión o el estado del servicio.';
+              'No pudimos enviar el código. Verificá el correo o intentá de nuevo.';
           _isLoading = false;
         });
       }
@@ -142,47 +124,25 @@ class _LoginScreenState extends State<LoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Cabecera del Formulario
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Iniciar Sesión',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          color: isDark
-                              ? Colors.white
-                              : const Color(0xFF0F172A),
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Accede a tu cuenta corporativa',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: isDark
-                              ? const Color(0xFF94A3B8)
-                              : const Color(0xFF64748B),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (widget.onToggleTheme != null)
-                  IconButton(
-                    icon: Icon(
-                      widget.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                      size: 20,
-                    ),
-                    tooltip: 'Alternar tema',
-                    onPressed: widget.onToggleTheme,
-                  ),
-              ],
+            Text(
+              'Recuperar Contraseña',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Te enviaremos un código de verificación a tu correo corporativo',
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
+                height: 1.4,
+              ),
             ),
             const SizedBox(height: 28),
 
@@ -223,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
             // Campo de Correo
             Text(
-              'Correo Corporativo',
+              'Correo corporativo',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
@@ -238,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
               keyboardType: TextInputType.emailAddress,
               autocorrect: false,
               decoration: const InputDecoration(
-                hintText: 'ejemplo@elitemultiservicios.com',
+                hintText: 'tu.nombre@elitemultiservicios.com',
                 prefixIcon: Icon(Icons.email_outlined, size: 20),
               ),
               validator: (value) {
@@ -252,123 +212,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 28),
 
-            // Campo de Contraseña
-            Text(
-              'Contraseña',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-                color: isDark
-                    ? const Color(0xFFCBD5E1)
-                    : const Color(0xFF334155),
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _passwordController,
-              obscureText: _obscurePassword,
-              decoration: InputDecoration(
-                hintText: '••••••••••••',
-                prefixIcon: const Icon(Icons.lock_outline, size: 20),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscurePassword
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                    size: 20,
-                  ),
-                  tooltip: _obscurePassword
-                      ? 'Mostrar contraseña'
-                      : 'Ocultar contraseña',
-                  onPressed: () =>
-                      setState(() => _obscurePassword = !_obscurePassword),
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'La contraseña es obligatoria';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Checkbox Recordarme + Link ¿Olvidaste tu contraseña?
-            Row(
-              children: [
-                Expanded(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: Checkbox(
-                          value: _rememberMe,
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          onChanged: (v) =>
-                              setState(() => _rememberMe = v ?? false),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Recordarme',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: isDark
-                              ? const Color(0xFF94A3B8)
-                              : const Color(0xFF64748B),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Flexible(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => ForgotPasswordScreen(
-                              authService: _authService,
-                            ),
-                          ),
-                        );
-                      },
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: Text(
-                        '¿Olvidaste tu contraseña?',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: isDark
-                              ? AppTheme.accentBlue
-                              : AppTheme.primaryBlue,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Botón de Inicio de Sesión
+            // Botón Primario: Enviar código de recuperación
             FilledButton(
-              onPressed: _isLoading ? null : _handleLogin,
+              onPressed: _isLoading ? null : _handleSendCode,
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
@@ -384,33 +232,47 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.white,
                       ),
                     )
-                  : const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Iniciar Sesión',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                  : const FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Enviar código de recuperación',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 8),
-                        Icon(Icons.arrow_forward, size: 18),
-                      ],
+                          SizedBox(width: 8),
+                          Icon(Icons.arrow_forward, size: 18),
+                        ],
+                      ),
                     ),
             ),
             const SizedBox(height: 20),
 
-            // Pie informativo
+            // Enlace Inferior: Volver al inicio de sesión
             Center(
-              child: Text(
-                '¿No tienes cuenta? Contacta a tu administrador',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: isDark
-                      ? const Color(0xFF64748B)
-                      : const Color(0xFF94A3B8),
+              child: TextButton.icon(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.arrow_back, size: 16),
+                label: const Text(
+                  'Volver al inicio de sesión',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                style: TextButton.styleFrom(
+                  foregroundColor: isDark
+                      ? AppTheme.accentBlue
+                      : AppTheme.primaryBlue,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                 ),
               ),
             ),

@@ -68,6 +68,35 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  /// Paso 1: Inicia la solicitud de recuperación. Envía un código por email.
+  /// Retorna el `passwordResetRequestId` para los siguientes pasos.
+  Future<UuidValue> startPasswordReset(String email) async {
+    return await _client.emailIdp.startPasswordReset(email: email.trim());
+  }
+
+  /// Paso 2: Verifica el código de 8 dígitos recibido por email.
+  /// Retorna el `finishPasswordResetToken` que autoriza el cambio.
+  Future<String> verifyPasswordResetCode({
+    required UuidValue passwordResetRequestId,
+    required String verificationCode,
+  }) async {
+    return await _client.emailIdp.verifyPasswordResetCode(
+      passwordResetRequestId: passwordResetRequestId,
+      verificationCode: verificationCode.trim(),
+    );
+  }
+
+  /// Paso 3: Aplica la nueva contraseña.
+  Future<void> finishPasswordReset({
+    required String finishPasswordResetToken,
+    required String newPassword,
+  }) async {
+    await _client.emailIdp.finishPasswordReset(
+      finishPasswordResetToken: finishPasswordResetToken,
+      newPassword: newPassword,
+    );
+  }
+
   /// Flujo de Logout Server-Side auditado (Corrección 4 del plan):
   /// 1. Revoca la sesión en base de datos mediante sessionManagement si se proporciona activeSessionId.
   /// 2. Purga los tokens JWT locales de almacenamiento seguro mediante client.auth.signOutDevice().
