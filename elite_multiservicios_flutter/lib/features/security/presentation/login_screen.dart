@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../services/auth_service.dart';
 
 /// Pantalla de inicio de sesión empresarial diseñada según los tokens y estructura
@@ -29,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late final AuthService _authService;
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _rememberMe = false;
   String? _errorMessage;
 
   @override
@@ -80,6 +82,29 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Widget _buildBadge(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -89,12 +114,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final formContent = Container(
       width: isDesktop ? 460 : double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+      padding: EdgeInsets.symmetric(
+        horizontal: isDesktop ? 32 : 24,
+        vertical: isDesktop ? 40 : 28,
+      ),
       decoration: BoxDecoration(
         color: theme.cardTheme.color,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? const Color(0xFF1F2937) : const Color(0xFFE2E8F0),
+          color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
         ),
         boxShadow: [
           BoxShadow(
@@ -131,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Ingresa tus credenciales corporativas autorizadas',
+                        'Accede a tu cuenta corporativa',
                         style: TextStyle(
                           fontSize: 13,
                           color: isDark
@@ -160,17 +188,17 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.redAccent.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  color: AppTheme.statusError.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: Colors.redAccent.withValues(alpha: 0.4),
+                    color: AppTheme.statusError.withValues(alpha: 0.4),
                   ),
                 ),
                 child: Row(
                   children: [
                     const Icon(
                       Icons.error_outline,
-                      color: Colors.redAccent,
+                      color: AppTheme.statusError,
                       size: 20,
                     ),
                     const SizedBox(width: 10),
@@ -178,7 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         _errorMessage!,
                         style: const TextStyle(
-                          color: Colors.redAccent,
+                          color: AppTheme.statusError,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
@@ -262,15 +290,80 @@ class _LoginScreenState extends State<LoginScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 16),
+
+            // Checkbox Recordarme + Link ¿Olvidaste tu contraseña?
+            Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: Checkbox(
+                          value: _rememberMe,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          onChanged: (v) =>
+                              setState(() => _rememberMe = v ?? false),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Recordarme',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Flexible(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        // Acción para recuperación de contraseña
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        '¿Olvidaste tu contraseña?',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: isDark
+                              ? AppTheme.accentBlue
+                              : AppTheme.primaryBlue,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
 
             // Botón de Inicio de Sesión
             FilledButton(
               onPressed: _isLoading ? null : _handleLogin,
               style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
               child: _isLoading
@@ -285,8 +378,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   : const Text(
                       'Iniciar Sesión',
                       style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
             ),
@@ -295,9 +388,9 @@ class _LoginScreenState extends State<LoginScreen> {
             // Pie informativo
             Center(
               child: Text(
-                'Acceso restringido • Sistema Empresarial Elite Multiservicios',
+                '¿No tienes cuenta? Contacta a tu administrador',
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 12,
                   color: isDark
                       ? const Color(0xFF64748B)
                       : const Color(0xFF94A3B8),
@@ -309,69 +402,142 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
 
+    final desktopBranding = Container(
+      width: 440,
+      padding: const EdgeInsets.all(48),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppTheme.primaryBlue, AppTheme.primaryHover],
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/images/logo.png',
+            width: 200,
+            fit: BoxFit.contain,
+          ),
+          const SizedBox(height: 8),
+          Semantics(
+            header: true,
+            child: const Text(
+              'ELITE MULTISERVICIOS',
+              style: TextStyle(
+                fontSize: 0,
+                height: 0,
+                color: Colors.transparent,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'ENTRE TODOS ES MEJOR',
+            style: TextStyle(
+              fontSize: 12,
+              letterSpacing: 4,
+              fontWeight: FontWeight.w500,
+              color: Colors.white.withValues(alpha: 0.8),
+            ),
+          ),
+          const SizedBox(height: 32),
+          Text(
+            'Plataforma Integral de Gestión y Seguridad Corporativa con trazabilidad inmutable y control RBAC.',
+            style: TextStyle(
+              fontSize: 15,
+              height: 1.5,
+              color: Colors.white.withValues(alpha: 0.7),
+            ),
+          ),
+          const SizedBox(height: 48),
+          Row(
+            children: [
+              _buildBadge('ISO 27001'),
+              const SizedBox(width: 12),
+              _buildBadge('TLS 1.3'),
+            ],
+          ),
+          const Spacer(),
+          Text(
+            '© 2026 Elite Multiservicios',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.white.withValues(alpha: 0.5),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    final mobileBranding = Column(
+      children: [
+        Image.asset(
+          'assets/images/logo.png',
+          width: 120,
+          fit: BoxFit.contain,
+        ),
+        const SizedBox(height: 8),
+        Semantics(
+          header: true,
+          child: const Text(
+            'ELITE MULTISERVICIOS',
+            style: TextStyle(
+              fontSize: 0,
+              height: 0,
+              color: Colors.transparent,
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'ENTRE TODOS ES MEJOR',
+          style: TextStyle(
+            fontSize: 10,
+            letterSpacing: 3,
+            fontWeight: FontWeight.w500,
+            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+          ),
+        ),
+        const SizedBox(height: 32),
+      ],
+    );
+
+    if (isDesktop) {
+      return Scaffold(
+        body: Row(
+          children: [
+            desktopBranding,
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 48,
+                    vertical: 24,
+                  ),
+                  child: formContent,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
-            child: isDesktop
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Panel izquierdo de branding
-                      Container(
-                        width: 440,
-                        padding: const EdgeInsets.all(48),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                color: const Color(
-                                  0xFF1E3A8A,
-                                ).withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: const Icon(
-                                Icons.security,
-                                color: Color(0xFF1E3A8A),
-                                size: 36,
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              'ELITE MULTISERVICIOS',
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -0.8,
-                                color: isDark
-                                    ? Colors.white
-                                    : const Color(0xFF0F172A),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Plataforma Integral de Gestión y Seguridad Corporativa con trazabilidad inmutable y control RBAC.',
-                              style: TextStyle(
-                                fontSize: 15,
-                                height: 1.5,
-                                color: isDark
-                                    ? const Color(0xFF94A3B8)
-                                    : const Color(0xFF64748B),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 48),
-                      // Formulario derecho
-                      formContent,
-                    ],
-                  )
-                : formContent,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                mobileBranding,
+                formContent,
+              ],
+            ),
           ),
         ),
       ),
