@@ -152,7 +152,8 @@ class MailService {
     required String textFallback,
   }) async {
     final runMode = session.serverpod.runMode;
-    final isProduction = runMode == 'production' ||
+    final isProduction =
+        runMode == 'production' ||
         Platform.environment['SERVERPOD_ENV'] == 'production';
 
     if (isProduction) {
@@ -182,27 +183,33 @@ class MailService {
     required String htmlContent,
     required String textFallback,
   }) async {
-    final host = session.passwords['smtpHost'] ??
+    final host =
+        session.passwords['smtpHost'] ??
         Platform.environment['MAILTRAP_HOST'] ??
         Platform.environment['SMTP_HOST'] ??
         'sandbox.smtp.mailtrap.io';
-    final portStr = session.passwords['smtpPort'] ??
+    final portStr =
+        session.passwords['smtpPort'] ??
         Platform.environment['MAILTRAP_PORT'] ??
         Platform.environment['SMTP_PORT'] ??
         '2525';
     final port = int.tryParse(portStr) ?? 2525;
-    final username = session.passwords['smtpUsername'] ??
+    final username =
+        session.passwords['smtpUsername'] ??
         Platform.environment['MAILTRAP_USER'] ??
         Platform.environment['SMTP_USER'] ??
         '0139e7cf5c0c9a';
-    final password = session.passwords['smtpPassword'] ??
+    final password =
+        session.passwords['smtpPassword'] ??
         Platform.environment['MAILTRAP_PASS'] ??
         Platform.environment['SMTP_PASSWORD'] ??
         '67513db99d0e49';
-    final fromEmail = session.passwords['smtpFromEmail'] ??
+    final fromEmail =
+        session.passwords['smtpFromEmail'] ??
         Platform.environment['SMTP_FROM_EMAIL'] ??
         'soporte@elitemultiservicios.com';
-    final fromName = session.passwords['smtpFromName'] ??
+    final fromName =
+        session.passwords['smtpFromName'] ??
         Platform.environment['SMTP_FROM_NAME'] ??
         'Elite Multiservicios';
 
@@ -263,7 +270,8 @@ class MailService {
     required String htmlContent,
     required String textFallback,
   }) async {
-    final apiKey = Platform.environment['RESEND_API_KEY'] ??
+    final apiKey =
+        Platform.environment['RESEND_API_KEY'] ??
         session.passwords['resendApiKey'] ??
         Platform.environment['SMTP_PASSWORD'];
     final fromEmail =
