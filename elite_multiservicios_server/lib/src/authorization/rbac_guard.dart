@@ -56,14 +56,27 @@ class RbacGuard {
     }
 
     // 3. Resolución relacional en PostgreSQL
-    final userIdInt = int.tryParse(userIdentifier);
-    if (userIdInt != null) {
-      final rbacRepo = RbacRepository(session);
-      final effectivePerms = await rbacRepo.getEffectivePermissionsForUser(
-        userIdInt,
-      );
-      if (effectivePerms.contains(requiredPermission)) {
-        return userIdentifier;
+    try {
+      final appUser = await resolveAppUser(session, userIdentifier);
+      if (appUser.id != null) {
+        final rbacRepo = RbacRepository(session);
+        final effectivePerms = await rbacRepo.getEffectivePermissionsForUser(
+          appUser.id!,
+        );
+        if (effectivePerms.contains(requiredPermission)) {
+          return userIdentifier;
+        }
+      }
+    } catch (_) {
+      final userIdInt = int.tryParse(userIdentifier);
+      if (userIdInt != null) {
+        final rbacRepo = RbacRepository(session);
+        final effectivePerms = await rbacRepo.getEffectivePermissionsForUser(
+          userIdInt,
+        );
+        if (effectivePerms.contains(requiredPermission)) {
+          return userIdentifier;
+        }
       }
     }
 
