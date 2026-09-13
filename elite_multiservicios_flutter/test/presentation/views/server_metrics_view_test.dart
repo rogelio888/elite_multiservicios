@@ -59,7 +59,7 @@ void main() {
       expect(find.text('Memoria RSS en Uso'), findsOneWidget);
       expect(find.text('150.0 MB'), findsOneWidget);
 
-      expect(find.text('Latencia PostgreSQL'), findsOneWidget);
+      expect(find.text('Latencia de Base de Datos'), findsOneWidget);
       expect(find.text('8 ms'), findsOneWidget);
 
       expect(find.text('Sesiones Activas'), findsOneWidget);
@@ -70,9 +70,9 @@ void main() {
 
       // Verificar panel de runtime
       expect(find.text('Información del Servidor & Runtime'), findsOneWidget);
-      expect(find.text('Serverpod Version'), findsOneWidget);
-      expect(find.text('Dart SDK'), findsOneWidget);
-      expect(find.text('Endpoint Health'), findsOneWidget);
+      expect(find.text('Versión del Sistema'), findsOneWidget);
+      expect(find.text('Motor de Ejecución'), findsOneWidget);
+      expect(find.text('Estado del Servicio'), findsOneWidget);
     });
 
     testWidgets('shows error banner when backend is unreachable', (
