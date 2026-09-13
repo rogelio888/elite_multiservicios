@@ -17,6 +17,20 @@ class RbacRepository {
     return await AppPermission.db.find(session, orderBy: (t) => t.code);
   }
 
+  /// Obtiene los roles asignados a un usuario.
+  Future<List<AppRole>> getUserRoles(int userId) async {
+    final userRoles = await UserRole.db.find(
+      session,
+      where: (t) => t.userId.equals(userId),
+    );
+    if (userRoles.isEmpty) return [];
+    final roleIds = userRoles.map((ur) => ur.roleId).toSet();
+    return await AppRole.db.find(
+      session,
+      where: (t) => t.id.inSet(roleIds),
+    );
+  }
+
   /// Asigna un rol a un usuario. Si ya está asignado, retorna la asignación existente.
   Future<UserRole> assignRoleToUser(int userId, int roleId) async {
     final existing = await UserRole.db.findFirstRow(

@@ -71,9 +71,8 @@ class AuthService extends ChangeNotifier {
   AuthSuccess? get currentUser => currentAuthInfo;
 
   /// Nombre o identificador legible para presentar en la interfaz de usuario.
-  String? get currentDisplayName => currentAuthInfo != null
-      ? 'Usuario (${currentAuthInfo!.authUserId.uuid.substring(0, 8)})'
-      : null;
+  String? get currentDisplayName =>
+      currentAuthInfo != null ? 'Administrador' : null;
 
   /// Acceso al servicio de API de seguridad y RBAC.
   SecurityApiService get securityApi => _securityApi;

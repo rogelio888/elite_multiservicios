@@ -1,11 +1,10 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import '../../services/security_api_service.dart';
 
-/// Vista principal del Dashboard de Seguridad para Elite Multiservicios.
-/// Implementado a partir del contrato visual aprobado en Google Stitch (Screen ID: 5cb0ceba1c604ac391a1759bf1cb1eb9).
+/// Dashboard Ejecutivo de Seguridad para Elite Multiservicios.
+/// Diseñado bajo principios de minimalismo formal, precisión suiza y alta densidad de valor.
 class SecurityDashboardView extends StatefulWidget {
   final Function(int targetIndex)? onNavigateToTab;
 
@@ -55,7 +54,7 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
 
     try {
       final metricsFuture = _service.getDashboardMetrics();
-      final logsFuture = _service.listAuditLogs(limit: 6, offset: 0);
+      final logsFuture = _service.listAuditLogs(limit: 7, offset: 0);
       final serverMetricsFuture = _service.getServerMetrics();
 
       final results = await Future.wait([
@@ -95,39 +94,62 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
   }
 
   String _getTimeAgo(DateTime timestamp) {
-    final now = DateTime.now();
-    final difference = now.difference(timestamp);
+    final difference = DateTime.now().difference(timestamp);
+    if (difference.inSeconds < 60) return 'Hace instantes';
+    if (difference.inMinutes < 60) return 'Hace ${difference.inMinutes}m';
+    if (difference.inHours < 24) return 'Hace ${difference.inHours}h';
+    return 'Hace ${difference.inDays}d';
+  }
 
-    if (difference.inSeconds < 60) {
-      return 'Hace instantes';
-    } else if (difference.inMinutes < 60) {
-      return 'Hace ${difference.inMinutes} min';
-    } else if (difference.inHours < 24) {
-      return 'Hace ${difference.inHours} h';
-    } else {
-      return 'Hace ${difference.inDays} d';
+  String _humanizeAction(String action) {
+    if (action.contains('LOGIN_SUCCESS')) {
+      return 'Inicio de sesión exitoso';
     }
+    if (action.contains('LOGIN_FAILED')) {
+      return 'Intento fallido de autenticación';
+    }
+    if (action.contains('MFA_VERIFIED')) {
+      return 'Segundo factor validado (MFA)';
+    }
+    if (action.contains('MFA_CHALLENGE')) {
+      return 'Desafío 2FA emitido';
+    }
+    if (action.contains('PASSWORD_RESET') ||
+        action.contains('PASSWORD_CHANGED')) {
+      return 'Actualización de credenciales';
+    }
+    if (action.contains('USER_CREATED')) return 'Usuario registrado en sistema';
+    if (action.contains('USER_UPDATED')) return 'Perfil de usuario modificado';
+    if (action.contains('ROLE')) return 'Modificación de permisos RBAC';
+    return action.replaceAll('_', ' ').toLowerCase();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (_isLoading) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CircularProgressIndicator(color: Color(0xFF3B82F6)),
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: isDark ? Colors.white70 : const Color(0xFF0F172A),
+              ),
+            ),
             const SizedBox(height: 16),
             Text(
-              'Cargando telemetría de seguridad...',
-              style: GoogleFonts.hankenGrotesk(
+              'Sincronizando estado operativo...',
+              style: GoogleFonts.inter(
                 color: isDark
                     ? const Color(0xFF94A3B8)
                     : const Color(0xFF64748B),
-                fontSize: 14,
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ],
@@ -135,310 +157,259 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
       );
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. Cabecera del Dashboard
-          _buildHeader(isDark),
-          const SizedBox(height: 24),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isNarrow = constraints.maxWidth < 700;
 
-          // 2. Fila de 4 Tarjetas KPI Dinámicas con Resplandor Cromático
-          _buildKpiGrid(isDark),
-          const SizedBox(height: 28),
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: isNarrow ? 16 : 36,
+            vertical: isNarrow ? 20 : 32,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 1. Header Minimalista Responsivo
+              _buildHeader(isDark, isNarrow),
+              const SizedBox(height: 24),
 
-          // 3. Distribución de Eventos de Seguridad (Últimas 24h)
-          _buildActivityDistribution(isDark),
-          const SizedBox(height: 28),
+              // 2. Cuadrícula de 4 Métricas Esenciales
+              _buildKpiGrid(isDark),
+              const SizedBox(height: 28),
 
-          // 4. Accesos Rápidos a Módulos
-          _buildQuickActions(isDark),
-          const SizedBox(height: 28),
-
-          // 5. Actividad Reciente del Sistema (Audit Stream)
-          _buildRecentAuditFeed(isDark),
-          const SizedBox(height: 32),
-        ],
-      ),
+              // 3. Bloque Central Asimétrico (Actividad Reciente + Gobernanza)
+              LayoutBuilder(
+                builder: (context, boxConstraints) {
+                  final isBlockNarrow = boxConstraints.maxWidth < 1000;
+                  if (isBlockNarrow) {
+                    return Column(
+                      children: [
+                        _buildRecentActivitySection(isDark),
+                        const SizedBox(height: 28),
+                        _buildGovernanceSection(isDark),
+                      ],
+                    );
+                  }
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 62,
+                        child: _buildRecentActivitySection(isDark),
+                      ),
+                      const SizedBox(width: 28),
+                      Expanded(
+                        flex: 38,
+                        child: _buildGovernanceSection(isDark),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildHeader(bool isDark) {
-    return Container(
-      padding: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-            width: 1,
+  // --- 1. CABECERA EJECUTIVA ---
+  Widget _buildHeader(bool isDark, bool isNarrow) {
+    final titleCol = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Dashboard de Seguridad',
+          style: GoogleFonts.inter(
+            fontSize: isNarrow ? 22 : 26,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.6,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
           ),
         ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'Panel de Control de Seguridad',
-                      style: GoogleFonts.hankenGrotesk(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w800,
-                        color: isDark ? Colors.white : const Color(0xFF0F172A),
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF3B82F6).withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(
-                          color: const Color(0xFF3B82F6).withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Text(
-                        'v4.2 PROD',
-                        style: GoogleFonts.jetBrainsMono(
-                          color: const Color(0xFF60A5FA),
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Monitoreo centralizado, control de accesos RBAC y auditoría inmutable',
-                  style: GoogleFonts.hankenGrotesk(
-                    fontSize: 14,
-                    color: isDark
-                        ? const Color(0xFF94A3B8)
-                        : const Color(0xFF64748B),
-                  ),
-                ),
-              ],
+        const SizedBox(height: 4),
+        Text(
+          'Supervisión de accesos, sesiones concurrentes y trazabilidad inmutable.',
+          style: GoogleFonts.inter(
+            fontSize: isNarrow ? 12.5 : 14,
+            fontWeight: FontWeight.w400,
+            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+          ),
+        ),
+      ],
+    );
+
+    final statusPill = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Indicador de estado operativo en línea
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF111827) : const Color(0xFFF1F5F9),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
             ),
           ),
-          Row(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Badge animado de Serverpod Online
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF064E3B).withValues(alpha: 0.35),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: const Color(0xFF10B981).withValues(alpha: 0.3),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                      blurRadius: 12,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF34D399),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0xFF34D399),
-                            blurRadius: 6,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Serverpod Online',
-                      style: GoogleFonts.jetBrainsMono(
-                        color: const Color(0xFF34D399),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Container(
-                      width: 4,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF059669).withValues(alpha: 0.6),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      '${_dbLatencyMs}ms',
-                      style: GoogleFonts.jetBrainsMono(
-                        color: const Color(0xFFA7F3D0),
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
+                width: 7,
+                height: 7,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF10B981),
+                  shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 12),
-              // Botón de actualización interactivo
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: _isRefreshing ? null : _loadDashboardData,
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0xFF1E293B).withValues(alpha: 0.8)
-                          : const Color(0xFFF1F5F9),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isDark
-                            ? const Color(0xFF334155)
-                            : const Color(0xFFCBD5E1),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        RotationTransition(
-                          turns: _spinController,
-                          child: const Icon(
-                            Icons.sync,
-                            size: 16,
-                            color: Color(0xFF60A5FA),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Actualizar',
-                          style: GoogleFonts.hankenGrotesk(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: isDark
-                                ? const Color(0xFFF1F5F9)
-                                : const Color(0xFF1E293B),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              const SizedBox(width: 8),
+              Text(
+                'En línea',
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: isDark
+                      ? const Color(0xFFE2E8F0)
+                      : const Color(0xFF334155),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '•',
+                style: TextStyle(
+                  color: isDark
+                      ? const Color(0xFF475569)
+                      : const Color(0xFF94A3B8),
+                  fontSize: 10,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '${_dbLatencyMs}ms',
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
                 ),
               ),
             ],
           ),
+        ),
+        const SizedBox(width: 8),
+
+        // Botón de sincronización manual
+        Tooltip(
+          message: 'Actualizar telemetría',
+          child: InkWell(
+            onTap: _isRefreshing ? null : _loadDashboardData,
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? const Color(0xFF111827)
+                    : const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFE2E8F0),
+                ),
+              ),
+              child: _isRefreshing
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(
+                      Icons.refresh,
+                      size: 16,
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
+                    ),
+            ),
+          ),
+        ),
+      ],
+    );
+
+    if (isNarrow) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          titleCol,
+          const SizedBox(height: 14),
+          statusPill,
         ],
-      ),
+      );
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(child: titleCol),
+        const SizedBox(width: 24),
+        statusPill,
+      ],
     );
   }
 
+  // --- 2. GRID DE 4 KPIS ESENCIALES ---
   Widget _buildKpiGrid(bool isDark) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isNarrow = constraints.maxWidth < 900;
-        final crossAxisCount = isNarrow ? 2 : 4;
+        final colCount = constraints.maxWidth < 480
+            ? 1
+            : (constraints.maxWidth < 800 ? 2 : 4);
         final cardWidth =
-            (constraints.maxWidth - ((crossAxisCount - 1) * 18)) /
-            crossAxisCount;
+            (constraints.maxWidth - ((colCount - 1) * 16)) / colCount;
 
         return Wrap(
-          spacing: 18,
-          runSpacing: 18,
+          spacing: 16,
+          runSpacing: 16,
           children: [
-            // KPI 1: Usuarios Activos (Blue)
-            SizedBox(
+            _buildKpiCard(
+              isDark: isDark,
               width: cardWidth,
-              child: _KpiGlowCard(
-                isDark: isDark,
-                icon: Icons.group,
-                iconColor: const Color(0xFF3B82F6),
-                title: 'USUARIOS ACTIVOS',
-                value: '${_metrics.totalUsers}',
-                totalSuffix: 'cuenta${_metrics.totalUsers == 1 ? "" : "s"}',
-                trendBadge: 'PostgreSQL',
-                trendColor: const Color(0xFF10B981),
-                trendIcon: Icons.storage,
-                subtitle: 'Cuentas empresariales en el sistema',
-                glowColor: const Color(0xFF2563EB),
-                onTap: () => widget.onNavigateToTab?.call(1),
-              ),
+              label: 'USUARIOS REGISTRADOS',
+              value: '${_metrics.totalUsers}',
+              subtext: 'Cuentas corporativas',
+              icon: Icons.person_outline,
+              onTap: () => widget.onNavigateToTab?.call(1),
             ),
-            // KPI 2: Roles de Sistema (Indigo)
-            SizedBox(
+            _buildKpiCard(
+              isDark: isDark,
               width: cardWidth,
-              child: _KpiGlowCard(
-                isDark: isDark,
-                icon: Icons.shield_outlined,
-                iconColor: const Color(0xFF6366F1),
-                title: 'ROLES DE SISTEMA',
-                value: '${_metrics.totalRoles}',
-                totalSuffix: 'perfil${_metrics.totalRoles == 1 ? "" : "es"}',
-                trendBadge: 'RBAC Activo',
-                trendColor: const Color(0xFFA5B4FC),
-                subtitle: 'Perfiles y políticas configuradas',
-                glowColor: const Color(0xFF4F46E5),
-                onTap: () => widget.onNavigateToTab?.call(2),
-              ),
+              label: 'SESIONES CONCURRENTES',
+              value: '${_metrics.activeSessions}',
+              subtext: 'Dispositivos autenticados',
+              icon: Icons.devices,
+              onTap: () => widget.onNavigateToTab?.call(4),
             ),
-            // KPI 3: Eventos de Bitácora (Amber)
-            SizedBox(
+            _buildKpiCard(
+              isDark: isDark,
               width: cardWidth,
-              child: _KpiGlowCard(
-                isDark: isDark,
-                icon: Icons.history,
-                iconColor: const Color(0xFFF59E0B),
-                title: 'EVENTOS DE BITÁCORA',
-                value: '${_metrics.totalAuditLogs}',
-                totalSuffix: 'registros',
-                trendBadge: 'En tiempo real',
-                trendColor: const Color(0xFFFCD34D),
-                isPulseDot: true,
-                subtitle: 'Registros inmutables en PostgreSQL',
-                glowColor: const Color(0xFFD97706),
-                onTap: () => widget.onNavigateToTab?.call(3),
-              ),
+              label: 'EVENTOS EN BITÁCORA',
+              value: '${_metrics.totalAuditLogs}',
+              subtext: 'Trazabilidad SHA-256',
+              icon: Icons.shield_outlined,
+              onTap: () => widget.onNavigateToTab?.call(3),
             ),
-            // KPI 4: Sesiones Activas (Cyan)
-            SizedBox(
+            _buildKpiCard(
+              isDark: isDark,
               width: cardWidth,
-              child: _KpiGlowCard(
-                isDark: isDark,
-                icon: Icons.devices,
-                iconColor: const Color(0xFF06B6D4),
-                title: 'SESIONES ACTIVAS',
-                value: '${_metrics.activeSessions}',
-                totalSuffix:
-                    'concurrente${_metrics.activeSessions == 1 ? "" : "s"}',
-                trendBadge: 'Conectado',
-                trendColor: const Color(0xFF67E8F9),
-                subtitle: 'Dispositivos autenticados',
-                glowColor: const Color(0xFF0891B2),
-                onTap: () => widget.onNavigateToTab?.call(4),
-              ),
+              label: 'MATRIZ DE ROLES',
+              value: '${_metrics.totalRoles}',
+              subtext: 'Políticas RBAC',
+              icon: Icons.admin_panel_settings_outlined,
+              onTap: () => widget.onNavigateToTab?.call(2),
             ),
           ],
         );
@@ -446,334 +417,66 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
     );
   }
 
-  Widget _buildActivityDistribution(bool isDark) {
-    // Cálculo dinámico de proporciones a partir de logs recientes
-    int loginCount = 0;
-    int mfaCount = 0;
-    int pwdCount = 0;
-    int blockedCount = 0;
-
-    for (final log in _recentLogs) {
-      if (log.action.contains('LOGIN_FAILED') ||
-          log.result == 'FAILURE' ||
-          log.result == 'BLOCKED') {
-        blockedCount++;
-      } else if (log.action.contains('MFA')) {
-        mfaCount++;
-      } else if (log.action.contains('PASSWORD')) {
-        pwdCount++;
-      } else {
-        loginCount++;
-      }
-    }
-
-    final total = loginCount + mfaCount + pwdCount + blockedCount;
-    final loginPct = total == 0 ? 0 : ((loginCount / total) * 100).round();
-    final mfaPct = total == 0 ? 0 : ((mfaCount / total) * 100).round();
-    final pwdPct = total == 0 ? 0 : ((pwdCount / total) * 100).round();
-    final blockedPct = total == 0
-        ? 0
-        : math.max(0, 100 - loginPct - mfaPct - pwdPct);
-
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0F172A) : Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
-            blurRadius: 18,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3B82F6).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: const Color(0xFF3B82F6).withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.donut_large,
-                      color: Color(0xFF60A5FA),
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Distribución de Eventos de Seguridad (Últimas 24h)',
-                        style: GoogleFonts.hankenGrotesk(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: isDark
-                              ? Colors.white
-                              : const Color(0xFF0F172A),
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Desglose porcentual y telemetría operativa de eventos de autenticación',
-                        style: GoogleFonts.hankenGrotesk(
-                          fontSize: 12,
-                          color: isDark
-                              ? const Color(0xFF94A3B8)
-                              : const Color(0xFF64748B),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? const Color(0xFF1E293B)
-                      : const Color(0xFFF1F5F9),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: isDark
-                        ? const Color(0xFF334155)
-                        : const Color(0xFFCBD5E1),
-                  ),
-                ),
-                child: Text(
-                  'Total: ${_metrics.totalAuditLogs} eventos registrados',
-                  style: GoogleFonts.jetBrainsMono(
-                    fontSize: 12,
-                    color: isDark
-                        ? const Color(0xFFCBD5E1)
-                        : const Color(0xFF475569),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // Barra segmentada cromática con bordes redondeados
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Container(
-              height: 14,
-              color: isDark ? const Color(0xFF020617) : const Color(0xFFE2E8F0),
-              child: total == 0
-                  ? Container(
-                      color: isDark
-                          ? const Color(0xFF1E293B)
-                          : const Color(0xFFE2E8F0),
-                    )
-                  : Row(
-                      children: [
-                        if (loginPct > 0)
-                          Expanded(
-                            flex: loginPct,
-                            child: Container(
-                              color: const Color(0xFF3B82F6),
-                            ),
-                          ),
-                        if (loginPct > 0 &&
-                            (mfaPct > 0 || pwdPct > 0 || blockedPct > 0))
-                          const SizedBox(width: 2),
-                        if (mfaPct > 0)
-                          Expanded(
-                            flex: mfaPct,
-                            child: Container(
-                              color: const Color(0xFF06B6D4),
-                            ),
-                          ),
-                        if (mfaPct > 0 && (pwdPct > 0 || blockedPct > 0))
-                          const SizedBox(width: 2),
-                        if (pwdPct > 0)
-                          Expanded(
-                            flex: pwdPct,
-                            child: Container(
-                              color: const Color(0xFFA855F7),
-                            ),
-                          ),
-                        if (pwdPct > 0 && blockedPct > 0)
-                          const SizedBox(width: 2),
-                        if (blockedPct > 0)
-                          Expanded(
-                            flex: blockedPct,
-                            child: Container(
-                              color: const Color(0xFFF43F5E),
-                            ),
-                          ),
-                      ],
-                    ),
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Tarjetas de desglose de métricas
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final isNarrow = constraints.maxWidth < 700;
-              final colCount = isNarrow ? 2 : 4;
-              final itemWidth =
-                  (constraints.maxWidth - ((colCount - 1) * 12)) / colCount;
-
-              return Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: [
-                  _buildDistributionItem(
-                    isDark: isDark,
-                    width: itemWidth,
-                    color: const Color(0xFF3B82F6),
-                    label: 'Inicios de Sesión',
-                    percentage: '$loginPct%',
-                    subtext: '$loginCount ops',
-                  ),
-                  _buildDistributionItem(
-                    isDark: isDark,
-                    width: itemWidth,
-                    color: const Color(0xFF06B6D4),
-                    label: 'Verificación MFA',
-                    percentage: '$mfaPct%',
-                    subtext: '$mfaCount ops',
-                  ),
-                  _buildDistributionItem(
-                    isDark: isDark,
-                    width: itemWidth,
-                    color: const Color(0xFFA855F7),
-                    label: 'Cambio Contraseña',
-                    percentage: '$pwdPct%',
-                    subtext: '$pwdCount ops',
-                  ),
-                  _buildDistributionItem(
-                    isDark: isDark,
-                    width: itemWidth,
-                    color: const Color(0xFFF43F5E),
-                    label: 'Bloqueos de Seg.',
-                    percentage: '$blockedPct%',
-                    subtext: '$blockedCount ops',
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDistributionItem({
+  Widget _buildKpiCard({
     required bool isDark,
     required double width,
-    required Color color,
     required String label,
-    required String percentage,
+    required String value,
     required String subtext,
+    required IconData icon,
+    required VoidCallback onTap,
   }) {
-    return Container(
+    return _MinimalHoverCard(
+      isDark: isDark,
       width: width,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: isDark
-            ? const Color(0xFF020617).withValues(alpha: 0.6)
-            : const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: color.withValues(alpha: 0.4),
-                      blurRadius: 4,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    label,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                      color: isDark
+                          ? const Color(0xFF64748B)
+                          : const Color(0xFF94A3B8),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: GoogleFonts.hankenGrotesk(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                const SizedBox(width: 8),
+                Icon(
+                  icon,
+                  size: 16,
                   color: isDark
-                      ? const Color(0xFFCBD5E1)
-                      : const Color(0xFF334155),
-                ),
-              ),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                percentage,
-                style: GoogleFonts.jetBrainsMono(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: isDark ? Colors.white : const Color(0xFF0F172A),
-                ),
-              ),
-              Text(
-                subtext,
-                style: GoogleFonts.jetBrainsMono(
-                  fontSize: 10,
-                  color: isDark
-                      ? const Color(0xFF64748B)
+                      ? const Color(0xFF475569)
                       : const Color(0xFF94A3B8),
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickActions(bool isDark) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const Icon(Icons.bolt, color: Color(0xFF3B82F6), size: 16),
-            const SizedBox(width: 6),
+              ],
+            ),
+            const SizedBox(height: 12),
             Text(
-              'ACCESOS RÁPIDOS A MÓDULOS',
-              style: GoogleFonts.hankenGrotesk(
+              value,
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 30,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -1.0,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              subtext,
+              style: GoogleFonts.inter(
                 fontSize: 12,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.8,
                 color: isDark
                     ? const Color(0xFF94A3B8)
                     : const Color(0xFF64748B),
@@ -781,244 +484,84 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
             ),
           ],
         ),
-        const SizedBox(height: 12),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final isNarrow = constraints.maxWidth < 900;
-            final colCount = isNarrow ? 2 : 4;
-            final cardWidth =
-                (constraints.maxWidth - ((colCount - 1) * 16)) / colCount;
-
-            return Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: [
-                _buildActionCard(
-                  isDark: isDark,
-                  width: cardWidth,
-                  icon: Icons.person_add_outlined,
-                  iconColor: const Color(0xFF3B82F6),
-                  title: 'Nuevo Usuario',
-                  description: 'Crear y asignar rol corporativo',
-                  onTap: () => widget.onNavigateToTab?.call(1),
-                ),
-                _buildActionCard(
-                  isDark: isDark,
-                  width: cardWidth,
-                  icon: Icons.policy_outlined,
-                  iconColor: const Color(0xFF6366F1),
-                  title: 'Gestionar RBAC',
-                  description: 'Políticas de permisos de acceso',
-                  onTap: () => widget.onNavigateToTab?.call(2),
-                ),
-                _buildActionCard(
-                  isDark: isDark,
-                  width: cardWidth,
-                  icon: Icons.history_edu,
-                  iconColor: const Color(0xFFF59E0B),
-                  title: 'Examinar Bitácora',
-                  description: 'Trazabilidad criptográfica inmutable',
-                  onTap: () => widget.onNavigateToTab?.call(3),
-                ),
-                _buildActionCard(
-                  isDark: isDark,
-                  width: cardWidth,
-                  icon: Icons.devices_outlined,
-                  iconColor: const Color(0xFF06B6D4),
-                  title: 'Inspeccionar Sesiones',
-                  description: 'Tokens y desconexión forzada',
-                  onTap: () => widget.onNavigateToTab?.call(4),
-                ),
-              ],
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionCard({
-    required bool isDark,
-    required double width,
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required String description,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          width: width,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isDark
-                ? const Color(0xFF0F172A).withValues(alpha: 0.8)
-                : Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: iconColor.withValues(alpha: 0.25),
-                  ),
-                ),
-                child: Icon(icon, color: iconColor, size: 20),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: GoogleFonts.hankenGrotesk(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: isDark ? Colors.white : const Color(0xFF0F172A),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      description,
-                      style: GoogleFonts.hankenGrotesk(
-                        fontSize: 11,
-                        color: isDark
-                            ? const Color(0xFF94A3B8)
-                            : const Color(0xFF64748B),
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: isDark
-                    ? const Color(0xFF475569)
-                    : const Color(0xFF94A3B8),
-                size: 18,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
 
-  Widget _buildRecentAuditFeed(bool isDark) {
+  // --- 3. ACTIVIDAD RECIENTE (STREAM LINEAL) ---
+  Widget _buildRecentActivitySection(bool isDark) {
     return Container(
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF0F172A) : Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
-            blurRadius: 18,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Feed Header
+          // Header de sección
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF10B981).withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Actividad Reciente del Sistema',
+                        style: GoogleFonts.inter(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w600,
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      child: const Icon(
-                        Icons.terminal,
-                        color: Color(0xFF34D399),
-                        size: 20,
+                      const SizedBox(height: 2),
+                      Text(
+                        'Últimos eventos autenticados y registrados en PostgreSQL',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Actividad Reciente del Sistema',
-                          style: GoogleFonts.hankenGrotesk(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: isDark
-                                ? Colors.white
-                                : const Color(0xFF0F172A),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Registro en vivo con trazabilidad de red e IP de origen',
-                          style: GoogleFonts.hankenGrotesk(
-                            fontSize: 12,
-                            color: isDark
-                                ? const Color(0xFF94A3B8)
-                                : const Color(0xFF64748B),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                TextButton.icon(
+                const SizedBox(width: 8),
+                TextButton(
                   onPressed: () => widget.onNavigateToTab?.call(3),
                   style: TextButton.styleFrom(
-                    foregroundColor: const Color(0xFF60A5FA),
-                    backgroundColor: const Color(
-                      0xFF3B82F6,
-                    ).withValues(alpha: 0.1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      side: BorderSide(
-                        color: const Color(0xFF3B82F6).withValues(alpha: 0.25),
-                      ),
-                    ),
+                    foregroundColor: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF475569),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
+                      horizontal: 10,
+                      vertical: 6,
                     ),
+                    visualDensity: VisualDensity.compact,
                   ),
-                  icon: const Icon(Icons.arrow_forward, size: 14),
-                  label: Text(
-                    'Ver bitácora completa',
-                    style: GoogleFonts.hankenGrotesk(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Ver bitácora',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.arrow_forward, size: 13),
+                    ],
                   ),
                 ),
               ],
@@ -1029,31 +572,19 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
             color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
           ),
 
-          // Lista de Eventos
+          // Lista de eventos
           if (_recentLogs.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 40),
+              padding: const EdgeInsets.symmetric(vertical: 48),
               child: Center(
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.history_toggle_off,
-                      size: 36,
-                      color: isDark
-                          ? const Color(0xFF475569)
-                          : const Color(0xFF94A3B8),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'No hay eventos recientes en la bitácora.',
-                      style: GoogleFonts.hankenGrotesk(
-                        color: isDark
-                            ? const Color(0xFF94A3B8)
-                            : const Color(0xFF64748B),
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  'No hay eventos registrados recientemente.',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: isDark
+                        ? const Color(0xFF64748B)
+                        : const Color(0xFF94A3B8),
+                  ),
                 ),
               ),
             )
@@ -1065,12 +596,12 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
               separatorBuilder: (ctx, index) => Divider(
                 height: 1,
                 color: isDark
-                    ? const Color(0xFF1E293B)
-                    : const Color(0xFFE2E8F0),
+                    ? const Color(0xFF1E293B).withValues(alpha: 0.6)
+                    : const Color(0xFFF1F5F9),
               ),
               itemBuilder: (context, index) {
                 final log = _recentLogs[index];
-                return _buildAuditEventItem(isDark, log);
+                return _buildEventRow(isDark, log);
               },
             ),
         ],
@@ -1078,159 +609,67 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
     );
   }
 
-  Widget _buildAuditEventItem(bool isDark, AuditLog log) {
-    Color badgeColor;
-    Color badgeBg;
-    Color badgeBorder;
-    IconData eventIcon;
-
-    if (log.action.contains('PASSWORD')) {
-      badgeColor = const Color(0xFFD8B4FE);
-      badgeBg = const Color(0xFFA855F7).withValues(alpha: 0.15);
-      badgeBorder = const Color(0xFFA855F7).withValues(alpha: 0.3);
-      eventIcon = Icons.lock_reset;
-    } else if (log.action.contains('MFA_VERIFIED')) {
-      badgeColor = const Color(0xFF67E8F9);
-      badgeBg = const Color(0xFF06B6D4).withValues(alpha: 0.15);
-      badgeBorder = const Color(0xFF06B6D4).withValues(alpha: 0.3);
-      eventIcon = Icons.verified_user;
-    } else if (log.action.contains('MFA_CHALLENGE')) {
-      badgeColor = const Color(0xFFFDE68A);
-      badgeBg = const Color(0xFFF59E0B).withValues(alpha: 0.15);
-      badgeBorder = const Color(0xFFF59E0B).withValues(alpha: 0.3);
-      eventIcon = Icons.mark_email_read;
-    } else if (log.action.contains('FAILED') ||
+  Widget _buildEventRow(bool isDark, AuditLog log) {
+    final isFailure =
         log.result == 'FAILURE' ||
-        log.result == 'BLOCKED') {
-      badgeColor = const Color(0xFFFDA4AF);
-      badgeBg = const Color(0xFFF43F5E).withValues(alpha: 0.15);
-      badgeBorder = const Color(0xFFF43F5E).withValues(alpha: 0.3);
-      eventIcon = Icons.gpp_bad;
-    } else {
-      badgeColor = const Color(0xFF86EFAC);
-      badgeBg = const Color(0xFF10B981).withValues(alpha: 0.15);
-      badgeBorder = const Color(0xFF10B981).withValues(alpha: 0.3);
-      eventIcon = Icons.login;
-    }
+        log.result == 'BLOCKED' ||
+        log.action.contains('FAILED');
 
-    final isSuccess = log.result == 'SUCCESS' || log.result == 'DELIVERED';
+    final statusColor = isFailure
+        ? const Color(0xFFEF4444)
+        : const Color(0xFF10B981);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Icono del Evento
+          // Punto discreto de estado
           Container(
-            width: 38,
-            height: 38,
+            width: 6,
+            height: 6,
             decoration: BoxDecoration(
-              color: badgeBg,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: badgeBorder),
+              color: statusColor,
+              shape: BoxShape.circle,
             ),
-            child: Icon(eventIcon, color: badgeColor, size: 20),
           ),
           const SizedBox(width: 14),
 
-          // Información del Evento
+          // Descripción y usuario
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: badgeBg,
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: badgeBorder),
-                      ),
-                      child: Text(
-                        log.action,
-                        style: GoogleFonts.jetBrainsMono(
-                          color: badgeColor,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        log.userIdentifier ?? 'admin@elitemultiservicios.com',
-                        style: GoogleFonts.hankenGrotesk(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: isDark
-                              ? const Color(0xFFE2E8F0)
-                              : const Color(0xFF1E293B),
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                Text(
+                  _humanizeAction(log.action),
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: isDark
+                        ? const Color(0xFFF1F5F9)
+                        : const Color(0xFF0F172A),
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.router,
-                      size: 13,
-                      color: Color(0xFF64748B),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'IP: ${log.ipAddress ?? "166.114.174.90"}',
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 11,
-                        color: isDark
-                            ? const Color(0xFF94A3B8)
-                            : const Color(0xFF64748B),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '•',
-                      style: TextStyle(
-                        color: isDark
-                            ? const Color(0xFF475569)
-                            : const Color(0xFFCBD5E1),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        log.metadata ??
-                            (log.resource != null
-                                ? 'Recurso: ${log.resource}'
-                                : 'Evento criptográfico registrado'),
-                        style: GoogleFonts.hankenGrotesk(
-                          fontSize: 11,
-                          color: isDark
-                              ? const Color(0xFF64748B)
-                              : const Color(0xFF94A3B8),
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 2),
+                Text(
+                  log.userIdentifier ?? 'Sistema interno',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: isDark
+                        ? const Color(0xFF64748B)
+                        : const Color(0xFF94A3B8),
+                  ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 16),
 
-          // Tiempo Relativo y Píldora de Estado
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                _getTimeAgo(log.timestamp),
+          // IP de origen
+          if (log.ipAddress != null && log.ipAddress!.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: Text(
+                log.ipAddress == '::1' ? 'Local' : log.ipAddress!,
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 11,
                   color: isDark
@@ -1238,92 +677,237 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                       : const Color(0xFF94A3B8),
                 ),
               ),
-              const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: isSuccess
-                      ? const Color(0xFF10B981).withValues(alpha: 0.15)
-                      : const Color(0xFFF43F5E).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isSuccess
-                        ? const Color(0xFF10B981).withValues(alpha: 0.3)
-                        : const Color(0xFFF43F5E).withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: isSuccess
-                            ? const Color(0xFF34D399)
-                            : const Color(0xFFFB7185),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      log.result,
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: isSuccess
-                            ? const Color(0xFF34D399)
-                            : const Color(0xFFFB7185),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
+
+          // Tiempo relativo
+          Text(
+            _getTimeAgo(log.timestamp),
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 11,
+              color: isDark ? const Color(0xFF475569) : const Color(0xFF94A3B8),
+            ),
           ),
         ],
       ),
     );
   }
+
+  // --- 4. SECCIÓN DE GOBERNANZA & RESUMEN ---
+  Widget _buildGovernanceSection(bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Tarjeta de Navegación Rápida
+        Container(
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0F172A) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
+                child: Text(
+                  'Gestión y Gobernanza',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                ),
+              ),
+              Divider(
+                height: 1,
+                color: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFE2E8F0),
+              ),
+              _buildGovernanceItem(
+                isDark: isDark,
+                icon: Icons.people_outline,
+                title: 'Directorio de Usuarios',
+                subtitle: 'Aprovisionamiento y credenciales',
+                onTap: () => widget.onNavigateToTab?.call(1),
+              ),
+              Divider(
+                height: 1,
+                color: isDark
+                    ? const Color(0xFF1E293B).withValues(alpha: 0.6)
+                    : const Color(0xFFF1F5F9),
+              ),
+              _buildGovernanceItem(
+                isDark: isDark,
+                icon: Icons.admin_panel_settings_outlined,
+                title: 'Políticas y Permisos RBAC',
+                subtitle: 'Matriz canónica de autorización',
+                onTap: () => widget.onNavigateToTab?.call(2),
+              ),
+              Divider(
+                height: 1,
+                color: isDark
+                    ? const Color(0xFF1E293B).withValues(alpha: 0.6)
+                    : const Color(0xFFF1F5F9),
+              ),
+              _buildGovernanceItem(
+                isDark: isDark,
+                icon: Icons.devices,
+                title: 'Control de Sesiones',
+                subtitle: 'Inspección y terminación forzada',
+                onTap: () => widget.onNavigateToTab?.call(4),
+              ),
+              Divider(
+                height: 1,
+                color: isDark
+                    ? const Color(0xFF1E293B).withValues(alpha: 0.6)
+                    : const Color(0xFFF1F5F9),
+              ),
+              _buildGovernanceItem(
+                isDark: isDark,
+                icon: Icons.speed_outlined,
+                title: 'Telemetría del Servidor',
+                subtitle: 'Rendimiento y consumo de recursos',
+                onTap: () => widget.onNavigateToTab?.call(5),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // Tarjeta de Integridad Criptográfica
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0F172A) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.lock_outline,
+                    size: 16,
+                    color: isDark
+                        ? const Color(0xFF10B981)
+                        : const Color(0xFF059669),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Integridad de Registro',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Cada evento de auditoría cuenta con firma SHA-256 inmutable almacenada en PostgreSQL.',
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  height: 1.5,
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGovernanceItem({
+    required bool isDark,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: isDark
+                          ? const Color(0xFFF1F5F9)
+                          : const Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: isDark
+                          ? const Color(0xFF64748B)
+                          : const Color(0xFF94A3B8),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              size: 16,
+              color: isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-/// Widget individual de tarjeta KPI con resplandor cromático y animación hover.
-class _KpiGlowCard extends StatefulWidget {
+/// Widget para tarjetas minimalistas con micro-interacción al hover.
+class _MinimalHoverCard extends StatefulWidget {
   final bool isDark;
-  final IconData icon;
-  final Color iconColor;
-  final String title;
-  final String value;
-  final String totalSuffix;
-  final String trendBadge;
-  final Color trendColor;
-  final IconData? trendIcon;
-  final bool isPulseDot;
-  final String subtitle;
-  final Color glowColor;
-  final VoidCallback? onTap;
+  final double width;
+  final Widget child;
+  final VoidCallback onTap;
 
-  const _KpiGlowCard({
+  const _MinimalHoverCard({
     required this.isDark,
-    required this.icon,
-    required this.iconColor,
-    required this.title,
-    required this.value,
-    required this.totalSuffix,
-    required this.trendBadge,
-    required this.trendColor,
-    this.trendIcon,
-    this.isPulseDot = false,
-    required this.subtitle,
-    required this.glowColor,
-    this.onTap,
+    required this.width,
+    required this.child,
+    required this.onTap,
   });
 
   @override
-  State<_KpiGlowCard> createState() => _KpiGlowCardState();
+  State<_MinimalHoverCard> createState() => _MinimalHoverCardState();
 }
 
-class _KpiGlowCardState extends State<_KpiGlowCard> {
+class _MinimalHoverCardState extends State<_MinimalHoverCard> {
   bool _isHovered = false;
 
   @override
@@ -1332,175 +916,40 @@ class _KpiGlowCardState extends State<_KpiGlowCard> {
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 160),
         curve: Curves.easeOutCubic,
-        transform: Matrix4.translationValues(0.0, _isHovered ? -4.0 : 0.0, 0.0),
+        width: widget.width,
+        transform: Matrix4.translationValues(0.0, _isHovered ? -2.0 : 0.0, 0.0),
         decoration: BoxDecoration(
           color: widget.isDark ? const Color(0xFF0F172A) : Colors.white,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: _isHovered
-                ? widget.glowColor.withValues(alpha: 0.6)
+                ? (widget.isDark
+                      ? const Color(0xFF334155)
+                      : const Color(0xFFCBD5E1))
                 : (widget.isDark
                       ? const Color(0xFF1E293B)
                       : const Color(0xFFE2E8F0)),
-            width: _isHovered ? 1.5 : 1.0,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: widget.glowColor.withValues(
-                alpha: _isHovered ? 0.28 : 0.08,
-              ),
-              blurRadius: _isHovered ? 24 : 12,
-              offset: Offset(0, _isHovered ? 8 : 4),
-            ),
-          ],
+          boxShadow: _isHovered
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(
+                      alpha: widget.isDark ? 0.25 : 0.04,
+                    ),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             onTap: widget.onTap,
-            borderRadius: BorderRadius.circular(18),
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          color: widget.iconColor.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: widget.iconColor.withValues(alpha: 0.25),
-                          ),
-                        ),
-                        child: Icon(
-                          widget.icon,
-                          color: widget.iconColor,
-                          size: 22,
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: widget.trendColor.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: widget.trendColor.withValues(alpha: 0.25),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (widget.trendIcon != null) ...[
-                              Icon(
-                                widget.trendIcon,
-                                color: widget.trendColor,
-                                size: 12,
-                              ),
-                              const SizedBox(width: 4),
-                            ] else if (widget.isPulseDot) ...[
-                              Container(
-                                width: 6,
-                                height: 6,
-                                decoration: BoxDecoration(
-                                  color: widget.trendColor,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                            ],
-                            Text(
-                              widget.trendBadge,
-                              style: GoogleFonts.jetBrainsMono(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                color: widget.trendColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    widget.title,
-                    style: GoogleFonts.hankenGrotesk(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.6,
-                      color: widget.isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF64748B),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(
-                        widget.value,
-                        style: GoogleFonts.jetBrainsMono(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: widget.isDark
-                              ? Colors.white
-                              : const Color(0xFF0F172A),
-                          letterSpacing: -1.0,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        widget.totalSuffix,
-                        style: GoogleFonts.jetBrainsMono(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: widget.isDark
-                              ? const Color(0xFF64748B)
-                              : const Color(0xFF94A3B8),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Container(
-                        width: 5,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: widget.iconColor,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          widget.subtitle,
-                          style: GoogleFonts.hankenGrotesk(
-                            fontSize: 11,
-                            color: widget.isDark
-                                ? const Color(0xFF94A3B8)
-                                : const Color(0xFF64748B),
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            borderRadius: BorderRadius.circular(10),
+            child: widget.child,
           ),
         ),
       ),
