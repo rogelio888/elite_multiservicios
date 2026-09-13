@@ -15,7 +15,14 @@
   - **Contrato HTML**: `elite_multiservicios_flutter/.stitch_reference/security_dashboard.html`
   - **Implementación Flutter**: [`lib/features/security/presentation/views/security_dashboard_view.dart`](file:///c:/Users/rogel/OneDrive/Escritorio/Proyectos/elite_multiservicios/elite_multiservicios_flutter/lib/features/security/presentation/views/security_dashboard_view.dart) & [`lib/features/security/presentation/security_shell_screen.dart`](file:///c:/Users/rogel/OneDrive/Escritorio/Proyectos/elite_multiservicios/elite_multiservicios_flutter/lib/features/security/presentation/security_shell_screen.dart)
 
-### 2. Autenticación & Acceso (Login)
+### 2. Gestión de Usuarios (Directorio Corporativo)
+- **Desktop (Enterprise Dark Mode - Estilo Clerk / Linear)**:
+  - **Screen ID**: `64cf4d16ab2d40c98984ba8f3533c239`
+  - **Título**: `Elite Multiservicios - Directorio de Usuarios Enterprise`
+  - **Contrato HTML**: `elite_multiservicios_flutter/.stitch_reference/users_management.html`
+  - **Implementación Flutter**: [`lib/features/security/presentation/views/users_management_view.dart`](file:///c:/Users/rogel/OneDrive/Escritorio/Proyectos/elite_multiservicios/elite_multiservicios_flutter/lib/features/security/presentation/views/users_management_view.dart)
+
+### 3. Autenticación & Acceso (Login)
 - **Desktop**:
   - **Screen ID**: `a2d22c1a844c4ce6a2216563099ecbfa`
   - **Título**: `Elite Multiservicios - Login (Dark Theme)`

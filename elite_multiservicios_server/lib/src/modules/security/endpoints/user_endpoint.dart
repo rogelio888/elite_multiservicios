@@ -146,6 +146,20 @@ class UserEndpoint extends Endpoint {
     );
 
     final repo = UserRepository(session);
+    final target = await repo.findById(id);
+    if (target != null) {
+      final rbacRepo = RbacRepository(session);
+      final roles = await rbacRepo.getUserRoles(target.id!);
+      final isSuperAdmin =
+          roles.any((r) => r.name.toLowerCase() == 'superadmin') ||
+          target.id == 1;
+      if (isSuperAdmin && !isActive) {
+        throw FormatException(
+          'La cuenta SuperAdmin del sistema es inmutable y no puede ser suspendida.',
+        );
+      }
+    }
+
     final updated = await repo.setActiveStatus(id, isActive);
     if (updated == null) return false;
 
@@ -174,6 +188,20 @@ class UserEndpoint extends Endpoint {
     );
 
     final repo = UserRepository(session);
+    final target = await repo.findById(id);
+    if (target != null) {
+      final rbacRepo = RbacRepository(session);
+      final roles = await rbacRepo.getUserRoles(target.id!);
+      final isSuperAdmin =
+          roles.any((r) => r.name.toLowerCase() == 'superadmin') ||
+          target.id == 1;
+      if (isSuperAdmin) {
+        throw FormatException(
+          'La cuenta SuperAdmin del sistema es inmutable y no puede ser eliminada.',
+        );
+      }
+    }
+
     final success = await repo.softDelete(id);
     if (!success) return false;
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/navigation/web_url_sync.dart';
 import '../services/auth_service.dart';
 import '../services/security_api_service.dart';
 import 'views/security_dashboard_view.dart';
@@ -9,6 +10,8 @@ import 'views/audit_log_view.dart';
 import 'views/active_sessions_view.dart';
 import 'views/server_metrics_view.dart';
 
+/// Shell principal de navegación para el módulo de seguridad de Elite Multiservicios.
+/// Diseñado con estética minimalista ejecutiva, contención visual y escala suiza.
 class SecurityShellScreen extends StatefulWidget {
   final VoidCallback? onToggleTheme;
   final bool isDarkMode;
@@ -26,16 +29,99 @@ class SecurityShellScreen extends StatefulWidget {
 }
 
 class _SecurityShellScreenState extends State<SecurityShellScreen> {
+  static const List<String> _tabSlugs = [
+    'dashboard',
+    'users',
+    'roles',
+    'audit',
+    'sessions',
+    'metrics',
+  ];
+
+  static int _indexFromRouteOrHash(String raw) {
+    final clean = raw
+        .toLowerCase()
+        .replaceAll('#', '')
+        .replaceAll('/', '')
+        .trim();
+    switch (clean) {
+      case 'users':
+      case 'usuarios':
+        return 1;
+      case 'roles':
+      case 'rbac':
+        return 2;
+      case 'audit':
+      case 'auditoria':
+      case 'bitacora':
+        return 3;
+      case 'sessions':
+      case 'sesiones':
+        return 4;
+      case 'metrics':
+      case 'metricas':
+      case 'telemetria':
+        return 5;
+      case 'dashboard':
+      default:
+        return 0;
+    }
+  }
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late final AuthService _authService;
   final _service = SecurityApiService();
   SecurityDashboardMetrics? _sidebarMetrics;
   int _selectedIndex = 0;
   bool _isSidebarCollapsed = false;
+  bool _isSecurityExpanded = true;
 
   @override
   void initState() {
     super.initState();
     _authService = widget.authService ?? AuthService();
+
+    // 1. Detección del módulo activo al cargar/recargar la página
+    final browserHash = getBrowserHash();
+    int initialIndex = 0;
+    if (browserHash.isNotEmpty) {
+      initialIndex = _indexFromRouteOrHash(browserHash);
+    } else {
+      final fragment = Uri.base.fragment;
+      if (fragment.isNotEmpty) {
+        initialIndex = _indexFromRouteOrHash(fragment);
+      } else {
+        final queryTab =
+            Uri.base.queryParameters['tab'] ??
+            Uri.base.queryParameters['module'];
+        if (queryTab != null && queryTab.isNotEmpty) {
+          initialIndex = _indexFromRouteOrHash(queryTab);
+        }
+      }
+    }
+
+    _selectedIndex = initialIndex;
+    if (initialIndex >= 1) {
+      _isSecurityExpanded = true;
+    }
+
+    // Sincronizar URL del navegador con el slug activo
+    setBrowserHash('/${_tabSlugs[_selectedIndex]}');
+
+    // Escuchar navegación del navegador (Atrás / Adelante)
+    listenBrowserHashChange((newHash) {
+      if (mounted) {
+        final newIndex = _indexFromRouteOrHash(newHash);
+        if (newIndex != _selectedIndex) {
+          setState(() {
+            _selectedIndex = newIndex;
+            if (newIndex >= 1) _isSecurityExpanded = true;
+          });
+          _loadSidebarMetrics();
+        }
+      }
+    });
+
     _loadSidebarMetrics();
   }
 
@@ -48,56 +134,68 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     } catch (_) {}
   }
 
-  void _onTabSelected(int index) {
+  void _onTabSelected(int index, {bool isDrawer = false}) {
     if (_selectedIndex != index) {
-      setState(() => _selectedIndex = index);
+      setState(() {
+        _selectedIndex = index;
+        if (index >= 1) {
+          _isSecurityExpanded = true;
+        }
+      });
+      // Sincronizar URL visible en la barra de direcciones del navegador
+      if (index >= 0 && index < _tabSlugs.length) {
+        setBrowserHash('/${_tabSlugs[index]}');
+      }
+    }
+    if (isDrawer && Navigator.canPop(context)) {
+      Navigator.pop(context);
     }
     _loadSidebarMetrics();
   }
 
   Future<void> _confirmAndLogout() async {
+    final isDark = widget.isDarkMode;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: widget.isDarkMode
-            ? const Color(0xFF0F172A)
-            : Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+          ),
+        ),
         title: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.redAccent.withValues(alpha: 0.12),
+                color: const Color(0xFFEF4444).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(
                 Icons.logout,
-                color: Colors.redAccent,
-                size: 20,
+                color: Color(0xFFEF4444),
+                size: 18,
               ),
             ),
             const SizedBox(width: 12),
             Text(
               'Cerrar Sesión',
-              style: GoogleFonts.hankenGrotesk(
-                fontWeight: FontWeight.w700,
-                fontSize: 18,
-                color: widget.isDarkMode
-                    ? Colors.white
-                    : const Color(0xFF0F172A),
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
               ),
             ),
           ],
         ),
         content: Text(
           '¿Estás seguro de que deseas cerrar tu sesión actual? '
-          'La sesión se revocará en el servidor y se registrará en la bitácora de auditoría.',
-          style: GoogleFonts.hankenGrotesk(
-            fontSize: 14,
-            color: widget.isDarkMode
-                ? const Color(0xFF94A3B8)
-                : const Color(0xFF64748B),
+          'La sesión se revocará en el servidor y se registrará en la bitácora.',
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
           ),
         ),
         actions: [
@@ -105,26 +203,31 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
               'Cancelar',
-              style: GoogleFonts.hankenGrotesk(
-                color: widget.isDarkMode
+              style: GoogleFonts.inter(
+                color: isDark
                     ? const Color(0xFF94A3B8)
                     : const Color(0xFF64748B),
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
               ),
             ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFFDC2626),
+              backgroundColor: const Color(0xFFEF4444),
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
               'Cerrar Sesión',
-              style: GoogleFonts.hankenGrotesk(fontWeight: FontWeight.w700),
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
             ),
           ),
         ],
@@ -145,33 +248,188 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'Telemetría y Métricas',
   ];
 
+  Widget _buildNavItem({
+    required IconData icon,
+    required IconData selectedIcon,
+    required String label,
+    required int index,
+    String? badge,
+    bool isSubItem = false,
+    bool isDrawer = false,
+  }) {
+    final isDark = widget.isDarkMode;
+    final isSelected = _selectedIndex == index;
+    final collapsed = !isDrawer && _isSidebarCollapsed;
+
+    final content = Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _onTabSelected(index, isDrawer: isDrawer),
+        borderRadius: BorderRadius.circular(8),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          curve: Curves.easeOutCubic,
+          padding: EdgeInsets.symmetric(
+            horizontal: collapsed ? 12 : (isSubItem ? 12 : 12),
+            vertical: isSubItem ? 8 : 10,
+          ),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? (isDark ? const Color(0xFF161F30) : const Color(0xFFF1F5F9))
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: isSelected
+                ? Border(
+                    left: BorderSide(
+                      color: const Color(0xFF2563EB),
+                      width: 2.5,
+                    ),
+                  )
+                : null,
+          ),
+          child: Row(
+            mainAxisAlignment: collapsed
+                ? MainAxisAlignment.center
+                : MainAxisAlignment.start,
+            children: [
+              Icon(
+                isSelected ? selectedIcon : icon,
+                color: isSelected
+                    ? (isDark
+                          ? const Color(0xFF60A5FA)
+                          : const Color(0xFF2563EB))
+                    : (isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B)),
+                size: isSubItem ? 16 : 18,
+              ),
+              if (!collapsed) ...[
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: GoogleFonts.inter(
+                      color: isSelected
+                          ? (isDark ? Colors.white : const Color(0xFF0F172A))
+                          : (isDark
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFF64748B)),
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                      fontSize: isSubItem ? 12.5 : 13,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (badge != null) ...[
+                  if (badge == 'dot')
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFD97706),
+                        shape: BoxShape.circle,
+                      ),
+                    )
+                  else
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 1,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? (isDark
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFFE2E8F0))
+                            : (isDark
+                                  ? const Color(0xFF111827)
+                                  : const Color(0xFFF1F5F9)),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        badge,
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: isSelected
+                              ? (isDark
+                                    ? const Color(0xFF93C5FD)
+                                    : const Color(0xFF1D4ED8))
+                              : (isDark
+                                    ? const Color(0xFF64748B)
+                                    : const Color(0xFF94A3B8)),
+                        ),
+                      ),
+                    ),
+                ],
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (collapsed) {
+      return Tooltip(
+        message: label,
+        waitDuration: const Duration(milliseconds: 300),
+        child: content,
+      );
+    }
+    return content;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
 
-    final navItems = [
-      (Icons.dashboard_outlined, Icons.dashboard, 'Dashboard', null),
+    final securityItems = [
       (
-        Icons.group_outlined,
-        Icons.group,
-        'Usuarios',
-        _sidebarMetrics != null ? '${_sidebarMetrics!.totalUsers}' : null,
+        icon: Icons.group_outlined,
+        selectedIcon: Icons.group,
+        label: 'Usuarios',
+        badge: _sidebarMetrics != null
+            ? '${_sidebarMetrics!.totalUsers}'
+            : null,
+        index: 1,
       ),
       (
-        Icons.admin_panel_settings_outlined,
-        Icons.admin_panel_settings,
-        'Roles & RBAC',
-        _sidebarMetrics != null ? '${_sidebarMetrics!.totalRoles}' : null,
+        icon: Icons.admin_panel_settings_outlined,
+        selectedIcon: Icons.admin_panel_settings,
+        label: 'Roles & RBAC',
+        badge: _sidebarMetrics != null
+            ? '${_sidebarMetrics!.totalRoles}'
+            : null,
+        index: 2,
       ),
-      (Icons.history_edu_outlined, Icons.history_edu, 'Auditoría', 'dot'),
       (
-        Icons.devices_outlined,
-        Icons.devices,
-        'Sesiones',
-        _sidebarMetrics != null ? '${_sidebarMetrics!.activeSessions}' : null,
+        icon: Icons.history_edu_outlined,
+        selectedIcon: Icons.history_edu,
+        label: 'Auditoría',
+        badge: 'dot',
+        index: 3,
       ),
-      (Icons.analytics_outlined, Icons.analytics, 'Métricas', null),
+      (
+        icon: Icons.devices_outlined,
+        selectedIcon: Icons.devices,
+        label: 'Sesiones',
+        badge: _sidebarMetrics != null
+            ? '${_sidebarMetrics!.activeSessions}'
+            : null,
+        index: 4,
+      ),
+      (
+        icon: Icons.speed_outlined,
+        selectedIcon: Icons.speed,
+        label: 'Métricas',
+        badge: null,
+        index: 5,
+      ),
     ];
+
+    final isAnySecurityActive = _selectedIndex >= 1 && _selectedIndex <= 5;
 
     Widget currentView;
     switch (_selectedIndex) {
@@ -199,118 +457,261 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         currentView = const Center(child: Text('Vista no encontrada'));
     }
 
-    final userEmail =
-        _authService.currentDisplayName ?? 'admin@elitemultiservicios.com';
-    final userInitials = userEmail.isNotEmpty && userEmail.length >= 2
-        ? userEmail.substring(0, 2).toUpperCase()
-        : 'AD';
+    final userName = _authService.currentDisplayName ?? 'Administrador';
+    const userEmail = 'admin@elitemultiservicios.com';
+    const userInitials = 'AD';
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isMobile = constraints.maxWidth < 850;
 
-    return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF080D1A)
-          : const Color(0xFFF8FAFC),
-      body: Row(
-        children: [
-          // Sidebar de Navegación Completo (#0B1120)
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: _isSidebarCollapsed ? 76 : 260,
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF0B1120) : const Color(0xFF0F172A),
-              border: Border(
-                right: BorderSide(
-                  color: isDark
-                      ? const Color(0xFF1E293B)
-                      : const Color(0xFF334155),
-                  width: 1,
-                ),
+        final topBar = Container(
+          height: 54,
+          padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 28),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF090D16) : Colors.white,
+            border: Border(
+              bottom: BorderSide(
+                color: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFE2E8F0),
+                width: 1,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  blurRadius: 16,
-                  offset: const Offset(4, 0),
-                ),
-              ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Branding Header
-                Container(
-                  height: 64,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF080D1A).withValues(alpha: 0.6)
-                        : const Color(0xFF0A0F1D),
-                    border: Border(
-                      bottom: BorderSide(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : const Color(0xFF334155),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Lado Izquierdo: Menú hamburguesa (móvil) + Breadcrumbs
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isMobile) ...[
+                      IconButton(
+                        icon: const Icon(Icons.menu, size: 20),
+                        tooltip: 'Abrir Menú',
+                        visualDensity: VisualDensity.compact,
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                        onPressed: () =>
+                            _scaffoldKey.currentState?.openDrawer(),
                       ),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 38,
-                        height: 38,
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1E293B),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: const Color(0xFF334155),
+                      const SizedBox(width: 6),
+                    ],
+                    if (!isMobile) ...[
+                      Text(
+                        'Seguridad',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: isDark
+                              ? const Color(0xFF64748B)
+                              : const Color(0xFF94A3B8),
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          '/',
+                          style: TextStyle(
+                            color: isDark
+                                ? const Color(0xFF334155)
+                                : const Color(0xFFCBD5E1),
+                            fontSize: 12,
                           ),
                         ),
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          fit: BoxFit.contain,
+                      ),
+                    ],
+                    Flexible(
+                      child: Text(
+                        _titles[_selectedIndex],
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Right Top Actions: Atajo de búsqueda (Desktop) + Tema + Notificaciones + Perfil
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!isMobile) ...[
+                    // Cápsula sutil de búsqueda rápida
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF0D111C)
+                            : const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFE2E8F0),
                         ),
                       ),
-                      if (!_isSidebarCollapsed) ...[
-                        const SizedBox(width: 12),
-                        Expanded(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.search,
+                            size: 14,
+                            color: isDark
+                                ? const Color(0xFF64748B)
+                                : const Color(0xFF94A3B8),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Buscar...',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: isDark
+                                  ? const Color(0xFF64748B)
+                                  : const Color(0xFF94A3B8),
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Text(
+                            '⌘K',
+                            style: GoogleFonts.jetBrainsMono(
+                              fontSize: 9,
+                              color: isDark
+                                  ? const Color(0xFF475569)
+                                  : const Color(0xFF94A3B8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                  ],
+
+                  // Theme Toggle Button
+                  IconButton(
+                    icon: Icon(
+                      widget.isDarkMode
+                          ? Icons.dark_mode_outlined
+                          : Icons.light_mode_outlined,
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
+                      size: 18,
+                    ),
+                    tooltip: 'Cambiar Tema',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: widget.onToggleTheme,
+                  ),
+
+                  // Notification Bell
+                  IconButton(
+                    icon: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Icon(
+                          Icons.notifications_none_outlined,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                          size: 18,
+                        ),
+                        Positioned(
+                          top: 1,
+                          right: 1,
+                          child: Container(
+                            width: 5,
+                            height: 5,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF3B82F6),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    tooltip: 'Notificaciones',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () {},
+                  ),
+                  const SizedBox(width: 8),
+
+                  Container(
+                    height: 18,
+                    width: 1,
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFE2E8F0),
+                  ),
+                  const SizedBox(width: 12),
+
+                  // User Identity
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: isDark
+                                ? const Color(0xFF334155)
+                                : const Color(0xFFCBD5E1),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            userInitials,
+                            style: GoogleFonts.inter(
+                              color: isDark
+                                  ? const Color(0xFFE2E8F0)
+                                  : const Color(0xFF1E293B),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (!isMobile) ...[
+                        const SizedBox(width: 8),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 180),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'ELITE MULTISERVICIOS',
-                                style: GoogleFonts.hankenGrotesk(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w800,
+                                userName,
+                                style: GoogleFonts.inter(
                                   fontSize: 12,
-                                  letterSpacing: 0.6,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(height: 2),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 6,
-                                    height: 6,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF34D399),
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      'Módulo de Seguridad',
-                                      style: GoogleFonts.hankenGrotesk(
-                                        color: const Color(0xFF60A5FA),
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
+                              Text(
+                                userEmail,
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  color: isDark
+                                      ? const Color(0xFF64748B)
+                                      : const Color(0xFF94A3B8),
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
@@ -318,550 +719,471 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       ],
                     ],
                   ),
-                ),
-
-                const SizedBox(height: 12),
-                if (!_isSidebarCollapsed)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 4,
-                    ),
-                    child: Text(
-                      'OPERACIONES PRINCIPALES',
-                      style: GoogleFonts.hankenGrotesk(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF64748B),
-                        letterSpacing: 0.8,
-                      ),
-                    ),
-                  ),
-
-                // Lista de Navegación
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: navItems.length,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    itemBuilder: (context, index) {
-                      final item = navItems[index];
-                      final isSelected = _selectedIndex == index;
-
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 5),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () => _onTabSelected(index),
-                            borderRadius: BorderRadius.circular(12),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 150),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: _isSidebarCollapsed ? 12 : 14,
-                                vertical: 11,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: isSelected
-                                    ? const LinearGradient(
-                                        colors: [
-                                          Color(0xFF2563EB),
-                                          Color(0xFF1D4ED8),
-                                        ],
-                                        begin: Alignment.centerLeft,
-                                        end: Alignment.centerRight,
-                                      )
-                                    : null,
-                                borderRadius: BorderRadius.circular(12),
-                                border: isSelected
-                                    ? Border.all(
-                                        color: const Color(
-                                          0xFF60A5FA,
-                                        ).withValues(alpha: 0.4),
-                                      )
-                                    : Border.all(color: Colors.transparent),
-                                boxShadow: isSelected
-                                    ? [
-                                        BoxShadow(
-                                          color: const Color(
-                                            0xFF2563EB,
-                                          ).withValues(alpha: 0.35),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 3),
-                                        ),
-                                      ]
-                                    : null,
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    isSelected ? item.$2 : item.$1,
-                                    color: isSelected
-                                        ? Colors.white
-                                        : const Color(0xFF94A3B8),
-                                    size: 19,
-                                  ),
-                                  if (!_isSidebarCollapsed) ...[
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Text(
-                                        item.$3,
-                                        style: GoogleFonts.hankenGrotesk(
-                                          color: isSelected
-                                              ? Colors.white
-                                              : const Color(0xFFCBD5E1),
-                                          fontWeight: isSelected
-                                              ? FontWeight.w700
-                                              : FontWeight.w500,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                    ),
-                                    if (item.$4 != null) ...[
-                                      if (item.$4 == 'dot')
-                                        Container(
-                                          width: 7,
-                                          height: 7,
-                                          decoration: const BoxDecoration(
-                                            color: Color(0xFFF59E0B),
-                                            shape: BoxShape.circle,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Color(0xFFF59E0B),
-                                                blurRadius: 4,
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      else
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 7,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: isSelected
-                                                ? Colors.white.withValues(
-                                                    alpha: 0.2,
-                                                  )
-                                                : (item.$4!.contains('vivas')
-                                                      ? const Color(
-                                                          0xFF064E3B,
-                                                        ).withValues(alpha: 0.6)
-                                                      : const Color(
-                                                          0xFF1E293B,
-                                                        )),
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                            border: Border.all(
-                                              color: isSelected
-                                                  ? Colors.white.withValues(
-                                                      alpha: 0.3,
-                                                    )
-                                                  : (item.$4!.contains('vivas')
-                                                        ? const Color(
-                                                            0xFF10B981,
-                                                          ).withValues(
-                                                            alpha: 0.4,
-                                                          )
-                                                        : const Color(
-                                                            0xFF334155,
-                                                          )),
-                                            ),
-                                          ),
-                                          child: Text(
-                                            item.$4!,
-                                            style: GoogleFonts.jetBrainsMono(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.w600,
-                                              color: isSelected
-                                                  ? Colors.white
-                                                  : (item.$4!.contains('vivas')
-                                                        ? const Color(
-                                                            0xFF34D399,
-                                                          )
-                                                        : const Color(
-                                                            0xFF94A3B8,
-                                                          )),
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ],
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                // Footer Actions: Cerrar Sesión & Colapsar Menú
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF080D1A).withValues(alpha: 0.7)
-                        : const Color(0xFF0A0F1D),
-                    border: Border(
-                      top: BorderSide(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : const Color(0xFF334155),
-                      ),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: _confirmAndLogout,
-                          borderRadius: BorderRadius.circular(10),
-                          hoverColor: Colors.redAccent.withValues(alpha: 0.1),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 10,
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.logout,
-                                  color: Color(0xFFF87171),
-                                  size: 18,
-                                ),
-                                if (!_isSidebarCollapsed) ...[
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    'Cerrar Sesión',
-                                    style: GoogleFonts.hankenGrotesk(
-                                      color: const Color(0xFFF87171),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () => setState(
-                            () => _isSidebarCollapsed = !_isSidebarCollapsed,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  _isSidebarCollapsed
-                                      ? Icons.chevron_right
-                                      : Icons.chevron_left,
-                                  color: const Color(0xFF94A3B8),
-                                  size: 18,
-                                ),
-                                if (!_isSidebarCollapsed) ...[
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      'Colapsar Menú',
-                                      style: GoogleFonts.hankenGrotesk(
-                                        color: const Color(0xFF94A3B8),
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 5,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF1E293B),
-                                      borderRadius: BorderRadius.circular(4),
-                                      border: Border.all(
-                                        color: const Color(0xFF334155),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      'Ctrl+B',
-                                      style: GoogleFonts.jetBrainsMono(
-                                        fontSize: 9,
-                                        color: const Color(0xFF64748B),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
+        );
 
-          // Área de Trabajo Principal y Top App Bar
-          Expanded(
-            child: Column(
-              children: [
-                // Top App Bar
-                Container(
-                  height: 64,
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF0B1120).withValues(alpha: 0.8)
-                        : Colors.white,
-                    border: Border(
-                      bottom: BorderSide(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : const Color(0xFFE2E8F0),
-                      ),
+        return Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: isDark
+              ? const Color(0xFF090D16)
+              : const Color(0xFFF8FAFC),
+          drawer: isMobile
+              ? Drawer(
+                  backgroundColor: isDark
+                      ? const Color(0xFF0D111C)
+                      : Colors.white,
+                  child: SafeArea(
+                    child: _buildSidebarContent(
+                      isDark: isDark,
+                      isDrawer: true,
+                      securityItems: securityItems,
+                      isAnySecurityActive: isAnySecurityActive,
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Breadcrumb
-                      Flexible(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                )
+              : null,
+          body: isMobile
+              ? Column(
+                  children: [
+                    topBar,
+                    Expanded(child: currentView),
+                  ],
+                )
+              : Row(
+                  children: [
+                    _buildSidebarContent(
+                      isDark: isDark,
+                      isDrawer: false,
+                      securityItems: securityItems,
+                      isAnySecurityActive: isAnySecurityActive,
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          topBar,
+                          Expanded(child: currentView),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSidebarContent({
+    required bool isDark,
+    required bool isDrawer,
+    required List<
+      ({
+        IconData icon,
+        IconData selectedIcon,
+        String label,
+        String? badge,
+        int index,
+      })
+    >
+    securityItems,
+    required bool isAnySecurityActive,
+  }) {
+    final collapsed = !isDrawer && _isSidebarCollapsed;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOutCubic,
+      width: isDrawer ? 280 : (collapsed ? 68 : 248),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0D111C) : Colors.white,
+        border: isDrawer
+            ? null
+            : Border(
+                right: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFE2E8F0),
+                  width: 1,
+                ),
+              ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Branding Header
+          Container(
+            height: 54,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFE2E8F0),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF111827)
+                        : const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFE2E8F0),
+                    ),
+                  ),
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                if (!collapsed) ...[
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'ELITE MULTISERVICIOS',
+                          style: GoogleFonts.inter(
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 11.5,
+                            letterSpacing: 0.4,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 1),
+                        Row(
                           children: [
-                            Text(
-                              'Seguridad',
-                              style: GoogleFonts.hankenGrotesk(
-                                fontSize: 13,
-                                color: isDark
-                                    ? const Color(0xFF64748B)
-                                    : const Color(0xFF94A3B8),
+                            Container(
+                              width: 5,
+                              height: 5,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF10B981),
+                                shape: BoxShape.circle,
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
+                            const SizedBox(width: 5),
+                            Expanded(
                               child: Text(
-                                '/',
-                                style: TextStyle(
+                                'Módulo de Seguridad',
+                                style: GoogleFonts.inter(
                                   color: isDark
-                                      ? const Color(0xFF475569)
-                                      : const Color(0xFFCBD5E1),
-                                ),
-                              ),
-                            ),
-                            Flexible(
-                              child: Text(
-                                _titles[_selectedIndex],
-                                style: GoogleFonts.hankenGrotesk(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: isDark
-                                      ? Colors.white
-                                      : const Color(0xFF0F172A),
+                                      ? const Color(0xFF94A3B8)
+                                      : const Color(0xFF64748B),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
                         ),
+                      ],
+                    ),
+                  ),
+                  if (isDrawer)
+                    IconButton(
+                      icon: const Icon(Icons.close, size: 18),
+                      color: const Color(0xFF94A3B8),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                ],
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 10),
+          if (!collapsed)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: Text(
+                'NAVEGACIÓN',
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: isDark
+                      ? const Color(0xFF475569)
+                      : const Color(0xFF94A3B8),
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ),
+
+          // Lista de Navegación
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              children: [
+                // 1. Dashboard
+                _buildNavItem(
+                  icon: Icons.dashboard_outlined,
+                  selectedIcon: Icons.dashboard,
+                  label: 'Dashboard',
+                  index: 0,
+                  isDrawer: isDrawer,
+                ),
+                const SizedBox(height: 4),
+
+                // 2. Acordeón Colapsable "Seguridad"
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    key: const Key('nav_accordion_seguridad'),
+                    onTap: () {
+                      setState(() {
+                        _isSecurityExpanded = !_isSecurityExpanded;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 140),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 9,
                       ),
-
-                      // Right Top Actions
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
+                      decoration: BoxDecoration(
+                        color: (isAnySecurityActive && !_isSecurityExpanded)
+                            ? (isDark
+                                  ? const Color(0xFF161F30)
+                                  : const Color(0xFFEFF6FF))
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(8),
+                        border: (isAnySecurityActive && !_isSecurityExpanded)
+                            ? const Border(
+                                left: BorderSide(
+                                  color: Color(0xFF2563EB),
+                                  width: 2.5,
+                                ),
+                              )
+                            : null,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: collapsed
+                            ? MainAxisAlignment.center
+                            : MainAxisAlignment.start,
                         children: [
-                          // Theme Toggle Button
-                          IconButton(
-                            icon: Icon(
-                              widget.isDarkMode
-                                  ? Icons.dark_mode
-                                  : Icons.light_mode,
-                              color: widget.isDarkMode
-                                  ? const Color(0xFFF59E0B)
-                                  : const Color(0xFF475569),
-                              size: 20,
-                            ),
-                            tooltip: 'Cambiar Tema',
-                            onPressed: widget.onToggleTheme,
+                          Icon(
+                            Icons.shield_outlined,
+                            color: isAnySecurityActive
+                                ? (isDark
+                                      ? const Color(0xFF60A5FA)
+                                      : const Color(0xFF2563EB))
+                                : (isDark
+                                      ? const Color(0xFF94A3B8)
+                                      : const Color(0xFF64748B)),
+                            size: 18,
                           ),
-                          const SizedBox(width: 4),
-
-                          // Notification Bell
-                          IconButton(
-                            icon: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                Icon(
-                                  Icons.notifications_outlined,
-                                  color: isDark
-                                      ? const Color(0xFFCBD5E1)
-                                      : const Color(0xFF475569),
-                                  size: 20,
-                                ),
-                                Positioned(
-                                  top: -1,
-                                  right: -1,
-                                  child: Container(
-                                    width: 7,
-                                    height: 7,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF3B82F6),
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            tooltip: 'Notificaciones',
-                            onPressed: () {},
-                          ),
-                          const SizedBox(width: 8),
-
-                          Container(
-                            height: 24,
-                            width: 1,
-                            color: isDark
-                                ? const Color(0xFF1E293B)
-                                : const Color(0xFFE2E8F0),
-                          ),
-                          const SizedBox(width: 12),
-
-                          // User Identity Pill
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Stack(
+                          if (!collapsed) ...[
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Row(
                                 children: [
-                                  Container(
-                                    width: 34,
-                                    height: 34,
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          Color(0xFF2563EB),
-                                          Color(0xFF7C3AED),
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: Colors.white.withValues(
-                                          alpha: 0.2,
-                                        ),
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        userInitials,
-                                        style: GoogleFonts.jetBrainsMono(
-                                          color: Colors.white,
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w800,
-                                        ),
-                                      ),
+                                  Text(
+                                    'Seguridad',
+                                    style: GoogleFonts.inter(
+                                      color: isAnySecurityActive
+                                          ? (isDark
+                                                ? Colors.white
+                                                : const Color(0xFF0F172A))
+                                          : (isDark
+                                                ? const Color(0xFF94A3B8)
+                                                : const Color(0xFF64748B)),
+                                      fontWeight: isAnySecurityActive
+                                          ? FontWeight.w600
+                                          : FontWeight.w500,
+                                      fontSize: 13,
                                     ),
                                   ),
-                                  Positioned(
-                                    bottom: -1,
-                                    right: -1,
-                                    child: Container(
-                                      width: 8,
-                                      height: 8,
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF10B981),
+                                  if (isAnySecurityActive &&
+                                      !_isSecurityExpanded) ...[
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      width: 5,
+                                      height: 5,
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFF38BDF8),
                                         shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: isDark
-                                              ? const Color(0xFF0B1120)
-                                              : Colors.white,
-                                          width: 1.5,
-                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(width: 8),
-                              ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 130,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Usuario',
-                                      style: GoogleFonts.hankenGrotesk(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                        color: isDark
-                                            ? Colors.white
-                                            : const Color(0xFF0F172A),
-                                      ),
-                                    ),
-                                    Text(
-                                      userEmail,
-                                      style: GoogleFonts.jetBrainsMono(
-                                        fontSize: 10,
-                                        color: isDark
-                                            ? const Color(0xFF94A3B8)
-                                            : const Color(0xFF64748B),
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
-                                ),
+                                ],
                               ),
-                            ],
-                          ),
-                          const SizedBox(width: 12),
-
-                          // Direct Logout Action
-                          IconButton(
-                            icon: const Icon(
-                              Icons.logout,
-                              color: Color(0xFFF87171),
-                              size: 18,
                             ),
-                            tooltip: 'Cerrar Sesión',
-                            onPressed: _confirmAndLogout,
-                          ),
+                            AnimatedRotation(
+                              turns: _isSecurityExpanded ? 0.5 : 0.0,
+                              duration: const Duration(milliseconds: 180),
+                              curve: Curves.easeOutCubic,
+                              child: Icon(
+                                Icons.keyboard_arrow_down,
+                                size: 16,
+                                color: isDark
+                                    ? const Color(0xFF64748B)
+                                    : const Color(0xFF94A3B8),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
 
-                // Contenido de la Vista Principal
-                Expanded(
-                  child: currentView,
+                // 3. Sub-pestañas pertenecientes a "Seguridad"
+                if (_isSecurityExpanded)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: collapsed ? 0 : 10,
+                      top: 2,
+                    ),
+                    child: Container(
+                      decoration: collapsed
+                          ? null
+                          : BoxDecoration(
+                              border: Border(
+                                left: BorderSide(
+                                  color: isDark
+                                      ? const Color(0xFF1E293B)
+                                      : const Color(0xFFE2E8F0),
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                      padding: EdgeInsets.only(
+                        left: collapsed ? 0 : 6,
+                      ),
+                      child: Column(
+                        children: securityItems.map((item) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: item.icon,
+                              selectedIcon: item.selectedIcon,
+                              label: item.label,
+                              index: item.index,
+                              badge: item.badge,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
+          // Footer Actions: Cerrar Sesión & Colapsar Menú (Colapsar solo en desktop)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFE2E8F0),
+                  width: 1,
                 ),
+              ),
+            ),
+            child: Column(
+              children: [
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: _confirmAndLogout,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.logout,
+                            color: Color(0xFFEF4444),
+                            size: 16,
+                          ),
+                          if (!collapsed) ...[
+                            const SizedBox(width: 10),
+                            Text(
+                              'Cerrar Sesión',
+                              style: GoogleFonts.inter(
+                                color: const Color(0xFFEF4444),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                if (!isDrawer) ...[
+                  const SizedBox(height: 2),
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => setState(
+                        () => _isSidebarCollapsed = !_isSidebarCollapsed,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              _isSidebarCollapsed
+                                  ? Icons.chevron_right
+                                  : Icons.chevron_left,
+                              color: isDark
+                                  ? const Color(0xFF64748B)
+                                  : const Color(0xFF94A3B8),
+                              size: 16,
+                            ),
+                            if (!_isSidebarCollapsed) ...[
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  'Colapsar Menú',
+                                  style: GoogleFonts.inter(
+                                    color: isDark
+                                        ? const Color(0xFF64748B)
+                                        : const Color(0xFF94A3B8),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

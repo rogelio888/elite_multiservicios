@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import '../../services/security_api_service.dart';
 
-/// Vista ejecutiva de Telemetría y Estado del Servidor Serverpod + PostgreSQL
-/// conforme a Executive Precision.
+/// Vista ejecutiva minimalista de Telemetría y Estado del Servidor
 class ServerMetricsView extends StatefulWidget {
   final SecurityApiService? service;
 
@@ -64,7 +64,6 @@ class _ServerMetricsViewState extends State<ServerMetricsView> {
           _isLoading = false;
           _errorMessage = null;
 
-          // Historial de métricas para sparklines
           _latencyHistory.add(metrics.databaseLatencyMs);
           if (_latencyHistory.length > 20) _latencyHistory.removeAt(0);
 
@@ -104,369 +103,376 @@ class _ServerMetricsViewState extends State<ServerMetricsView> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final bgCard = isDark ? const Color(0xFF1E293B) : Colors.white;
-    final borderColor = isDark
-        ? const Color(0xFF334155)
-        : const Color(0xFFE2E8F0);
-    final textPrimary = isDark
-        ? const Color(0xFFF8FAFC)
-        : const Color(0xFF0F172A);
-    final textMuted = isDark
-        ? const Color(0xFF94A3B8)
-        : const Color(0xFF64748B);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isNarrow = constraints.maxWidth < 700;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header Ejecutivo Responsivo
-          LayoutBuilder(
-            builder: (context, constraints) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 12,
-                    runSpacing: 8,
-                    children: [
-                      Text(
-                        'Telemetría y Estado del Servidor',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          color: textPrimary,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      // Badge Online / Offline
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: (_errorMessage == null)
-                              ? const Color(0xFF10B981).withAlpha(25)
-                              : const Color(0xFFEF4444).withAlpha(25),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: (_errorMessage == null)
-                                ? const Color(0xFF10B981).withAlpha(80)
-                                : const Color(0xFFEF4444).withAlpha(80),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: (_errorMessage == null)
-                                    ? const Color(0xFF10B981)
-                                    : const Color(0xFFEF4444),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              (_errorMessage == null)
-                                  ? 'SISTEMA ONLINE'
-                                  : 'ERROR CONEXIÓN',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: (_errorMessage == null)
-                                    ? const Color(0xFF10B981)
-                                    : const Color(0xFFEF4444),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Métricas operativas en tiempo real de Serverpod backend y PostgreSQL',
-                    style: TextStyle(fontSize: 14, color: textMuted),
-                  ),
-                  const SizedBox(height: 16),
-                  // Controles: Auto-refresh + Actualizar
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 16,
-                    runSpacing: 10,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Auto-refresh (30s):',
-                            style: TextStyle(fontSize: 12, color: textMuted),
-                          ),
-                          const SizedBox(width: 6),
-                          Switch(
-                            value: _autoRefreshEnabled,
-                            activeTrackColor: const Color(0xFF1E3A8A),
-                            onChanged: (val) {
-                              setState(() => _autoRefreshEnabled = val);
-                              _setupAutoRefresh();
-                            },
-                          ),
-                        ],
-                      ),
-                      FilledButton.icon(
-                        onPressed: _isLoading ? null : () => _fetchMetrics(),
-                        icon: const Icon(Icons.refresh, size: 16),
-                        label: const Text('Actualizar Ahora'),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF1E3A8A),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              );
-            },
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: isNarrow ? 16 : 32,
+            vertical: isNarrow ? 20 : 28,
           ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 1. Cabecera Ejecutiva
+              _buildHeader(isDark, isNarrow),
+              const SizedBox(height: 20),
 
-          const SizedBox(height: 24),
+              // 2. Banner de Error si aplica
+              if (_errorMessage != null) ...[
+                _buildErrorBanner(isDark),
+                const SizedBox(height: 20),
+              ],
 
-          if (_errorMessage != null)
+              // 3. Estado de Carga Inicial
+              if (_isLoading && _metrics == null)
+                _buildLoadingState(isDark)
+              else if (_metrics != null) ...[
+                // 4. Tarjetas KPI Principales
+                _buildKpisGrid(isDark),
+                const SizedBox(height: 20),
+
+                // 5. Panel de Información & Runtime
+                _buildRuntimePanel(isDark, isNarrow),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // --- CABECERA ---
+  Widget _buildHeader(bool isDark, bool isNarrow) {
+    final borderColor = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFE2E8F0);
+    final cardBg = isDark ? const Color(0xFF0F172A) : Colors.white;
+
+    final infoCol = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 12,
+          runSpacing: 6,
+          children: [
+            Text(
+              'Telemetría y Estado del Servidor',
+              style: GoogleFonts.inter(
+                fontSize: isNarrow ? 18 : 20,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.4,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+              ),
+            ),
             Container(
-              margin: const EdgeInsets.only(bottom: 24),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: const Color(0xFFEF4444).withAlpha(20),
-                borderRadius: BorderRadius.circular(12),
+                color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: const Color(0xFFEF4444).withAlpha(60),
+                  color: const Color(0xFF10B981).withValues(alpha: 0.25),
                 ),
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.error_outline, color: Color(0xFFEF4444)),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      _errorMessage!,
-                      style: const TextStyle(
-                        color: Color(0xFFEF4444),
-                        fontSize: 14,
-                      ),
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF10B981),
+                      shape: BoxShape.circle,
                     ),
                   ),
-                  FilledButton(
-                    onPressed: () => _fetchMetrics(),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFFEF4444),
+                  const SizedBox(width: 5),
+                  Text(
+                    'SISTEMA ONLINE',
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF10B981),
+                      letterSpacing: 0.5,
                     ),
-                    child: const Text('Reintentar'),
                   ),
                 ],
               ),
             ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Supervisión de rendimiento del núcleo backend, latencia PostgreSQL y carga de sockets en tiempo real.',
+          style: GoogleFonts.inter(
+            fontSize: isNarrow ? 12.5 : 13,
+            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+          ),
+        ),
+      ],
+    );
 
-          if (_isLoading && _metrics == null)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(80),
-                child: CircularProgressIndicator(),
+    final actionsRow = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Switch de auto-refresh
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Auto 30s',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
-            )
-          else if (_metrics != null) ...[
-            // Grid de 5 KPIs
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isWide = constraints.maxWidth >= 960;
-                return Wrap(
-                  spacing: 16,
-                  runSpacing: 16,
-                  children: [
-                    _buildKpiCard(
-                      title: 'Tiempo de Actividad',
-                      value: _formatUptime(_metrics!.uptimeSeconds),
-                      subtitle: 'Iniciado recientemente',
-                      badgeText: '99.98% SLA',
-                      badgeColor: const Color(0xFF10B981),
-                      icon: Icons.timer_outlined,
-                      width: isWide
-                          ? (constraints.maxWidth - 64) / 5
-                          : (constraints.maxWidth - 16) / 2,
-                      bgCard: bgCard,
-                      borderColor: borderColor,
-                      textPrimary: textPrimary,
-                      textMuted: textMuted,
-                    ),
-                    _buildKpiCard(
-                      title: 'Memoria RSS en Uso',
-                      value:
-                          '${(_metrics!.memoryRssBytes / (1024 * 1024)).toStringAsFixed(1)} MB',
-                      subtitle: 'Límite dinámico asignado',
-                      badgeText: 'Normal',
-                      badgeColor: const Color(0xFF2563EB),
-                      icon: Icons.memory_outlined,
-                      width: isWide
-                          ? (constraints.maxWidth - 64) / 5
-                          : (constraints.maxWidth - 16) / 2,
-                      bgCard: bgCard,
-                      borderColor: borderColor,
-                      textPrimary: textPrimary,
-                      textMuted: textMuted,
-                    ),
-                    _buildKpiCard(
-                      title: 'Latencia PostgreSQL',
-                      value: '${_metrics!.databaseLatencyMs} ms',
-                      subtitle: 'Ping en tiempo real',
-                      badgeText: _metrics!.databaseLatencyMs < 15
-                          ? 'Óptimo (< 15ms)'
-                          : 'Normal',
-                      badgeColor: _metrics!.databaseLatencyMs < 15
-                          ? const Color(0xFF10B981)
-                          : const Color(0xFFF59E0B),
-                      icon: Icons.storage_outlined,
-                      width: isWide
-                          ? (constraints.maxWidth - 64) / 5
-                          : (constraints.maxWidth - 16) / 2,
-                      bgCard: bgCard,
-                      borderColor: borderColor,
-                      textPrimary: textPrimary,
-                      textMuted: textMuted,
-                    ),
-                    _buildKpiCard(
-                      title: 'Sesiones Activas',
-                      value: '${_metrics!.activeSessionsCount}',
-                      subtitle: 'Usuarios concurrentes',
-                      badgeText: 'Conectadas',
-                      badgeColor: const Color(0xFF2563EB),
-                      icon: Icons.people_outline,
-                      width: isWide
-                          ? (constraints.maxWidth - 64) / 5
-                          : (constraints.maxWidth - 16) / 2,
-                      bgCard: bgCard,
-                      borderColor: borderColor,
-                      textPrimary: textPrimary,
-                      textMuted: textMuted,
-                    ),
-                    _buildKpiCard(
-                      title: 'Logins Fallidos (24h)',
-                      value: '${_metrics!.failedLoginsLast24h}',
-                      subtitle: 'Intentos erróneos',
-                      badgeText: _metrics!.failedLoginsLast24h < 5
-                          ? 'Bajo Riesgo'
-                          : 'Alerta',
-                      badgeColor: _metrics!.failedLoginsLast24h < 5
-                          ? const Color(0xFF10B981)
-                          : const Color(0xFFEF4444),
-                      icon: Icons.shield_outlined,
-                      width: isWide
-                          ? (constraints.maxWidth - 64) / 5
-                          : constraints.maxWidth,
-                      bgCard: bgCard,
-                      borderColor: borderColor,
-                      textPrimary: textPrimary,
-                      textMuted: textMuted,
-                    ),
-                  ],
-                );
-              },
             ),
-
-            const SizedBox(height: 24),
-
-            // Paneles Inferiores: Telemetría Gráfica (60%) + Runtime Info (40%)
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isDesktop = constraints.maxWidth >= 900;
-                if (isDesktop) {
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 6,
-                        child: _buildTelemetryPanel(
-                          bgCard: bgCard,
-                          borderColor: borderColor,
-                          textPrimary: textPrimary,
-                          textMuted: textMuted,
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        flex: 4,
-                        child: _buildRuntimeInfoPanel(
-                          bgCard: bgCard,
-                          borderColor: borderColor,
-                          textPrimary: textPrimary,
-                          textMuted: textMuted,
-                        ),
-                      ),
-                    ],
-                  );
-                } else {
-                  return Column(
-                    children: [
-                      _buildTelemetryPanel(
-                        bgCard: bgCard,
-                        borderColor: borderColor,
-                        textPrimary: textPrimary,
-                        textMuted: textMuted,
-                      ),
-                      const SizedBox(height: 20),
-                      _buildRuntimeInfoPanel(
-                        bgCard: bgCard,
-                        borderColor: borderColor,
-                        textPrimary: textPrimary,
-                        textMuted: textMuted,
-                      ),
-                    ],
-                  );
-                }
-              },
+            const SizedBox(width: 4),
+            Transform.scale(
+              scale: 0.75,
+              child: Switch(
+                value: _autoRefreshEnabled,
+                activeThumbColor: const Color(0xFF2563EB),
+                onChanged: (v) {
+                  setState(() => _autoRefreshEnabled = v);
+                  _setupAutoRefresh();
+                },
+              ),
             ),
           ],
+        ),
+        const SizedBox(width: 8),
+        OutlinedButton.icon(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: isDark
+                ? const Color(0xFFCBD5E1)
+                : const Color(0xFF475569),
+            side: BorderSide(color: borderColor),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          onPressed: () => _fetchMetrics(),
+          icon: const Icon(Icons.refresh, size: 15),
+          label: Text(
+            'Actualizar',
+            style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500),
+          ),
+        ),
+      ],
+    );
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: isNarrow ? 16 : 24,
+        vertical: isNarrow ? 16 : 20,
+      ),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor),
+      ),
+      child: isNarrow
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                infoCol,
+                const SizedBox(height: 14),
+                actionsRow,
+              ],
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(child: infoCol),
+                const SizedBox(width: 16),
+                actionsRow,
+              ],
+            ),
+    );
+  }
+
+  // --- BANNER DE ERROR ---
+  Widget _buildErrorBanner(bool isDark) {
+    final borderColor = isDark
+        ? const Color(0xFF7F1D1D)
+        : const Color(0xFFFECACA);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEF4444).withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: borderColor),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEF4444).withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: const Icon(
+              Icons.error_outline,
+              color: Color(0xFFEF4444),
+              size: 18,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'ERROR CONEXIÓN',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFEF4444),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  _errorMessage!,
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    color: isDark
+                        ? const Color(0xFFFCA5A5)
+                        : const Color(0xFF991B1B),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          FilledButton(
+            onPressed: () => _fetchMetrics(),
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            ),
+            child: Text(
+              'Reintentar',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  // --- GRID DE 5 KPIS ---
+  Widget _buildKpisGrid(bool isDark) {
+    final m = _metrics!;
+    final memMb = (m.memoryRssBytes / (1024 * 1024)).toStringAsFixed(1);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 1050;
+        final cardWidth = isWide
+            ? (constraints.maxWidth - (12 * 4)) / 5
+            : (constraints.maxWidth >= 640
+                  ? (constraints.maxWidth - 12) / 2
+                  : constraints.maxWidth);
+
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            _buildKpiCard(
+              title: 'Tiempo de Actividad',
+              value: _formatUptime(m.uptimeSeconds),
+              statusText: 'Normal',
+              statusColor: const Color(0xFF10B981),
+              icon: Icons.timer_outlined,
+              width: cardWidth,
+              isDark: isDark,
+            ),
+            _buildKpiCard(
+              title: 'Memoria RSS en Uso',
+              value: '$memMb MB',
+              statusText: 'Normal',
+              statusColor: const Color(0xFF2563EB),
+              icon: Icons.memory_outlined,
+              width: cardWidth,
+              isDark: isDark,
+            ),
+            _buildKpiCard(
+              title: 'Latencia de Base de Datos',
+              value: '${m.databaseLatencyMs} ms',
+              statusText: m.databaseLatencyMs < 20 ? 'Óptima' : 'Alerta',
+              statusColor: m.databaseLatencyMs < 20
+                  ? const Color(0xFF10B981)
+                  : const Color(0xFFF59E0B),
+              icon: Icons.storage_outlined,
+              width: cardWidth,
+              isDark: isDark,
+            ),
+            _buildKpiCard(
+              title: 'Sesiones Activas',
+              value: '${m.activeSessionsCount}',
+              statusText: 'Conexiones',
+              statusColor: const Color(0xFF8B5CF6),
+              icon: Icons.devices_outlined,
+              width: cardWidth,
+              isDark: isDark,
+            ),
+            _buildKpiCard(
+              title: 'Logins Fallidos (24h)',
+              value: '${m.failedLoginsLast24h}',
+              statusText: m.failedLoginsLast24h == 0
+                  ? 'Sin fallos'
+                  : 'Monitoreado',
+              statusColor: m.failedLoginsLast24h == 0
+                  ? const Color(0xFF10B981)
+                  : const Color(0xFFF59E0B),
+              icon: Icons.shield_outlined,
+              width: cardWidth,
+              isDark: isDark,
+            ),
+          ],
+        );
+      },
     );
   }
 
   Widget _buildKpiCard({
     required String title,
     required String value,
-    required String subtitle,
-    required String badgeText,
-    required Color badgeColor,
+    required String statusText,
+    required Color statusColor,
     required IconData icon,
     required double width,
-    required Color bgCard,
-    required Color borderColor,
-    required Color textPrimary,
-    required Color textMuted,
+    required bool isDark,
   }) {
+    final borderColor = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFE2E8F0);
+    final cardBg = isDark ? const Color(0xFF0F172A) : Colors.white;
+
     return Container(
       width: width,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: bgCard,
-        borderRadius: BorderRadius.circular(12),
+        color: cardBg,
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: borderColor),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF0F172A).withAlpha(8),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -474,317 +480,220 @@ class _ServerMetricsViewState extends State<ServerMetricsView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(icon, size: 20, color: const Color(0xFF1E3A8A)),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
+              Expanded(
+                child: Text(
+                  title,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
                   ),
-                  decoration: BoxDecoration(
-                    color: badgeColor.withAlpha(25),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: badgeColor.withAlpha(60)),
-                  ),
-                  child: Text(
-                    badgeText,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w700,
-                      color: badgeColor,
-                    ),
-                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(icon, size: 16, color: const Color(0xFF64748B)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            value,
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : const Color(0xFF0F172A),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: statusColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                statusText,
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: statusColor,
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: textPrimary,
-              letterSpacing: -0.5,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: textPrimary,
-            ),
-          ),
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: 11.5,
-              color: textMuted,
-            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTelemetryPanel({
-    required Color bgCard,
-    required Color borderColor,
-    required Color textPrimary,
-    required Color textMuted,
-  }) {
+  // --- PANEL DE RUNTIME ---
+  Widget _buildRuntimePanel(bool isDark, bool isNarrow) {
+    final borderColor = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFE2E8F0);
+    final cardBg = isDark ? const Color(0xFF0F172A) : Colors.white;
+    final m = _metrics!;
+
+    final formattedDate =
+        '${m.serverTimestamp.day.toString().padLeft(2, '0')}/${m.serverTimestamp.month.toString().padLeft(2, '0')}/${m.serverTimestamp.year} ${m.serverTimestamp.hour.toString().padLeft(2, '0')}:${m.serverTimestamp.minute.toString().padLeft(2, '0')}:${m.serverTimestamp.second.toString().padLeft(2, '0')} UTC';
+
+    final runtimeItems = [
+      _buildRuntimeItem(
+        'Versión del Sistema',
+        'v${m.serverVersion}',
+        Icons.verified_outlined,
+        isDark,
+      ),
+      _buildRuntimeItem(
+        'Motor de Ejecución',
+        'Serverpod / Dart VM',
+        Icons.code_outlined,
+        isDark,
+      ),
+      _buildRuntimeItem(
+        'Estado del Servicio',
+        'Operativo (Saludable)',
+        Icons.check_circle_outline,
+        isDark,
+      ),
+    ];
+
     return Container(
-      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: bgCard,
+        color: cardBg,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: borderColor),
       ),
+      padding: EdgeInsets.all(isNarrow ? 16 : 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 12,
+            runSpacing: 8,
             children: [
               Text(
-                'Rendimiento en Tiempo Real',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: textPrimary,
+                'Información del Servidor & Runtime',
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E3A8A).withAlpha(20),
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Text(
-                  'Últimas muestras',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF1E3A8A),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Historial de latencia de PostgreSQL y consumo de memoria del proceso',
-            style: TextStyle(fontSize: 13, color: textMuted),
-          ),
-          const SizedBox(height: 20),
-
-          // Historial de Latencia DB (Gráfico de barras / sparkline simple)
-          const Text(
-            'Latencia de Consultas (ms):',
-            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 60,
-            child: _latencyHistory.isEmpty
-                ? Center(
-                    child: Text(
-                      'Recopilando datos...',
-                      style: TextStyle(fontSize: 12, color: textMuted),
-                    ),
-                  )
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: _latencyHistory.map((latency) {
-                      final maxLat = (_latencyHistory.reduce(
-                        (a, b) => a > b ? a : b,
-                      )).clamp(20, 100);
-                      final heightPct = (latency / maxLat).clamp(0.1, 1.0);
-                      return Expanded(
-                        child: Container(
-                          height: 50 * heightPct,
-                          margin: const EdgeInsets.symmetric(horizontal: 2),
-                          decoration: BoxDecoration(
-                            color: latency < 15
-                                ? const Color(0xFF10B981)
-                                : const Color(0xFFF59E0B),
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-          ),
-
-          const SizedBox(height: 18),
-
-          // Historial de Memoria RSS
-          const Text(
-            'Memoria RSS (MB):',
-            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 60,
-            child: _memoryHistoryMb.isEmpty
-                ? Center(
-                    child: Text(
-                      'Recopilando datos...',
-                      style: TextStyle(fontSize: 12, color: textMuted),
-                    ),
-                  )
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: _memoryHistoryMb.map((mem) {
-                      final maxMem = (_memoryHistoryMb.reduce(
-                        (a, b) => a > b ? a : b,
-                      )).clamp(100.0, 500.0);
-                      final heightPct = (mem / maxMem).clamp(0.1, 1.0);
-                      return Expanded(
-                        child: Container(
-                          height: 50 * heightPct,
-                          margin: const EdgeInsets.symmetric(horizontal: 2),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF2563EB),
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRuntimeInfoPanel({
-    required Color bgCard,
-    required Color borderColor,
-    required Color textPrimary,
-    required Color textMuted,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: bgCard,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Información del Servidor & Runtime',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: textPrimary,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Arquitectura de despliegue y dependencias activas',
-            style: TextStyle(fontSize: 13, color: textMuted),
-          ),
-          const SizedBox(height: 18),
-          _infoRow(
-            'Serverpod Version',
-            _metrics?.serverVersion ?? '3.4.13 (monolith)',
-            textMuted,
-            textPrimary,
-          ),
-          _infoRow('Dart SDK', '3.11.1 (stable)', textMuted, textPrimary),
-          _infoRow(
-            'Endpoint Health',
-            '/health -> HTTP 200 OK',
-            textMuted,
-            const Color(0xFF10B981),
-          ),
-          _infoRow(
-            'Base de Datos',
-            'PostgreSQL 16 (dockerized)',
-            textMuted,
-            textPrimary,
-          ),
-          _infoRow(
-            'Pool Conexiones',
-            '10 conexiones máx.',
-            textMuted,
-            textPrimary,
-          ),
-          _infoRow(
-            'Modo de Operación',
-            'Development / Monolith',
-            textMuted,
-            textPrimary,
-          ),
-          _infoRow(
-            'Timestamp Servidor',
-            _metrics?.serverTimestamp.toIso8601String() ?? 'N/A',
-            textMuted,
-            textPrimary,
-          ),
-          const SizedBox(height: 12),
-          const Divider(),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Icon(
-                Icons.verified_user_outlined,
-                size: 16,
-                color: Color(0xFF1E3A8A),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
                 child: Text(
-                  'Cifrado en tránsito TLS 1.3 • Auditoría Inmutable',
-                  style: TextStyle(
+                  formattedDate,
+                  style: GoogleFonts.jetBrainsMono(
                     fontSize: 11,
-                    color: textMuted,
-                    fontWeight: FontWeight.w600,
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
                   ),
                 ),
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          Divider(height: 1, color: borderColor),
+          const SizedBox(height: 16),
+
+          if (isNarrow)
+            Column(
+              children: [
+                runtimeItems[0],
+                const SizedBox(height: 12),
+                runtimeItems[1],
+                const SizedBox(height: 12),
+                runtimeItems[2],
+              ],
+            )
+          else
+            Row(
+              children: [
+                Expanded(child: runtimeItems[0]),
+                Expanded(child: runtimeItems[1]),
+                Expanded(child: runtimeItems[2]),
+              ],
+            ),
         ],
       ),
     );
   }
 
-  Widget _infoRow(String label, String value, Color textMuted, Color textVal) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(fontSize: 13, color: textMuted),
-              overflow: TextOverflow.ellipsis,
-            ),
+  Widget _buildRuntimeItem(
+    String label,
+    String value,
+    IconData icon,
+    bool isDark,
+  ) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+            borderRadius: BorderRadius.circular(6),
           ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: textVal,
-                fontFamily: 'monospace',
+          child: Icon(icon, size: 16, color: const Color(0xFF64748B)),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: GoogleFonts.inter(
+                  fontSize: 11.5,
+                  color: const Color(0xFF64748B),
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
-            ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
-        ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoadingState(bool isDark) {
+    return const Padding(
+      padding: EdgeInsets.all(60),
+      child: Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Color(0xFF2563EB),
+          ),
+        ),
       ),
     );
   }

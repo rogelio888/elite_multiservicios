@@ -194,5 +194,106 @@ void main() {
         expect(find.textContaining('Bitácora de Auditoría'), findsWidgets);
       },
     );
+
+    testWidgets(
+      'SecurityShellScreen allows collapsing and expanding Seguridad section',
+      (tester) async {
+        tester.view.physicalSize = const Size(1280, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        addTearDown(() async {
+          await tester.pumpWidget(const SizedBox());
+          await tester.pump(const Duration(seconds: 5));
+        });
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.lightTheme,
+            home: const SecurityShellScreen(),
+          ),
+        );
+
+        // Al inicio, "Dashboard" y el acordeón "Seguridad" están presentes
+        expect(find.text('Dashboard'), findsOneWidget);
+        expect(
+          find.byKey(const Key('nav_accordion_seguridad')),
+          findsOneWidget,
+        );
+
+        // Como inicia expandido, las sub-pestañas están visibles
+        expect(find.text('Usuarios'), findsOneWidget);
+        expect(find.text('Roles & RBAC'), findsOneWidget);
+        expect(find.text('Auditoría'), findsOneWidget);
+        expect(find.text('Sesiones'), findsOneWidget);
+        expect(find.text('Métricas'), findsOneWidget);
+
+        // Tap en "Seguridad" para contraer el acordeón
+        await tester.tap(find.byKey(const Key('nav_accordion_seguridad')));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        // Tras colapsar, las sub-pestañas no deben estar renderizadas
+        expect(find.text('Usuarios'), findsNothing);
+        expect(find.text('Roles & RBAC'), findsNothing);
+
+        // Tap en "Seguridad" nuevamente para expandir
+        await tester.tap(find.byKey(const Key('nav_accordion_seguridad')));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        // Vuelven a mostrarse
+        expect(find.text('Usuarios'), findsOneWidget);
+        expect(find.text('Roles & RBAC'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'SecurityShellScreen adapts to mobile viewport with Drawer and hamburger menu',
+      (tester) async {
+        // Simular viewport de iPhone 16 Pro Max (440 x 956)
+        tester.view.physicalSize = const Size(440, 956);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        addTearDown(() async {
+          await tester.pumpWidget(const SizedBox());
+          await tester.pump(const Duration(seconds: 5));
+        });
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.lightTheme,
+            home: const SecurityShellScreen(),
+          ),
+        );
+
+        // En móvil, el botón hamburguesa debe estar presente en el Topbar
+        expect(find.byIcon(Icons.menu), findsOneWidget);
+
+        // Al inicio, el sidebar permanente NO debe estar en pantalla principal
+        // (el Drawer está cerrado)
+        expect(find.text('ELITE MULTISERVICIOS'), findsNothing);
+
+        // Abrir Drawer mediante el botón hamburguesa
+        await tester.tap(find.byIcon(Icons.menu));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        // Ahora el contenido del menú debe estar visible dentro del Drawer
+        expect(find.text('ELITE MULTISERVICIOS'), findsOneWidget);
+        expect(find.text('Usuarios'), findsOneWidget);
+
+        // Navegar a Usuarios desde el Drawer
+        await tester.tap(find.text('Usuarios'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        // El drawer se cierra automáticamente y la vista de usuarios se muestra a ancho completo
+        expect(find.text('Gestión de Usuarios'), findsWidgets);
+      },
+    );
   });
 }
