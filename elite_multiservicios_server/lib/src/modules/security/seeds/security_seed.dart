@@ -76,6 +76,44 @@ class SecuritySeed {
       }
     }
 
+    // 3.1 Rol Developer (Ingeniería de Software con acceso total)
+    var devRole = await AppRole.db.findFirstRow(
+      session,
+      where: (t) => t.name.equals('Developer'),
+    );
+
+    devRole ??= await AppRole.db.insertRow(
+      session,
+      AppRole(
+        name: 'Developer',
+        description:
+            'Rol de ingeniería con acceso completo a todos los módulos y telemetría',
+        isSystemRole: true,
+        createdAt: DateTime.now().toUtc(),
+      ),
+    );
+
+    for (final perm in allPermissions) {
+      if (perm.id == null) continue;
+
+      final existingLink = await RolePermission.db.findFirstRow(
+        session,
+        where: (t) =>
+            t.roleId.equals(devRole!.id!) & t.permissionId.equals(perm.id!),
+      );
+
+      if (existingLink == null) {
+        await RolePermission.db.insertRow(
+          session,
+          RolePermission(
+            roleId: devRole.id!,
+            permissionId: perm.id!,
+            assignedAt: DateTime.now().toUtc(),
+          ),
+        );
+      }
+    }
+
     // 4. Sembrado seguro del usuario Administrador Inicial
     final adminEmail =
         Platform.environment['SEED_ADMIN_EMAIL'] ??

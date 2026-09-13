@@ -63,6 +63,14 @@ class RbacRepository {
     return true;
   }
 
+  /// Remueve todos los roles asignados a un usuario.
+  Future<void> removeAllRolesFromUser(int userId) async {
+    await UserRole.db.deleteWhere(
+      session,
+      where: (t) => t.userId.equals(userId),
+    );
+  }
+
   /// Asigna un permiso granular a un rol.
   Future<RolePermission> assignPermissionToRole(
     int roleId,
