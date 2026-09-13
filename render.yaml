@@ -21,29 +21,17 @@ services:
       - key: SERVERPOD_MODE
         value: production
       - key: DATABASE_HOST
-        fromDatabase:
-          name: elite-postgres
-          property: host
+        sync: false
       - key: DATABASE_PORT
-        fromDatabase:
-          name: elite-postgres
-          property: port
+        sync: false
       - key: DATABASE_NAME
-        fromDatabase:
-          name: elite-postgres
-          property: database
+        sync: false
       - key: DATABASE_USER
-        fromDatabase:
-          name: elite-postgres
-          property: user
+        sync: false
       - key: DATABASE_PASSWORD
-        fromDatabase:
-          name: elite-postgres
-          property: password
+        sync: false
       - key: SERVERPOD_PASSWORD_database
-        fromDatabase:
-          name: elite-postgres
-          property: password
+        sync: false
       - key: REDIS_HOST
         fromService:
           type: keyvalue
@@ -113,13 +101,3 @@ services:
     ipAllowList:
       - source: 0.0.0.0/0
         description: everywhere
-
-databases:
-  # ----------------------------------------------------------------------------
-  # Relational Database: Render Postgres
-  # ----------------------------------------------------------------------------
-  - name: elite-postgres
-    plan: free
-    region: ohio
-    databaseName: elite_multiservicios
-    user: elite_user
