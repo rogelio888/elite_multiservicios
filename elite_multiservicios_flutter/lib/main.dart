@@ -110,15 +110,7 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
                 }
                 final user = snapshot.data!;
 
-                // 1. Cambio obligatorio de contraseña
-                if (user.mustChangePassword) {
-                  return ForcePasswordChangeScreen(
-                    authService: _authService,
-                    onPasswordChanged: () => setState(() {}),
-                  );
-                }
-
-                // 2. MFA pendiente
+                // 1. PRIMERO: ¿MFA pendiente?
                 if (_authService.isMfaPending &&
                     _authService.currentMfaChallenge != null) {
                   final challenge = _authService.currentMfaChallenge!;
@@ -131,6 +123,14 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
                       _authService.clearMfaPending();
                       setState(() {});
                     },
+                  );
+                }
+
+                // 2. DESPUÉS: ¿Cambio obligatorio de contraseña?
+                if (user.mustChangePassword) {
+                  return ForcePasswordChangeScreen(
+                    authService: _authService,
+                    onPasswordChanged: () => setState(() {}),
                   );
                 }
 
