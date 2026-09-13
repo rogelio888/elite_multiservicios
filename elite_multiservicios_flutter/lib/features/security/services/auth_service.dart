@@ -123,6 +123,9 @@ class AuthService extends ChangeNotifier {
       return true;
     } catch (e) {
       clearMfaPending();
+      try {
+        await _client.auth.signOutDevice();
+      } catch (_) {}
       if (kDebugMode) {
         print('Error en login: $e');
       }
