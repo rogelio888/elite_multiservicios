@@ -64,7 +64,7 @@ services:
       - key: SMTP_PASSWORD
         sync: false
       - key: SMTP_FROM_EMAIL
-        value: noreply@elitemultiservicios.com
+        value: onboarding@resend.dev
       - key: SMTP_FROM_NAME
         value: Elite Multiservicios
       - key: SEED_ADMIN_EMAIL
