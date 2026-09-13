@@ -11,6 +11,16 @@
 
 echo "==> [entrypoint] Preparando entorno de Serverpod..."
 
+# Puerto de escucha del API Server:
+# Render asigna dinámicamente un puerto en $PORT (por defecto 10000 en plan free).
+# Mapear a la variable nativa SERVERPOD_API_SERVER_PORT para que Render pueda rutear el tráfico.
+if [ -n "$PORT" ]; then
+    export SERVERPOD_API_SERVER_PORT="$PORT"
+    echo "==> [entrypoint] Serverpod API Server escuchará en \$PORT=$PORT"
+elif [ -n "$SERVERPOD_API_SERVER_PORT" ]; then
+    export SERVERPOD_API_SERVER_PORT
+fi
+
 # Database Host
 if [ -n "$SERVERPOD_DATABASE_HOST" ]; then
     export SERVERPOD_DATABASE_HOST
