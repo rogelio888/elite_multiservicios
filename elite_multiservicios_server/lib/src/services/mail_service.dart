@@ -148,22 +148,28 @@ class MailService {
     required String textFallback,
   }) async {
     // 1. Leer de Platform.environment PRIMERO, con fallback a session.passwords.
-    final host = Platform.environment['SMTP_HOST'] ??
+    final host =
+        Platform.environment['SMTP_HOST'] ??
         session.passwords['smtpHost'] ??
         'sandbox.smtp.mailtrap.io';
-    final portStr = Platform.environment['SMTP_PORT'] ??
+    final portStr =
+        Platform.environment['SMTP_PORT'] ??
         session.passwords['smtpPort'] ??
         '2525';
     final port = int.tryParse(portStr) ?? 2525;
-    final username = Platform.environment['SMTP_USERNAME'] ??
+    final username =
+        Platform.environment['SMTP_USERNAME'] ??
         session.passwords['smtpUsername'] ??
         '0139e7cf5c0c9a';
-    final password = Platform.environment['SMTP_PASSWORD'] ??
+    final password =
+        Platform.environment['SMTP_PASSWORD'] ??
         session.passwords['smtpPassword'];
-    final fromEmail = Platform.environment['SMTP_FROM_EMAIL'] ??
+    final fromEmail =
+        Platform.environment['SMTP_FROM_EMAIL'] ??
         session.passwords['smtpFromEmail'] ??
         'soporte@elitemultiservicios.com';
-    final fromName = Platform.environment['SMTP_FROM_NAME'] ??
+    final fromName =
+        Platform.environment['SMTP_FROM_NAME'] ??
         session.passwords['smtpFromName'] ??
         'Elite Multiservicios';
 
