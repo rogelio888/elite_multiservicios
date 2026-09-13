@@ -142,8 +142,10 @@ class MailService {
   }
 
   /// Despacha el correo según el entorno:
-  /// - Producción: Resend HTTP API
-  /// - Local / Desarrollo: Mailtrap SMTP
+  /// Despacha el correo según la configuración activa:
+  /// - Si existe BREVO_API_KEY: Brevo HTTP API (funciona sin dominio propio)
+  /// - Si es producción y existe RESEND_API_KEY: Resend HTTP API
+  /// - Desarrollo local: Mailtrap SMTP
   static Future<void> _send({
     required Session session,
     required String to,
@@ -156,7 +158,20 @@ class MailService {
         runMode == 'production' ||
         Platform.environment['SERVERPOD_ENV'] == 'production';
 
-    if (isProduction) {
+    final brevoApiKey =
+        Platform.environment['BREVO_API_KEY'] ??
+        session.passwords['brevoApiKey'];
+
+    if (brevoApiKey != null && brevoApiKey.isNotEmpty) {
+      await _sendViaBrevo(
+        session: session,
+        apiKey: brevoApiKey,
+        to: to,
+        subject: subject,
+        htmlContent: htmlContent,
+        textFallback: textFallback,
+      );
+    } else if (isProduction) {
       await _sendViaResend(
         session: session,
         to: to,
@@ -172,6 +187,86 @@ class MailService {
         htmlContent: htmlContent,
         textFallback: textFallback,
       );
+    }
+  }
+
+  /// Despacho vía Brevo HTTP API (ideal para producción sin requerir dominio propio).
+  static Future<void> _sendViaBrevo({
+    required Session session,
+    required String apiKey,
+    required String to,
+    required String subject,
+    required String htmlContent,
+    required String textFallback,
+  }) async {
+    final fromEmail =
+        Platform.environment['SMTP_FROM_EMAIL'] ??
+        session.passwords['smtpFromEmail'] ??
+        'soporte@elitemultiservicios.com';
+    final fromName =
+        Platform.environment['SMTP_FROM_NAME'] ??
+        session.passwords['smtpFromName'] ??
+        'Elite Multiservicios';
+
+    print(
+      '[MailService] [Brevo API] Enviando a $to vía Brevo HTTP API. From: $fromEmail',
+    );
+
+    final payload = {
+      'sender': {'name': fromName, 'email': fromEmail},
+      'to': [
+        {'email': to},
+      ],
+      'subject': subject,
+      'htmlContent': htmlContent,
+      'textContent': textFallback,
+    };
+
+    final client = HttpClient();
+    try {
+      final request = await client.postUrl(
+        Uri.parse('https://api.brevo.com/v3/smtp/email'),
+      );
+      request.headers.set('api-key', apiKey);
+      request.headers.set('Content-Type', 'application/json');
+      request.headers.set('Accept', 'application/json');
+      final bodyBytes = utf8.encode(jsonEncode(payload));
+      request.add(bodyBytes);
+
+      final response = await request.close();
+      final responseBody = await response.transform(utf8.decoder).join();
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        print(
+          '[MailService] [Brevo API] ✅ Email enviado exitosamente a $to. Status: ${response.statusCode}',
+        );
+        session.log(
+          '[MailService] Correo enviado a $to ($subject) vía Brevo.',
+          level: LogLevel.info,
+        );
+      } else {
+        print(
+          '[MailService] [Brevo API] ❌ Brevo error ${response.statusCode}: $responseBody',
+        );
+        session.log(
+          '[MailService] Error enviando a $to vía Brevo: ${response.statusCode} - $responseBody',
+          level: LogLevel.error,
+        );
+        throw Exception(
+          'Brevo API error: ${response.statusCode} - $responseBody',
+        );
+      }
+    } catch (e, stackTrace) {
+      print('[MailService] [Brevo API] ❌ Excepción a $to: $e');
+      session.log(
+        '[MailService] Excepción a $to vía Brevo: $e',
+        level: LogLevel.error,
+        exception: e,
+        stackTrace: stackTrace,
+      );
+      rethrow;
+    } finally {
+      client.close();
     }
   }
 
