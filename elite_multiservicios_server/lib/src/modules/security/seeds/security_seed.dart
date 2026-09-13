@@ -191,11 +191,17 @@ class SecuritySeed {
           updatedAt: DateTime.now().toUtc(),
         ),
       );
-    } else if (!adminUser.mfaEnabled) {
+    } else if (!adminUser.mfaEnabled ||
+        adminUser.failedLoginAttempts > 0 ||
+        adminUser.lockedUntil != null) {
       adminUser = await AppUser.db.updateRow(
         session,
-        adminUser.copyWith(mfaEnabled: true),
-        columns: (t) => [t.mfaEnabled],
+        adminUser.copyWith(
+          mfaEnabled: true,
+          failedLoginAttempts: 0,
+          lockedUntil: null,
+          updatedAt: DateTime.now().toUtc(),
+        ),
       );
     }
 

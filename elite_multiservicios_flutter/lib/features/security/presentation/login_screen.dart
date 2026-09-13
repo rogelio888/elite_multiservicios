@@ -39,6 +39,20 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _authService = widget.authService ?? AuthService();
+    _loadRememberMePreference();
+  }
+
+  Future<void> _loadRememberMePreference() async {
+    final remember = await _authService.getRememberMePreference();
+    final email = await _authService.getRememberedEmail();
+    if (mounted) {
+      setState(() {
+        _rememberMe = remember;
+        if (remember && email != null && email.isNotEmpty) {
+          _emailController.text = email;
+        }
+      });
+    }
   }
 
   @override
@@ -292,34 +306,51 @@ class _LoginScreenState extends State<LoginScreen> {
             Row(
               children: [
                 Expanded(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: Checkbox(
-                          value: _rememberMe,
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(4),
+                    onTap: () {
+                      final newVal = !_rememberMe;
+                      setState(() => _rememberMe = newVal);
+                      _authService.saveRememberMePreference(
+                        rememberMe: newVal,
+                        email: _emailController.text,
+                      );
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: Checkbox(
+                            value: _rememberMe,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            onChanged: (v) {
+                              final newVal = v ?? false;
+                              setState(() => _rememberMe = newVal);
+                              _authService.saveRememberMePreference(
+                                rememberMe: newVal,
+                                email: _emailController.text,
+                              );
+                            },
                           ),
-                          onChanged: (v) =>
-                              setState(() => _rememberMe = v ?? false),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Recordarme',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: isDark
-                              ? const Color(0xFF94A3B8)
-                              : const Color(0xFF64748B),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Recordarme',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: isDark
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFF64748B),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 Flexible(
