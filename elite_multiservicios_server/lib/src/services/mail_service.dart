@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+import 'dart:io';
 import 'package:mailer/mailer.dart' as mailer;
 import 'package:mailer/smtp_server.dart';
 import 'package:serverpod/serverpod.dart';
@@ -137,7 +139,7 @@ class MailService {
     );
   }
 
-  /// Despacha un correo electrónico vía SMTP configurado en session.passwords.
+  /// Despacha un correo electrónico vía SMTP configurado en session.passwords o env vars.
   static Future<void> _send({
     required Session session,
     required String to,
@@ -145,31 +147,58 @@ class MailService {
     required String htmlContent,
     required String textFallback,
   }) async {
-    final host = session.passwords['smtpHost'] ?? 'sandbox.smtp.mailtrap.io';
-    final portStr = session.passwords['smtpPort'] ?? '2525';
+    // 1. Leer de Platform.environment PRIMERO, con fallback a session.passwords.
+    final host =
+        Platform.environment['SMTP_HOST'] ??
+        session.passwords['smtpHost'] ??
+        'sandbox.smtp.mailtrap.io';
+    final portStr =
+        Platform.environment['SMTP_PORT'] ??
+        session.passwords['smtpPort'] ??
+        '2525';
     final port = int.tryParse(portStr) ?? 2525;
-    final username = session.passwords['smtpUsername'] ?? '0139e7cf5c0c9a';
-    final password = session.passwords['smtpPassword'];
+    final username =
+        Platform.environment['SMTP_USERNAME'] ??
+        session.passwords['smtpUsername'] ??
+        '0139e7cf5c0c9a';
+    final password =
+        Platform.environment['SMTP_PASSWORD'] ??
+        session.passwords['smtpPassword'];
     final fromEmail =
-        session.passwords['smtpFromEmail'] ?? 'soporte@elitemultiservicios.com';
+        Platform.environment['SMTP_FROM_EMAIL'] ??
+        session.passwords['smtpFromEmail'] ??
+        'soporte@elitemultiservicios.com';
     final fromName =
-        session.passwords['smtpFromName'] ?? 'Elite Multiservicios';
+        Platform.environment['SMTP_FROM_NAME'] ??
+        session.passwords['smtpFromName'] ??
+        'Elite Multiservicios';
+
+    // 2. Logs con print() para que aparezcan en Render stdout.
+    print(
+      '[MailService] Intentando enviar email a $to. Host: $host:$port, From: $fromEmail',
+    );
 
     if (password == null || password.isEmpty) {
+      print(
+        '[MailService] ⚠️ SMTP_PASSWORD no configurado. Email NO enviado a $to.',
+      );
       session.log(
-        '⚠️ smtpPassword no configurado en passwords.yaml. Correo no enviado a $to. Contenido: $textFallback',
+        '⚠️ smtpPassword no configurado. Correo no enviado a $to.',
         level: LogLevel.warning,
       );
       return;
     }
+
+    // 3. SSL según puerto (465 = SSL directo, 587 = STARTTLS, 25/2525 = sin SSL).
+    final useSsl = port == 465;
 
     final smtpServer = SmtpServer(
       host,
       port: port,
       username: username,
       password: password,
-      ssl: false,
-      allowInsecure: true,
+      ssl: useSsl,
+      allowInsecure: !useSsl && port != 587,
     );
 
     final message = mailer.Message()
@@ -181,11 +210,13 @@ class MailService {
 
     try {
       final sendReport = await mailer.send(message, smtpServer);
+      print('[MailService] ✅ Correo enviado a $to. Reporte: $sendReport');
       session.log(
-        '[MailService] Correo enviado exitosamente a $to ($subject). Reporte: $sendReport',
+        '[MailService] Correo enviado exitosamente a $to ($subject).',
         level: LogLevel.info,
       );
     } catch (e, stackTrace) {
+      print('[MailService] ❌ Error enviando a $to: $e');
       session.log(
         '[MailService] Error despachando correo a $to: $e',
         level: LogLevel.error,
