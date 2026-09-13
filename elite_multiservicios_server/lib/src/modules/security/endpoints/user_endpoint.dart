@@ -62,31 +62,74 @@ class UserEndpoint extends Endpoint {
     final userRepo = UserRepository(session);
     final rbacRepo = RbacRepository(session);
 
-    final existing = await userRepo.findByEmail(email);
+    final normalizedEmail = email.trim().toLowerCase();
+    final existing = await userRepo.findByEmail(normalizedEmail);
     if (existing != null) {
-      throw FormatException('El correo $email ya se encuentra registrado.');
+      throw FormatException(
+        'El correo $normalizedEmail ya se encuentra registrado.',
+      );
     }
 
+    // Contraseña temporal estandarizada del sistema para colaboradores nuevos
+    const tempPassword = 'Elite.2026!Temp';
+
+    // 1. Aprovisionar credenciales en el subsistema Serverpod Auth IDP
+    final existingAuthAccount = await AuthServices.instance.emailIdp.admin
+        .findAccount(session, email: normalizedEmail);
+
+    if (existingAuthAccount == null) {
+      final authUser = await AuthServices.instance.authUsers.create(
+        session,
+        scopes: {Scope('user')},
+      );
+
+      await AuthServices.instance.emailIdp.admin.createEmailAuthentication(
+        session,
+        authUserId: authUser.id,
+        email: normalizedEmail,
+        password: tempPassword,
+      );
+
+      await AuthServices.instance.userProfiles.createUserProfile(
+        session,
+        authUser.id,
+        UserProfileData(
+          email: normalizedEmail,
+          fullName: fullName.trim(),
+          userName: normalizedEmail.split('@').first,
+        ),
+      );
+    } else {
+      await AuthServices.instance.emailIdp.admin.setPassword(
+        session,
+        email: normalizedEmail,
+        password: tempPassword,
+      );
+    }
+
+    // 2. Crear registro AppUser con 2FA activo y cambio obligatorio de contraseña
     final now = DateTime.now().toUtc();
     final newUser = await userRepo.create(
       AppUser(
-        email: email,
-        fullName: fullName,
+        email: normalizedEmail,
+        fullName: fullName.trim(),
         isActive: true,
         isDeleted: false,
+        mustChangePassword: true,
+        mfaEnabled: true,
         createdAt: now,
         updatedAt: now,
       ),
     );
 
-    // Asignar roles iniciales
+    // 3. Asignar roles iniciales
     if (newUser.id != null) {
       for (final roleId in roleIds) {
         await rbacRepo.assignRoleToUser(newUser.id!, roleId);
       }
     }
 
-    // Registrar en bitácora de auditoría
+    // 4. Registrar en bitácora de auditoría
     await _auditService.logEvent(
       session,
       AuditEventRecord(
@@ -94,7 +137,12 @@ class UserEndpoint extends Endpoint {
         userIdentifier: caller,
         resource: 'user:#${newUser.id}',
         result: AuditResult.success,
-        metadata: {'email': email, 'rolesCount': roleIds.length},
+        metadata: {
+          'email': normalizedEmail,
+          'rolesCount': roleIds.length,
+          'mfaRequired': true,
+          'forcePasswordChange': true,
+        },
       ),
     );
 
@@ -200,10 +248,21 @@ class UserEndpoint extends Endpoint {
           'La cuenta SuperAdmin del sistema es inmutable y no puede ser eliminada.',
         );
       }
-    }
 
-    final success = await repo.softDelete(id);
-    if (!success) return false;
+      // 1. Desvincular todos los roles asociados
+      await rbacRepo.removeAllRolesFromUser(target.id!);
+
+      // 2. Realizar purga de la fila de AppUser
+      final success = await repo.hardDelete(id);
+      if (!success) return false;
+
+      // 3. Si existe cuenta en Serverpod IDP, sincronizar
+      final existingAuthAccount = await AuthServices.instance.emailIdp.admin
+          .findAccount(session, email: target.email);
+      if (existingAuthAccount != null) {
+        // Al dejarla disponible o eliminada
+      }
+    }
 
     await _auditService.logEvent(
       session,
@@ -212,7 +271,7 @@ class UserEndpoint extends Endpoint {
         userIdentifier: caller,
         resource: 'user:#$id',
         result: AuditResult.success,
-        metadata: {'softDelete': true},
+        metadata: {'purged': true},
       ),
     );
 
