@@ -52,6 +52,10 @@ COPY --from=builder /app/elite_multiservicios_server/migrations/ /app/migrations
 COPY --from=builder /app/elite_multiservicios_server/web/ /app/web/
 COPY --from=builder /app/elite_multiservicios_server/lib/src/generated/protocol.yaml /app/lib/src/generated/protocol.yaml
 
+# Copiar script de entrypoint y otorgar permisos de ejecución
+COPY --from=builder /app/elite_multiservicios_server/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 # Puertos expuestos: 8080 (API), 8081 (Insights), 8082 (Web)
 EXPOSE 8080 8081 8082
 
@@ -59,5 +63,6 @@ EXPOSE 8080 8081 8082
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8082/health || exit 1
 
-# Comando de arranque
-CMD ["/app/bin/server", "--apply-migrations", "--mode", "production"]
+# Entrypoint y comando de arranque
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["--apply-migrations", "--mode", "production"]
