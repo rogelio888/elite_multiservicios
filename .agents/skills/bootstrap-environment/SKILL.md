@@ -27,11 +27,24 @@ Cuando el colaborador dice frases como:
 docker --version
 flutter --version
 dart --version
+gh --version
 Test-Path .env
 Test-Path elite_multiservicios_server/config/passwords.yaml
 ```
 
-Si algún comando falla, **DETENERSE** y avisar al colaborador.
+Si `gh` no está instalado, instalarlo automáticamente:
+```powershell
+winget install --id GitHub.cli --accept-source-agreements --accept-package-agreements
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+```
+
+Verificar autenticación en GitHub CLI:
+```powershell
+gh auth status
+```
+Si no está autenticado, solicitar al colaborador que ejecute `gh auth login --web`.
+
+Si algún otro comando falla, **DETENERSE** y avisar al colaborador.
 
 Si `.env` no existe, avisar:
 > *"Ejecutá primero `copy .env.example .env` y completá las variables."*
