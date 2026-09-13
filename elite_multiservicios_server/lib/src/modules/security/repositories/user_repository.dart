@@ -65,4 +65,13 @@ class UserRepository {
     await update(user.copyWith(isDeleted: true, isActive: false));
     return true;
   }
+
+  /// Realiza un borrado físico completo de un usuario para permitir su recreación limpia.
+  Future<bool> hardDelete(int id) async {
+    final user = await findById(id);
+    if (user == null) return false;
+
+    await AppUser.db.deleteRow(session, user);
+    return true;
+  }
 }
