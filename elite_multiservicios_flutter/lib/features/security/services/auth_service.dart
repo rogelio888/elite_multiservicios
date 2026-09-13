@@ -10,6 +10,8 @@ import 'security_api_service.dart';
 /// y auditoría server-side de cierre de sesión en Elite Multiservicios.
 class AuthService extends ChangeNotifier {
   static const _trustedDeviceKey = 'trusted_device_token';
+  static const _rememberMeKey = 'remember_me_preference';
+  static const _rememberedEmailKey = 'remembered_email';
   final _secureStorage = const FlutterSecureStorage();
 
   bool _isMfaPending = false;
@@ -118,6 +120,11 @@ class AuthService extends ChangeNotifier {
       } else {
         clearMfaPending();
       }
+
+      await saveRememberMePreference(
+        rememberMe: rememberMe,
+        email: email,
+      );
 
       return true;
     } catch (e) {
@@ -245,6 +252,51 @@ class AuthService extends ChangeNotifier {
     } catch (e) {
       if (kDebugMode) {
         print('Error eliminando trusted device token: $e');
+      }
+    }
+  }
+
+  /// Retorna si el usuario tenía activada la preferencia 'Recordarme'.
+  Future<bool> getRememberMePreference() async {
+    try {
+      final val = await _secureStorage.read(key: _rememberMeKey);
+      return val == 'true';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Retorna el correo recordado si existiera.
+  Future<String?> getRememberedEmail() async {
+    try {
+      return await _secureStorage.read(key: _rememberedEmailKey);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Guarda o elimina la preferencia 'Recordarme' y el correo recordado.
+  Future<void> saveRememberMePreference({
+    required bool rememberMe,
+    String? email,
+  }) async {
+    try {
+      if (rememberMe) {
+        await _secureStorage.write(key: _rememberMeKey, value: 'true');
+        if (email != null && email.trim().isNotEmpty) {
+          await _secureStorage.write(
+            key: _rememberedEmailKey,
+            value: email.trim(),
+          );
+        }
+      } else {
+        await _secureStorage.delete(key: _rememberMeKey);
+        await _secureStorage.delete(key: _rememberedEmailKey);
+        await clearTrustedDeviceToken();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error guardando preferencia rememberMe: $e');
       }
     }
   }
