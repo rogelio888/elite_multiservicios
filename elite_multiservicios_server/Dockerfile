@@ -57,11 +57,12 @@ COPY --from=builder /app/elite_multiservicios_server/entrypoint.sh /app/entrypoi
 RUN chmod +x /app/entrypoint.sh
 
 # Puertos expuestos: 8080 (API), 8081 (Insights), 8082 (Web)
+ENV PORT=8080
 EXPOSE 8080 8081 8082
 
-# Healthcheck contra el WebServer en puerto 8082 (/health)
+# Healthcheck contra el API Server en puerto 8080 (/livez)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:8082/health || exit 1
+    CMD curl -f http://localhost:8080/livez || exit 1
 
 # Entrypoint y comando de arranque
 ENTRYPOINT ["/app/entrypoint.sh"]
