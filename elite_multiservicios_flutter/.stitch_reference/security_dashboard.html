@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elite Multiservicios - Panel de Control de Seguridad</title>
+  <!-- Google Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Hanken Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          colors: {
+            brand: {
+              darkest: '#050811',
+              sidebar: '#0b1120',
+              canvas: '#080d1a',
+              card: '#0f172a',
+              cardHover: '#131e36',
+              border: '#1e293b',
+              borderBright: '#334155'
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'spin-slow': 'spin 12s linear infinite'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Hanken Grotesk', sans-serif;
+      background-color: #080d1a;
+      color: #f1f5f9;
+    }
+    .glow-blue {
+      box-shadow: 0 0 25px -5px rgba(37, 99, 235, 0.25);
+    }
+    .glow-cyan {
+      box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.25);
+    }
+    .glow-indigo {
+      box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.25);
+    }
+    .glow-amber {
+      box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.25);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0b1120;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(30, 41, 59, 0.8);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex antialiased bg-[#080d1a] text-slate-100 overflow-x-hidden selection:bg-blue-600 selection:text-white">
+
+  <!-- ========================================================================= -->
+  <!-- SIDEBAR DE NAVEGACIÓN COMPLETO (DARK NAVY #0b1120) -->
+  <!-- ========================================================================= -->
+  <aside class="w-64 bg-[#0b1120] border-r border-slate-800/80 flex flex-col justify-between shrink-0 min-h-screen z-30 transition-all duration-300 select-none shadow-xl">
+    <!-- Top Branding & Navigation -->
+    <div>
+      <!-- Brand Logo / Header -->
+      <div class="h-16 px-5 flex items-center gap-3 border-b border-slate-800/60 bg-[#080d1a]/50">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-600/30 border border-blue-400/30 shrink-0">
+          <span class="material-symbols-outlined text-white text-22px">shield</span>
+        </div>
+        <div class="flex flex-col min-w-0">
+          <span class="font-extrabold text-sm tracking-tight text-white uppercase truncate">Elite Multiservicios</span>
+          <span class="text-[11px] font-medium text-blue-400/90 tracking-wide flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            Módulo de Seguridad
+          </span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-3 space-y-1.5 mt-2">
+        <!-- Section label -->
+        <div class="px-3 pt-2 pb-1 text-[10px] font-semibold tracking-wider text-slate-500 uppercase">
+          Operaciones Principales
+        </div>
+
+        <!-- Dashboard (Active) -->
+        <a href="#dashboard" class="group flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold text-sm shadow-md shadow-blue-600/30 border border-blue-400/30 transition-all duration-150">
+          <span class="material-symbols-outlined text-xl text-white group-hover:scale-110 transition-transform">dashboard</span>
+          <span class="flex-1">Dashboard</span>
+          <span class="w-1.5 h-4 rounded-full bg-blue-200"></span>
+        </a>
+
+        <!-- Usuarios -->
+        <a href="#usuarios" class="group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 text-sm font-medium transition-all duration-150 border border-transparent hover:border-slate-800">
+          <span class="material-symbols-outlined text-xl text-slate-400 group-hover:text-blue-400 transition-colors">group</span>
+          <span class="flex-1">Usuarios</span>
+          <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-800/80 text-slate-400 border border-slate-700/60">12</span>
+        </a>
+
+        <!-- Roles & RBAC -->
+        <a href="#roles" class="group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 text-sm font-medium transition-all duration-150 border border-transparent hover:border-slate-800">
+          <span class="material-symbols-outlined text-xl text-slate-400 group-hover:text-indigo-400 transition-colors">admin_panel_settings</span>
+          <span class="flex-1">Roles &amp; RBAC</span>
+          <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-800/80 text-slate-400 border border-slate-700/60">4</span>
+        </a>
+
+        <!-- Auditoría -->
+        <a href="#auditoria" class="group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 text-sm font-medium transition-all duration-150 border border-transparent hover:border-slate-800">
+          <span class="material-symbols-outlined text-xl text-slate-400 group-hover:text-amber-400 transition-colors">history_edu</span>
+          <span class="flex-1">Auditoría</span>
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        </a>
+
+        <!-- Sesiones -->
+        <a href="#sesiones" class="group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 text-sm font-medium transition-all duration-150 border border-transparent hover:border-slate-800">
+          <span class="material-symbols-outlined text-xl text-slate-400 group-hover:text-cyan-400 transition-colors">devices</span>
+          <span class="flex-1">Sesiones</span>
+          <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-emerald-950/60 text-emerald-400 border border-emerald-800/40">3 vivas</span>
+        </a>
+
+        <!-- Métricas -->
+        <a href="#metricas" class="group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 text-sm font-medium transition-all duration-150 border border-transparent hover:border-slate-800">
+          <span class="material-symbols-outlined text-xl text-slate-400 group-hover:text-emerald-400 transition-colors">analytics</span>
+          <span class="flex-1">Métricas</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Bottom Actions: Logout & Collapse -->
+    <div class="p-3 border-t border-slate-800/80 bg-[#080d1a]/60 space-y-1">
+      <button class="w-full group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 text-sm font-medium transition-all duration-150 border border-transparent hover:border-red-500/20">
+        <span class="material-symbols-outlined text-xl text-red-400 group-hover:translate-x-0.5 transition-transform">logout</span>
+        <span class="flex-1 text-left font-semibold">Cerrar Sesión</span>
+      </button>
+
+      <button class="w-full group flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 text-xs font-medium transition-all duration-150">
+        <span class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-base text-slate-400 group-hover:-translate-x-0.5 transition-transform">chevron_left</span>
+          <span>Colapsar Menú</span>
+        </span>
+        <kbd class="text-[10px] font-mono px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded border border-slate-700">Ctrl+B</kbd>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN WORKSPACE & DASHBOARD CONTENT -->
+  <!-- ========================================================================= -->
+  <div class="flex-1 flex flex-col min-w-0 min-h-screen bg-[#080d1a]">
+
+    <!-- TOP APP BAR -->
+    <header class="h-16 px-8 bg-[#0b1120]/80 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between sticky top-0 z-20">
+      <!-- Title & Breadcrumb -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
+          <span>Seguridad</span>
+          <span class="text-slate-600">/</span>
+          <span class="text-slate-200 font-semibold">Dashboard General</span>
+        </div>
+      </div>
+
+      <!-- Right Top Actions: Mode Toggle, User info, Logout Icon -->
+      <div class="flex items-center gap-4">
+        <!-- Theme Toggle (Dark Mode Indicator) -->
+        <button title="Cambiar tema" class="w-9 h-9 rounded-xl bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700/70 flex items-center justify-center text-amber-400 hover:text-amber-300 transition-all">
+          <span class="material-symbols-outlined text-xl">dark_mode</span>
+        </button>
+
+        <!-- Notification Ping -->
+        <button title="Notificaciones" class="relative w-9 h-9 rounded-xl bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700/70 flex items-center justify-center text-slate-300 hover:text-white transition-all">
+          <span class="material-symbols-outlined text-xl">notifications</span>
+          <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-blue-500 ring-2 ring-[#0b1120]"></span>
+        </button>
+
+        <!-- Divider -->
+        <div class="h-6 w-px bg-slate-800"></div>
+
+        <!-- User Identity Info & Avatar -->
+        <div class="flex items-center gap-3 pl-1">
+          <div class="relative">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center font-bold text-white text-xs shadow-md shadow-indigo-500/20 border border-white/20">
+              AD
+            </div>
+            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#0b1120]"></span>
+          </div>
+          <div class="flex flex-col text-left hidden sm:flex">
+            <span class="text-xs font-bold text-slate-200 leading-tight">Usuario</span>
+            <span class="text-[11px] font-mono text-slate-400 leading-tight">admin@elitemultiservicios.com</span>
+          </div>
+          <button title="Cerrar sesión" class="ml-1 p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors">
+            <span class="material-symbols-outlined text-lg">logout</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- DASHBOARD SCROLLABLE CONTAINER -->
+    <main class="flex-1 p-8 space-y-7 custom-scrollbar overflow-y-auto max-w-[1600px] w-full mx-auto">
+
+      <!-- ===================================================================== -->
+      <!-- HEADER SECTION -->
+      <!-- ===================================================================== -->
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-2 border-b border-slate-800/60">
+        <div>
+          <div class="flex items-center gap-3">
+            <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight" style="letter-spacing: -0.02em;">
+              Panel de Control de Seguridad
+            </h1>
+            <span class="px-2.5 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/30 text-blue-400 font-mono text-xs font-semibold">
+              v4.2 PROD
+            </span>
+          </div>
+          <p class="text-slate-400 text-sm mt-1">
+            Monitoreo centralizado, control de accesos RBAC y auditoría inmutable
+          </p>
+        </div>
+
+        <!-- Right Header Badges & Actions -->
+        <div class="flex items-center gap-3 self-start lg:self-center">
+          <!-- Serverpod Online Status Badge (Animated Glowing Emerald) -->
+          <div class="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs font-semibold shadow-lg shadow-emerald-900/20">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span class="font-mono tracking-tight">Serverpod Online</span>
+            <span class="w-1 h-1 rounded-full bg-emerald-600"></span>
+            <span class="text-[10px] text-emerald-300/80 font-mono">38ms</span>
+          </div>
+
+          <!-- Refresh Button -->
+          <button title="Actualizar datos" class="group flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/80 text-slate-200 hover:text-white text-xs font-medium shadow-sm transition-all duration-150 active:scale-95">
+            <span class="material-symbols-outlined text-base text-blue-400 group-hover:rotate-180 transition-transform duration-500">sync</span>
+            <span>Actualizar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- 4 DYNAMIC KPI CARDS WITH DEPTH & COLORED GLOW -->
+      <!-- ===================================================================== -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+
+        <!-- CARD 1: Usuarios Activos (Blue Glow) -->
+        <div class="relative group rounded-2xl bg-gradient-to-b from-[#0f172a] to-[#0c1424] p-5 border border-slate-800 hover:border-blue-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-blue-950/40 glow-blue overflow-hidden">
+          <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-blue-600/10 rounded-full blur-xl group-hover:bg-blue-600/20 transition-all"></div>
+          <div class="flex items-start justify-between">
+            <div class="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shadow-inner">
+              <span class="material-symbols-outlined text-2xl">group</span>
+            </div>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+              <span class="material-symbols-outlined text-xs">trending_up</span>
+              +8% este mes
+            </span>
+          </div>
+          <div class="mt-4">
+            <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Usuarios Activos</p>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-extrabold text-white font-mono tracking-tight">12</span>
+              <span class="text-xs text-slate-500 font-mono">/ 13 total</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-2 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+              Cuentas empresariales activas
+            </p>
+          </div>
+        </div>
+
+        <!-- CARD 2: Roles de Sistema (Indigo Glow) -->
+        <div class="relative group rounded-2xl bg-gradient-to-b from-[#0f172a] to-[#0c1424] p-5 border border-slate-800 hover:border-indigo-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-950/40 glow-indigo overflow-hidden">
+          <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-indigo-600/10 rounded-full blur-xl group-hover:bg-indigo-600/20 transition-all"></div>
+          <div class="flex items-start justify-between">
+            <div class="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shadow-inner">
+              <span class="material-symbols-outlined text-2xl">shield_person</span>
+            </div>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-mono">
+              RBAC Activo
+            </span>
+          </div>
+          <div class="mt-4">
+            <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Roles de Sistema</p>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-extrabold text-white font-mono tracking-tight">4</span>
+              <span class="text-xs text-slate-500 font-mono">perfiles</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-2 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+              Perfiles y políticas configuradas
+            </p>
+          </div>
+        </div>
+
+        <!-- CARD 3: Eventos de Bitácora (Amber Glow) -->
+        <div class="relative group rounded-2xl bg-gradient-to-b from-[#0f172a] to-[#0c1424] p-5 border border-slate-800 hover:border-amber-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-amber-950/40 glow-amber overflow-hidden">
+          <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-amber-600/10 rounded-full blur-xl group-hover:bg-amber-600/20 transition-all"></div>
+          <div class="flex items-start justify-between">
+            <div class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shadow-inner">
+              <span class="material-symbols-outlined text-2xl">history</span>
+            </div>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+              En tiempo real
+            </span>
+          </div>
+          <div class="mt-4">
+            <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Eventos de Bitácora</p>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-extrabold text-white font-mono tracking-tight">148</span>
+              <span class="text-xs text-slate-500 font-mono">hoy</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-2 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+              Registros inmutables en PostgreSQL
+            </p>
+          </div>
+        </div>
+
+        <!-- CARD 4: Sesiones Activas (Cyan Glow) -->
+        <div class="relative group rounded-2xl bg-gradient-to-b from-[#0f172a] to-[#0c1424] p-5 border border-slate-800 hover:border-cyan-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-950/40 glow-cyan overflow-hidden">
+          <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-cyan-600/10 rounded-full blur-xl group-hover:bg-cyan-600/20 transition-all"></div>
+          <div class="flex items-start justify-between">
+            <div class="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center shadow-inner">
+              <span class="material-symbols-outlined text-2xl">devices</span>
+            </div>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 font-mono">
+              Concurrencia viva
+            </span>
+          </div>
+          <div class="mt-4">
+            <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Sesiones Activas</p>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-extrabold text-white font-mono tracking-tight">3</span>
+              <span class="text-xs text-emerald-400 font-mono font-medium">100% MFA OK</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-2 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+              Dispositivos autenticados por MFA
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- DYNAMIC ACTIVITY CHART / DISTRIBUTION BREAKDOWN (LAST 24H) -->
+      <!-- ===================================================================== -->
+      <section class="rounded-2xl bg-gradient-to-b from-[#0f172a] to-[#0b1222] border border-slate-800/90 p-6 shadow-xl">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+              <span class="material-symbols-outlined text-lg">donut_large</span>
+            </div>
+            <div>
+              <h2 class="text-base font-bold text-white tracking-tight">
+                Distribución de Eventos de Seguridad (Últimas 24h)
+              </h2>
+              <p class="text-xs text-slate-400">Desglose porcentual y telemetría operativa de eventos de autenticación</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono text-slate-400 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60">
+              Total: 148 eventos procesados
+            </span>
+          </div>
+        </div>
+
+        <!-- Segmented Colored Progress Bar with Glow -->
+        <div class="w-full h-3.5 bg-slate-900 rounded-full overflow-hidden flex p-0.5 border border-slate-800 shadow-inner">
+          <div class="h-full bg-blue-500 rounded-l-full relative group transition-all duration-300" style="width: 45%;" title="Inicios de Sesión: 45%">
+            <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </div>
+          <div class="h-full bg-cyan-400 relative group transition-all duration-300" style="width: 30%;" title="Verificación MFA: 30%">
+            <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </div>
+          <div class="h-full bg-purple-500 relative group transition-all duration-300" style="width: 15%;" title="Cambios de Contraseña: 15%">
+            <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </div>
+          <div class="h-full bg-rose-500 rounded-r-full relative group transition-all duration-300" style="width: 10%;" title="Bloqueos de Seguridad: 10%">
+            <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </div>
+        </div>
+
+        <!-- Metric Breakdown Legend with Interactive Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
+          <!-- Item 1 -->
+          <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-blue-500/30 transition-all flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-md bg-blue-500 shadow-sm shadow-blue-500/50"></span>
+              <span class="text-xs font-semibold text-slate-300">Inicios de Sesión</span>
+            </div>
+            <div class="text-right">
+              <span class="text-sm font-bold font-mono text-white">45%</span>
+              <span class="text-[10px] text-slate-500 font-mono block">67 ops</span>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-cyan-500/30 transition-all flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-md bg-cyan-400 shadow-sm shadow-cyan-400/50"></span>
+              <span class="text-xs font-semibold text-slate-300">Verificación MFA</span>
+            </div>
+            <div class="text-right">
+              <span class="text-sm font-bold font-mono text-white">30%</span>
+              <span class="text-[10px] text-slate-500 font-mono block">44 ops</span>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-purple-500/30 transition-all flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-md bg-purple-500 shadow-sm shadow-purple-500/50"></span>
+              <span class="text-xs font-semibold text-slate-300">Cambio Contraseña</span>
+            </div>
+            <div class="text-right">
+              <span class="text-sm font-bold font-mono text-white">15%</span>
+              <span class="text-[10px] text-slate-500 font-mono block">22 ops</span>
+            </div>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-rose-500/30 transition-all flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3 h-3 rounded-md bg-rose-500 shadow-sm shadow-rose-500/50"></span>
+              <span class="text-xs font-semibold text-slate-300">Bloqueos de Seg.</span>
+            </div>
+            <div class="text-right">
+              <span class="text-sm font-bold font-mono text-rose-400">10%</span>
+              <span class="text-[10px] text-rose-400/70 font-mono block">15 ops</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- ACCESOS RÁPIDOS A MÓDULOS (QUICK ACTIONS) -->
+      <!-- ===================================================================== -->
+      <div>
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm text-blue-400">bolt</span>
+          Accesos Rápidos a Módulos
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Acción 1 -->
+          <button class="group p-4 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-blue-500/40 hover:bg-slate-800/60 transition-all text-left flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-blue-600/10 text-blue-400 border border-blue-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <span class="material-symbols-outlined text-xl">person_add</span>
+              </div>
+              <div>
+                <p class="text-sm font-bold text-slate-100 group-hover:text-blue-400 transition-colors">Nuevo Usuario</p>
+                <p class="text-[11px] text-slate-400">Crear y asignar rol corporativo</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-slate-500 group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all text-lg">chevron_right</span>
+          </button>
+
+          <!-- Acción 2 -->
+          <button class="group p-4 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-indigo-500/40 hover:bg-slate-800/60 transition-all text-left flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <span class="material-symbols-outlined text-xl">policy</span>
+              </div>
+              <div>
+                <p class="text-sm font-bold text-slate-100 group-hover:text-indigo-400 transition-colors">Gestionar RBAC</p>
+                <p class="text-[11px] text-slate-400">Políticas de permisos de acceso</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-slate-500 group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all text-lg">chevron_right</span>
+          </button>
+
+          <!-- Acción 3 -->
+          <button class="group p-4 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-amber-500/40 hover:bg-slate-800/60 transition-all text-left flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-amber-600/10 text-amber-400 border border-amber-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <span class="material-symbols-outlined text-xl">download</span>
+              </div>
+              <div>
+                <p class="text-sm font-bold text-slate-100 group-hover:text-amber-400 transition-colors">Exportar Auditoría</p>
+                <p class="text-[11px] text-slate-400">Descarga criptográfica JSON/CSV</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-slate-500 group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all text-lg">chevron_right</span>
+          </button>
+
+          <!-- Acción 4 -->
+          <button class="group p-4 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-cyan-500/40 hover:bg-slate-800/60 transition-all text-left flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-cyan-600/10 text-cyan-400 border border-cyan-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <span class="material-symbols-outlined text-xl">screen_search_desktop</span>
+              </div>
+              <div>
+                <p class="text-sm font-bold text-slate-100 group-hover:text-cyan-400 transition-colors">Inspeccionar Sesiones</p>
+                <p class="text-[11px] text-slate-400">Tokens y desconexión forzada</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-slate-500 group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all text-lg">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- ACTIVIDAD RECIENTE DEL SISTEMA (HIGH-TECH AUDIT LOG FEED) -->
+      <!-- ===================================================================== -->
+      <section class="rounded-2xl bg-gradient-to-b from-[#0f172a] to-[#0a101f] border border-slate-800/90 shadow-xl overflow-hidden">
+        <!-- Feed Header -->
+        <div class="p-5 border-b border-slate-800/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-900/40">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <span class="material-symbols-outlined text-lg">terminal</span>
+            </div>
+            <div>
+              <h2 class="text-base font-bold text-white tracking-tight">
+                Actividad Reciente del Sistema
+              </h2>
+              <p class="text-xs text-slate-400">Registro en vivo con trazabilidad de red e IP de origen</p>
+            </div>
+          </div>
+          <a href="#auditoria" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 text-blue-400 hover:text-blue-300 text-xs font-semibold transition-all group self-start sm:self-auto">
+            <span>Ver bitácora completa</span>
+            <span class="material-symbols-outlined text-sm group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+          </a>
+        </div>
+
+        <!-- Terminal-like Event Feed Items -->
+        <div class="divide-y divide-slate-800/60">
+
+          <!-- ITEM 1: PASSWORD_CHANGED -->
+          <div class="p-4 hover:bg-slate-800/40 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3 group">
+            <div class="flex items-start md:items-center gap-3.5 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 mt-0.5 md:mt-0">
+                <span class="material-symbols-outlined text-lg">lock_reset</span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-purple-500/15 border border-purple-500/30 text-purple-300 font-mono text-[11px] font-bold">
+                    PASSWORD_CHANGED
+                  </span>
+                  <span class="text-sm font-semibold text-slate-200 truncate">admin@elitemultiservicios.com</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 mt-1 font-mono">
+                  <span class="flex items-center gap-1 text-slate-400">
+                    <span class="material-symbols-outlined text-xs text-slate-500">router</span>
+                    IP: 166.114.174.90
+                  </span>
+                  <span class="text-slate-600">•</span>
+                  <span>Argon2id rehash completado</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 self-end md:self-auto shrink-0">
+              <span class="text-xs font-mono text-slate-400">Hace 2 min</span>
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                SUCCESS
+              </span>
+            </div>
+          </div>
+
+          <!-- ITEM 2: MFA_VERIFIED -->
+          <div class="p-4 hover:bg-slate-800/40 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3 group">
+            <div class="flex items-start md:items-center gap-3.5 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 mt-0.5 md:mt-0">
+                <span class="material-symbols-outlined text-lg">verified_user</span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-mono text-[11px] font-bold">
+                    MFA_VERIFIED
+                  </span>
+                  <span class="text-sm font-semibold text-slate-200 truncate">rogelio.vladimir@gmail.com</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 mt-1 font-mono">
+                  <span class="flex items-center gap-1 text-slate-400">
+                    <span class="material-symbols-outlined text-xs text-slate-500">router</span>
+                    IP: 166.114.174.90
+                  </span>
+                  <span class="text-slate-600">•</span>
+                  <span>Token TOTP de 6 dígitos verificado</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 self-end md:self-auto shrink-0">
+              <span class="text-xs font-mono text-slate-400">Hace 5 min</span>
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                SUCCESS
+              </span>
+            </div>
+          </div>
+
+          <!-- ITEM 3: MFA_CHALLENGE_ISSUED -->
+          <div class="p-4 hover:bg-slate-800/40 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3 group">
+            <div class="flex items-start md:items-center gap-3.5 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5 md:mt-0">
+                <span class="material-symbols-outlined text-lg">mark_email_read</span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono text-[11px] font-bold">
+                    MFA_CHALLENGE_ISSUED
+                  </span>
+                  <span class="text-sm font-semibold text-slate-200 truncate">rogelio.vladimir@gmail.com</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 mt-1 font-mono">
+                  <span class="flex items-center gap-1 text-slate-400">
+                    <span class="material-symbols-outlined text-xs text-amber-500/80">send</span>
+                    Código enviado por pasarela Resend
+                  </span>
+                  <span class="text-slate-600">•</span>
+                  <span>Vencimiento: 5 minutos</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 self-end md:self-auto shrink-0">
+              <span class="text-xs font-mono text-slate-400">Hace 8 min</span>
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                DELIVERED
+              </span>
+            </div>
+          </div>
+
+          <!-- ITEM 4: LOGIN_SUCCESS -->
+          <div class="p-4 hover:bg-slate-800/40 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3 group">
+            <div class="flex items-start md:items-center gap-3.5 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 md:mt-0">
+                <span class="material-symbols-outlined text-lg">login</span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono text-[11px] font-bold">
+                    LOGIN_SUCCESS
+                  </span>
+                  <span class="text-sm font-semibold text-slate-200 truncate">admin@elitemultiservicios.com</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 mt-1 font-mono">
+                  <span>JWT emitido con rotación de refresh tokens</span>
+                  <span class="text-slate-600">•</span>
+                  <span>Rol: SuperAdmin</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 self-end md:self-auto shrink-0">
+              <span class="text-xs font-mono text-slate-400">Hace 15 min</span>
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                SUCCESS
+              </span>
+            </div>
+          </div>
+
+          <!-- ITEM 5: LOGIN_FAILED -->
+          <div class="p-4 hover:bg-slate-800/40 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3 group bg-rose-950/10">
+            <div class="flex items-start md:items-center gap-3.5 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center shrink-0 mt-0.5 md:mt-0">
+                <span class="material-symbols-outlined text-lg">gpp_bad</span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono text-[11px] font-bold">
+                    LOGIN_FAILED
+                  </span>
+                  <span class="text-sm font-semibold text-rose-200 font-mono truncate">usuario_desconocido</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-rose-300/80 mt-1 font-mono">
+                  <span class="font-semibold text-rose-400">3 intentos fallidos consecutivos</span>
+                  <span class="text-slate-600">•</span>
+                  <span>IP bloqueada temporalmente por Rate Limiter (WAF)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 self-end md:self-auto shrink-0">
+              <span class="text-xs font-mono text-slate-400">Hace 32 min</span>
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 font-mono">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                BLOCKED
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Feed Footer -->
+        <div class="px-5 py-3 bg-[#090e1b] border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+          <div class="flex items-center gap-2 font-mono">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>Feed de auditoría sincronizado con PostgreSQL inmutable</span>
+          </div>
+          <span class="font-mono text-[11px] text-slate-500">Buffer: 50 eventos en memoria</span>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
+
+
