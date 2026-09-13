@@ -378,11 +378,11 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                 iconColor: const Color(0xFF3B82F6),
                 title: 'USUARIOS ACTIVOS',
                 value: '${_metrics.totalUsers}',
-                totalSuffix: '/ ${_metrics.totalUsers} total',
-                trendBadge: '+8% este mes',
+                totalSuffix: 'cuenta${_metrics.totalUsers == 1 ? "" : "s"}',
+                trendBadge: 'PostgreSQL',
                 trendColor: const Color(0xFF10B981),
-                trendIcon: Icons.trending_up,
-                subtitle: 'Cuentas empresariales activas',
+                trendIcon: Icons.storage,
+                subtitle: 'Cuentas empresariales en el sistema',
                 glowColor: const Color(0xFF2563EB),
                 onTap: () => widget.onNavigateToTab?.call(1),
               ),
@@ -396,7 +396,7 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                 iconColor: const Color(0xFF6366F1),
                 title: 'ROLES DE SISTEMA',
                 value: '${_metrics.totalRoles}',
-                totalSuffix: 'perfiles',
+                totalSuffix: 'perfil${_metrics.totalRoles == 1 ? "" : "es"}',
                 trendBadge: 'RBAC Activo',
                 trendColor: const Color(0xFFA5B4FC),
                 subtitle: 'Perfiles y políticas configuradas',
@@ -413,7 +413,7 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                 iconColor: const Color(0xFFF59E0B),
                 title: 'EVENTOS DE BITÁCORA',
                 value: '${_metrics.totalAuditLogs}',
-                totalSuffix: 'hoy',
+                totalSuffix: 'registros',
                 trendBadge: 'En tiempo real',
                 trendColor: const Color(0xFFFCD34D),
                 isPulseDot: true,
@@ -431,10 +431,11 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                 iconColor: const Color(0xFF06B6D4),
                 title: 'SESIONES ACTIVAS',
                 value: '${_metrics.activeSessions}',
-                totalSuffix: '100% MFA OK',
-                trendBadge: 'Concurrencia viva',
+                totalSuffix:
+                    'concurrente${_metrics.activeSessions == 1 ? "" : "s"}',
+                trendBadge: 'Conectado',
                 trendColor: const Color(0xFF67E8F9),
-                subtitle: 'Dispositivos autenticados por MFA',
+                subtitle: 'Dispositivos autenticados',
                 glowColor: const Color(0xFF0891B2),
                 onTap: () => widget.onNavigateToTab?.call(4),
               ),
@@ -466,19 +467,13 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
       }
     }
 
-    final total = math.max(1, loginCount + mfaCount + pwdCount + blockedCount);
-    final loginPct = _recentLogs.isEmpty
-        ? 45
-        : ((loginCount / total) * 100).round();
-    final mfaPct = _recentLogs.isEmpty
-        ? 30
-        : ((mfaCount / total) * 100).round();
-    final pwdPct = _recentLogs.isEmpty
-        ? 15
-        : ((pwdCount / total) * 100).round();
-    final blockedPct = _recentLogs.isEmpty
-        ? 10
-        : (100 - loginPct - mfaPct - pwdPct);
+    final total = loginCount + mfaCount + pwdCount + blockedCount;
+    final loginPct = total == 0 ? 0 : ((loginCount / total) * 100).round();
+    final mfaPct = total == 0 ? 0 : ((mfaCount / total) * 100).round();
+    final pwdPct = total == 0 ? 0 : ((pwdCount / total) * 100).round();
+    final blockedPct = total == 0
+        ? 0
+        : math.max(0, 100 - loginPct - mfaPct - pwdPct);
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -584,37 +579,51 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
             child: Container(
               height: 14,
               color: isDark ? const Color(0xFF020617) : const Color(0xFFE2E8F0),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: math.max(1, loginPct),
-                    child: Container(
-                      color: const Color(0xFF3B82F6),
+              child: total == 0
+                  ? Container(
+                      color: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFE2E8F0),
+                    )
+                  : Row(
+                      children: [
+                        if (loginPct > 0)
+                          Expanded(
+                            flex: loginPct,
+                            child: Container(
+                              color: const Color(0xFF3B82F6),
+                            ),
+                          ),
+                        if (loginPct > 0 &&
+                            (mfaPct > 0 || pwdPct > 0 || blockedPct > 0))
+                          const SizedBox(width: 2),
+                        if (mfaPct > 0)
+                          Expanded(
+                            flex: mfaPct,
+                            child: Container(
+                              color: const Color(0xFF06B6D4),
+                            ),
+                          ),
+                        if (mfaPct > 0 && (pwdPct > 0 || blockedPct > 0))
+                          const SizedBox(width: 2),
+                        if (pwdPct > 0)
+                          Expanded(
+                            flex: pwdPct,
+                            child: Container(
+                              color: const Color(0xFFA855F7),
+                            ),
+                          ),
+                        if (pwdPct > 0 && blockedPct > 0)
+                          const SizedBox(width: 2),
+                        if (blockedPct > 0)
+                          Expanded(
+                            flex: blockedPct,
+                            child: Container(
+                              color: const Color(0xFFF43F5E),
+                            ),
+                          ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(width: 2),
-                  Expanded(
-                    flex: math.max(1, mfaPct),
-                    child: Container(
-                      color: const Color(0xFF06B6D4),
-                    ),
-                  ),
-                  const SizedBox(width: 2),
-                  Expanded(
-                    flex: math.max(1, pwdPct),
-                    child: Container(
-                      color: const Color(0xFFA855F7),
-                    ),
-                  ),
-                  const SizedBox(width: 2),
-                  Expanded(
-                    flex: math.max(1, math.max(0, blockedPct)),
-                    child: Container(
-                      color: const Color(0xFFF43F5E),
-                    ),
-                  ),
-                ],
-              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -637,7 +646,7 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                     color: const Color(0xFF3B82F6),
                     label: 'Inicios de Sesión',
                     percentage: '$loginPct%',
-                    subtext: '${_recentLogs.isEmpty ? 67 : loginCount} ops',
+                    subtext: '$loginCount ops',
                   ),
                   _buildDistributionItem(
                     isDark: isDark,
@@ -645,7 +654,7 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                     color: const Color(0xFF06B6D4),
                     label: 'Verificación MFA',
                     percentage: '$mfaPct%',
-                    subtext: '${_recentLogs.isEmpty ? 44 : mfaCount} ops',
+                    subtext: '$mfaCount ops',
                   ),
                   _buildDistributionItem(
                     isDark: isDark,
@@ -653,7 +662,7 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                     color: const Color(0xFFA855F7),
                     label: 'Cambio Contraseña',
                     percentage: '$pwdPct%',
-                    subtext: '${_recentLogs.isEmpty ? 22 : pwdCount} ops',
+                    subtext: '$pwdCount ops',
                   ),
                   _buildDistributionItem(
                     isDark: isDark,
@@ -661,7 +670,7 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                     color: const Color(0xFFF43F5E),
                     label: 'Bloqueos de Seg.',
                     percentage: '$blockedPct%',
-                    subtext: '${_recentLogs.isEmpty ? 15 : blockedCount} ops',
+                    subtext: '$blockedCount ops',
                   ),
                 ],
               );
