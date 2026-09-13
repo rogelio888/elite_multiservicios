@@ -42,6 +42,15 @@ fi
 # Database Require SSL (default true en producción para Supabase)
 export SERVERPOD_DATABASE_REQUIRE_SSL="${SERVERPOD_DATABASE_REQUIRE_SSL:-true}"
 
+# Database Max Connection Count (default 3 para plan free de Supabase)
+if [ -n "$SERVERPOD_DATABASE_MAX_CONNECTION_COUNT" ]; then
+    export SERVERPOD_DATABASE_MAX_CONNECTION_COUNT
+elif [ -n "$DATABASE_MAX_CONNECTION_COUNT" ]; then
+    export SERVERPOD_DATABASE_MAX_CONNECTION_COUNT="$DATABASE_MAX_CONNECTION_COUNT"
+else
+    export SERVERPOD_DATABASE_MAX_CONNECTION_COUNT="3"
+fi
+
 # Database Password
 if [ -n "$SERVERPOD_PASSWORD_database" ]; then
     export SERVERPOD_PASSWORD_database
