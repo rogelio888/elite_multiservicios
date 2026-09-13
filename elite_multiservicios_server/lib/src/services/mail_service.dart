@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
+import 'dart:convert';
 import 'dart:io';
-import 'package:mailer/mailer.dart' as mailer;
-import 'package:mailer/smtp_server.dart';
 import 'package:serverpod/serverpod.dart';
 
 /// Servicio para orquestar y despachar correos electrónicos transaccionales
@@ -139,7 +138,7 @@ class MailService {
     );
   }
 
-  /// Despacha un correo electrónico vía SMTP configurado en session.passwords o env vars.
+  /// Despacha un correo electrónico vía la API HTTP de Resend (evita bloqueo de puertos SMTP en Render).
   static Future<void> _send({
     required Session session,
     required String to,
@@ -147,83 +146,77 @@ class MailService {
     required String htmlContent,
     required String textFallback,
   }) async {
-    // 1. Leer de Platform.environment PRIMERO, con fallback a session.passwords.
-    final host =
-        Platform.environment['SMTP_HOST'] ??
-        session.passwords['smtpHost'] ??
-        'sandbox.smtp.mailtrap.io';
-    final portStr =
-        Platform.environment['SMTP_PORT'] ??
-        session.passwords['smtpPort'] ??
-        '2525';
-    final port = int.tryParse(portStr) ?? 2525;
-    final username =
-        Platform.environment['SMTP_USERNAME'] ??
-        session.passwords['smtpUsername'] ??
-        '0139e7cf5c0c9a';
-    final password =
+    final apiKey =
+        Platform.environment['RESEND_API_KEY'] ??
         Platform.environment['SMTP_PASSWORD'] ??
-        session.passwords['smtpPassword'];
+        session.passwords['resendApiKey'];
     final fromEmail =
-        Platform.environment['SMTP_FROM_EMAIL'] ??
-        session.passwords['smtpFromEmail'] ??
-        'soporte@elitemultiservicios.com';
+        Platform.environment['SMTP_FROM_EMAIL'] ?? 'onboarding@resend.dev';
     final fromName =
-        Platform.environment['SMTP_FROM_NAME'] ??
-        session.passwords['smtpFromName'] ??
-        'Elite Multiservicios';
+        Platform.environment['SMTP_FROM_NAME'] ?? 'Elite Multiservicios';
 
-    // 2. Logs con print() para que aparezcan en Render stdout.
-    print(
-      '[MailService] Intentando enviar email a $to. Host: $host:$port, From: $fromEmail',
-    );
+    print('[MailService] Enviando a $to vía Resend HTTP API. From: $fromEmail');
 
-    if (password == null || password.isEmpty) {
+    if (apiKey == null || apiKey.isEmpty) {
       print(
-        '[MailService] ⚠️ SMTP_PASSWORD no configurado. Email NO enviado a $to.',
+        '[MailService] ⚠️ RESEND_API_KEY no configurada. Email NO enviado a $to.',
       );
       session.log(
-        '⚠️ smtpPassword no configurado. Correo no enviado a $to.',
+        '⚠️ RESEND_API_KEY no configurada. Correo no enviado a $to.',
         level: LogLevel.warning,
       );
       return;
     }
 
-    // 3. SSL según puerto (465 = SSL directo, 587 = STARTTLS, 25/2525 = sin SSL).
-    final useSsl = port == 465;
+    final payload = {
+      'from': '$fromName <$fromEmail>',
+      'to': [to],
+      'subject': subject,
+      'html': htmlContent,
+      'text': textFallback,
+    };
 
-    final smtpServer = SmtpServer(
-      host,
-      port: port,
-      username: username,
-      password: password,
-      ssl: useSsl,
-      allowInsecure: !useSsl && port != 587,
-    );
-
-    final message = mailer.Message()
-      ..from = mailer.Address(fromEmail, fromName)
-      ..recipients.add(to)
-      ..subject = subject
-      ..text = textFallback
-      ..html = htmlContent;
-
+    final client = HttpClient();
     try {
-      final sendReport = await mailer.send(message, smtpServer);
-      print('[MailService] ✅ Correo enviado a $to. Reporte: $sendReport');
-      session.log(
-        '[MailService] Correo enviado exitosamente a $to ($subject).',
-        level: LogLevel.info,
+      final request = await client.postUrl(
+        Uri.parse('https://api.resend.com/emails'),
       );
+      request.headers.set('Authorization', 'Bearer $apiKey');
+      request.headers.set('Content-Type', 'application/json');
+      request.write(jsonEncode(payload));
+
+      final response = await request.close();
+      final responseBody = await response.transform(utf8.decoder).join();
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        print(
+          '[MailService] ✅ Email enviado a $to. Status: ${response.statusCode}',
+        );
+        session.log(
+          '[MailService] Correo enviado a $to ($subject).',
+          level: LogLevel.info,
+        );
+      } else {
+        print(
+          '[MailService] ❌ Resend error ${response.statusCode}: $responseBody',
+        );
+        session.log(
+          '[MailService] Error enviando a $to: ${response.statusCode} - $responseBody',
+          level: LogLevel.error,
+        );
+        throw Exception('Resend API error: ${response.statusCode}');
+      }
     } catch (e, stackTrace) {
-      print('[MailService] ❌ Error enviando a $to: $e');
+      print('[MailService] ❌ Excepción a $to: $e');
       session.log(
-        '[MailService] Error despachando correo a $to: $e',
+        '[MailService] Excepción a $to: $e',
         level: LogLevel.error,
         exception: e,
         stackTrace: stackTrace,
       );
       rethrow;
+    } finally {
+      client.close();
     }
   }
 }
