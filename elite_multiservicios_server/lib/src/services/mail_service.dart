@@ -183,7 +183,8 @@ class MailService {
       );
       request.headers.set('Authorization', 'Bearer $apiKey');
       request.headers.set('Content-Type', 'application/json');
-      request.write(jsonEncode(payload));
+      final bodyBytes = utf8.encode(jsonEncode(payload));
+      request.add(bodyBytes);
 
       final response = await request.close();
       final responseBody = await response.transform(utf8.decoder).join();
