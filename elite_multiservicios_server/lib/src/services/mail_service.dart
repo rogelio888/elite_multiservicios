@@ -1,10 +1,13 @@
 // ignore_for_file: avoid_print
 import 'dart:convert';
 import 'dart:io';
+import 'package:mailer/mailer.dart' as mailer;
+import 'package:mailer/smtp_server.dart';
 import 'package:serverpod/serverpod.dart';
 
-/// Servicio para orquestar y despachar correos electrónicos transaccionales
-/// a través de SMTP (Mailtrap en desarrollo/sandbox).
+/// Servicio para orquestar y despachar correos electrónicos transaccionales.
+/// - Entorno local / desarrollo: Mailtrap vía SMTP.
+/// - Entorno producción: Resend vía API HTTP.
 class MailService {
   /// Envía el código de verificación para el registro de una nueva cuenta.
   static Future<void> sendRegistrationCode(
@@ -138,7 +141,9 @@ class MailService {
     );
   }
 
-  /// Despacha un correo electrónico vía la API HTTP de Resend (evita bloqueo de puertos SMTP en Render).
+  /// Despacha el correo según el entorno:
+  /// - Producción: Resend HTTP API
+  /// - Local / Desarrollo: Mailtrap SMTP
   static Future<void> _send({
     required Session session,
     required String to,
@@ -146,25 +151,135 @@ class MailService {
     required String htmlContent,
     required String textFallback,
   }) async {
-    final apiKey =
-        Platform.environment['RESEND_API_KEY'] ??
+    final runMode = session.serverpod.runMode;
+    final isProduction = runMode == 'production' ||
+        Platform.environment['SERVERPOD_ENV'] == 'production';
+
+    if (isProduction) {
+      await _sendViaResend(
+        session: session,
+        to: to,
+        subject: subject,
+        htmlContent: htmlContent,
+        textFallback: textFallback,
+      );
+    } else {
+      await _sendViaMailtrap(
+        session: session,
+        to: to,
+        subject: subject,
+        htmlContent: htmlContent,
+        textFallback: textFallback,
+      );
+    }
+  }
+
+  /// Despacho en desarrollo local vía Mailtrap SMTP.
+  static Future<void> _sendViaMailtrap({
+    required Session session,
+    required String to,
+    required String subject,
+    required String htmlContent,
+    required String textFallback,
+  }) async {
+    final host = session.passwords['smtpHost'] ??
+        Platform.environment['MAILTRAP_HOST'] ??
+        Platform.environment['SMTP_HOST'] ??
+        'sandbox.smtp.mailtrap.io';
+    final portStr = session.passwords['smtpPort'] ??
+        Platform.environment['MAILTRAP_PORT'] ??
+        Platform.environment['SMTP_PORT'] ??
+        '2525';
+    final port = int.tryParse(portStr) ?? 2525;
+    final username = session.passwords['smtpUsername'] ??
+        Platform.environment['MAILTRAP_USER'] ??
+        Platform.environment['SMTP_USER'] ??
+        '0139e7cf5c0c9a';
+    final password = session.passwords['smtpPassword'] ??
+        Platform.environment['MAILTRAP_PASS'] ??
         Platform.environment['SMTP_PASSWORD'] ??
-        session.passwords['resendApiKey'];
+        '67513db99d0e49';
+    final fromEmail = session.passwords['smtpFromEmail'] ??
+        Platform.environment['SMTP_FROM_EMAIL'] ??
+        'soporte@elitemultiservicios.com';
+    final fromName = session.passwords['smtpFromName'] ??
+        Platform.environment['SMTP_FROM_NAME'] ??
+        'Elite Multiservicios';
+
+    print(
+      '[MailService] [Local/Mailtrap] Despachando a $to vía $host:$port ($fromEmail)...',
+    );
+
+    if (password.isEmpty) {
+      final msg =
+          '⚠️ [MailService] Mailtrap password no configurada. Correo no enviado a $to. Contenido: $textFallback';
+      print(msg);
+      session.log(msg, level: LogLevel.warning);
+      return;
+    }
+
+    final smtpServer = SmtpServer(
+      host,
+      port: port,
+      username: username,
+      password: password,
+      ssl: false,
+      allowInsecure: true,
+    );
+
+    final message = mailer.Message()
+      ..from = mailer.Address(fromEmail, fromName)
+      ..recipients.add(to)
+      ..subject = subject
+      ..text = textFallback
+      ..html = htmlContent;
+
+    try {
+      final sendReport = await mailer.send(message, smtpServer);
+      print(
+        '[MailService] [Local/Mailtrap] ✅ Correo enviado exitosamente a $to ($subject). Reporte: $sendReport',
+      );
+      session.log(
+        '[MailService] Correo enviado exitosamente a $to ($subject) vía Mailtrap.',
+        level: LogLevel.info,
+      );
+    } catch (e, stackTrace) {
+      print('[MailService] [Local/Mailtrap] ❌ Error despachando a $to: $e');
+      session.log(
+        '[MailService] Error despachando correo a $to vía Mailtrap: $e',
+        level: LogLevel.error,
+        exception: e,
+        stackTrace: stackTrace,
+      );
+      rethrow;
+    }
+  }
+
+  /// Despacho en producción vía Resend HTTP API.
+  static Future<void> _sendViaResend({
+    required Session session,
+    required String to,
+    required String subject,
+    required String htmlContent,
+    required String textFallback,
+  }) async {
+    final apiKey = Platform.environment['RESEND_API_KEY'] ??
+        session.passwords['resendApiKey'] ??
+        Platform.environment['SMTP_PASSWORD'];
     final fromEmail =
         Platform.environment['SMTP_FROM_EMAIL'] ?? 'onboarding@resend.dev';
     final fromName =
         Platform.environment['SMTP_FROM_NAME'] ?? 'Elite Multiservicios';
 
-    print('[MailService] Enviando a $to vía Resend HTTP API. From: $fromEmail');
+    print(
+      '[MailService] [Producción/Resend] Enviando a $to vía Resend HTTP API. From: $fromEmail',
+    );
 
     if (apiKey == null || apiKey.isEmpty) {
-      print(
-        '[MailService] ⚠️ RESEND_API_KEY no configurada. Email NO enviado a $to.',
-      );
-      session.log(
-        '⚠️ RESEND_API_KEY no configurada. Correo no enviado a $to.',
-        level: LogLevel.warning,
-      );
+      final msg =
+          '⚠️ [MailService] RESEND_API_KEY no configurada en producción. Email NO enviado a $to.';
+      print(msg);
+      session.log(msg, level: LogLevel.warning);
       return;
     }
 
@@ -191,15 +306,15 @@ class MailService {
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         print(
-          '[MailService] ✅ Email enviado a $to. Status: ${response.statusCode}',
+          '[MailService] [Producción/Resend] ✅ Email enviado a $to. Status: ${response.statusCode}',
         );
         session.log(
-          '[MailService] Correo enviado a $to ($subject).',
+          '[MailService] Correo enviado a $to ($subject) vía Resend.',
           level: LogLevel.info,
         );
       } else {
         print(
-          '[MailService] ❌ Resend error ${response.statusCode}: $responseBody',
+          '[MailService] [Producción/Resend] ❌ Resend error ${response.statusCode}: $responseBody',
         );
         session.log(
           '[MailService] Error enviando a $to: ${response.statusCode} - $responseBody',
@@ -208,7 +323,9 @@ class MailService {
         throw Exception('Resend API error: ${response.statusCode}');
       }
     } catch (e, stackTrace) {
-      print('[MailService] ❌ Excepción a $to: $e');
+      print(
+        '[MailService] [Producción/Resend] ❌ Excepción a $to: $e',
+      );
       session.log(
         '[MailService] Excepción a $to: $e',
         level: LogLevel.error,
