@@ -102,7 +102,16 @@ echo "    SERVERPOD_DATABASE_PORT=${SERVERPOD_DATABASE_PORT:-[desde yaml]}"
 echo "    SERVERPOD_DATABASE_NAME=${SERVERPOD_DATABASE_NAME:-[desde yaml]}"
 echo "    SERVERPOD_DATABASE_USER=${SERVERPOD_DATABASE_USER:-[desde yaml]}"
 echo "    SERVERPOD_REDIS_ENABLED=${SERVERPOD_REDIS_ENABLED}"
+
+# Sembrado inicial de base de datos (Admin y permisos canónicos)
+if [ "$SEED_ON_START" = "true" ]; then
+    echo "==> [entrypoint] Seed habilitado (SEED_ON_START=true)"
+    set -- "$@" --seed
+else
+    echo "==> [entrypoint] Seed deshabilitado (SEED_ON_START != true)"
+fi
+
 echo "==> [entrypoint] Ejecutando: /app/bin/server $@"
 
-# Ejecutar el binario con los argumentos originales
+# Ejecutar el binario con los argumentos resultantes
 exec /app/bin/server "$@"
