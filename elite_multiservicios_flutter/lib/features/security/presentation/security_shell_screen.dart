@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/auth_service.dart';
+import '../services/security_api_service.dart';
 import 'views/security_dashboard_view.dart';
 import 'views/users_management_view.dart';
 import 'views/roles_rbac_view.dart';
@@ -26,6 +27,8 @@ class SecurityShellScreen extends StatefulWidget {
 
 class _SecurityShellScreenState extends State<SecurityShellScreen> {
   late final AuthService _authService;
+  final _service = SecurityApiService();
+  SecurityDashboardMetrics? _sidebarMetrics;
   int _selectedIndex = 0;
   bool _isSidebarCollapsed = false;
 
@@ -33,6 +36,23 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
   void initState() {
     super.initState();
     _authService = widget.authService ?? AuthService();
+    _loadSidebarMetrics();
+  }
+
+  Future<void> _loadSidebarMetrics() async {
+    try {
+      final metrics = await _service.getDashboardMetrics();
+      if (mounted) {
+        setState(() => _sidebarMetrics = metrics);
+      }
+    } catch (_) {}
+  }
+
+  void _onTabSelected(int index) {
+    if (_selectedIndex != index) {
+      setState(() => _selectedIndex = index);
+    }
+    _loadSidebarMetrics();
   }
 
   Future<void> _confirmAndLogout() async {
@@ -131,15 +151,25 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
 
     final navItems = [
       (Icons.dashboard_outlined, Icons.dashboard, 'Dashboard', null),
-      (Icons.group_outlined, Icons.group, 'Usuarios', '12'),
+      (
+        Icons.group_outlined,
+        Icons.group,
+        'Usuarios',
+        _sidebarMetrics != null ? '${_sidebarMetrics!.totalUsers}' : null,
+      ),
       (
         Icons.admin_panel_settings_outlined,
         Icons.admin_panel_settings,
         'Roles & RBAC',
-        '4',
+        _sidebarMetrics != null ? '${_sidebarMetrics!.totalRoles}' : null,
       ),
       (Icons.history_edu_outlined, Icons.history_edu, 'Auditoría', 'dot'),
-      (Icons.devices_outlined, Icons.devices, 'Sesiones', '3 vivas'),
+      (
+        Icons.devices_outlined,
+        Icons.devices,
+        'Sesiones',
+        _sidebarMetrics != null ? '${_sidebarMetrics!.activeSessions}' : null,
+      ),
       (Icons.analytics_outlined, Icons.analytics, 'Métricas', null),
     ];
 
@@ -147,7 +177,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     switch (_selectedIndex) {
       case 0:
         currentView = SecurityDashboardView(
-          onNavigateToTab: (idx) => setState(() => _selectedIndex = idx),
+          onNavigateToTab: _onTabSelected,
         );
         break;
       case 1:
@@ -227,32 +257,17 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       Container(
                         width: 38,
                         height: 38,
+                        padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF2563EB), Color(0xFF4F46E5)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(
-                                0xFF2563EB,
-                              ).withValues(alpha: 0.35),
-                              blurRadius: 10,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
+                          color: const Color(0xFF1E293B),
+                          borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: const Color(
-                              0xFF60A5FA,
-                            ).withValues(alpha: 0.3),
+                            color: const Color(0xFF334155),
                           ),
                         ),
-                        child: const Icon(
-                          Icons.shield,
-                          color: Colors.white,
-                          size: 20,
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          fit: BoxFit.contain,
                         ),
                       ),
                       if (!_isSidebarCollapsed) ...[
@@ -340,7 +355,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: () => setState(() => _selectedIndex = index),
+                            onTap: () => _onTabSelected(index),
                             borderRadius: BorderRadius.circular(12),
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 150),
