@@ -39,7 +39,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
+        backgroundColor: widget.isDarkMode
+            ? const Color(0xFF0F172A)
+            : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
           children: [
@@ -49,7 +51,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                 color: Colors.redAccent.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.logout, color: Colors.redAccent, size: 20),
+              child: const Icon(
+                Icons.logout,
+                color: Colors.redAccent,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 12),
             Text(
@@ -57,7 +63,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
               style: GoogleFonts.hankenGrotesk(
                 fontWeight: FontWeight.w700,
                 fontSize: 18,
-                color: widget.isDarkMode ? Colors.white : const Color(0xFF0F172A),
+                color: widget.isDarkMode
+                    ? Colors.white
+                    : const Color(0xFF0F172A),
               ),
             ),
           ],
@@ -67,7 +75,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
           'La sesión se revocará en el servidor y se registrará en la bitácora de auditoría.',
           style: GoogleFonts.hankenGrotesk(
             fontSize: 14,
-            color: widget.isDarkMode ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+            color: widget.isDarkMode
+                ? const Color(0xFF94A3B8)
+                : const Color(0xFF64748B),
           ),
         ),
         actions: [
@@ -76,7 +86,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
             child: Text(
               'Cancelar',
               style: GoogleFonts.hankenGrotesk(
-                color: widget.isDarkMode ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: widget.isDarkMode
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -85,7 +97,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
             style: FilledButton.styleFrom(
               backgroundColor: const Color(0xFFDC2626),
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
@@ -118,7 +132,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     final navItems = [
       (Icons.dashboard_outlined, Icons.dashboard, 'Dashboard', null),
       (Icons.group_outlined, Icons.group, 'Usuarios', '12'),
-      (Icons.admin_panel_settings_outlined, Icons.admin_panel_settings, 'Roles & RBAC', '4'),
+      (
+        Icons.admin_panel_settings_outlined,
+        Icons.admin_panel_settings,
+        'Roles & RBAC',
+        '4',
+      ),
       (Icons.history_edu_outlined, Icons.history_edu, 'Auditoría', 'dot'),
       (Icons.devices_outlined, Icons.devices, 'Sesiones', '3 vivas'),
       (Icons.analytics_outlined, Icons.analytics, 'Métricas', null),
@@ -150,13 +169,16 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         currentView = const Center(child: Text('Vista no encontrada'));
     }
 
-    final userEmail = _authService.currentDisplayName ?? 'admin@elitemultiservicios.com';
+    final userEmail =
+        _authService.currentDisplayName ?? 'admin@elitemultiservicios.com';
     final userInitials = userEmail.isNotEmpty && userEmail.length >= 2
         ? userEmail.substring(0, 2).toUpperCase()
         : 'AD';
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF080D1A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF080D1A)
+          : const Color(0xFFF8FAFC),
       body: Row(
         children: [
           // Sidebar de Navegación Completo (#0B1120)
@@ -167,7 +189,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
               color: isDark ? const Color(0xFF0B1120) : const Color(0xFF0F172A),
               border: Border(
                 right: BorderSide(
-                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFF334155),
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFF334155),
                   width: 1,
                 ),
               ),
@@ -192,7 +216,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                         : const Color(0xFF0A0F1D),
                     border: Border(
                       bottom: BorderSide(
-                        color: isDark ? const Color(0xFF1E293B) : const Color(0xFF334155),
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFF334155),
                       ),
                     ),
                   ),
@@ -210,13 +236,17 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF2563EB).withValues(alpha: 0.35),
+                              color: const Color(
+                                0xFF2563EB,
+                              ).withValues(alpha: 0.35),
                               blurRadius: 10,
                               offset: const Offset(0, 3),
                             ),
                           ],
                           border: Border.all(
-                            color: const Color(0xFF60A5FA).withValues(alpha: 0.3),
+                            color: const Color(
+                              0xFF60A5FA,
+                            ).withValues(alpha: 0.3),
                           ),
                         ),
                         child: const Icon(
@@ -278,7 +308,10 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                 const SizedBox(height: 12),
                 if (!_isSidebarCollapsed)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 4,
+                    ),
                     child: Text(
                       'OPERACIONES PRINCIPALES',
                       style: GoogleFonts.hankenGrotesk(
@@ -294,7 +327,10 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                 Expanded(
                   child: ListView.builder(
                     itemCount: navItems.length,
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     itemBuilder: (context, index) {
                       final item = navItems[index];
                       final isSelected = _selectedIndex == index;
@@ -315,7 +351,10 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                               decoration: BoxDecoration(
                                 gradient: isSelected
                                     ? const LinearGradient(
-                                        colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+                                        colors: [
+                                          Color(0xFF2563EB),
+                                          Color(0xFF1D4ED8),
+                                        ],
                                         begin: Alignment.centerLeft,
                                         end: Alignment.centerRight,
                                       )
@@ -323,13 +362,17 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                                 borderRadius: BorderRadius.circular(12),
                                 border: isSelected
                                     ? Border.all(
-                                        color: const Color(0xFF60A5FA).withValues(alpha: 0.4),
+                                        color: const Color(
+                                          0xFF60A5FA,
+                                        ).withValues(alpha: 0.4),
                                       )
                                     : Border.all(color: Colors.transparent),
                                 boxShadow: isSelected
                                     ? [
                                         BoxShadow(
-                                          color: const Color(0xFF2563EB).withValues(alpha: 0.35),
+                                          color: const Color(
+                                            0xFF2563EB,
+                                          ).withValues(alpha: 0.35),
                                           blurRadius: 10,
                                           offset: const Offset(0, 3),
                                         ),
@@ -340,7 +383,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                                 children: [
                                   Icon(
                                     isSelected ? item.$2 : item.$1,
-                                    color: isSelected ? Colors.white : const Color(0xFF94A3B8),
+                                    color: isSelected
+                                        ? Colors.white
+                                        : const Color(0xFF94A3B8),
                                     size: 19,
                                   ),
                                   if (!_isSidebarCollapsed) ...[
@@ -349,8 +394,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                                       child: Text(
                                         item.$3,
                                         style: GoogleFonts.hankenGrotesk(
-                                          color: isSelected ? Colors.white : const Color(0xFFCBD5E1),
-                                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                          color: isSelected
+                                              ? Colors.white
+                                              : const Color(0xFFCBD5E1),
+                                          fontWeight: isSelected
+                                              ? FontWeight.w700
+                                              : FontWeight.w500,
                                           fontSize: 13,
                                         ),
                                       ),
@@ -379,17 +428,33 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: isSelected
-                                                ? Colors.white.withValues(alpha: 0.2)
+                                                ? Colors.white.withValues(
+                                                    alpha: 0.2,
+                                                  )
                                                 : (item.$4!.contains('vivas')
-                                                    ? const Color(0xFF064E3B).withValues(alpha: 0.6)
-                                                    : const Color(0xFF1E293B)),
-                                            borderRadius: BorderRadius.circular(10),
+                                                      ? const Color(
+                                                          0xFF064E3B,
+                                                        ).withValues(alpha: 0.6)
+                                                      : const Color(
+                                                          0xFF1E293B,
+                                                        )),
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
                                             border: Border.all(
                                               color: isSelected
-                                                  ? Colors.white.withValues(alpha: 0.3)
+                                                  ? Colors.white.withValues(
+                                                      alpha: 0.3,
+                                                    )
                                                   : (item.$4!.contains('vivas')
-                                                      ? const Color(0xFF10B981).withValues(alpha: 0.4)
-                                                      : const Color(0xFF334155)),
+                                                        ? const Color(
+                                                            0xFF10B981,
+                                                          ).withValues(
+                                                            alpha: 0.4,
+                                                          )
+                                                        : const Color(
+                                                            0xFF334155,
+                                                          )),
                                             ),
                                           ),
                                           child: Text(
@@ -400,8 +465,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                                               color: isSelected
                                                   ? Colors.white
                                                   : (item.$4!.contains('vivas')
-                                                      ? const Color(0xFF34D399)
-                                                      : const Color(0xFF94A3B8)),
+                                                        ? const Color(
+                                                            0xFF34D399,
+                                                          )
+                                                        : const Color(
+                                                            0xFF94A3B8,
+                                                          )),
                                             ),
                                           ),
                                         ),
@@ -419,14 +488,19 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
 
                 // Footer Actions: Cerrar Sesión & Colapsar Menú
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: isDark
                         ? const Color(0xFF080D1A).withValues(alpha: 0.7)
                         : const Color(0xFF0A0F1D),
                     border: Border(
                       top: BorderSide(
-                        color: isDark ? const Color(0xFF1E293B) : const Color(0xFF334155),
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFF334155),
                       ),
                     ),
                   ),
@@ -439,7 +513,10 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                           borderRadius: BorderRadius.circular(10),
                           hoverColor: Colors.redAccent.withValues(alpha: 0.1),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
                             child: Row(
                               children: [
                                 const Icon(
@@ -467,10 +544,15 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          onTap: () => setState(() => _isSidebarCollapsed = !_isSidebarCollapsed),
+                          onTap: () => setState(
+                            () => _isSidebarCollapsed = !_isSidebarCollapsed,
+                          ),
                           borderRadius: BorderRadius.circular(10),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                             child: Row(
                               children: [
                                 Icon(
@@ -494,11 +576,16 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                                     ),
                                   ),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 2,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFF1E293B),
                                       borderRadius: BorderRadius.circular(4),
-                                      border: Border.all(color: const Color(0xFF334155)),
+                                      border: Border.all(
+                                        color: const Color(0xFF334155),
+                                      ),
                                     ),
                                     child: Text(
                                       'Ctrl+B',
@@ -535,7 +622,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                         : Colors.white,
                     border: Border(
                       bottom: BorderSide(
-                        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFE2E8F0),
                       ),
                     ),
                   ),
@@ -551,15 +640,21 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                               'Seguridad',
                               style: GoogleFonts.hankenGrotesk(
                                 fontSize: 13,
-                                color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                                color: isDark
+                                    ? const Color(0xFF64748B)
+                                    : const Color(0xFF94A3B8),
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
                               child: Text(
                                 '/',
                                 style: TextStyle(
-                                  color: isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1),
+                                  color: isDark
+                                      ? const Color(0xFF475569)
+                                      : const Color(0xFFCBD5E1),
                                 ),
                               ),
                             ),
@@ -569,7 +664,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                                 style: GoogleFonts.hankenGrotesk(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
-                                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -585,7 +682,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                           // Theme Toggle Button
                           IconButton(
                             icon: Icon(
-                              widget.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                              widget.isDarkMode
+                                  ? Icons.dark_mode
+                                  : Icons.light_mode,
                               color: widget.isDarkMode
                                   ? const Color(0xFFF59E0B)
                                   : const Color(0xFF475569),
@@ -603,7 +702,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                               children: [
                                 Icon(
                                   Icons.notifications_outlined,
-                                  color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569),
+                                  color: isDark
+                                      ? const Color(0xFFCBD5E1)
+                                      : const Color(0xFF475569),
                                   size: 20,
                                 ),
                                 Positioned(
@@ -628,7 +729,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                           Container(
                             height: 24,
                             width: 1,
-                            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFE2E8F0),
                           ),
                           const SizedBox(width: 12),
 
@@ -643,13 +746,18 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                                     height: 34,
                                     decoration: BoxDecoration(
                                       gradient: const LinearGradient(
-                                        colors: [Color(0xFF2563EB), Color(0xFF7C3AED)],
+                                        colors: [
+                                          Color(0xFF2563EB),
+                                          Color(0xFF7C3AED),
+                                        ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       ),
                                       borderRadius: BorderRadius.circular(10),
                                       border: Border.all(
-                                        color: Colors.white.withValues(alpha: 0.2),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.2,
+                                        ),
                                       ),
                                     ),
                                     child: Center(
@@ -673,7 +781,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                                         color: const Color(0xFF10B981),
                                         shape: BoxShape.circle,
                                         border: Border.all(
-                                          color: isDark ? const Color(0xFF0B1120) : Colors.white,
+                                          color: isDark
+                                              ? const Color(0xFF0B1120)
+                                              : Colors.white,
                                           width: 1.5,
                                         ),
                                       ),
@@ -683,7 +793,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                               ),
                               const SizedBox(width: 8),
                               ConstrainedBox(
-                                constraints: const BoxConstraints(maxWidth: 130),
+                                constraints: const BoxConstraints(
+                                  maxWidth: 130,
+                                ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -693,14 +805,18 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                                       style: GoogleFonts.hankenGrotesk(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700,
-                                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF0F172A),
                                       ),
                                     ),
                                     Text(
                                       userEmail,
                                       style: GoogleFonts.jetBrainsMono(
                                         fontSize: 10,
-                                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                                        color: isDark
+                                            ? const Color(0xFF94A3B8)
+                                            : const Color(0xFF64748B),
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                     ),

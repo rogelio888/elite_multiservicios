@@ -124,7 +124,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
             Text(
               'Cargando telemetría de seguridad...',
               style: GoogleFonts.hankenGrotesk(
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
                 fontSize: 14,
               ),
             ),
@@ -451,7 +453,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
     int blockedCount = 0;
 
     for (final log in _recentLogs) {
-      if (log.action.contains('LOGIN_FAILED') || log.result == 'FAILURE' || log.result == 'BLOCKED') {
+      if (log.action.contains('LOGIN_FAILED') ||
+          log.result == 'FAILURE' ||
+          log.result == 'BLOCKED') {
         blockedCount++;
       } else if (log.action.contains('MFA')) {
         mfaCount++;
@@ -463,10 +467,18 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
     }
 
     final total = math.max(1, loginCount + mfaCount + pwdCount + blockedCount);
-    final loginPct = _recentLogs.isEmpty ? 45 : ((loginCount / total) * 100).round();
-    final mfaPct = _recentLogs.isEmpty ? 30 : ((mfaCount / total) * 100).round();
-    final pwdPct = _recentLogs.isEmpty ? 15 : ((pwdCount / total) * 100).round();
-    final blockedPct = _recentLogs.isEmpty ? 10 : (100 - loginPct - mfaPct - pwdPct);
+    final loginPct = _recentLogs.isEmpty
+        ? 45
+        : ((loginCount / total) * 100).round();
+    final mfaPct = _recentLogs.isEmpty
+        ? 30
+        : ((mfaCount / total) * 100).round();
+    final pwdPct = _recentLogs.isEmpty
+        ? 15
+        : ((pwdCount / total) * 100).round();
+    final blockedPct = _recentLogs.isEmpty
+        ? 10
+        : (100 - loginPct - mfaPct - pwdPct);
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -516,7 +528,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                         style: GoogleFonts.hankenGrotesk(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
-                          color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -534,19 +548,28 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
+                    color: isDark
+                        ? const Color(0xFF334155)
+                        : const Color(0xFFCBD5E1),
                   ),
                 ),
                 child: Text(
                   'Total: ${_metrics.totalAuditLogs} eventos registrados',
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 12,
-                    color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569),
+                    color: isDark
+                        ? const Color(0xFFCBD5E1)
+                        : const Color(0xFF475569),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -601,7 +624,8 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
             builder: (context, constraints) {
               final isNarrow = constraints.maxWidth < 700;
               final colCount = isNarrow ? 2 : 4;
-              final itemWidth = (constraints.maxWidth - ((colCount - 1) * 12)) / colCount;
+              final itemWidth =
+                  (constraints.maxWidth - ((colCount - 1) * 12)) / colCount;
 
               return Wrap(
                 spacing: 12,
@@ -660,7 +684,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
       width: width,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF020617).withValues(alpha: 0.6) : const Color(0xFFF8FAFC),
+        color: isDark
+            ? const Color(0xFF020617).withValues(alpha: 0.6)
+            : const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
@@ -691,7 +717,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                 style: GoogleFonts.hankenGrotesk(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+                  color: isDark
+                      ? const Color(0xFFCBD5E1)
+                      : const Color(0xFF334155),
                 ),
               ),
             ],
@@ -711,7 +739,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                 subtext,
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 10,
-                  color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                  color: isDark
+                      ? const Color(0xFF64748B)
+                      : const Color(0xFF94A3B8),
                 ),
               ),
             ],
@@ -735,7 +765,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.8,
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -745,7 +777,8 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
           builder: (context, constraints) {
             final isNarrow = constraints.maxWidth < 900;
             final colCount = isNarrow ? 2 : 4;
-            final cardWidth = (constraints.maxWidth - ((colCount - 1) * 16)) / colCount;
+            final cardWidth =
+                (constraints.maxWidth - ((colCount - 1) * 16)) / colCount;
 
             return Wrap(
               spacing: 16,
@@ -813,7 +846,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
           width: width,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF0F172A).withValues(alpha: 0.8) : Colors.white,
+            color: isDark
+                ? const Color(0xFF0F172A).withValues(alpha: 0.8)
+                : Colors.white,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
@@ -857,7 +892,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                       description,
                       style: GoogleFonts.hankenGrotesk(
                         fontSize: 11,
-                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -866,7 +903,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
               ),
               Icon(
                 Icons.chevron_right,
-                color: isDark ? const Color(0xFF475569) : const Color(0xFF94A3B8),
+                color: isDark
+                    ? const Color(0xFF475569)
+                    : const Color(0xFF94A3B8),
                 size: 18,
               ),
             ],
@@ -927,7 +966,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                           style: GoogleFonts.hankenGrotesk(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -948,14 +989,19 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                   onPressed: () => widget.onNavigateToTab?.call(3),
                   style: TextButton.styleFrom(
                     foregroundColor: const Color(0xFF60A5FA),
-                    backgroundColor: const Color(0xFF3B82F6).withValues(alpha: 0.1),
+                    backgroundColor: const Color(
+                      0xFF3B82F6,
+                    ).withValues(alpha: 0.1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                       side: BorderSide(
                         color: const Color(0xFF3B82F6).withValues(alpha: 0.25),
                       ),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
                   ),
                   icon: const Icon(Icons.arrow_forward, size: 14),
                   label: Text(
@@ -984,13 +1030,17 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                     Icon(
                       Icons.history_toggle_off,
                       size: 36,
-                      color: isDark ? const Color(0xFF475569) : const Color(0xFF94A3B8),
+                      color: isDark
+                          ? const Color(0xFF475569)
+                          : const Color(0xFF94A3B8),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'No hay eventos recientes en la bitácora.',
                       style: GoogleFonts.hankenGrotesk(
-                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
                         fontSize: 13,
                       ),
                     ),
@@ -1005,7 +1055,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
               itemCount: _recentLogs.length,
               separatorBuilder: (ctx, index) => Divider(
                 height: 1,
-                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                color: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFE2E8F0),
               ),
               itemBuilder: (context, index) {
                 final log = _recentLogs[index];
@@ -1038,7 +1090,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
       badgeBg = const Color(0xFFF59E0B).withValues(alpha: 0.15);
       badgeBorder = const Color(0xFFF59E0B).withValues(alpha: 0.3);
       eventIcon = Icons.mark_email_read;
-    } else if (log.action.contains('FAILED') || log.result == 'FAILURE' || log.result == 'BLOCKED') {
+    } else if (log.action.contains('FAILED') ||
+        log.result == 'FAILURE' ||
+        log.result == 'BLOCKED') {
       badgeColor = const Color(0xFFFDA4AF);
       badgeBg = const Color(0xFFF43F5E).withValues(alpha: 0.15);
       badgeBorder = const Color(0xFFF43F5E).withValues(alpha: 0.3);
@@ -1103,7 +1157,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                         style: GoogleFonts.hankenGrotesk(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF1E293B),
+                          color: isDark
+                              ? const Color(0xFFE2E8F0)
+                              : const Color(0xFF1E293B),
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -1123,23 +1179,32 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                       'IP: ${log.ipAddress ?? "166.114.174.90"}',
                       style: GoogleFonts.jetBrainsMono(
                         fontSize: 11,
-                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
                       ),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       '•',
                       style: TextStyle(
-                        color: isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1),
+                        color: isDark
+                            ? const Color(0xFF475569)
+                            : const Color(0xFFCBD5E1),
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        log.metadata ?? (log.resource != null ? 'Recurso: ${log.resource}' : 'Evento criptográfico registrado'),
+                        log.metadata ??
+                            (log.resource != null
+                                ? 'Recurso: ${log.resource}'
+                                : 'Evento criptográfico registrado'),
                         style: GoogleFonts.hankenGrotesk(
                           fontSize: 11,
-                          color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                          color: isDark
+                              ? const Color(0xFF64748B)
+                              : const Color(0xFF94A3B8),
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -1159,7 +1224,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                 _getTimeAgo(log.timestamp),
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 11,
-                  color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                  color: isDark
+                      ? const Color(0xFF64748B)
+                      : const Color(0xFF94A3B8),
                 ),
               ),
               const SizedBox(height: 4),
@@ -1183,7 +1250,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: isSuccess ? const Color(0xFF34D399) : const Color(0xFFFB7185),
+                        color: isSuccess
+                            ? const Color(0xFF34D399)
+                            : const Color(0xFFFB7185),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -1193,7 +1262,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView>
                       style: GoogleFonts.jetBrainsMono(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
-                        color: isSuccess ? const Color(0xFF34D399) : const Color(0xFFFB7185),
+                        color: isSuccess
+                            ? const Color(0xFF34D399)
+                            : const Color(0xFFFB7185),
                       ),
                     ),
                   ],
@@ -1261,12 +1332,16 @@ class _KpiGlowCardState extends State<_KpiGlowCard> {
           border: Border.all(
             color: _isHovered
                 ? widget.glowColor.withValues(alpha: 0.6)
-                : (widget.isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+                : (widget.isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFE2E8F0)),
             width: _isHovered ? 1.5 : 1.0,
           ),
           boxShadow: [
             BoxShadow(
-              color: widget.glowColor.withValues(alpha: _isHovered ? 0.28 : 0.08),
+              color: widget.glowColor.withValues(
+                alpha: _isHovered ? 0.28 : 0.08,
+              ),
               blurRadius: _isHovered ? 24 : 12,
               offset: Offset(0, _isHovered ? 8 : 4),
             ),
@@ -1295,10 +1370,17 @@ class _KpiGlowCardState extends State<_KpiGlowCard> {
                             color: widget.iconColor.withValues(alpha: 0.25),
                           ),
                         ),
-                        child: Icon(widget.icon, color: widget.iconColor, size: 22),
+                        child: Icon(
+                          widget.icon,
+                          color: widget.iconColor,
+                          size: 22,
+                        ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: widget.trendColor.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(20),
@@ -1310,7 +1392,11 @@ class _KpiGlowCardState extends State<_KpiGlowCard> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             if (widget.trendIcon != null) ...[
-                              Icon(widget.trendIcon, color: widget.trendColor, size: 12),
+                              Icon(
+                                widget.trendIcon,
+                                color: widget.trendColor,
+                                size: 12,
+                              ),
                               const SizedBox(width: 4),
                             ] else if (widget.isPulseDot) ...[
                               Container(
@@ -1343,7 +1429,9 @@ class _KpiGlowCardState extends State<_KpiGlowCard> {
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.6,
-                      color: widget.isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                      color: widget.isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -1356,7 +1444,9 @@ class _KpiGlowCardState extends State<_KpiGlowCard> {
                         style: GoogleFonts.jetBrainsMono(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
-                          color: widget.isDark ? Colors.white : const Color(0xFF0F172A),
+                          color: widget.isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
                           letterSpacing: -1.0,
                         ),
                       ),
@@ -1366,7 +1456,9 @@ class _KpiGlowCardState extends State<_KpiGlowCard> {
                         style: GoogleFonts.jetBrainsMono(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
-                          color: widget.isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                          color: widget.isDark
+                              ? const Color(0xFF64748B)
+                              : const Color(0xFF94A3B8),
                         ),
                       ),
                     ],
@@ -1388,7 +1480,9 @@ class _KpiGlowCardState extends State<_KpiGlowCard> {
                           widget.subtitle,
                           style: GoogleFonts.hankenGrotesk(
                             fontSize: 11,
-                            color: widget.isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                            color: widget.isDark
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFF64748B),
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
