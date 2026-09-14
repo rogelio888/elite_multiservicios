@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:serverpod/serverpod.dart';
 import '../../../generated/protocol.dart';
 import '../../../audit/audit_event.dart';
+import '../../../authorization/rbac_guard.dart';
 
 /// Repositorio para la persistencia inmutable de la bitácora de auditoría en PostgreSQL.
 class AuditRepository {
@@ -112,6 +113,48 @@ class AuditRepository {
       orderBy: (t) => t.timestamp,
       orderDescending: true,
     );
+
+    // Enriquecer registros que no tengan email legible (registros antiguos o con UUID)
+    final missingEmailItems = items
+        .where(
+          (i) => i.userIdentifier == null || !i.userIdentifier!.contains('@'),
+        )
+        .toList();
+
+    if (missingEmailItems.isNotEmpty) {
+      final userIds = missingEmailItems
+          .map((i) => i.userId)
+          .whereType<int>()
+          .toSet();
+
+      final userMap = <int, String>{};
+      if (userIds.isNotEmpty) {
+        final users = await AppUser.db.find(
+          session,
+          where: (t) => t.id.inSet(userIds),
+        );
+        for (final u in users) {
+          if (u.id != null) {
+            userMap[u.id!] = u.email;
+          }
+        }
+      }
+
+      for (final item in missingEmailItems) {
+        if (item.userId != null && userMap.containsKey(item.userId)) {
+          item.userIdentifier = userMap[item.userId];
+        } else if (item.userIdentifier != null &&
+            !item.userIdentifier!.contains('@')) {
+          try {
+            final appUser = await RbacGuard.resolveAppUser(
+              session,
+              item.userIdentifier!,
+            );
+            item.userIdentifier = appUser.email;
+          } catch (_) {}
+        }
+      }
+    }
 
     return AuditLogPageResponse(
       items: items,
