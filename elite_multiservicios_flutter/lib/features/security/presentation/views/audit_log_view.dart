@@ -145,19 +145,23 @@ class _AuditLogViewState extends State<AuditLogView> {
     return clean.length >= 32 && clean.contains('-');
   }
 
-  String _cleanUserIdentifier(String? raw) {
-    if (raw == null || raw.trim().isEmpty) return 'Sistema / Proceso Interno';
+  String _cleanUserIdentifier(String? raw, {int? userId}) {
+    if (raw == null || raw.trim().isEmpty) {
+      if (userId != null) return 'Usuario #$userId';
+      return 'Sistema / Proceso Interno';
+    }
     final clean = raw.trim();
     if (_isUuid(clean)) {
-      return 'admin@elitemultiservicios.com';
+      if (userId != null) return 'Usuario #$userId';
+      return 'Usuario (${clean.substring(0, 8)})';
     }
     return clean;
   }
 
   String _cleanUserRoleLabel(String? raw) {
     if (raw == null || raw.trim().isEmpty) return 'Proceso Automatizado';
-    final clean = raw.trim();
-    if (_isUuid(clean) || clean.contains('admin')) {
+    final clean = raw.trim().toLowerCase();
+    if (clean.contains('admin') || clean.contains('superadmin')) {
       return 'Super Administrador';
     }
     return 'Usuario Operativo';
@@ -265,7 +269,10 @@ class _AuditLogViewState extends State<AuditLogView> {
       }
     }
 
-    final cleanUser = _cleanUserIdentifier(log.userIdentifier);
+    final cleanUser = _cleanUserIdentifier(
+      log.userIdentifier,
+      userId: log.userId,
+    );
 
     showDialog(
       context: context,
@@ -972,7 +979,10 @@ class _AuditLogViewState extends State<AuditLogView> {
         ? const Color(0xFF1E293B)
         : const Color(0xFFE2E8F0);
     final cardBg = isDark ? const Color(0xFF0F172A) : Colors.white;
-    final cleanUser = _cleanUserIdentifier(log.userIdentifier);
+    final cleanUser = _cleanUserIdentifier(
+      log.userIdentifier,
+      userId: log.userId,
+    );
     final cleanRes = _cleanResource(log.resource);
     final cleanIp = _cleanIpAddress(log.ipAddress);
     final (actionLabel, actionIcon, actionColor) = _getActionDetails(
@@ -1139,7 +1149,10 @@ class _AuditLogViewState extends State<AuditLogView> {
   }
 
   Widget _buildAuditRow(AuditLog log, bool isDark) {
-    final cleanUser = _cleanUserIdentifier(log.userIdentifier);
+    final cleanUser = _cleanUserIdentifier(
+      log.userIdentifier,
+      userId: log.userId,
+    );
     final userRole = _cleanUserRoleLabel(log.userIdentifier);
     final cleanIp = _cleanIpAddress(log.ipAddress);
     final cleanRes = _cleanResource(log.resource);

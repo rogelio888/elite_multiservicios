@@ -350,7 +350,7 @@ class UserEndpoint extends Endpoint {
       AuditEventRecord(
         action: AuditEventType.passwordChanged,
         userId: appUser.id,
-        userIdentifier: authUserIdStr,
+        userIdentifier: appUser.email,
         resource: 'user:#${appUser.id}',
         ipAddress: session.request?.remoteInfo,
         result: AuditResult.success,
