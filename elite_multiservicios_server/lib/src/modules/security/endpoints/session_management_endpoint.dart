@@ -61,7 +61,7 @@ class SessionManagementEndpoint extends Endpoint {
       AuditEventRecord(
         action: AuditEventType.loginSuccess,
         userId: appUser.id,
-        userIdentifier: authUserIdStr,
+        userIdentifier: appUser.email,
         resource: 'session:#${userSession.id}/user:#${appUser.id}',
         ipAddress: ipAddress,
         result: AuditResult.success,
@@ -166,7 +166,7 @@ class SessionManagementEndpoint extends Endpoint {
       AuditEventRecord(
         action: AuditEventType.logout,
         userId: appUser.id,
-        userIdentifier: authUserIdStr,
+        userIdentifier: appUser.email,
         resource: 'session:#${activeSession.id}/user:#${appUser.id}',
         ipAddress: session.request?.remoteInfo,
         result: AuditResult.success,
