@@ -142,10 +142,10 @@ class MailService {
   }
 
   /// Despacha el correo según el entorno:
-  /// Despacha el correo según la configuración activa:
-  /// - Si existe BREVO_API_KEY: Brevo HTTP API (funciona sin dominio propio)
-  /// - Si es producción y existe RESEND_API_KEY: Resend HTTP API
-  /// - Desarrollo local: Mailtrap SMTP
+  /// Despacha el correo según el entorno:
+  /// - En producción (Render / Cloud): Brevo HTTP API (o Resend como alternativa).
+  /// - En local / desarrollo: Mailtrap SMTP Sandbox (los correos quedan en el buzón de prueba).
+  /// - Opcional: Si se desea probar Brevo en local explícitamente, definir MAIL_DRIVER=brevo en .env.
   static Future<void> _send({
     required Session session,
     required String to,
@@ -158,28 +158,35 @@ class MailService {
         runMode == 'production' ||
         Platform.environment['SERVERPOD_ENV'] == 'production';
 
+    final forceBrevoInLocal =
+        Platform.environment['MAIL_DRIVER'] == 'brevo' ||
+        Platform.environment['FORCE_REAL_MAIL'] == 'true';
+
     final brevoApiKey =
         Platform.environment['BREVO_API_KEY'] ??
         session.passwords['brevoApiKey'];
 
-    if (brevoApiKey != null && brevoApiKey.isNotEmpty) {
-      await _sendViaBrevo(
-        session: session,
-        apiKey: brevoApiKey,
-        to: to,
-        subject: subject,
-        htmlContent: htmlContent,
-        textFallback: textFallback,
-      );
-    } else if (isProduction) {
-      await _sendViaResend(
-        session: session,
-        to: to,
-        subject: subject,
-        htmlContent: htmlContent,
-        textFallback: textFallback,
-      );
+    if (isProduction || forceBrevoInLocal) {
+      if (brevoApiKey != null && brevoApiKey.isNotEmpty) {
+        await _sendViaBrevo(
+          session: session,
+          apiKey: brevoApiKey,
+          to: to,
+          subject: subject,
+          htmlContent: htmlContent,
+          textFallback: textFallback,
+        );
+      } else {
+        await _sendViaResend(
+          session: session,
+          to: to,
+          subject: subject,
+          htmlContent: htmlContent,
+          textFallback: textFallback,
+        );
+      }
     } else {
+      // Desarrollo local: Siempre Mailtrap SMTP Sandbox
       await _sendViaMailtrap(
         session: session,
         to: to,

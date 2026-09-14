@@ -72,6 +72,11 @@ class _UsersManagementViewState extends State<UsersManagementView> {
       _userPermissions = null;
     });
 
+    final isWide = MediaQuery.of(context).size.width >= 1150;
+    if (!isWide) {
+      _showUserDetailSheet(user);
+    }
+
     try {
       if (user.id != null) {
         final perms = await _service.getUserEffectivePermissions(user.id!);
@@ -89,6 +94,66 @@ class _UsersManagementViewState extends State<UsersManagementView> {
     }
   }
 
+  void _showUserDetailSheet(AppUser user) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final permsFuture = user.id != null
+        ? _service.getUserEffectivePermissions(user.id!)
+        : Future.value(<String>[]);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetCtx) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.88,
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0D111C) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            border: Border.all(
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+            ),
+          ),
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 6),
+                width: 38,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? const Color(0xFF334155)
+                      : const Color(0xFFCBD5E1),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              _buildDetailHeader(
+                user,
+                isDark,
+                onClose: () => Navigator.pop(sheetCtx),
+              ),
+              Expanded(
+                child: FutureBuilder<List<String>>(
+                  future: permsFuture,
+                  builder: (context, snapshot) {
+                    final isLoading =
+                        snapshot.connectionState == ConnectionState.waiting;
+                    return _buildDetailBody(
+                      user,
+                      isDark,
+                      permissions: snapshot.data,
+                      isLoading: isLoading,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _showCreateUserDialog() {
     final emailController = TextEditingController();
     final nameController = TextEditingController();
@@ -100,6 +165,10 @@ class _UsersManagementViewState extends State<UsersManagementView> {
       builder: (dialogCtx) => StatefulBuilder(
         builder: (context, setDialogState) {
           return Dialog(
+            insetPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 24,
+            ),
             backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
@@ -109,34 +178,33 @@ class _UsersManagementViewState extends State<UsersManagementView> {
                     : const Color(0xFFE2E8F0),
               ),
             ),
-            child: Container(
-              width: 480,
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: const Color(
-                                0xFF2563EB,
-                              ).withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.person_add_alt_1,
-                              color: Color(0xFF60A5FA),
-                              size: 20,
-                            ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(
+                              0xFF2563EB,
+                            ).withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          const SizedBox(width: 12),
-                          Column(
+                          child: const Icon(
+                            Icons.person_add_alt_1,
+                            color: Color(0xFF60A5FA),
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
@@ -148,6 +216,8 @@ class _UsersManagementViewState extends State<UsersManagementView> {
                                       ? Colors.white
                                       : const Color(0xFF0F172A),
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                               Text(
                                 'Aprovisionamiento de cuenta y roles',
@@ -157,287 +227,291 @@ class _UsersManagementViewState extends State<UsersManagementView> {
                                       ? const Color(0xFF94A3B8)
                                       : const Color(0xFF64748B),
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                      IconButton(
-                        onPressed: () => Navigator.pop(dialogCtx),
-                        icon: const Icon(Icons.close, size: 18),
-                        color: const Color(0xFF94A3B8),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
+                        ),
+                        IconButton(
+                          onPressed: () => Navigator.pop(dialogCtx),
+                          icon: const Icon(Icons.close, size: 18),
+                          color: const Color(0xFF94A3B8),
+                          visualDensity: VisualDensity.compact,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
 
-                  Text(
-                    'Nombre Completo',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: isDark
-                          ? const Color(0xFFE2E8F0)
-                          : const Color(0xFF334155),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: nameController,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Ej. Roberto Morales',
-                      hintStyle: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: const Color(0xFF64748B),
-                      ),
-                      filled: true,
-                      fillColor: isDark
-                          ? const Color(0xFF111827)
-                          : const Color(0xFFF8FAFC),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: isDark
-                              ? const Color(0xFF1E293B)
-                              : const Color(0xFFCBD5E1),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: isDark
-                              ? const Color(0xFF1E293B)
-                              : const Color(0xFFCBD5E1),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF2563EB)),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 11,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-
-                  Text(
-                    'Correo Corporativo',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: isDark
-                          ? const Color(0xFFE2E8F0)
-                          : const Color(0xFF334155),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: emailController,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'colaborador@elitemultiservicios.com',
-                      hintStyle: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: const Color(0xFF64748B),
-                      ),
-                      filled: true,
-                      fillColor: isDark
-                          ? const Color(0xFF111827)
-                          : const Color(0xFFF8FAFC),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: isDark
-                              ? const Color(0xFF1E293B)
-                              : const Color(0xFFCBD5E1),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: isDark
-                              ? const Color(0xFF1E293B)
-                              : const Color(0xFFCBD5E1),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF2563EB)),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 11,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  Text(
-                    'Roles y Permisos RBAC',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: isDark
-                          ? const Color(0xFFE2E8F0)
-                          : const Color(0xFF334155),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (_availableRoles.isEmpty)
                     Text(
-                      'No hay roles configurados.',
+                      'Nombre Completo',
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: const Color(0xFF94A3B8),
+                        fontWeight: FontWeight.w500,
+                        color: isDark
+                            ? const Color(0xFFE2E8F0)
+                            : const Color(0xFF334155),
                       ),
-                    )
-                  else
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: _availableRoles.map((role) {
-                        final isSelected = selectedRoleIds.contains(role.id);
-                        return FilterChip(
-                          selected: isSelected,
-                          showCheckmark: false,
-                          label: Text(
-                            role.name,
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.w500,
-                              color: isSelected
-                                  ? Colors.white
-                                  : (isDark
-                                        ? const Color(0xFFCBD5E1)
-                                        : const Color(0xFF334155)),
-                            ),
-                          ),
-                          backgroundColor: isDark
-                              ? const Color(0xFF111827)
-                              : const Color(0xFFF1F5F9),
-                          selectedColor: const Color(0xFF2563EB),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
-                            side: BorderSide(
-                              color: isSelected
-                                  ? const Color(0xFF2563EB)
-                                  : (isDark
-                                        ? const Color(0xFF1E293B)
-                                        : const Color(0xFFCBD5E1)),
-                            ),
-                          ),
-                          onSelected: (val) {
-                            setDialogState(() {
-                              if (val) {
-                                if (role.id != null) {
-                                  selectedRoleIds.add(role.id!);
-                                }
-                              } else {
-                                selectedRoleIds.remove(role.id);
-                              }
-                            });
-                          },
-                        );
-                      }).toList(),
                     ),
-                  const SizedBox(height: 24),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(dialogCtx),
-                        child: Text(
-                          'Cancelar',
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
+                    const SizedBox(height: 6),
+                    TextField(
+                      controller: nameController,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Ej. Roberto Morales',
+                        hintStyle: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: const Color(0xFF64748B),
+                        ),
+                        filled: true,
+                        fillColor: isDark
+                            ? const Color(0xFF111827)
+                            : const Color(0xFFF8FAFC),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
                             color: isDark
-                                ? const Color(0xFF94A3B8)
-                                : const Color(0xFF64748B),
-                            fontWeight: FontWeight.w500,
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFCBD5E1),
                           ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFCBD5E1),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF2563EB),
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 11,
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      FilledButton(
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF2563EB),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 18,
-                            vertical: 10,
+                    ),
+                    const SizedBox(height: 14),
+
+                    Text(
+                      'Correo Corporativo',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: isDark
+                            ? const Color(0xFFE2E8F0)
+                            : const Color(0xFF334155),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    TextField(
+                      controller: emailController,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'colaborador@elitemultiservicios.com',
+                        hintStyle: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: const Color(0xFF64748B),
+                        ),
+                        filled: true,
+                        fillColor: isDark
+                            ? const Color(0xFF111827)
+                            : const Color(0xFFF8FAFC),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFCBD5E1),
                           ),
                         ),
-                        onPressed: () async {
-                          final name = nameController.text.trim();
-                          final email = emailController.text.trim();
-                          if (name.isEmpty || email.isEmpty) return;
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFCBD5E1),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF2563EB),
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 11,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
 
-                          final messenger = ScaffoldMessenger.of(context);
-                          Navigator.pop(dialogCtx);
-                          setState(() => _isLoading = true);
+                    Text(
+                      'Roles y Permisos RBAC',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: isDark
+                            ? const Color(0xFFE2E8F0)
+                            : const Color(0xFF334155),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    if (_availableRoles.isEmpty)
+                      Text(
+                        'No hay roles configurados.',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: const Color(0xFF94A3B8),
+                        ),
+                      )
+                    else
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: _availableRoles.map((role) {
+                          final isSelected = selectedRoleIds.contains(role.id);
+                          return FilterChip(
+                            selected: isSelected,
+                            showCheckmark: false,
+                            label: Text(
+                              role.name,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
+                                color: isSelected
+                                    ? Colors.white
+                                    : (isDark
+                                          ? const Color(0xFFCBD5E1)
+                                          : const Color(0xFF334155)),
+                              ),
+                            ),
+                            backgroundColor: isDark
+                                ? const Color(0xFF111827)
+                                : const Color(0xFFF1F5F9),
+                            selectedColor: const Color(0xFF2563EB),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                              side: BorderSide(
+                                color: isSelected
+                                    ? const Color(0xFF2563EB)
+                                    : (isDark
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFCBD5E1)),
+                              ),
+                            ),
+                            onSelected: (val) {
+                              setDialogState(() {
+                                if (val) {
+                                  if (role.id != null) {
+                                    selectedRoleIds.add(role.id!);
+                                  }
+                                } else {
+                                  selectedRoleIds.remove(role.id);
+                                }
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    const SizedBox(height: 24),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Wrap(
+                        alignment: WrapAlignment.end,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(dialogCtx),
+                            child: Text(
+                              'Cancelar',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                color: isDark
+                                    ? const Color(0xFF94A3B8)
+                                    : const Color(0xFF64748B),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: const Color(0xFF2563EB),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 10,
+                              ),
+                            ),
+                            onPressed: () async {
+                              final name = nameController.text.trim();
+                              final email = emailController.text.trim();
+                              if (name.isEmpty || email.isEmpty) return;
 
-                          try {
-                            final newUser = await _service.createUser(
-                              email: email,
-                              fullName: name,
-                            );
+                              final messenger = ScaffoldMessenger.of(context);
+                              Navigator.pop(dialogCtx);
+                              setState(() => _isLoading = true);
 
-                            if (newUser.id != null &&
-                                selectedRoleIds.isNotEmpty) {
-                              for (final rId in selectedRoleIds) {
-                                await _service.assignRoleToUser(
-                                  userId: newUser.id!,
-                                  roleId: rId,
+                              try {
+                                final newUser = await _service.createUser(
+                                  email: email,
+                                  fullName: name,
+                                  roleIds: selectedRoleIds.toList(),
                                 );
+                                await _loadData();
+                                if (mounted) {
+                                  _showCreatedUserCredentialsDialog(
+                                    newUser,
+                                    'Elite.2026!Temp',
+                                  );
+                                }
+                              } catch (e) {
+                                if (mounted) {
+                                  setState(() => _isLoading = false);
+                                  messenger.showSnackBar(
+                                    SnackBar(
+                                      backgroundColor: const Color(0xFFDC2626),
+                                      content: Text(
+                                        'Error al crear colaborador: $e',
+                                      ),
+                                    ),
+                                  );
+                                }
                               }
-                            }
-                            await _loadData();
-                            if (mounted) {
-                              _showCreatedUserCredentialsDialog(
-                                newUser,
-                                'Elite.2026!Temp',
-                              );
-                            }
-                          } catch (e) {
-                            if (mounted) {
-                              setState(() => _isLoading = false);
-                              messenger.showSnackBar(
-                                SnackBar(
-                                  backgroundColor: const Color(0xFFDC2626),
-                                  content: Text(
-                                    'Error al crear colaborador: $e',
-                                  ),
-                                ),
-                              );
-                            }
-                          }
-                        },
-                        child: Text(
-                          'Guardar Colaborador',
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                            },
+                            child: Text(
+                              'Guardar Colaborador',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -456,214 +530,219 @@ class _UsersManagementViewState extends State<UsersManagementView> {
       context: context,
       barrierDismissible: false,
       builder: (dialogCtx) => Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
           side: BorderSide(color: borderColor),
         ),
-        child: Container(
-          width: 480,
-          padding: const EdgeInsets.all(26),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF10B981).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: const Color(0xFF10B981).withValues(alpha: 0.25),
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.check_circle_outline,
-                      color: Color(0xFF10B981),
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Colaborador Registrado Exitosamente',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: isDark
-                                ? Colors.white
-                                : const Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          'Credenciales iniciales aprovisionadas en el sistema',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: const Color(0xFF64748B),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Divider(height: 1, color: borderColor),
-              const SizedBox(height: 18),
-
-              // Datos del colaborador
-              Text(
-                'COLABORADOR',
-                style: GoogleFonts.inter(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                  color: const Color(0xFF64748B),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${newUser.fullName} (${newUser.email})',
-                style: GoogleFonts.inter(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w500,
-                  color: isDark
-                      ? const Color(0xFFE2E8F0)
-                      : const Color(0xFF1E293B),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Caja destacada de Contraseña Temporal
-              Text(
-                'CONTRASEÑA TEMPORAL INICIAL',
-                style: GoogleFonts.inter(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                  color: const Color(0xFF64748B),
-                ),
-              ),
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? const Color(0xFF0B1120)
-                      : const Color(0xFFF1F5F9),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: isDark
-                        ? const Color(0xFF334155)
-                        : const Color(0xFFCBD5E1),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 480),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Text(
-                      tempPassword,
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF3B82F6),
-                        letterSpacing: 0.5,
+                    Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: const Color(
+                            0xFF10B981,
+                          ).withValues(alpha: 0.25),
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.check_circle_outline,
+                        color: Color(0xFF10B981),
+                        size: 20,
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.copy_outlined, size: 18),
-                      tooltip: 'Copiar contraseña temporal',
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: tempPassword));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            backgroundColor: Color(0xFF10B981),
-                            duration: Duration(seconds: 2),
-                            content: Text(
-                              'Contraseña temporal copiada al portapapeles',
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Colaborador Registrado Exitosamente',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
                             ),
                           ),
-                        );
-                      },
+                          Text(
+                            'Credenciales iniciales aprovisionadas en el sistema',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: const Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 20),
+                Divider(height: 1, color: borderColor),
+                const SizedBox(height: 18),
 
-              // Instrucciones del flujo de seguridad
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF3B82F6).withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: const Color(0xFF3B82F6).withValues(alpha: 0.2),
+                // Datos del colaborador
+                Text(
+                  'COLABORADOR',
+                  style: GoogleFonts.inter(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                    color: const Color(0xFF64748B),
                   ),
                 ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.shield_outlined,
-                      size: 16,
-                      color: Color(0xFF3B82F6),
+                const SizedBox(height: 4),
+                Text(
+                  '${newUser.fullName} (${newUser.email})',
+                  style: GoogleFonts.inter(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w500,
+                    color: isDark
+                        ? const Color(0xFFE2E8F0)
+                        : const Color(0xFF1E293B),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Caja destacada de Contraseña Temporal
+                Text(
+                  'CONTRASEÑA TEMPORAL INICIAL',
+                  style: GoogleFonts.inter(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                    color: const Color(0xFF64748B),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF0B1120)
+                        : const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF334155)
+                          : const Color(0xFFCBD5E1),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        tempPassword,
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF3B82F6),
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.copy_outlined, size: 18),
+                        tooltip: 'Copiar contraseña temporal',
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                        visualDensity: VisualDensity.compact,
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: tempPassword));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              backgroundColor: Color(0xFF10B981),
+                              duration: Duration(seconds: 2),
+                              content: Text(
+                                'Contraseña temporal copiada al portapapeles',
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Instrucciones del flujo de seguridad
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF3B82F6).withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: const Color(0xFF3B82F6).withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.shield_outlined,
+                        size: 16,
+                        color: Color(0xFF3B82F6),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Paso siguiente para el colaborador:\n1. Iniciar sesión con esta clave temporal.\n2. Validar el código 2FA enviado a su correo.\n3. Definir su contraseña definitiva obligatoriamente.',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            height: 1.45,
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF334155),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 22),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF2563EB),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                      ),
+                      onPressed: () => Navigator.pop(dialogCtx),
                       child: Text(
-                        'Paso siguiente para el colaborador:\n1. Iniciar sesión con esta clave temporal.\n2. Validar el código 2FA enviado a su correo.\n3. Definir su contraseña definitiva obligatoriamente.',
+                        'Entendido',
                         style: GoogleFonts.inter(
-                          fontSize: 11.5,
-                          height: 1.45,
-                          color: isDark
-                              ? const Color(0xFFCBD5E1)
-                              : const Color(0xFF334155),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 22),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF2563EB),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                    ),
-                    onPressed: () => Navigator.pop(dialogCtx),
-                    child: Text(
-                      'Entendido',
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -677,6 +756,7 @@ class _UsersManagementViewState extends State<UsersManagementView> {
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
@@ -684,130 +764,146 @@ class _UsersManagementViewState extends State<UsersManagementView> {
             color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
           ),
         ),
-        child: Container(
-          width: 440,
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Modificar Colaborador',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 440),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Modificar Colaborador',
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    icon: const Icon(Icons.close, size: 18),
-                    color: const Color(0xFF94A3B8),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Nombre Completo',
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: isDark
-                      ? const Color(0xFFE2E8F0)
-                      : const Color(0xFF334155),
-                ),
-              ),
-              const SizedBox(height: 6),
-              TextField(
-                controller: nameController,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  color: isDark ? Colors.white : const Color(0xFF0F172A),
-                ),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: isDark
-                      ? const Color(0xFF111827)
-                      : const Color(0xFFF8FAFC),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                      color: isDark
-                          ? const Color(0xFF1E293B)
-                          : const Color(0xFFCBD5E1),
+                    IconButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      icon: const Icon(Icons.close, size: 18),
+                      color: const Color(0xFF94A3B8),
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
                     ),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 11,
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Nombre Completo',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: isDark
+                        ? const Color(0xFFE2E8F0)
+                        : const Color(0xFF334155),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    child: Text(
-                      'Cancelar',
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
+                const SizedBox(height: 6),
+                TextField(
+                  controller: nameController,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: isDark
+                        ? const Color(0xFF111827)
+                        : const Color(0xFFF8FAFC),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
                         color: isDark
-                            ? const Color(0xFF94A3B8)
-                            : const Color(0xFF64748B),
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFCBD5E1),
                       ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 11,
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF2563EB),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                ),
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Wrap(
+                    alignment: WrapAlignment.end,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(
+                          'Cancelar',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            color: isDark
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFF64748B),
+                          ),
+                        ),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
+                      FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFF2563EB),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                        ),
+                        onPressed: () async {
+                          final newName = nameController.text.trim();
+                          if (newName.isEmpty || user.id == null) return;
+                          Navigator.pop(ctx);
+                          setState(() => _isLoading = true);
+                          try {
+                            await _service.updateUser(
+                              id: user.id!,
+                              fullName: newName,
+                            );
+                            await _loadData();
+                          } catch (e) {
+                            if (mounted) {
+                              setState(() => _isLoading = false);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: const Color(0xFFDC2626),
+                                  content: Text('Error al actualizar: $e'),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        child: Text(
+                          'Actualizar',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    ),
-                    onPressed: () async {
-                      final newName = nameController.text.trim();
-                      if (newName.isEmpty || user.id == null) return;
-                      Navigator.pop(ctx);
-                      setState(() => _isLoading = true);
-                      try {
-                        await _service.updateUser(
-                          id: user.id!,
-                          fullName: newName,
-                        );
-                        await _loadData();
-                      } catch (e) {
-                        if (mounted) {
-                          setState(() => _isLoading = false);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: const Color(0xFFDC2626),
-                              content: Text('Error al actualizar: $e'),
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    child: Text(
-                      'Actualizar',
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -2070,13 +2166,66 @@ class _UsersManagementViewState extends State<UsersManagementView> {
     );
   }
 
-  Widget _buildDetailDrawer(AppUser user, bool isDark) {
-    final initials = user.fullName.isNotEmpty
-        ? (user.fullName.trim().split(' ').length > 1
-              ? '${user.fullName.trim().split(" ")[0][0]}${user.fullName.trim().split(" ")[1][0]}'
-              : user.fullName.substring(0, 1).toUpperCase())
-        : 'US';
+  Widget _buildDetailHeader(
+    AppUser user,
+    bool isDark, {
+    required VoidCallback onClose,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+          ),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Text(
+                'Ficha del Colaborador',
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 1,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2563EB).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  '#${user.id}',
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF60A5FA),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          IconButton(
+            onPressed: onClose,
+            icon: const Icon(Icons.close, size: 16),
+            color: const Color(0xFF94A3B8),
+            visualDensity: VisualDensity.compact,
+          ),
+        ],
+      ),
+    );
+  }
 
+  Widget _buildDetailDrawer(AppUser user, bool isDark) {
     return Container(
       width: 360,
       decoration: BoxDecoration(
@@ -2089,377 +2238,327 @@ class _UsersManagementViewState extends State<UsersManagementView> {
       ),
       child: Column(
         children: [
-          // Header del Drawer
+          _buildDetailHeader(
+            user,
+            isDark,
+            onClose: () => setState(() => _selectedUser = null),
+          ),
+          Expanded(
+            child: _buildDetailBody(user, isDark),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailBody(
+    AppUser user,
+    bool isDark, {
+    List<String>? permissions,
+    bool? isLoading,
+  }) {
+    final actualLoading = isLoading ?? _isLoadingPermissions;
+    final actualPermissions = permissions ?? _userPermissions;
+    final initials = user.fullName.isNotEmpty
+        ? (user.fullName.trim().split(' ').length > 1
+              ? '${user.fullName.trim().split(" ")[0][0]}${user.fullName.trim().split(" ")[1][0]}'
+              : user.fullName.substring(0, 1).toUpperCase())
+        : 'US';
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Tarjeta de Identidad
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: isDark
-                      ? const Color(0xFF1E293B)
-                      : const Color(0xFFE2E8F0),
-                ),
+              color: isDark ? const Color(0xFF111827) : const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFE2E8F0),
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
               children: [
-                Row(
-                  children: [
-                    Text(
-                      'Ficha del Colaborador',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.white : const Color(0xFF0F172A),
-                      ),
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFE2E8F0),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    initials.toUpperCase(),
+                    style: GoogleFonts.inter(
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 1,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2563EB).withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        '#${user.id}',
-                        style: GoogleFonts.jetBrainsMono(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF60A5FA),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-                IconButton(
-                  onPressed: () => setState(() => _selectedUser = null),
-                  icon: const Icon(Icons.close, size: 16),
-                  color: const Color(0xFF94A3B8),
-                  visualDensity: VisualDensity.compact,
+                const SizedBox(height: 10),
+                Text(
+                  user.fullName,
+                  style: GoogleFonts.inter(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  ),
                 ),
+                const SizedBox(height: 2),
+                Text(
+                  user.email,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _buildRoleBadge(user.id ?? 0, isDark),
               ],
             ),
           ),
+          const SizedBox(height: 20),
 
-          // Contenido con Scroll
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Tarjeta de Identidad
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0xFF111827)
-                          : const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : const Color(0xFFE2E8F0),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 46,
-                          height: 46,
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color(0xFF1E293B)
-                                : const Color(0xFFE2E8F0),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            initials.toUpperCase(),
-                            style: GoogleFonts.inter(
-                              color: isDark
-                                  ? Colors.white
-                                  : const Color(0xFF0F172A),
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          user.fullName,
-                          style: GoogleFonts.inter(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: isDark
-                                ? Colors.white
-                                : const Color(0xFF0F172A),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          user.email,
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: const Color(0xFF94A3B8),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        _buildRoleBadge(user.id ?? 0, isDark),
-                      ],
+          // Credenciales y Seguridad
+          Text(
+            'SEGURIDAD & CREDENCIALES',
+            style: GoogleFonts.inter(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.6,
+              color: const Color(0xFF64748B),
+            ),
+          ),
+          const SizedBox(height: 8),
+          _buildDetailRow(
+            label: 'Segundo Factor (2FA)',
+            value: user.mfaEnabled == true ? 'Habilitado' : 'No configurado',
+            valueColor: user.mfaEnabled == true
+                ? const Color(0xFF10B981)
+                : const Color(0xFFF59E0B),
+            isDark: isDark,
+          ),
+          _buildDetailRow(
+            label: 'Estado de Contraseña',
+            value: user.mustChangePassword == true ? 'Debe cambiar' : 'Vigente',
+            valueColor: user.mustChangePassword == true
+                ? const Color(0xFFF59E0B)
+                : const Color(0xFF10B981),
+            isDark: isDark,
+          ),
+          _buildDetailRow(
+            label: 'Intentos Fallidos',
+            value: '${user.failedLoginAttempts}',
+            valueColor: isDark ? Colors.white : const Color(0xFF0F172A),
+            isDark: isDark,
+          ),
+          _buildDetailRow(
+            label: 'Fecha de Alta',
+            value:
+                '${user.createdAt.day.toString().padLeft(2, "0")}/${user.createdAt.month.toString().padLeft(2, "0")}/${user.createdAt.year}',
+            valueColor: isDark ? Colors.white : const Color(0xFF0F172A),
+            isDark: isDark,
+          ),
+          const SizedBox(height: 20),
+
+          // Permisos RBAC Asignados
+          Text(
+            'PERMISOS EFECTIVOS RBAC',
+            style: GoogleFonts.inter(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.6,
+              color: const Color(0xFF64748B),
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (actualLoading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(12),
+                child: SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            )
+          else if (actualPermissions == null || actualPermissions.isEmpty)
+            Text(
+              'Sin permisos granulares asignados.',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: const Color(0xFF64748B),
+              ),
+            )
+          else
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: actualPermissions.map((perm) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(
+                      0xFF2563EB,
+                    ).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: const Color(
+                        0xFF2563EB,
+                      ).withValues(alpha: 0.25),
                     ),
                   ),
-                  const SizedBox(height: 20),
-
-                  // Credenciales y Seguridad
-                  Text(
-                    'SEGURIDAD & CREDENCIALES',
-                    style: GoogleFonts.inter(
+                  child: Text(
+                    perm,
+                    style: GoogleFonts.jetBrainsMono(
                       fontSize: 10.5,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.6,
-                      color: const Color(0xFF64748B),
+                      color: const Color(0xFF60A5FA),
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  _buildDetailRow(
-                    label: 'Segundo Factor (2FA)',
-                    value: user.mfaEnabled == true
-                        ? 'Habilitado'
-                        : 'No configurado',
-                    valueColor: user.mfaEnabled == true
-                        ? const Color(0xFF10B981)
-                        : const Color(0xFFF59E0B),
-                    isDark: isDark,
-                  ),
-                  _buildDetailRow(
-                    label: 'Estado de Contraseña',
-                    value: user.mustChangePassword == true
-                        ? 'Debe cambiar'
-                        : 'Vigente',
-                    valueColor: user.mustChangePassword == true
-                        ? const Color(0xFFF59E0B)
-                        : const Color(0xFF10B981),
-                    isDark: isDark,
-                  ),
-                  _buildDetailRow(
-                    label: 'Intentos Fallidos',
-                    value: '${user.failedLoginAttempts}',
-                    valueColor: isDark ? Colors.white : const Color(0xFF0F172A),
-                    isDark: isDark,
-                  ),
-                  _buildDetailRow(
-                    label: 'Fecha de Alta',
-                    value:
-                        '${user.createdAt.day.toString().padLeft(2, "0")}/${user.createdAt.month.toString().padLeft(2, "0")}/${user.createdAt.year}',
-                    valueColor: isDark ? Colors.white : const Color(0xFF0F172A),
-                    isDark: isDark,
-                  ),
-                  const SizedBox(height: 20),
+                );
+              }).toList(),
+            ),
+          const SizedBox(height: 24),
 
-                  // Permisos RBAC Asignados
-                  Text(
-                    'PERMISOS EFECTIVOS RBAC',
-                    style: GoogleFonts.inter(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.6,
-                      color: const Color(0xFF64748B),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (_isLoadingPermissions)
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(12),
-                        child: SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ),
-                    )
-                  else if (_userPermissions == null ||
-                      _userPermissions!.isEmpty)
-                    Text(
-                      'Sin permisos granulares asignados.',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: const Color(0xFF64748B),
-                      ),
-                    )
-                  else
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: _userPermissions!.map((perm) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 7,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFF2563EB,
-                            ).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(
-                              color: const Color(
-                                0xFF2563EB,
-                              ).withValues(alpha: 0.25),
-                            ),
-                          ),
-                          child: Text(
-                            perm,
-                            style: GoogleFonts.jetBrainsMono(
-                              fontSize: 10.5,
-                              color: const Color(0xFF60A5FA),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  const SizedBox(height: 24),
-
-                  // Acciones
-                  Text(
-                    'ACCIONES DISPONIBLES',
-                    style: GoogleFonts.inter(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.6,
-                      color: const Color(0xFF64748B),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    onPressed: () => _showEditUserDialog(user),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: isDark
-                          ? Colors.white
-                          : const Color(0xFF0F172A),
-                      side: BorderSide(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : const Color(0xFFCBD5E1),
-                      ),
-                      minimumSize: const Size(double.infinity, 38),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    icon: const Icon(Icons.edit_outlined, size: 15),
-                    label: Text(
-                      'Modificar Perfil',
-                      style: GoogleFonts.inter(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (user.id == 1)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFA855F7).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: const Color(
-                            0xFFA855F7,
-                          ).withValues(alpha: 0.25),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.shield_outlined,
-                            color: Color(0xFFA855F7),
-                            size: 16,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Cuenta SuperAdmin inmutable.',
-                              style: GoogleFonts.inter(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w500,
-                                color: const Color(0xFFA855F7),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  else ...[
-                    OutlinedButton.icon(
-                      onPressed: () => _toggleUserActive(user),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: user.isActive
-                            ? const Color(0xFFF59E0B)
-                            : const Color(0xFF10B981),
-                        side: BorderSide(
-                          color: user.isActive
-                              ? const Color(0xFFF59E0B).withValues(alpha: 0.35)
-                              : const Color(0xFF10B981).withValues(alpha: 0.35),
-                        ),
-                        minimumSize: const Size(double.infinity, 38),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      icon: Icon(
-                        user.isActive
-                            ? Icons.block
-                            : Icons.check_circle_outline,
-                        size: 15,
-                      ),
-                      label: Text(
-                        user.isActive ? 'Suspender Acceso' : 'Reactivar Acceso',
-                        style: GoogleFonts.inter(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: () => _confirmDeleteUser(user),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFFEF4444),
-                        side: BorderSide(
-                          color: const Color(
-                            0xFFEF4444,
-                          ).withValues(alpha: 0.35),
-                        ),
-                        minimumSize: const Size(double.infinity, 38),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      icon: const Icon(Icons.delete_outline, size: 15),
-                      label: Text(
-                        'Dar de Baja',
-                        style: GoogleFonts.inter(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
+          // Acciones
+          Text(
+            'ACCIONES DISPONIBLES',
+            style: GoogleFonts.inter(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.6,
+              color: const Color(0xFF64748B),
+            ),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: () => _showEditUserDialog(user),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: isDark ? Colors.white : const Color(0xFF0F172A),
+              side: BorderSide(
+                color: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFCBD5E1),
+              ),
+              minimumSize: const Size(double.infinity, 38),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            icon: const Icon(Icons.edit_outlined, size: 15),
+            label: Text(
+              'Modificar Perfil',
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
+          const SizedBox(height: 8),
+          if (user.id == 1)
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                color: const Color(0xFFA855F7).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: const Color(
+                    0xFFA855F7,
+                  ).withValues(alpha: 0.25),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.shield_outlined,
+                    color: Color(0xFFA855F7),
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Cuenta SuperAdmin inmutable.',
+                      style: GoogleFonts.inter(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFFA855F7),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else ...[
+            OutlinedButton.icon(
+              onPressed: () => _toggleUserActive(user),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: user.isActive
+                    ? const Color(0xFFF59E0B)
+                    : const Color(0xFF10B981),
+                side: BorderSide(
+                  color: user.isActive
+                      ? const Color(0xFFF59E0B).withValues(alpha: 0.35)
+                      : const Color(0xFF10B981).withValues(alpha: 0.35),
+                ),
+                minimumSize: const Size(double.infinity, 38),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              icon: Icon(
+                user.isActive ? Icons.block : Icons.check_circle_outline,
+                size: 15,
+              ),
+              label: Text(
+                user.isActive ? 'Suspender Acceso' : 'Reactivar Acceso',
+                style: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: () => _confirmDeleteUser(user),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFFEF4444),
+                side: BorderSide(
+                  color: const Color(
+                    0xFFEF4444,
+                  ).withValues(alpha: 0.35),
+                ),
+                minimumSize: const Size(double.infinity, 38),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              icon: const Icon(Icons.delete_outline, size: 15),
+              label: Text(
+                'Dar de Baja',
+                style: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
