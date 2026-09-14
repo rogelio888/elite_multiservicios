@@ -49,6 +49,28 @@ class AuditEventRecord {
     this.metadata,
   }) : timestamp = timestamp ?? DateTime.now().toUtc();
 
+  AuditEventRecord copyWith({
+    String? action,
+    int? userId,
+    String? userIdentifier,
+    String? resource,
+    String? ipAddress,
+    AuditResult? result,
+    DateTime? timestamp,
+    Map<String, dynamic>? metadata,
+  }) {
+    return AuditEventRecord(
+      action: action ?? this.action,
+      userId: userId ?? this.userId,
+      userIdentifier: userIdentifier ?? this.userIdentifier,
+      resource: resource ?? this.resource,
+      ipAddress: ipAddress ?? this.ipAddress,
+      result: result ?? this.result,
+      timestamp: timestamp ?? this.timestamp,
+      metadata: metadata ?? this.metadata,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
     'action': action,
     'userId': userId,
