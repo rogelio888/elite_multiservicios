@@ -5,6 +5,11 @@ import '../../crm/presentation/views/crm_activities_view.dart';
 import '../../crm/presentation/views/crm_customers_view.dart';
 import '../../crm/presentation/views/crm_leads_view.dart';
 import '../../crm/presentation/views/crm_pipeline_view.dart';
+import '../../rrhh/presentation/views/rrhh_absences_view.dart';
+import '../../rrhh/presentation/views/rrhh_audit_view.dart';
+import '../../rrhh/presentation/views/rrhh_contracts_view.dart';
+import '../../rrhh/presentation/views/rrhh_employees_view.dart';
+import '../../rrhh/presentation/views/rrhh_history_view.dart';
 import '../services/auth_service.dart';
 import '../services/security_api_service.dart';
 import 'views/security_dashboard_view.dart';
@@ -44,6 +49,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'crm-pipeline',
     'crm-clientes',
     'crm-actividades',
+    'rrhh-colaboradores',
+    'rrhh-contratos',
+    'rrhh-permisos',
+    'rrhh-bajas',
+    'rrhh-bitacora',
   ];
 
   static int _indexFromRouteOrHash(String raw) {
@@ -86,6 +96,26 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 'actividades':
       case 'agenda':
         return 9;
+      case 'rrhh-colaboradores':
+      case 'colaboradores':
+      case 'empleados':
+      case 'rrhh':
+        return 10;
+      case 'rrhh-contratos':
+      case 'contratos':
+        return 11;
+      case 'rrhh-permisos':
+      case 'permisos':
+      case 'vacaciones':
+        return 12;
+      case 'rrhh-bajas':
+      case 'bajas':
+      case 'historial-laboral':
+        return 13;
+      case 'rrhh-bitacora':
+      case 'rrhh-auditoria':
+      case 'bitacora-rrhh':
+        return 14;
       case 'dashboard':
       default:
         return 0;
@@ -100,6 +130,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
   bool _isSidebarCollapsed = false;
   bool _isSecurityExpanded = true;
   bool _isCrmExpanded = true;
+  bool _isRrhhExpanded = true;
 
   @override
   void initState() {
@@ -130,6 +161,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       _isSecurityExpanded = true;
     } else if (initialIndex >= 6 && initialIndex <= 9) {
       _isCrmExpanded = true;
+    } else if (initialIndex >= 10 && initialIndex <= 14) {
+      _isRrhhExpanded = true;
     }
 
     // Sincronizar URL del navegador con el slug activo
@@ -144,6 +177,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
             _selectedIndex = newIndex;
             if (newIndex >= 1 && newIndex <= 5) _isSecurityExpanded = true;
             if (newIndex >= 6 && newIndex <= 9) _isCrmExpanded = true;
+            if (newIndex >= 10 && newIndex <= 14) _isRrhhExpanded = true;
           });
           _loadSidebarMetrics();
         }
@@ -280,6 +314,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'CRM: Pipeline Comercial',
     'CRM: Directorio Clientes 360°',
     'CRM: Agenda & Actividades',
+    'RRHH: Colaboradores & Personal',
+    'RRHH: Contratos & Asignaciones',
+    'RRHH: Permisos & Vacaciones',
+    'RRHH: Bajas & Historial Laboral',
+    'RRHH: Bitácora de Auditoría',
   ];
 
   Widget _buildNavItem({
@@ -496,6 +535,45 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
 
     final isAnySecurityActive = _selectedIndex >= 1 && _selectedIndex <= 5;
     final isAnyCrmActive = _selectedIndex >= 6 && _selectedIndex <= 9;
+    final isAnyRrhhActive = _selectedIndex >= 10 && _selectedIndex <= 14;
+
+    final rrhhItems = [
+      (
+        icon: Icons.people_alt_outlined,
+        selectedIcon: Icons.people_alt,
+        label: 'Colaboradores',
+        badge: null,
+        index: 10,
+      ),
+      (
+        icon: Icons.description_outlined,
+        selectedIcon: Icons.description,
+        label: 'Contratos & Cargos',
+        badge: null,
+        index: 11,
+      ),
+      (
+        icon: Icons.event_note_outlined,
+        selectedIcon: Icons.event_note,
+        label: 'Permisos & Vacaciones',
+        badge: null,
+        index: 12,
+      ),
+      (
+        icon: Icons.history_edu_outlined,
+        selectedIcon: Icons.history_edu,
+        label: 'Bajas & Historial',
+        badge: null,
+        index: 13,
+      ),
+      (
+        icon: Icons.receipt_long_outlined,
+        selectedIcon: Icons.receipt_long,
+        label: 'Bitácora RRHH',
+        badge: null,
+        index: 14,
+      ),
+    ];
 
     Widget currentView;
     switch (_selectedIndex) {
@@ -530,6 +608,21 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         break;
       case 9:
         currentView = const CrmActivitiesView();
+        break;
+      case 10:
+        currentView = const RrhhEmployeesView();
+        break;
+      case 11:
+        currentView = const RrhhContractsView();
+        break;
+      case 12:
+        currentView = const RrhhAbsencesView();
+        break;
+      case 13:
+        currentView = const RrhhHistoryView();
+        break;
+      case 14:
+        currentView = const RrhhAuditView();
         break;
       default:
         currentView = const Center(child: Text('Vista no encontrada'));
@@ -577,7 +670,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                     ],
                     if (!isMobile) ...[
                       Text(
-                        _selectedIndex >= 6 ? 'CRM' : 'Seguridad',
+                        _selectedIndex >= 10
+                            ? 'RRHH'
+                            : (_selectedIndex >= 6 ? 'CRM' : 'Seguridad'),
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           color: isDark
@@ -821,6 +916,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       isAnySecurityActive: isAnySecurityActive,
                       crmItems: crmItems,
                       isAnyCrmActive: isAnyCrmActive,
+                      rrhhItems: rrhhItems,
+                      isAnyRrhhActive: isAnyRrhhActive,
                     ),
                   ),
                 )
@@ -841,6 +938,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       isAnySecurityActive: isAnySecurityActive,
                       crmItems: crmItems,
                       isAnyCrmActive: isAnyCrmActive,
+                      rrhhItems: rrhhItems,
+                      isAnyRrhhActive: isAnyRrhhActive,
                     ),
                     Expanded(
                       child: Column(
@@ -882,6 +981,17 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     >
     crmItems,
     required bool isAnyCrmActive,
+    required List<
+      ({
+        IconData icon,
+        IconData selectedIcon,
+        String label,
+        String? badge,
+        int index,
+      })
+    >
+    rrhhItems,
+    required bool isAnyRrhhActive,
   }) {
     final collapsed = !isDrawer && _isSidebarCollapsed;
 
@@ -1314,6 +1424,155 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       ),
                       child: Column(
                         children: crmItems.map((item) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: item.icon,
+                              selectedIcon: item.selectedIcon,
+                              label: item.label,
+                              index: item.index,
+                              badge: item.badge,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 6),
+
+                // 6. Acordeón Colapsable "RRHH (Recursos Humanos)"
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    key: const Key('nav_accordion_rrhh'),
+                    onTap: () {
+                      setState(() {
+                        _isRrhhExpanded = !_isRrhhExpanded;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 140),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 9,
+                      ),
+                      decoration: BoxDecoration(
+                        color: (isAnyRrhhActive && !_isRrhhExpanded)
+                            ? (isDark
+                                  ? const Color(0xFF1E1B4B)
+                                  : const Color(0xFFEEF2FF))
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(8),
+                        border: (isAnyRrhhActive && !_isRrhhExpanded)
+                            ? const Border(
+                                left: BorderSide(
+                                  color: Color(0xFF6366F1),
+                                  width: 2.5,
+                                ),
+                              )
+                            : null,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: collapsed
+                            ? MainAxisAlignment.center
+                            : MainAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.badge_outlined,
+                            color: isAnyRrhhActive
+                                ? (isDark
+                                      ? const Color(0xFF818CF8)
+                                      : const Color(0xFF4F46E5))
+                                : (isDark
+                                      ? const Color(0xFF94A3B8)
+                                      : const Color(0xFF64748B)),
+                            size: 18,
+                          ),
+                          if (!collapsed) ...[
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      'Recursos Humanos',
+                                      style: GoogleFonts.inter(
+                                        color: isAnyRrhhActive
+                                            ? (isDark
+                                                  ? Colors.white
+                                                  : const Color(0xFF0F172A))
+                                            : (isDark
+                                                  ? const Color(0xFF94A3B8)
+                                                  : const Color(0xFF64748B)),
+                                        fontWeight: isAnyRrhhActive
+                                            ? FontWeight.w600
+                                            : FontWeight.w500,
+                                        fontSize: 13,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  if (isAnyRrhhActive && !_isRrhhExpanded) ...[
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      width: 5,
+                                      height: 5,
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFF6366F1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            AnimatedRotation(
+                              turns: _isRrhhExpanded ? 0.5 : 0.0,
+                              duration: const Duration(milliseconds: 180),
+                              curve: Curves.easeOutCubic,
+                              child: Icon(
+                                Icons.keyboard_arrow_down,
+                                size: 16,
+                                color: isDark
+                                    ? const Color(0xFF64748B)
+                                    : const Color(0xFF94A3B8),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // 7. Sub-pestañas pertenecientes a "RRHH"
+                if (_isRrhhExpanded)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: collapsed ? 0 : 10,
+                      top: 2,
+                    ),
+                    child: Container(
+                      decoration: collapsed
+                          ? null
+                          : BoxDecoration(
+                              border: Border(
+                                left: BorderSide(
+                                  color: isDark
+                                      ? const Color(0xFF1E293B)
+                                      : const Color(0xFFE2E8F0),
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                      padding: EdgeInsets.only(
+                        left: collapsed ? 0 : 6,
+                      ),
+                      child: Column(
+                        children: rrhhItems.map((item) {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 2),
                             child: _buildNavItem(
