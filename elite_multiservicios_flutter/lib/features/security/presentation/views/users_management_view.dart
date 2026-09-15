@@ -1409,8 +1409,8 @@ class _UsersManagementViewState extends State<UsersManagementView> {
                                     );
                                   }
 
-                                  final tableWidth = constraints.maxWidth < 940
-                                      ? 940.0
+                                  final tableWidth = constraints.maxWidth < 1040
+                                      ? 1040.0
                                       : constraints.maxWidth;
                                   return SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
@@ -1507,13 +1507,13 @@ class _UsersManagementViewState extends State<UsersManagementView> {
       ),
       child: Row(
         children: [
-          Expanded(flex: 30, child: _headerCell('COLABORADOR', isDark)),
-          Expanded(flex: 26, child: _headerCell('CORREO CORPORATIVO', isDark)),
-          Expanded(flex: 14, child: _headerCell('ROL RBAC', isDark)),
-          Expanded(flex: 14, child: _headerCell('SEGURIDAD 2FA', isDark)),
+          Expanded(flex: 25, child: _headerCell('COLABORADOR', isDark)),
+          Expanded(flex: 22, child: _headerCell('CORREO CORPORATIVO', isDark)),
+          Expanded(flex: 13, child: _headerCell('ROL RBAC', isDark)),
+          Expanded(flex: 12, child: _headerCell('SEGURIDAD 2FA', isDark)),
           Expanded(flex: 10, child: _headerCell('ESTADO', isDark)),
           Expanded(
-            flex: 14,
+            flex: 18,
             child: Align(
               alignment: Alignment.centerRight,
               child: _headerCell('ACCIONES', isDark),
@@ -1832,9 +1832,9 @@ class _UsersManagementViewState extends State<UsersManagementView> {
           ),
           child: Row(
             children: [
-              // 1. Colaborador (flex: 30)
+              // 1. Colaborador (flex: 25)
               Expanded(
-                flex: 30,
+                flex: 25,
                 child: Row(
                   children: [
                     Container(
@@ -1894,9 +1894,9 @@ class _UsersManagementViewState extends State<UsersManagementView> {
                 ),
               ),
 
-              // 2. Correo Corporativo (flex: 26)
+              // 2. Correo Corporativo (flex: 22)
               Expanded(
-                flex: 26,
+                flex: 22,
                 child: Text(
                   user.email,
                   style: GoogleFonts.inter(
@@ -1909,18 +1909,18 @@ class _UsersManagementViewState extends State<UsersManagementView> {
                 ),
               ),
 
-              // 3. Rol RBAC (flex: 14)
+              // 3. Rol RBAC (flex: 13)
               Expanded(
-                flex: 14,
+                flex: 13,
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: _buildRoleBadge(user.id ?? 0, isDark),
                 ),
               ),
 
-              // 4. Seguridad 2FA (flex: 14)
+              // 4. Seguridad 2FA (flex: 12)
               Expanded(
-                flex: 14,
+                flex: 12,
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
@@ -1989,55 +1989,66 @@ class _UsersManagementViewState extends State<UsersManagementView> {
                 ),
               ),
 
-              // 6. Acciones (flex: 14)
+              // 6. Acciones (flex: 18)
               Expanded(
-                flex: 14,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.visibility_outlined, size: 16),
-                      tooltip: 'Detalle',
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () => _selectUser(user),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.edit_outlined, size: 16),
-                      tooltip: 'Editar',
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () => _showEditUserDialog(user),
-                    ),
-                    if (user.id == 1)
-                      const Tooltip(
-                        message: 'SuperAdmin protegido',
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          child: Icon(
-                            Icons.shield_outlined,
-                            size: 16,
-                            color: Color(0xFFA855F7),
+                flex: 18,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.visibility_outlined, size: 16),
+                          tooltip: 'Detalle',
+                          visualDensity: VisualDensity.compact,
+                          onPressed: () => _selectUser(user),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.edit_outlined, size: 16),
+                          tooltip: 'Editar',
+                          visualDensity: VisualDensity.compact,
+                          onPressed: () => _showEditUserDialog(user),
+                        ),
+                        if (user.id == 1)
+                          const Tooltip(
+                            message: 'SuperAdmin protegido',
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8),
+                              child: Icon(
+                                Icons.shield_outlined,
+                                size: 16,
+                                color: Color(0xFFA855F7),
+                              ),
+                            ),
+                          )
+                        else ...[
+                          Transform.scale(
+                            scale: 0.8,
+                            child: Switch(
+                              value: user.isActive,
+                              activeThumbColor: const Color(0xFF10B981),
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              onChanged: (_) => _toggleUserActive(user),
+                            ),
                           ),
-                        ),
-                      )
-                    else ...[
-                      Switch(
-                        value: user.isActive,
-                        activeThumbColor: const Color(0xFF10B981),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onChanged: (_) => _toggleUserActive(user),
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          size: 16,
-                          color: Color(0xFFEF4444),
-                        ),
-                        tooltip: 'Dar de baja',
-                        visualDensity: VisualDensity.compact,
-                        onPressed: () => _confirmDeleteUser(user),
-                      ),
-                    ],
-                  ],
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              size: 16,
+                              color: Color(0xFFEF4444),
+                            ),
+                            tooltip: 'Dar de baja',
+                            visualDensity: VisualDensity.compact,
+                            onPressed: () => _confirmDeleteUser(user),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],
