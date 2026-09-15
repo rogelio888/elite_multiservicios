@@ -754,8 +754,9 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                   ),
                                 ],
                                 onChanged: (v) {
-                                  if (v != null)
+                                  if (v != null) {
                                     setModalState(() => selectedWorkplace = v);
+                                  }
                                 },
                               ),
                             ),
@@ -798,8 +799,9 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                   ),
                                 ],
                                 onChanged: (v) {
-                                  if (v != null)
+                                  if (v != null) {
                                     setModalState(() => selectedContract = v);
+                                  }
                                 },
                               ),
                             ),
@@ -831,8 +833,9 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                     firstDate: DateTime(2020),
                                     lastDate: DateTime(2030),
                                   );
-                                  if (picked != null)
+                                  if (picked != null) {
                                     setModalState(() => realStartDate = picked);
+                                  }
                                 },
                               ),
                             ),
@@ -853,10 +856,11 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                     firstDate: DateTime(2020),
                                     lastDate: DateTime(2030),
                                   );
-                                  if (picked != null)
+                                  if (picked != null) {
                                     setModalState(
                                       () => fiscalStartDate = picked,
                                     );
+                                  }
                                 },
                               ),
                             ),
@@ -1246,8 +1250,9 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                           ),
                         ],
                         onChanged: (val) {
-                          if (val != null)
+                          if (val != null) {
                             setState(() => _workplaceFilter = val);
+                          }
                         },
                       ),
                       const SizedBox(width: 12),
