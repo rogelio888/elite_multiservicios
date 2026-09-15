@@ -1,0 +1,105 @@
+# ==============================================================================
+# Elite Multiservicios - Infrastructure as Code (Render Blueprint: Develop / Staging)
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # Backend: Serverpod Monolith (Docker) - Staging (develop)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: elite-backend-dev
+    runtime: docker
+    repo: https://github.com/rogelio888/elite_multiservicios
+    plan: free
+    region: ohio
+    branch: develop
+    dockerfilePath: ./elite_multiservicios_server/Dockerfile
+    dockerContext: ./elite_multiservicios_server
+    healthCheckPath: /livez
+    autoDeployTrigger: commit
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: SERVERPOD_MODE
+        value: production
+      - key: DATABASE_HOST
+        sync: false
+      - key: DATABASE_PORT
+        sync: false
+      - key: DATABASE_NAME
+        sync: false
+      - key: DATABASE_USER
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: SERVERPOD_PASSWORD_database
+        sync: false
+      - key: REDIS_HOST
+        fromService:
+          type: keyvalue
+          name: elite-redis-dev
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: keyvalue
+          name: elite-redis-dev
+          property: port
+      - key: SERVERPOD_PASSWORD_redis
+        fromService:
+          type: keyvalue
+          name: elite-redis-dev
+          property: connectionString
+      - key: SERVERPOD_PASSWORD_emailSecretHashPepper
+        generateValue: true
+      - key: SERVERPOD_PASSWORD_jwtHmacSha512PrivateKey
+        generateValue: true
+      - key: SERVERPOD_PASSWORD_jwtRefreshTokenHashPepper
+        generateValue: true
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "465"
+      - key: SMTP_USERNAME
+        value: resend
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM_EMAIL
+        value: onboarding@resend.dev
+      - key: SMTP_FROM_NAME
+        value: Elite Multiservicios (Dev)
+      - key: SEED_ADMIN_EMAIL
+        value: admin@elitemultiservicios.com
+      - key: SEED_ADMIN_PASSWORD
+        sync: false
+      - key: SEED_ON_START
+        value: "true"
+
+  # ----------------------------------------------------------------------------
+  # Frontend: Flutter Web (Docker + Nginx SPA) - Staging (develop)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: elite-frontend-dev
+    runtime: docker
+    repo: https://github.com/rogelio888/elite_multiservicios
+    plan: free
+    region: ohio
+    branch: develop
+    dockerfilePath: ./elite_multiservicios_flutter/Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    autoDeployTrigger: commit
+    envVars:
+      - key: SERVER_URL
+        sync: false
+
+  # ----------------------------------------------------------------------------
+  # Cache & PubSub: Key Value (Redis) - Staging (develop)
+  # ----------------------------------------------------------------------------
+  - type: keyvalue
+    name: elite-redis-dev
+    plan: free
+    region: ohio
+    maxmemoryPolicy: noeviction
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
