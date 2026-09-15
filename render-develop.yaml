@@ -1,6 +1,11 @@
 # ==============================================================================
 # Elite Multiservicios - Infrastructure as Code (Render Blueprint: Develop / Staging)
 # ==============================================================================
+# NOTA: En el plan gratuito de Render solo se permite 1 instancia de Key Value (Redis).
+# Dado que 'elite-redis' ya existe en producción, el entorno staging opera con Serverpod
+# en modo standalone (SERVERPOD_REDIS_ENABLED=false gestionado por entrypoint.sh),
+# consumiendo 0 slots adicionales de Redis y garantizando compatibilidad 100% free tier.
+# ==============================================================================
 
 services:
   # ----------------------------------------------------------------------------
@@ -34,21 +39,6 @@ services:
         sync: false
       - key: SERVERPOD_PASSWORD_database
         sync: false
-      - key: REDIS_HOST
-        fromService:
-          type: keyvalue
-          name: elite-redis-dev
-          property: host
-      - key: REDIS_PORT
-        fromService:
-          type: keyvalue
-          name: elite-redis-dev
-          property: port
-      - key: SERVERPOD_PASSWORD_redis
-        fromService:
-          type: keyvalue
-          name: elite-redis-dev
-          property: connectionString
       - key: SERVERPOD_PASSWORD_emailSecretHashPepper
         generateValue: true
       - key: SERVERPOD_PASSWORD_jwtHmacSha512PrivateKey
@@ -91,15 +81,3 @@ services:
     envVars:
       - key: SERVER_URL
         sync: false
-
-  # ----------------------------------------------------------------------------
-  # Cache & PubSub: Key Value (Redis) - Staging (develop)
-  # ----------------------------------------------------------------------------
-  - type: keyvalue
-    name: elite-redis-dev
-    plan: free
-    region: ohio
-    maxmemoryPolicy: noeviction
-    ipAllowList:
-      - source: 0.0.0.0/0
-        description: everywhere
