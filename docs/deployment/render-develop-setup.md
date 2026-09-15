@@ -33,14 +33,14 @@ Definidos en [`render-develop.yaml`](file:///c:/Users/rogel/OneDrive/Escritorio/
 ### Backend (`elite-backend-dev`)
 Configurar en Render Dashboard (`elite-backend-dev > Environment`):
 
-| Variable | Valor Recomendado | Origen |
+| Variable | Valor para `Elite_develop` | Origen / Detalle |
 |---|---|---|
-| `DATABASE_HOST` | Host de base de datos PostgreSQL de desarrollo (Supabase / Postgres) | Supabase Dashboard |
-| `DATABASE_PORT` | `6543` o `5432` | Supabase Dashboard |
-| `DATABASE_NAME` | `postgres` | Supabase Dashboard |
-| `DATABASE_USER` | Usuario de base de datos | Supabase Dashboard |
-| `DATABASE_PASSWORD` | Contraseña de base de datos | Supabase Dashboard |
-| `SERVERPOD_PASSWORD_database` | Misma contraseña que `DATABASE_PASSWORD` | Supabase Dashboard |
+| `DATABASE_HOST` | `aws-0-us-east-2.pooler.supabase.com` | Supabase Pooler (Ohio) |
+| `DATABASE_PORT` | `5432` | Modo Session Pooler (Obligatorio para Serverpod) |
+| `DATABASE_NAME` | `postgres` | Fijo |
+| `DATABASE_USER` | `postgres.rpbdavytokkcenycbaqq` | Usuario de proyecto Supabase |
+| `DATABASE_PASSWORD` | *(Tu contraseña asignada en Supabase)* | Definida al crear el proyecto |
+| `SERVERPOD_PASSWORD_database` | *(Misma que `DATABASE_PASSWORD`)* | Definida al crear el proyecto |
 | `SMTP_HOST` | `smtp.resend.com` | Resend |
 | `SMTP_PASSWORD` | API Key de Resend (`re_...`) | Resend |
 | `SEED_ADMIN_PASSWORD` | Contraseña administrativa segura para staging | Generada por vos |
