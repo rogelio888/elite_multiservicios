@@ -67,12 +67,14 @@ cd elite_multiservicios_server && dart test && cd ..
    git rebase origin/develop
    # Resolver choques en local si existen -> git rebase --continue
    ```
-3. **Subir rama aislada**:
+3. **Consulta y Aprobación Obligatoria del Desarrollador**:
+   La IA debe consultar obligatoriamente con el usuario si está listo para subir los cambios antes de ejecutar el push o abrir el PR, evitando colisiones con otros compañeros de equipo.
+4. **Subir rama aislada (solo tras confirmación)**:
    ```bash
    git push -u origin feat/<nombre-descriptivo>
    ```
 
-### Fase 5: PR Automático por la IA, CI y Fusión a `develop`
+### Fase 5: PR con GitHub CLI, CI y Fusión a `develop`
 1. **Apertura de PR por la IA**:
    - La IA crea automáticamente el PR apuntando **exclusivamente a `develop`** (`--base develop`) mediante `gh pr create --body-file ...`.
 2. **Verificación de CI en GitHub**:

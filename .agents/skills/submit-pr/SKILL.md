@@ -1,6 +1,6 @@
 ---
 name: submit-pr
-description: Protocolo riguroso de sincronización anti-choques, verificación de calidad, push de rama, apertura automática de Pull Request hacia develop con GitHub CLI y posterior fusión sincronizada.
+description: Protocolo riguroso de sincronización anti-choques, verificación de calidad, consulta previa al desarrollador, push de rama y apertura de Pull Request hacia develop con GitHub CLI.
 ---
 
 # Submit PR Skill — Elite Multiservicios
@@ -55,13 +55,28 @@ git log HEAD..origin/develop --oneline
      ```
   *Nota: De esta manera nadie borra ni pisa el código del otro compañero.*
 
-### 4. Subir la Rama Aislada al Repositorio Remoto
+### 4. CONSULTA Y APROBACIÓN OBLIGATORIA DEL DESARROLLADOR (PUNTO DE CONTROL)
+> [!IMPORTANT]
+> **REGLA DE ORO ANTI-CHOQUES:**  
+> La IA tiene **ESTRICTAMENTE PROHIBIDO** hacer `git push` o abrir un Pull Request de forma autónoma sin consultar previamente y recibir el consentimiento explícito del usuario o desarrollador activo.
+>
+> **Motivo:** En equipos concurrentes, otro colaborador puede estar a punto de subir sus cambios o coordinando una integración. Abrir el PR sin aviso previo puede causar condiciones de carrera y colisiones de despliegue.
+
+**Acción obligatoria de la IA:**
+Presentar un resumen claro de los cambios locales y preguntar:
+> *"He completado las verificaciones locales (calidad 5/5, sin secretos y anti-colisión con `develop` al día). ¿Estás listo para que suba la rama y abra el Pull Request hacia `develop`?"*
+
+**Condición de avance:**  
+Esperar la respuesta afirmativa del usuario ("sí", "adelante", "sube el PR", etc.) antes de ejecutar los pasos siguientes.
+
+### 5. Subir la Rama Aislada al Repositorio Remoto
+Una vez aprobada por el usuario:
 ```powershell
 git push -u origin <nombre-de-tu-rama>
 ```
 
-### 5. Crear el Pull Request Automáticamente con GitHub CLI (`gh`)
-La IA debe generar y ejecutar la creación del PR de forma 100% autónoma:
+### 6. Crear el Pull Request con GitHub CLI (`gh`)
+La IA genera la descripción y abre el PR apuntando a `develop`:
 ```powershell
 # 1. Escribir descripción estructurada en archivo temporal para evitar problemas de escape en PowerShell
 # Guardar en .agents/scratch/pr_body.md con secciones de Contexto, Cambios y Verificación
@@ -73,7 +88,7 @@ gh pr create --base develop --title "<tipo>(<alcance>): <descripción>" --body-f
 Remove-Item .agents/scratch/pr_body.md -Force -ErrorAction SilentlyContinue
 ```
 
-### 6. Monitorear el Pipeline de CI
+### 7. Monitorear el Pipeline de CI
 Monitorear la ejecución de los 4 checks de GitHub Actions automáticamente:
 ```powershell
 gh pr checks <numero-del-pr>
@@ -85,25 +100,18 @@ Los 4 jobs deben pasar en verde:
 - `Flutter Unit & Widget Tests`
 - `Serverpod Tests & Database Integration`
 
-Si alguno falla, revisar los logs del job, corregir en la misma rama local y volver a pushear.
-
-### 7. Fusión (Merge) a `develop` y Cierre de Rama
-Una vez el CI esté en verde y el Tech Lead (`@rogelio888`) apruebe o instruya la fusión:
+### 8. Fusión (Merge) a `develop` y Retorno Local
+Cuando el Tech Lead (`@rogelio888`) apruebe o instruya la fusión:
 ```powershell
 gh pr merge <numero-del-pr> --merge --delete-branch
-```
-
-### 8. Retorno y Sincronización Local
-Sincronizar el entorno local para continuar con la siguiente tarea:
-```powershell
 git checkout develop
 git pull origin develop
-git branch -d <nombre-de-tu-rama>
 ```
 
 ---
 
 ## Prohibiciones Explícitas
+- ❌ **Pushear o abrir PR automáticamente sin consulta previa y confirmación del usuario.**
 - ❌ Trabajar directamente sobre `develop` o `main` sin rama propia.
 - ❌ Pushear sin antes haber hecho `git fetch origin develop` y comprobado si hubo cambios concurrentes.
 - ❌ Abrir PR o pushear hacia `main` (solo `develop`).
