@@ -1,0 +1,621 @@
+IMPORTANTE SOBRE MI NIVEL Y CÓMO QUIERO QUE ME GUÍES:
+
+Es la primera vez que desarrollo un módulo de Recursos Humanos y todavía no sé con exactitud qué debe contener un módulo de RRHH profesional.
+
+Por lo tanto, NO quiero que solamente conviertas literalmente mis requisitos en tablas, endpoints y pantallas.
+
+Quiero que también actúes como:
+
+- Analista de sistemas.
+- Analista funcional de Recursos Humanos.
+- Arquitecto de software.
+- Tutor de Flutter + Serverpod.
+
+Quiero que me GUÍES durante el desarrollo.
+
+Cada vez que analices una necesidad de la empresa, explícame:
+
+1. Qué problema existe actualmente.
+2. Cómo debería solucionarse mediante el sistema.
+3. Qué funcionalidad debería tener RRHH para solucionarlo.
+4. Qué información debería almacenarse.
+5. Qué pantalla sería necesaria.
+6. Qué modelo de Serverpod podría necesitarse.
+7. Qué endpoint podría necesitarse.
+8. Por qué esa solución sería conveniente.
+9. Si existe una alternativa mejor, indícala.
+10. Si necesito consultar algo nuevamente con la encargada de RRHH, indícame exactamente qué pregunta debo hacerle.
+
+No asumas que yo ya sé cómo funciona un sistema de Recursos Humanos.
+
+Si digo algo que técnicamente no sería recomendable, NO lo implementes simplemente porque yo lo dije. Explícame el problema y recomiéndame una mejor solución respetando la forma de trabajo de Elite Multiservicios.
+
+=========================================
+OBJETIVO REAL DEL NUEVO SISTEMA
+=========================================
+
+Es muy importante comprender que NO queremos simplemente digitalizar las actuales planillas Excel.
+
+Actualmente Elite Multiservicios tiene muchos procesos manuales y todavía trabaja bajo una modalidad donde los trabajadores no cuentan con todos los beneficios laborales que posteriormente se quieren implementar.
+
+El nuevo sistema debe servir también para acompañar la TRANSICIÓN de la empresa hacia una gestión formal de trabajadores con beneficios laborales y mayor control administrativo.
+
+Por lo tanto, quiero diseñar RRHH pensando tanto en:
+
+ESTADO ACTUAL:
+- Excel.
+- Documentación física.
+- Procesos manuales.
+- Prestación de servicios.
+- Poco control centralizado.
+- Permisos manejados informalmente.
+- Sin control sistematizado de vacaciones.
+- Sin manejo formal de varios beneficios.
+- Asistencia parcialmente informal.
+
+COMO EN EL ESTADO FUTURO:
+- Información centralizada.
+- Expediente digital del trabajador.
+- Beneficios laborales.
+- Vacaciones.
+- Permisos.
+- Bonos cuando correspondan.
+- Historial laboral.
+- Mayor control de documentación.
+- Control de altas y bajas.
+- Integración con asistencia.
+- Integración con contabilidad.
+- Mayor trazabilidad.
+- Control de usuarios y responsabilidades.
+- Crecimiento de la cantidad de trabajadores.
+
+El sistema debe poder evolucionar sin tener que rehacer completamente el módulo de RRHH.
+
+=========================================
+IMPORTANTE: LEGISLACIÓN LABORAL
+=========================================
+
+La empresa quiere pasar a manejar beneficios laborales conforme corresponda legalmente.
+
+Por eso quiero que identifiques qué funciones debería contemplar un módulo de RRHH preparado para esa transición.
+
+SIN EMBARGO:
+
+No inventes leyes, porcentajes, cantidades de días, beneficios, descuentos o fórmulas.
+
+Cuando una funcionalidad dependa de legislación laboral boliviana, indícame:
+
+"REQUIERE VALIDACIÓN LEGAL/CONTABLE".
+
+Quiero que el sistema sea configurable siempre que sea posible.
+
+Por ejemplo, evitar programar directamente:
+
+"X permiso siempre tiene X días".
+
+Sería preferible tener configuraciones como:
+
+TipoPermiso
+- nombre
+- remunerado
+- generaDescuento
+- requiereDocumento
+- cantidadDiasPermitidos
+- requiereAprobacion
+- activo
+
+De esa manera las reglas pueden modificarse posteriormente sin cambiar el código.
+
+=========================================
+CICLO DE VIDA DEL TRABAJADOR
+=========================================
+
+Quiero que el módulo esté diseñado considerando TODO el ciclo de vida de un trabajador:
+
+CANDIDATO / POSTULANTE
+        ↓
+PROCESO DE CONTRATACIÓN
+        ↓
+REGISTRO DEL EMPLEADO
+        ↓
+DOCUMENTACIÓN
+        ↓
+ASIGNACIÓN LABORAL
+        ↓
+EMPLEADO ACTIVO
+        ↓
+CAMBIOS DURANTE SU VIDA LABORAL
+        ↓
+PERMISOS / VACACIONES / BENEFICIOS
+        ↓
+CAMBIOS DE CARGO / EMPRESA / SUCURSAL
+        ↓
+BAJA O RETIRO
+        ↓
+EMPLEADO INACTIVO
+        ↓
+HISTORIAL CONSERVADO
+
+Analiza cuáles de estas etapas realmente corresponden al alcance actual de nuestro proyecto y cuáles deberían dejarse preparadas para una futura versión.
+
+No agregues procesos innecesarios solamente porque otros sistemas de RRHH los tienen.
+
+=========================================
+REGLA CRÍTICA: NO ELIMINAR EMPLEADOS
+=========================================
+
+Cuando un trabajador deja Elite Multiservicios, NO debe eliminarse de la base de datos.
+
+Debe cambiar su estado.
+
+Por ejemplo:
+
+ACTIVO
+INACTIVO
+RETIRADO
+
+Analiza si estos estados son suficientes o recomienda una estructura mejor.
+
+Cuando un empleado ya no trabaja:
+
+- No debe aparecer normalmente en la lista de empleados activos.
+- Debe poder encontrarse mediante filtros o historial.
+- Su información personal debe conservarse.
+- Su historial laboral debe conservarse.
+- Sus antiguas asignaciones deben conservarse.
+- Sus documentos deben conservarse según corresponda.
+- Sus permisos y vacaciones históricos deben conservarse.
+- Debe conocerse cuándo ingresó.
+- Debe conocerse cuándo salió.
+- Debe conocerse el motivo de su retiro/baja.
+- Debe conocerse quién registró la baja.
+
+Si posteriormente el trabajador vuelve a ser contratado, analiza cuál sería la mejor solución.
+
+NO quiero crear necesariamente un empleado completamente nuevo perdiendo su historia anterior.
+
+Explícame cómo debería manejarse una RECONTRATACIÓN.
+
+=========================================
+INTEGRACIÓN CON ASISTENCIA
+=========================================
+
+Otro integrante desarrollará un módulo de asistencia mucho más completo y riguroso.
+
+Por eso NO quiero duplicar asistencia dentro de RRHH.
+
+El módulo de asistencia será responsable de controlar aspectos como:
+
+- marcaciones,
+- entradas,
+- salidas,
+- faltas,
+- atrasos,
+- horas trabajadas,
+- incidencias relacionadas con asistencia,
+- y otros controles que determine el equipo.
+
+RRHH debe poder CONSULTAR o RECIBIR la información que necesite de asistencia.
+
+Quiero que me expliques claramente:
+
+ASISTENCIA ES RESPONSABLE DE: ...
+RRHH ES RESPONSABLE DE: ...
+INFORMACIÓN QUE ASISTENCIA ENVÍA A RRHH: ...
+
+No quiero tener dos módulos registrando la misma información y generando inconsistencias.
+
+=========================================
+NO QUIERO UN SISTEMA SOBRECARGADO
+=========================================
+
+Aunque quiero que el sistema sea profesional, recuerda que Elite Multiservicios todavía es una empresa pequeña/en crecimiento.
+
+Actualmente
+-----------------------------------------------------------------------
+========================================
+5. ESTRUCTURA REAL DEL PERSONAL DE
+ELITE MULTISERVICIOS
+========================================
+
+Es MUY IMPORTANTE comprender cómo está organizada la empresa antes
+de diseñar el módulo de Recursos Humanos.
+
+Elite Multiservicios tiene DOS GRANDES ÁREAS DE PERSONAL:
+
+1. ÁREA ADMINISTRATIVA / OFICINA
+2. ÁREA OPERATIVA / CAMPO
+
+Estas dos áreas trabajan de manera diferente y el sistema debe
+contemplar esas diferencias.
+
+----------------------------------------
+A. ÁREA ADMINISTRATIVA / OFICINA
+----------------------------------------
+
+Son los trabajadores que realizan sus funciones directamente para
+la administración de Elite Multiservicios.
+
+Actualmente son aproximadamente 6 personas.
+
+Aquí se encuentran puestos/áreas como, por ejemplo:
+
+- Gerencia.
+- Recursos Humanos.
+- Marketing.
+- Administración.
+- Otras funciones internas de oficina.
+
+Estos trabajadores pertenecen directamente a la estructura interna
+de Elite Multiservicios.
+
+NO están normalmente asignados a una empresa cliente para prestar
+un servicio operativo.
+
+Ejemplo conceptual:
+
+ELITE MULTISERVICIOS
+│
+└── ÁREA ADMINISTRATIVA
+     │
+     ├── Gerencia
+     ├── Recursos Humanos
+     ├── Marketing
+     └── Otros
+           │
+           └── Trabajadores administrativos
+
+Analiza cómo debería representarse correctamente esta estructura
+dentro del sistema.
+
+No asumas que "área", "departamento", "cargo" y "puesto" significan
+exactamente lo mismo.
+
+Explícame qué diferencia existe entre ellos y cuáles realmente
+necesitamos para esta empresa.
+
+----------------------------------------
+B. ÁREA OPERATIVA / CAMPO
+----------------------------------------
+
+El segundo gran grupo corresponde al PERSONAL OPERATIVO o PERSONAL
+DE CAMPO.
+
+Estos trabajadores pertenecen a Elite Multiservicios, pero realizan
+su trabajo físicamente en las empresas clientes que contratan los
+servicios de Elite Multiservicios.
+
+Entre los servicios que pueden realizar se encuentran, por ejemplo:
+
+- Seguridad / guardias.
+- Limpieza.
+- Jardinería.
+- Otros servicios que Elite Multiservicios pueda ofrecer.
+
+IMPORTANTE:
+
+La empresa cliente NO es el empleador del trabajador.
+
+El trabajador pertenece a Elite Multiservicios y Elite Multiservicios
+lo ASIGNA a una empresa cliente para prestar determinado servicio.
+
+Por lo tanto, necesito que el modelo de datos represente correctamente
+esta relación y no confunda:
+
+EMPLEADOR
+con
+EMPRESA CLIENTE.
+
+----------------------------------------
+6. EMPRESAS CLIENTES
+----------------------------------------
+
+Actualmente Elite Multiservicios presta servicios a diferentes
+empresas clientes.
+
+Entre las mencionadas actualmente están:
+
+- Kolping.
+- Kinesis.
+- Segomeit.
+- Acegal.
+- Ventura Mall.
+- Alianza Bravsa.
+
+El personal operativo se distribuye entre estas empresas dependiendo
+del servicio contratado.
+
+Ejemplo conceptual:
+
+ELITE MULTISERVICIOS
+│
+└── PERSONAL OPERATIVO
+     │
+     ├── KOLPING
+     │    ├── trabajadores
+     │    └── sucursales
+     │
+     ├── KINESIS
+     │    └── trabajadores
+     │
+     ├── SEGOMEIT
+     │    └── trabajadores
+     │
+     ├── ACEGAL
+     │    └── trabajadores
+     │
+     ├── VENTURA MALL
+     │    └── trabajadores
+     │
+     └── ALIANZA BRAVSA
+          └── trabajadores
+
+Actualmente RRHH organiza gran parte de esta información mediante
+planillas Excel según la empresa cliente donde se encuentra asignado
+cada trabajador.
+
+----------------------------------------
+7. SUCURSALES DE LAS EMPRESAS CLIENTES
+----------------------------------------
+
+Una empresa cliente puede tener UNA O VARIAS SUCURSALES.
+
+Por ejemplo:
+
+KOLPING
+│
+├── CENTRAL
+│    └── aproximadamente 8 trabajadores
+│
+├── 15 DE DICIEMBRE
+│    └── aproximadamente 2 trabajadores
+│
+└── LOS CHACOS
+     └── aproximadamente 2 trabajadores
+
+Por lo tanto, el sistema debe permitir administrar:
+
+EMPRESA CLIENTE
+      ↓
+SUCURSALES
+      ↓
+SERVICIO PRESTADO
+      ↓
+TRABAJADORES ASIGNADOS
+
+Pero NO asumas todavía que necesariamente esas cuatro cosas deben
+convertirse directamente en cuatro tablas.
+
+Analiza la necesidad y explícame cuál sería la estructura correcta.
+
+----------------------------------------
+8. SERVICIOS PRESTADOS
+----------------------------------------
+
+Elite Multiservicios puede prestar diferentes tipos de servicios a
+sus empresas clientes.
+
+Por ejemplo:
+
+- Seguridad.
+- Limpieza.
+- Jardinería.
+- Otros.
+
+Una empresa cliente podría contratar uno o varios servicios.
+
+Además, diferentes trabajadores pueden estar asignados dependiendo
+del servicio requerido.
+
+Ejemplo conceptual:
+
+KOLPING
+│
+└── CENTRAL
+     │
+     ├── SERVICIO DE SEGURIDAD
+     │      ├── Guardia 1
+     │      └── Guardia 2
+     │
+     └── SERVICIO DE LIMPIEZA
+            ├── Trabajador 1
+            ├── Trabajador 2
+            └── Trabajador 3
+
+Este ejemplo es solamente conceptual.
+
+Quiero que analices si realmente necesitamos entidades como:
+
+- EmpresaCliente
+- Sucursal
+- TipoServicio
+- ServicioContratado
+- AsignacionEmpleado
+
+o si existe una estructura mejor.
+
+Explícame qué problema resuelve cada entidad antes de recomendar
+crearla.
+
+----------------------------------------
+9. ASIGNACIONES DEL PERSONAL OPERATIVO
+----------------------------------------
+
+NO quiero almacenar simplemente dentro del empleado:
+
+empresa = "Kolping"
+sucursal = "Central"
+servicio = "Limpieza"
+
+porque un trabajador puede cambiar con el tiempo.
+
+Por ejemplo:
+
+Juan comienza trabajando como personal de limpieza en:
+
+Kolping → Central.
+
+Posteriormente puede pasar a:
+
+Kolping → 15 de Diciembre.
+
+Y posteriormente podría ser trasladado a:
+
+Ventura Mall.
+
+El sistema debe conservar TODO ese historial.
+
+Conceptualmente:
+
+JUAN
+│
+├── Asignación #1
+│    ├── Empresa: Kolping
+│    ├── Sucursal: Central
+│    ├── Servicio: Limpieza
+│    ├── Fecha inicio
+│    └── Fecha fin
+│
+├── Asignación #2
+│    ├── Empresa: Kolping
+│    ├── Sucursal: 15 de Diciembre
+│    ├── Servicio: Limpieza
+│    ├── Fecha inicio
+│    └── Fecha fin
+│
+└── Asignación actual
+     ├── Empresa: Ventura Mall
+     ├── Servicio correspondiente
+     ├── Fecha inicio
+     └── ACTIVA
+
+Quiero que determines cómo manejar correctamente este historial en
+Serverpod.
+
+----------------------------------------
+10. DIFERENCIA ENTRE PERSONAL
+ADMINISTRATIVO Y OPERATIVO
+----------------------------------------
+
+El sistema debe poder diferenciar fácilmente:
+
+PERSONAL ADMINISTRATIVO
+
+de
+
+PERSONAL OPERATIVO.
+
+Pero no quiero crear dos tablas completamente separadas de empleados
+si eso provoca duplicación innecesaria.
+
+Analiza cuál sería el diseño correcto.
+
+Por ejemplo, analiza si debería existir:
+
+Empleado
+   │
+   ├── Tipo/Área: ADMINISTRATIVO
+   │
+   └── Tipo/Área: OPERATIVO
+
+y posteriormente manejar las características particulares mediante
+otras entidades.
+
+NO asumas que este ejemplo es necesariamente la solución correcta.
+
+Recomiéndame la mejor estructura.
+
+También quiero poder filtrar fácilmente desde Flutter:
+
+TODOS LOS EMPLEADOS ACTIVOS
+
+ADMINISTRATIVOS
+
+OPERATIVOS
+
+y dentro de OPERATIVOS:
+
+POR EMPRESA CLIENTE
+
+POR SUCURSAL
+
+POR SERVICIO
+
+POR CARGO/PUESTO
+
+----------------------------------------
+11. DIFERENCIAS DE FUNCIONAMIENTO
+----------------------------------------
+
+Ten en cuenta que existen procesos diferentes según el tipo de
+trabajador.
+
+Por ejemplo:
+
+PERSONAL ADMINISTRATIVO:
+
+- Trabaja principalmente en las instalaciones/oficinas de Elite
+  Multiservicios.
+- Utiliza actualmente un marcador para asistencia.
+- Una falta no necesariamente requiere reemplazo inmediato.
+
+PERSONAL OPERATIVO:
+
+- Trabaja en instalaciones de empresas clientes.
+- Puede prestar servicios de seguridad, limpieza, jardinería, etc.
+- Actualmente su asistencia se controla de otra manera.
+- Si falta un trabajador operativo, muchas veces Elite Multiservicios
+  debe enviar un reemplazo porque debe cumplir el servicio contratado
+  con la empresa cliente.
+- Determinados puestos pueden requerir documentación adicional.
+- Por ejemplo, seguridad puede requerir antecedentes penales.
+
+Quiero que identifiques qué diferencias realmente afectan al módulo
+de RRHH y cuáles pertenecen al módulo de Asistencia.
+
+NO dupliques funcionalidades entre ambos módulos.
+
+----------------------------------------
+12. QUIERO QUE ME AYUDES A DESCUBRIR
+CASOS QUE NO HE CONSIDERADO
+----------------------------------------
+
+Como es mi primera vez desarrollando RRHH, quiero que analices esta
+estructura empresarial y detectes situaciones que probablemente
+necesitamos contemplar y que yo todavía no haya considerado.
+
+Por ejemplo:
+
+¿Qué sucede si un trabajador operativo cambia temporalmente de
+sucursal?
+
+¿Qué sucede si cubre a otro trabajador solamente durante un día?
+
+¿Qué sucede si cambia definitivamente de empresa cliente?
+
+¿Qué sucede si cambia de servicio, por ejemplo de limpieza a
+jardinería?
+
+¿Qué sucede si una empresa cliente deja de contratar un servicio?
+
+¿Qué sucede con los trabajadores que estaban asignados allí?
+
+¿Qué sucede si una nueva empresa cliente contrata los servicios de
+Elite Multiservicios?
+
+¿Qué sucede si una empresa cliente abre una nueva sucursal?
+
+¿Qué sucede si un trabajador operativo queda temporalmente sin
+asignación?
+
+¿Qué sucede si una persona tiene más de una asignación?
+
+NO inventes las respuestas.
+
+Para cada situación:
+
+1. Dime cuál sería la solución que normalmente recomendarías.
+2. Dime cómo afectaría al diseño del sistema.
+3. Indica si necesitamos preguntárselo a RRHH.
+4. Si necesitamos confirmación, dame la pregunta exacta que debería
+5. hacer en mi siguiente entrevista.
