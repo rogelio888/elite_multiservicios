@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/navigation/web_url_sync.dart';
+import '../../crm/presentation/views/crm_activities_view.dart';
+import '../../crm/presentation/views/crm_customers_view.dart';
+import '../../crm/presentation/views/crm_leads_view.dart';
+import '../../crm/presentation/views/crm_pipeline_view.dart';
 import '../services/auth_service.dart';
 import '../services/security_api_service.dart';
 import 'views/security_dashboard_view.dart';
@@ -36,6 +40,10 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'audit',
     'sessions',
     'metrics',
+    'crm-leads',
+    'crm-pipeline',
+    'crm-clientes',
+    'crm-actividades',
   ];
 
   static int _indexFromRouteOrHash(String raw) {
@@ -62,6 +70,22 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 'metricas':
       case 'telemetria':
         return 5;
+      case 'crm-leads':
+      case 'leads':
+      case 'prospectos':
+        return 6;
+      case 'crm-pipeline':
+      case 'pipeline':
+      case 'embudo':
+        return 7;
+      case 'crm-clientes':
+      case 'clientes':
+      case 'directorio':
+        return 8;
+      case 'crm-actividades':
+      case 'actividades':
+      case 'agenda':
+        return 9;
       case 'dashboard':
       default:
         return 0;
@@ -75,6 +99,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
   int _selectedIndex = 0;
   bool _isSidebarCollapsed = false;
   bool _isSecurityExpanded = true;
+  bool _isCrmExpanded = true;
 
   @override
   void initState() {
@@ -101,8 +126,10 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     }
 
     _selectedIndex = initialIndex;
-    if (initialIndex >= 1) {
+    if (initialIndex >= 1 && initialIndex <= 5) {
       _isSecurityExpanded = true;
+    } else if (initialIndex >= 6 && initialIndex <= 9) {
+      _isCrmExpanded = true;
     }
 
     // Sincronizar URL del navegador con el slug activo
@@ -115,7 +142,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         if (newIndex != _selectedIndex) {
           setState(() {
             _selectedIndex = newIndex;
-            if (newIndex >= 1) _isSecurityExpanded = true;
+            if (newIndex >= 1 && newIndex <= 5) _isSecurityExpanded = true;
+            if (newIndex >= 6 && newIndex <= 9) _isCrmExpanded = true;
           });
           _loadSidebarMetrics();
         }
@@ -138,8 +166,10 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     if (_selectedIndex != index) {
       setState(() {
         _selectedIndex = index;
-        if (index >= 1) {
+        if (index >= 1 && index <= 5) {
           _isSecurityExpanded = true;
+        } else if (index >= 6 && index <= 9) {
+          _isCrmExpanded = true;
         }
       });
       // Sincronizar URL visible en la barra de direcciones del navegador
@@ -246,6 +276,10 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'Bitácora de Auditoría',
     'Sesiones Activas',
     'Telemetría y Métricas',
+    'CRM: Prospectos & Leads',
+    'CRM: Pipeline Comercial',
+    'CRM: Directorio Clientes 360°',
+    'CRM: Agenda & Actividades',
   ];
 
   Widget _buildNavItem({
@@ -429,7 +463,39 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       ),
     ];
 
+    final crmItems = [
+      (
+        icon: Icons.person_search_outlined,
+        selectedIcon: Icons.person_search,
+        label: 'Prospectos / Leads',
+        badge: 'Nuevo',
+        index: 6,
+      ),
+      (
+        icon: Icons.view_kanban_outlined,
+        selectedIcon: Icons.view_kanban,
+        label: 'Pipeline & Embudo',
+        badge: null,
+        index: 7,
+      ),
+      (
+        icon: Icons.business_outlined,
+        selectedIcon: Icons.business,
+        label: 'Clientes 360°',
+        badge: null,
+        index: 8,
+      ),
+      (
+        icon: Icons.event_available_outlined,
+        selectedIcon: Icons.event_available,
+        label: 'Agenda & Tareas',
+        badge: 'dot',
+        index: 9,
+      ),
+    ];
+
     final isAnySecurityActive = _selectedIndex >= 1 && _selectedIndex <= 5;
+    final isAnyCrmActive = _selectedIndex >= 6 && _selectedIndex <= 9;
 
     Widget currentView;
     switch (_selectedIndex) {
@@ -452,6 +518,18 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         break;
       case 5:
         currentView = const ServerMetricsView();
+        break;
+      case 6:
+        currentView = const CrmLeadsView();
+        break;
+      case 7:
+        currentView = const CrmPipelineView();
+        break;
+      case 8:
+        currentView = const CrmCustomersView();
+        break;
+      case 9:
+        currentView = const CrmActivitiesView();
         break;
       default:
         currentView = const Center(child: Text('Vista no encontrada'));
@@ -499,7 +577,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                     ],
                     if (!isMobile) ...[
                       Text(
-                        'Seguridad',
+                        _selectedIndex >= 6 ? 'CRM' : 'Seguridad',
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           color: isDark
@@ -741,6 +819,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       isDrawer: true,
                       securityItems: securityItems,
                       isAnySecurityActive: isAnySecurityActive,
+                      crmItems: crmItems,
+                      isAnyCrmActive: isAnyCrmActive,
                     ),
                   ),
                 )
@@ -759,6 +839,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       isDrawer: false,
                       securityItems: securityItems,
                       isAnySecurityActive: isAnySecurityActive,
+                      crmItems: crmItems,
+                      isAnyCrmActive: isAnyCrmActive,
                     ),
                     Expanded(
                       child: Column(
@@ -789,6 +871,17 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     >
     securityItems,
     required bool isAnySecurityActive,
+    required List<
+      ({
+        IconData icon,
+        IconData selectedIcon,
+        String label,
+        String? badge,
+        int index,
+      })
+    >
+    crmItems,
+    required bool isAnyCrmActive,
   }) {
     final collapsed = !isDrawer && _isSidebarCollapsed;
 
@@ -994,20 +1087,23 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                             Expanded(
                               child: Row(
                                 children: [
-                                  Text(
-                                    'Seguridad',
-                                    style: GoogleFonts.inter(
-                                      color: isAnySecurityActive
-                                          ? (isDark
-                                                ? Colors.white
-                                                : const Color(0xFF0F172A))
-                                          : (isDark
-                                                ? const Color(0xFF94A3B8)
-                                                : const Color(0xFF64748B)),
-                                      fontWeight: isAnySecurityActive
-                                          ? FontWeight.w600
-                                          : FontWeight.w500,
-                                      fontSize: 13,
+                                  Expanded(
+                                    child: Text(
+                                      'Seguridad',
+                                      style: GoogleFonts.inter(
+                                        color: isAnySecurityActive
+                                            ? (isDark
+                                                  ? Colors.white
+                                                  : const Color(0xFF0F172A))
+                                            : (isDark
+                                                  ? const Color(0xFF94A3B8)
+                                                  : const Color(0xFF64748B)),
+                                        fontWeight: isAnySecurityActive
+                                            ? FontWeight.w600
+                                            : FontWeight.w500,
+                                        fontSize: 13,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                   if (isAnySecurityActive &&
@@ -1069,6 +1165,155 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       ),
                       child: Column(
                         children: securityItems.map((item) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: item.icon,
+                              selectedIcon: item.selectedIcon,
+                              label: item.label,
+                              index: item.index,
+                              badge: item.badge,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 6),
+
+                // 4. Acordeón Colapsable "CRM (Clientes y Prospectos)"
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    key: const Key('nav_accordion_crm'),
+                    onTap: () {
+                      setState(() {
+                        _isCrmExpanded = !_isCrmExpanded;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 140),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 9,
+                      ),
+                      decoration: BoxDecoration(
+                        color: (isAnyCrmActive && !_isCrmExpanded)
+                            ? (isDark
+                                  ? const Color(0xFF0D251D)
+                                  : const Color(0xFFECFDF5))
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(8),
+                        border: (isAnyCrmActive && !_isCrmExpanded)
+                            ? const Border(
+                                left: BorderSide(
+                                  color: Color(0xFF10B981),
+                                  width: 2.5,
+                                ),
+                              )
+                            : null,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: collapsed
+                            ? MainAxisAlignment.center
+                            : MainAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.handshake_outlined,
+                            color: isAnyCrmActive
+                                ? (isDark
+                                      ? const Color(0xFF34D399)
+                                      : const Color(0xFF059669))
+                                : (isDark
+                                      ? const Color(0xFF94A3B8)
+                                      : const Color(0xFF64748B)),
+                            size: 18,
+                          ),
+                          if (!collapsed) ...[
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      'Clientes y CRM',
+                                      style: GoogleFonts.inter(
+                                        color: isAnyCrmActive
+                                            ? (isDark
+                                                  ? Colors.white
+                                                  : const Color(0xFF0F172A))
+                                            : (isDark
+                                                  ? const Color(0xFF94A3B8)
+                                                  : const Color(0xFF64748B)),
+                                        fontWeight: isAnyCrmActive
+                                            ? FontWeight.w600
+                                            : FontWeight.w500,
+                                        fontSize: 13,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  if (isAnyCrmActive && !_isCrmExpanded) ...[
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      width: 5,
+                                      height: 5,
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFF10B981),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            AnimatedRotation(
+                              turns: _isCrmExpanded ? 0.5 : 0.0,
+                              duration: const Duration(milliseconds: 180),
+                              curve: Curves.easeOutCubic,
+                              child: Icon(
+                                Icons.keyboard_arrow_down,
+                                size: 16,
+                                color: isDark
+                                    ? const Color(0xFF64748B)
+                                    : const Color(0xFF94A3B8),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // 5. Sub-pestañas pertenecientes a "CRM"
+                if (_isCrmExpanded)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: collapsed ? 0 : 10,
+                      top: 2,
+                    ),
+                    child: Container(
+                      decoration: collapsed
+                          ? null
+                          : BoxDecoration(
+                              border: Border(
+                                left: BorderSide(
+                                  color: isDark
+                                      ? const Color(0xFF1E293B)
+                                      : const Color(0xFFE2E8F0),
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                      padding: EdgeInsets.only(
+                        left: collapsed ? 0 : 6,
+                      ),
+                      child: Column(
+                        children: crmItems.map((item) {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 2),
                             child: _buildNavItem(
