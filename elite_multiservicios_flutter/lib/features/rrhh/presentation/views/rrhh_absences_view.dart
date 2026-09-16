@@ -358,7 +358,7 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
       return _buildEmptyState(isDark);
     }
 
-    final tableWidth = max(maxWidth - 48, 920.0);
+    final tableWidth = max(maxWidth, 920.0);
 
     return Container(
       width: double.infinity,

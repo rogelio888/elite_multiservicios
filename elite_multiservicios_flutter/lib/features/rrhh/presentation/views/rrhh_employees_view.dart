@@ -2652,7 +2652,7 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       return _buildEmptyState(isDark);
     }
 
-    final tableWidth = max(maxWidth - 48, 1100.0);
+    final tableWidth = max(maxWidth, 1180.0);
 
     return Container(
       width: double.infinity,
@@ -2671,14 +2671,14 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
             width: tableWidth,
             child: Table(
               columnWidths: const {
-                0: FlexColumnWidth(2.6), // Colaborador
-                1: FlexColumnWidth(1.3), // CI / Documento
-                2: FlexColumnWidth(2.0), // Lugar de Trabajo / Tipo
-                3: FlexColumnWidth(2.6), // Cargo y Sueldo
-                4: FlexColumnWidth(1.3), // Expediente Físico
-                5: FlexColumnWidth(1.1), // Estado
-                6: FlexColumnWidth(1.7), // Contacto / Ref.
-                7: FlexColumnWidth(1.2), // Acciones
+                0: FlexColumnWidth(2.8), // Colaborador (flex)
+                1: FixedColumnWidth(125), // CI / Documento (fijo)
+                2: FlexColumnWidth(2.0), // Lugar de Trabajo / Tipo (flex)
+                3: FlexColumnWidth(2.8), // Cargo y Sueldo (flex)
+                4: FixedColumnWidth(140), // Expediente Físico (fijo, sin desbordamiento)
+                5: FixedColumnWidth(110), // Estado (fijo)
+                6: FixedColumnWidth(155), // Contacto / Ref. (fijo)
+                7: FixedColumnWidth(135), // Acciones (fijo)
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
@@ -2863,7 +2863,7 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                 : const Color(
                                     0xFFF59E0B,
                                   ).withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(6),
+                              borderRadius: BorderRadius.circular(6),
                             border: Border.all(
                               color: emp.attachedDocumentsCount == 6
                                   ? const Color(
@@ -2886,15 +2886,18 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                     ? const Color(0xFF10B981)
                                     : const Color(0xFFF59E0B),
                               ),
-                              const SizedBox(width: 6),
-                              Text(
-                                '${emp.attachedDocumentsCount}/6 docs',
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: emp.attachedDocumentsCount == 6
-                                      ? const Color(0xFF10B981)
-                                      : const Color(0xFFF59E0B),
+                              const SizedBox(width: 5),
+                              Flexible(
+                                child: Text(
+                                  '${emp.attachedDocumentsCount}/6 docs',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: emp.attachedDocumentsCount == 6
+                                        ? const Color(0xFF10B981)
+                                        : const Color(0xFFF59E0B),
+                                  ),
                                 ),
                               ),
                             ],
@@ -2967,9 +2970,11 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
   }) {
     return Container(
       alignment: alignment,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       child: Text(
         text,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
         style: GoogleFonts.inter(
           fontWeight: FontWeight.w600,
           fontSize: 12,
@@ -2981,7 +2986,7 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
 
   Widget _buildBodyCell(Widget child) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: child,
     );
   }

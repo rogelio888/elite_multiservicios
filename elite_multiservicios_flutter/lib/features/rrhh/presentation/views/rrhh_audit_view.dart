@@ -819,7 +819,7 @@ class _RrhhAuditViewState extends State<RrhhAuditView> {
     bool isDark,
     double maxWidth,
   ) {
-    final tableWidth = max(maxWidth - 48, 1060.0);
+    final tableWidth = max(maxWidth, 1060.0);
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,

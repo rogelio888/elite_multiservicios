@@ -430,7 +430,7 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
       return _buildEmptyState(isDark);
     }
 
-    final tableWidth = max(maxWidth - 48, 920.0);
+    final tableWidth = max(maxWidth, 920.0);
 
     return Container(
       width: double.infinity,
