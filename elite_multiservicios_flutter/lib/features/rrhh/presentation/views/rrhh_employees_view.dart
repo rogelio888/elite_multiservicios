@@ -760,7 +760,9 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                     icon: const Icon(Icons.domain_add_outlined, size: 20),
                                     tooltip: 'Ingresar Nueva Empresa / Sede',
                                     onPressed: () async {
-                                      await _showCreateCompanyModal();
+                                      await _showCompanyManagementModal(
+                                        openDirectlyToCreate: true,
+                                      );
                                       setModalState(() {
                                         if (_companyService.companyNames.isNotEmpty) {
                                           selectedWorkplace = _companyService.companyNames.first;
@@ -1048,16 +1050,36 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
     );
   }
 
-  Future<void> _showCreateCompanyModal([WorkplaceCompanyItem? initialCompanyToEdit]) async {
+  Future<void> _showCompanyManagementModal({
+    bool openDirectlyToCreate = false,
+    WorkplaceCompanyItem? initialCompanyToEdit,
+  }) async {
     final formKey = GlobalKey<FormState>();
-    WorkplaceCompanyItem? selectedCompanyToEdit = initialCompanyToEdit;
+    bool isFormView = openDirectlyToCreate || initialCompanyToEdit != null;
+    WorkplaceCompanyItem? editingCompany = initialCompanyToEdit;
 
-    final nameCtrl = TextEditingController(text: initialCompanyToEdit?.name ?? '');
-    final addressCtrl = TextEditingController(text: initialCompanyToEdit?.address ?? '');
-    final contactNameCtrl = TextEditingController(text: initialCompanyToEdit?.contactPerson ?? '');
-    final contactPhoneCtrl = TextEditingController(text: initialCompanyToEdit?.contactPhone ?? '');
-    final notesCtrl = TextEditingController(text: initialCompanyToEdit?.notes ?? '');
-    String serviceCategory = initialCompanyToEdit?.serviceCategory ?? 'Limpieza';
+    final nameCtrl =
+        TextEditingController(text: initialCompanyToEdit?.name ?? '');
+    final addressCtrl =
+        TextEditingController(text: initialCompanyToEdit?.address ?? '');
+    final contactNameCtrl =
+        TextEditingController(text: initialCompanyToEdit?.contactPerson ?? '');
+    final contactPhoneCtrl =
+        TextEditingController(text: initialCompanyToEdit?.contactPhone ?? '');
+    final notesCtrl =
+        TextEditingController(text: initialCompanyToEdit?.notes ?? '');
+    String serviceCategory =
+        initialCompanyToEdit?.serviceCategory ?? 'Limpieza';
+
+    void resetForm(WorkplaceCompanyItem? comp) {
+      editingCompany = comp;
+      nameCtrl.text = comp?.name ?? '';
+      addressCtrl.text = comp?.address ?? '';
+      contactNameCtrl.text = comp?.contactPerson ?? '';
+      contactPhoneCtrl.text = comp?.contactPhone ?? '';
+      notesCtrl.text = comp?.notes ?? '';
+      serviceCategory = comp?.serviceCategory ?? 'Limpieza';
+    }
 
     await showDialog(
       context: context,
@@ -1065,7 +1087,7 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
         return StatefulBuilder(
           builder: (dialogCtx, setDialogState) {
-            final isEditing = selectedCompanyToEdit != null;
+            final isEditing = editingCompany != null;
 
             return AlertDialog(
               backgroundColor:
@@ -1073,379 +1095,607 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              title: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6366F1).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      isEditing
-                          ? Icons.edit_note_outlined
-                          : Icons.domain_add_outlined,
-                      color: const Color(0xFF6366F1),
-                      size: 22,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              title: isFormView
+                  ? Row(
                       children: [
-                        Text(
-                          isEditing
-                              ? 'Editar Empresa / Sede Cliente'
-                              : 'Ingresar Nueva Empresa / Sede',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                          ),
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back, size: 20),
+                          tooltip: 'Volver a la lista de empresas',
+                          onPressed: () {
+                            setDialogState(() {
+                              isFormView = false;
+                              resetForm(null);
+                            });
+                          },
                         ),
-                        Text(
-                          isEditing
-                              ? 'Modificación de datos con registro en bitácora'
-                              : 'Empresa cliente asignada a servicios de Elite Multiservicios',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            color: const Color(0xFF64748B),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              content: SizedBox(
-                width: 540,
-                child: Form(
-                  key: formKey,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Selector para alternar entre Crear o Editar existente
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          margin: const EdgeInsets.only(bottom: 14),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color(0xFF1E293B)
-                                : const Color(0xFFF1F5F9),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: isDark
-                                  ? const Color(0xFF334155)
-                                  : const Color(0xFFCBD5E1),
-                            ),
-                          ),
-                          child: Row(
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(
+                              Text(
                                 isEditing
-                                    ? Icons.edit_outlined
-                                    : Icons.add_circle_outline,
-                                size: 16,
-                                color: const Color(0xFF6366F1),
+                                    ? 'Editar Empresa: ${editingCompany!.name}'
+                                    : 'Registrar Nueva Empresa / Sede',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                ),
                               ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: DropdownButton<String?>(
-                                  value: selectedCompanyToEdit?.id,
-                                  isExpanded: true,
-                                  underline: const SizedBox(),
-                                  hint: Text(
-                                    '¿Editar una empresa existente? Seleccionar...',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 12,
-                                      color: const Color(0xFF64748B),
-                                    ),
-                                  ),
-                                  items: [
-                                    const DropdownMenuItem<String?>(
-                                      value: null,
-                                      child: Text(
-                                        '+ Crear Nueva Empresa (Formulario en blanco)',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                    ..._companyService.allCompanies.map((c) {
-                                      return DropdownMenuItem<String?>(
-                                        value: c.id,
-                                        child: Text(
-                                          'Editar: ${c.name} (${c.serviceCategory})',
-                                        ),
-                                      );
-                                    }),
-                                  ],
-                                  onChanged: (val) {
-                                    setDialogState(() {
-                                      if (val == null) {
-                                        selectedCompanyToEdit = null;
-                                        nameCtrl.clear();
-                                        serviceCategory = 'Limpieza';
-                                        addressCtrl.clear();
-                                        contactNameCtrl.clear();
-                                        contactPhoneCtrl.clear();
-                                        notesCtrl.clear();
-                                      } else {
-                                        final found = _companyService
-                                            .allCompanies
-                                            .firstWhere((c) => c.id == val);
-                                        selectedCompanyToEdit = found;
-                                        nameCtrl.text = found.name;
-                                        serviceCategory = found.serviceCategory;
-                                        addressCtrl.text = found.address;
-                                        contactNameCtrl.text =
-                                            found.contactPerson;
-                                        contactPhoneCtrl.text =
-                                            found.contactPhone;
-                                        notesCtrl.text = found.notes;
-                                      }
-                                    });
-                                  },
+                              Text(
+                                isEditing
+                                    ? 'Modificación de datos con registro en bitácora'
+                                    : 'Empresa cliente asignada a servicios de Elite Multiservicios',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: const Color(0xFF64748B),
                                 ),
                               ),
                             ],
                           ),
                         ),
-
-                        TextFormField(
-                          controller: nameCtrl,
-                          decoration: const InputDecoration(
-                            labelText: 'Nombre de la Empresa o Sede Cliente *',
-                            hintText:
-                                'Ej. Banco FIE - Sucursal Norte / Condominio La Riviera',
-                            prefixIcon: Icon(Icons.business_outlined, size: 18),
-                          ),
-                          validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'Campo requerido'
-                              : null,
-                        ),
-                        const SizedBox(height: 14),
-                        DropdownButtonFormField<String>(
-                          key: ValueKey(serviceCategory),
-                          initialValue: serviceCategory,
-                          decoration: const InputDecoration(
-                            labelText: 'Tipo de Servicio Prestado por Elite *',
-                            prefixIcon: Icon(Icons.category_outlined, size: 18),
-                          ),
-                          items: const [
-                            DropdownMenuItem(
-                              value: 'Limpieza',
-                              child: Text('Limpieza y Desinfección Operativa'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'Jardinería',
-                              child: Text('Jardinería y Mantenimiento de Áreas Verdes'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'Sistemas',
-                              child: Text('Sistemas, Soporte TI y Telecomunicaciones'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'Mantenimiento',
-                              child: Text('Mantenimiento Técnico y Electromecánico'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'Seguridad',
-                              child: Text('Seguridad y Vigilancia Operativa'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'Multiservicios',
-                              child: Text('Multiservicios Integral'),
-                            ),
-                          ],
-                          onChanged: (v) {
-                            if (v != null) {
-                              setDialogState(() => serviceCategory = v);
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 14),
-                        TextFormField(
-                          controller: addressCtrl,
-                          decoration: const InputDecoration(
-                            labelText: 'Dirección o Ubicación de la Sede *',
-                            hintText: 'Ej. 4to Anillo y Av. San Martín, Equipetrol',
-                            prefixIcon: Icon(Icons.place_outlined, size: 18),
-                          ),
-                          validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'Campo requerido'
-                              : null,
-                        ),
-                        const SizedBox(height: 14),
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
                         Row(
                           children: [
-                            Expanded(
-                              child: TextFormField(
-                                controller: contactNameCtrl,
-                                decoration: const InputDecoration(
-                                  labelText: 'Persona de Contacto / Supervisor',
-                                  hintText: 'Ej. Ing. Carlos Suárez',
-                                  prefixIcon:
-                                      Icon(Icons.person_outline, size: 18),
-                                ),
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF6366F1)
+                                    .withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.apartment_outlined,
+                                color: Color(0xFF6366F1),
+                                size: 22,
                               ),
                             ),
                             const SizedBox(width: 12),
-                            Expanded(
-                              child: TextFormField(
-                                controller: contactPhoneCtrl,
-                                decoration: const InputDecoration(
-                                  labelText: 'Teléfono de Contacto',
-                                  hintText: 'Ej. +591 76543210',
-                                  prefixIcon:
-                                      Icon(Icons.phone_outlined, size: 18),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Empresas y Sedes Cliente',
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
+                                Text(
+                                  '${_companyService.allCompanies.length} empresas registradas',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        const SizedBox(height: 14),
-                        TextFormField(
-                          controller: notesCtrl,
-                          maxLines: 2,
-                          decoration: const InputDecoration(
-                            labelText: 'Observaciones / Requerimientos de Turno',
-                            hintText:
-                                'Ej. Turnos 24/7, cuadrilla de operarios con EPP especializado.',
+                        FilledButton.icon(
+                          style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xFF6366F1),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 8,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
+                          icon: const Icon(Icons.add, size: 16),
+                          label: Text(
+                            'Nueva Empresa',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          onPressed: () {
+                            setDialogState(() {
+                              resetForm(null);
+                              isFormView = true;
+                            });
+                          },
                         ),
                       ],
                     ),
-                  ),
-                ),
+              content: SizedBox(
+                width: 580,
+                child: isFormView
+                    ? Form(
+                        key: formKey,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextFormField(
+                                controller: nameCtrl,
+                                decoration: const InputDecoration(
+                                  labelText:
+                                      'Nombre de la Empresa o Sede Cliente *',
+                                  hintText:
+                                      'Ej. Banco FIE - Sucursal Norte / Condominio La Riviera',
+                                  prefixIcon:
+                                      Icon(Icons.business_outlined, size: 18),
+                                ),
+                                validator: (v) =>
+                                    (v == null || v.trim().isEmpty)
+                                        ? 'Campo requerido'
+                                        : null,
+                              ),
+                              const SizedBox(height: 14),
+                              DropdownButtonFormField<String>(
+                                key: ValueKey(serviceCategory),
+                                initialValue: serviceCategory,
+                                decoration: const InputDecoration(
+                                  labelText:
+                                      'Tipo de Servicio Prestado por Elite *',
+                                  prefixIcon:
+                                      Icon(Icons.category_outlined, size: 18),
+                                ),
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 'Limpieza',
+                                    child: Text(
+                                        'Limpieza y Desinfección Operativa'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Jardinería',
+                                    child: Text(
+                                        'Jardinería y Mantenimiento de Áreas Verdes'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Sistemas',
+                                    child: Text(
+                                        'Sistemas, Soporte TI y Telecomunicaciones'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Mantenimiento',
+                                    child: Text(
+                                        'Mantenimiento Técnico y Electromecánico'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Seguridad',
+                                    child: Text(
+                                        'Seguridad y Vigilancia Operativa'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Multiservicios',
+                                    child: Text('Multiservicios Integral'),
+                                  ),
+                                ],
+                                onChanged: (v) {
+                                  if (v != null) {
+                                    setDialogState(() => serviceCategory = v);
+                                  }
+                                },
+                              ),
+                              const SizedBox(height: 14),
+                              TextFormField(
+                                controller: addressCtrl,
+                                decoration: const InputDecoration(
+                                  labelText:
+                                      'Dirección o Ubicación de la Sede *',
+                                  hintText:
+                                      'Ej. 4to Anillo y Av. San Martín, Equipetrol',
+                                  prefixIcon:
+                                      Icon(Icons.place_outlined, size: 18),
+                                ),
+                                validator: (v) =>
+                                    (v == null || v.trim().isEmpty)
+                                        ? 'Campo requerido'
+                                        : null,
+                              ),
+                              const SizedBox(height: 14),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: contactNameCtrl,
+                                      decoration: const InputDecoration(
+                                        labelText:
+                                            'Persona de Contacto / Supervisor',
+                                        hintText: 'Ej. Ing. Carlos Suárez',
+                                        prefixIcon:
+                                            Icon(Icons.person_outline, size: 18),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: contactPhoneCtrl,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Teléfono de Contacto',
+                                        hintText: 'Ej. +591 76543210',
+                                        prefixIcon:
+                                            Icon(Icons.phone_outlined, size: 18),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 14),
+                              TextFormField(
+                                controller: notesCtrl,
+                                maxLines: 2,
+                                decoration: const InputDecoration(
+                                  labelText:
+                                      'Observaciones / Requerimientos de Turno',
+                                  hintText:
+                                      'Ej. Turnos 24/7, cuadrilla de operarios con EPP especializado.',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : SizedBox(
+                        height: 380,
+                        child: _companyService.allCompanies.isEmpty
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.business_outlined,
+                                      size: 48,
+                                      color: isDark
+                                          ? const Color(0xFF475569)
+                                          : const Color(0xFF94A3B8),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      'No hay empresas cliente registradas aún.',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 14,
+                                        color: const Color(0xFF64748B),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : ListView.separated(
+                                shrinkWrap: true,
+                                itemCount:
+                                    _companyService.allCompanies.length,
+                                separatorBuilder: (sepCtx, index) =>
+                                    const SizedBox(height: 8),
+                                itemBuilder: (itemCtx, index) {
+                                  final comp =
+                                      _companyService.allCompanies[index];
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFF8FAFC),
+                                      borderRadius:
+                                          BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: isDark
+                                            ? const Color(0xFF334155)
+                                            : const Color(0xFFE2E8F0),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF6366F1)
+                                                .withValues(alpha: 0.1),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: const Icon(
+                                            Icons.business,
+                                            size: 18,
+                                            color: Color(0xFF6366F1),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Flexible(
+                                                    child: Text(
+                                                      comp.name,
+                                                      style: GoogleFonts.inter(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 13,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets
+                                                            .symmetric(
+                                                      horizontal: 7,
+                                                      vertical: 2,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: const Color(
+                                                              0xFF6366F1)
+                                                          .withValues(
+                                                              alpha: 0.12),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              6),
+                                                    ),
+                                                    child: Text(
+                                                      comp.serviceCategory,
+                                                      style: GoogleFonts.inter(
+                                                        fontSize: 10,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: const Color(
+                                                            0xFF6366F1),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.place_outlined,
+                                                    size: 13,
+                                                    color: Color(0xFF64748B),
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Expanded(
+                                                    child: Text(
+                                                      comp.address,
+                                                      style: GoogleFonts.inter(
+                                                        fontSize: 11,
+                                                        color: const Color(
+                                                            0xFF64748B),
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  if (comp.contactPerson !=
+                                                          'No especificado' &&
+                                                      comp.contactPerson
+                                                          .isNotEmpty) ...[
+                                                    const SizedBox(width: 8),
+                                                    const Icon(
+                                                      Icons.person_outline,
+                                                      size: 13,
+                                                      color:
+                                                          Color(0xFF64748B),
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      comp.contactPerson,
+                                                      style: GoogleFonts.inter(
+                                                        fontSize: 11,
+                                                        color: const Color(
+                                                            0xFF64748B),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        OutlinedButton.icon(
+                                          style: OutlinedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 6,
+                                            ),
+                                            visualDensity:
+                                                VisualDensity.compact,
+                                            side: BorderSide(
+                                              color: isDark
+                                                  ? const Color(0xFF475569)
+                                                  : const Color(0xFFCBD5E1),
+                                            ),
+                                          ),
+                                          icon: const Icon(Icons.edit_outlined,
+                                              size: 14),
+                                          label: Text(
+                                            'Editar',
+                                            style:
+                                                GoogleFonts.inter(fontSize: 11),
+                                          ),
+                                          onPressed: () {
+                                            setDialogState(() {
+                                              resetForm(comp);
+                                              isFormView = true;
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                      ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: const Text('Cancelar'),
-                ),
-                FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF6366F1),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
-                  ),
-                  icon: const Icon(Icons.check, size: 16),
-                  label: Text(
-                    isEditing ? 'Actualizar Empresa' : 'Guardar Empresa',
-                  ),
-                  onPressed: () {
-                    if (formKey.currentState?.validate() ?? false) {
-                      final newName = nameCtrl.text.trim();
-                      if (isEditing) {
-                        final oldName = selectedCompanyToEdit!.name;
-                        _companyService.updateCompany(
-                          id: selectedCompanyToEdit!.id,
-                          name: newName,
-                          serviceCategory: serviceCategory,
-                          address: addressCtrl.text.trim().isEmpty
-                              ? 'Santa Cruz de la Sierra'
-                              : addressCtrl.text.trim(),
-                          contactPerson: contactNameCtrl.text.trim().isEmpty
-                              ? 'No especificado'
-                              : contactNameCtrl.text.trim(),
-                          contactPhone: contactPhoneCtrl.text.trim().isEmpty
-                              ? 'S/N'
-                              : contactPhoneCtrl.text.trim(),
-                          notes: notesCtrl.text.trim(),
-                        );
-
-                        // Si cambió el nombre, actualizar referencias de colaboradores
-                        if (oldName != newName) {
-                          setState(() {
-                            for (int i = 0; i < _employees.length; i++) {
-                              if (_employees[i].workplace == oldName) {
-                                final cur = _employees[i];
-                                _employees[i] = EmployeeItem(
-                                  id: cur.id,
-                                  code: cur.code,
-                                  fullName: cur.fullName,
-                                  birthDate: cur.birthDate,
-                                  birthPlace: cur.birthPlace,
-                                  identityCard: cur.identityCard,
-                                  phone: cur.phone,
-                                  address: cur.address,
-                                  occupation: cur.occupation,
-                                  personalReference: cur.personalReference,
-                                  referencePhone: cur.referencePhone,
-                                  workplace: newName,
-                                  employeeType: cur.employeeType,
-                                  position: cur.position,
-                                  department: cur.department,
-                                  fiscalStartDate: cur.fiscalStartDate,
-                                  realStartDate: cur.realStartDate,
-                                  agreedSalary: cur.agreedSalary,
-                                  contractType: cur.contractType,
-                                  observations: cur.observations,
-                                  status: cur.status,
-                                  hasCiCopy: cur.hasCiCopy,
-                                  hasUtilityBill: cur.hasUtilityBill,
-                                  hasHomeSketch: cur.hasHomeSketch,
-                                  hasFelccRecord: cur.hasFelccRecord,
-                                  hasPhoto3x4: cur.hasPhoto3x4,
-                                  hasSusInsurance: cur.hasSusInsurance,
-                                );
-                              }
-                            }
+              actions: isFormView
+                  ? [
+                      TextButton(
+                        onPressed: () {
+                          setDialogState(() {
+                            isFormView = false;
+                            resetForm(null);
                           });
-                        }
+                        },
+                        child: const Text('Atrás'),
+                      ),
+                      FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFF6366F1),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                        ),
+                        icon: const Icon(Icons.check, size: 16),
+                        label: Text(
+                          isEditing
+                              ? 'Actualizar Empresa'
+                              : 'Guardar Empresa',
+                        ),
+                        onPressed: () {
+                          if (formKey.currentState?.validate() ?? false) {
+                            final newName = nameCtrl.text.trim();
+                            if (isEditing) {
+                              final oldName = editingCompany!.name;
+                              _companyService.updateCompany(
+                                id: editingCompany!.id,
+                                name: newName,
+                                serviceCategory: serviceCategory,
+                                address: addressCtrl.text.trim().isEmpty
+                                    ? 'Santa Cruz de la Sierra'
+                                    : addressCtrl.text.trim(),
+                                contactPerson:
+                                    contactNameCtrl.text.trim().isEmpty
+                                        ? 'No especificado'
+                                        : contactNameCtrl.text.trim(),
+                                contactPhone:
+                                    contactPhoneCtrl.text.trim().isEmpty
+                                        ? 'S/N'
+                                        : contactPhoneCtrl.text.trim(),
+                                notes: notesCtrl.text.trim(),
+                              );
 
-                        Navigator.pop(ctx);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Datos de la empresa "$newName" actualizados exitosamente.',
-                            ),
-                            backgroundColor: const Color(0xFF10B981),
-                          ),
-                        );
-                      } else {
-                        _companyService.addCompany(
-                          name: newName,
-                          serviceCategory: serviceCategory,
-                          address: addressCtrl.text.trim().isEmpty
-                              ? 'Santa Cruz de la Sierra'
-                              : addressCtrl.text.trim(),
-                          contactPerson: contactNameCtrl.text.trim().isEmpty
-                              ? 'No especificado'
-                              : contactNameCtrl.text.trim(),
-                          contactPhone: contactPhoneCtrl.text.trim().isEmpty
-                              ? 'S/N'
-                              : contactPhoneCtrl.text.trim(),
-                          notes: notesCtrl.text.trim(),
-                        );
-                        Navigator.pop(ctx);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Empresa "$newName" registrada y habilitada para asignación de personal.',
-                            ),
-                            backgroundColor: const Color(0xFF10B981),
-                          ),
-                        );
-                      }
-                    }
-                  },
-                ),
-              ],
+                              // Si cambió el nombre, actualizar referencias de colaboradores
+                              if (oldName != newName) {
+                                setState(() {
+                                  for (int i = 0;
+                                      i < _employees.length;
+                                      i++) {
+                                    if (_employees[i].workplace ==
+                                        oldName) {
+                                      final cur = _employees[i];
+                                      _employees[i] = EmployeeItem(
+                                        id: cur.id,
+                                        code: cur.code,
+                                        fullName: cur.fullName,
+                                        birthDate: cur.birthDate,
+                                        birthPlace: cur.birthPlace,
+                                        identityCard: cur.identityCard,
+                                        phone: cur.phone,
+                                        address: cur.address,
+                                        occupation: cur.occupation,
+                                        personalReference:
+                                            cur.personalReference,
+                                        referencePhone: cur.referencePhone,
+                                        workplace: newName,
+                                        employeeType: cur.employeeType,
+                                        position: cur.position,
+                                        department: cur.department,
+                                        fiscalStartDate:
+                                            cur.fiscalStartDate,
+                                        realStartDate: cur.realStartDate,
+                                        agreedSalary: cur.agreedSalary,
+                                        contractType: cur.contractType,
+                                        observations: cur.observations,
+                                        status: cur.status,
+                                        hasCiCopy: cur.hasCiCopy,
+                                        hasUtilityBill:
+                                            cur.hasUtilityBill,
+                                        hasHomeSketch: cur.hasHomeSketch,
+                                        hasFelccRecord:
+                                            cur.hasFelccRecord,
+                                        hasPhoto3x4: cur.hasPhoto3x4,
+                                        hasSusInsurance:
+                                            cur.hasSusInsurance,
+                                      );
+                                    }
+                                  }
+                                });
+                              }
+
+                              setState(() {});
+                              setDialogState(() {
+                                isFormView = false;
+                                resetForm(null);
+                              });
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Datos de la empresa "$newName" actualizados exitosamente.',
+                                  ),
+                                  backgroundColor: const Color(0xFF10B981),
+                                ),
+                              );
+                            } else {
+                              _companyService.addCompany(
+                                name: newName,
+                                serviceCategory: serviceCategory,
+                                address: addressCtrl.text.trim().isEmpty
+                                    ? 'Santa Cruz de la Sierra'
+                                    : addressCtrl.text.trim(),
+                                contactPerson:
+                                    contactNameCtrl.text.trim().isEmpty
+                                        ? 'No especificado'
+                                        : contactNameCtrl.text.trim(),
+                                contactPhone:
+                                    contactPhoneCtrl.text.trim().isEmpty
+                                        ? 'S/N'
+                                        : contactPhoneCtrl.text.trim(),
+                                notes: notesCtrl.text.trim(),
+                              );
+
+                              setState(() {});
+                              setDialogState(() {
+                                isFormView = false;
+                                resetForm(null);
+                              });
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Empresa "$newName" registrada y habilitada para asignación de personal.',
+                                  ),
+                                  backgroundColor: const Color(0xFF10B981),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                      ),
+                    ]
+                  : [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text('Cerrar'),
+                      ),
+                    ],
             );
           },
         );
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -1542,15 +1792,15 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                           vertical: 12,
                         ),
                       ),
-                      icon: const Icon(Icons.domain_add_outlined, size: 18),
+                      icon: const Icon(Icons.domain_outlined, size: 18),
                       label: Text(
-                        'Ingresar Nueva Empresa',
+                        'Empresas / Sedes',
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
                       ),
-                      onPressed: _showCreateCompanyModal,
+                      onPressed: () => _showCompanyManagementModal(),
                     ),
                     const SizedBox(width: 12),
                     FilledButton.icon(
@@ -1677,52 +1927,28 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                         },
                       ),
                       const SizedBox(width: 12),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          DropdownButton<String>(
-                            value: _companyService.companyNames.contains(_workplaceFilter)
-                                ? _workplaceFilter
-                                : 'TODOS',
-                            underline: const SizedBox(),
-                            items: [
-                              const DropdownMenuItem(
-                                value: 'TODOS',
-                                child: Text('Lugar: Todos'),
-                              ),
-                              ..._companyService.companyNames.map((name) {
-                                return DropdownMenuItem(
-                                  value: name,
-                                  child: Text(name),
-                                );
-                              }),
-                            ],
-                            onChanged: (val) {
-                              if (val != null) {
-                                setState(() => _workplaceFilter = val);
-                              }
-                            },
+                      DropdownButton<String>(
+                        value: _companyService.companyNames.contains(_workplaceFilter)
+                            ? _workplaceFilter
+                            : 'TODOS',
+                        underline: const SizedBox(),
+                        items: [
+                          const DropdownMenuItem(
+                            value: 'TODOS',
+                            child: Text('Lugar: Todos'),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.add_business_outlined, size: 18),
-                            tooltip: 'Ingresar Nueva Empresa o Sede',
-                            color: const Color(0xFF6366F1),
-                            onPressed: () => _showCreateCompanyModal(),
-                          ),
-                          if (_workplaceFilter != 'TODOS')
-                            IconButton(
-                              icon: const Icon(Icons.edit_outlined, size: 18),
-                              tooltip: 'Editar datos de $_workplaceFilter',
-                              color: const Color(0xFFF59E0B),
-                              onPressed: () {
-                                final comp =
-                                    _companyService.findByName(_workplaceFilter);
-                                if (comp != null) {
-                                  _showCreateCompanyModal(comp);
-                                }
-                              },
-                            ),
+                          ..._companyService.companyNames.map((name) {
+                            return DropdownMenuItem(
+                              value: name,
+                              child: Text(name),
+                            );
+                          }),
                         ],
+                        onChanged: (val) {
+                          if (val != null) {
+                            setState(() => _workplaceFilter = val);
+                          }
+                        },
                       ),
                       const SizedBox(width: 12),
                       DropdownButton<String>(
