@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../data/crm_customers_service.dart';
 
 /// Modelo local de Línea de Cotización para desglose operativo y propuesta comercial.
 class QuoteItem {
@@ -487,6 +488,10 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
       }
     });
 
+    final isJustWon =
+        newStage == 'Ganada' &&
+        !CrmCustomersService().isOpportunityPromoted(deal.id);
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: const Color(0xFF0F172A),
@@ -505,7 +510,14 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
             ),
           ],
         ),
-        duration: const Duration(seconds: 2),
+        action: isJustWon
+            ? SnackBarAction(
+                label: 'Ficha 360°',
+                textColor: const Color(0xFF10B981),
+                onPressed: () => _showPromoteToCustomerDialog(deal),
+              )
+            : null,
+        duration: const Duration(seconds: 4),
       ),
     );
   }
@@ -1648,6 +1660,117 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
 
                   const SizedBox(height: 16),
 
+                  if (deal.stage == 'Ganada') ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.verified,
+                                color: Color(0xFF10B981),
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'OPORTUNIDAD GANADA',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF10B981),
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            CrmCustomersService().isOpportunityPromoted(deal.id)
+                                ? 'Esta cuenta ya está registrada en el Directorio Clientes 360° con sus sedes operativas.'
+                                : 'Promueve este negocio a la Ficha de Cliente 360° para formalizar su contrato y registrar su sede matriz.',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: isDark
+                                  ? const Color(0xFFCBD5E1)
+                                  : const Color(0xFF475569),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          if (!CrmCustomersService().isOpportunityPromoted(
+                            deal.id,
+                          ))
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF10B981),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 10,
+                                ),
+                                elevation: 0,
+                              ),
+                              onPressed: () {
+                                Navigator.pop(ctx);
+                                _showPromoteToCustomerDialog(deal);
+                              },
+                              icon: const Icon(Icons.add_business, size: 16),
+                              label: Text(
+                                'Promover a Cliente 360°',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF10B981,
+                                ).withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.check_circle,
+                                    size: 14,
+                                    color: Color(0xFF10B981),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Cliente 360° Activo en Directorio',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xFF10B981),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  const SizedBox(height: 16),
+
                   // Mover etapa
                   Text(
                     'ACCIONES DE ETAPA',
@@ -1709,6 +1832,401 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void _showPromoteToCustomerDialog(OpportunityItem deal) {
+    final formKey = GlobalKey<FormState>();
+    final tradeNameCtrl = TextEditingController(text: deal.clientName);
+    final legalNameCtrl = TextEditingController(
+      text: '${deal.clientName} S.R.L.',
+    );
+    final taxIdCtrl = TextEditingController();
+    final contactCtrl = TextEditingController(text: deal.contactPerson);
+    final phoneCtrl = TextEditingController(text: deal.phone);
+    final emailCtrl = TextEditingController(
+      text:
+          'contacto@${deal.clientName.toLowerCase().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}.bo',
+    );
+    final billingCtrl = TextEditingController(
+      text: deal.amount.toStringAsFixed(2),
+    );
+
+    final branchNameCtrl = TextEditingController(
+      text: 'Sede Matriz / ${deal.clientName}',
+    );
+    final branchAddressCtrl = TextEditingController();
+    final branchContactCtrl = TextEditingController(text: deal.contactPerson);
+    final branchPhoneCtrl = TextEditingController(text: deal.phone);
+
+    String segment = deal.clientName.toLowerCase().contains('condominio')
+        ? 'Residencial B2C'
+        : (deal.clientName.toLowerCase().contains('colegio')
+              ? 'Sector Educativo'
+              : 'Corporativo B2B');
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dCtx) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            final isDarkDialog = Theme.of(ctx).brightness == Brightness.dark;
+            return AlertDialog(
+              backgroundColor: isDarkDialog
+                  ? const Color(0xFF0F172A)
+                  : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.add_business,
+                      color: Color(0xFF10B981),
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Promover a Cliente 360°',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: isDarkDialog
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                          ),
+                        ),
+                        Text(
+                          'Convertir oportunidad "${deal.id}" en ficha de cliente permanente.',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              content: SizedBox(
+                width: 580,
+                child: Form(
+                  key: formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '1. DATOS FISCALES DEL CLIENTE',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF3B82F6),
+                            letterSpacing: 0.6,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: TextFormField(
+                                controller: tradeNameCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Nombre Comercial *',
+                                  isDense: true,
+                                ),
+                                validator: (v) =>
+                                    (v == null || v.trim().isEmpty)
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 2,
+                              child: TextFormField(
+                                controller: taxIdCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'NIT / RUC *',
+                                  hintText: 'Ej: 1029384756',
+                                  isDense: true,
+                                ),
+                                validator: (v) =>
+                                    (v == null || v.trim().isEmpty)
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: TextFormField(
+                                controller: legalNameCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Razón Social *',
+                                  isDense: true,
+                                ),
+                                validator: (v) =>
+                                    (v == null || v.trim().isEmpty)
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 2,
+                              child: DropdownButtonFormField<String>(
+                                initialValue: segment,
+                                decoration: const InputDecoration(
+                                  labelText: 'Segmento *',
+                                  isDense: true,
+                                ),
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 'Corporativo B2B',
+                                    child: Text('Corporativo B2B'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Residencial B2C',
+                                    child: Text('Residencial B2C'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Sector Educativo',
+                                    child: Text('Sector Educativo'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Sector Público',
+                                    child: Text('Sector Público'),
+                                  ),
+                                ],
+                                onChanged: (v) {
+                                  if (v != null)
+                                    setDialogState(() => segment = v);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          '2. CONTACTO Y FACTURACIÓN',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF3B82F6),
+                            letterSpacing: 0.6,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: contactCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Contacto Principal *',
+                                  isDense: true,
+                                ),
+                                validator: (v) =>
+                                    (v == null || v.trim().isEmpty)
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: phoneCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Teléfono *',
+                                  isDense: true,
+                                ),
+                                validator: (v) =>
+                                    (v == null || v.trim().isEmpty)
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: TextFormField(
+                                controller: emailCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Correo de Facturación *',
+                                  isDense: true,
+                                ),
+                                validator: (v) =>
+                                    (v == null || v.trim().isEmpty)
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 2,
+                              child: TextFormField(
+                                controller: billingCtrl,
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(
+                                  labelText: 'Canon Mensual (Bs.) *',
+                                  isDense: true,
+                                ),
+                                validator: (v) =>
+                                    (v == null || double.tryParse(v) == null)
+                                    ? 'Inválido'
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          '3. SEDE MATRIZ INICIAL (OBLIGATORIA)',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF3B82F6),
+                            letterSpacing: 0.6,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Ubicación física inicial acordada durante el cierre de la negociación.',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF94A3B8),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: branchNameCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Nombre Sede Matriz *',
+                                  isDense: true,
+                                ),
+                                validator: (v) =>
+                                    (v == null || v.trim().isEmpty)
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: branchAddressCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Dirección Física *',
+                                  hintText: 'Ej: Av. San Martín #230',
+                                  isDense: true,
+                                ),
+                                validator: (v) =>
+                                    (v == null || v.trim().isEmpty)
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dCtx).pop(),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF10B981),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 12,
+                    ),
+                  ),
+                  onPressed: () {
+                    if (formKey.currentState?.validate() ?? false) {
+                      final newId =
+                          'CLI-${DateTime.now().millisecondsSinceEpoch % 10000}';
+                      final initialBranch = CustomerBranch(
+                        id: 'BR-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                        name: branchNameCtrl.text.trim(),
+                        address: branchAddressCtrl.text.trim(),
+                        localContact: branchContactCtrl.text.trim().isNotEmpty
+                            ? branchContactCtrl.text.trim()
+                            : contactCtrl.text.trim(),
+                        localPhone: branchPhoneCtrl.text.trim().isNotEmpty
+                            ? branchPhoneCtrl.text.trim()
+                            : phoneCtrl.text.trim(),
+                        isHeadquarters: true,
+                      );
+
+                      final customer = CustomerItem(
+                        id: newId,
+                        legalName: legalNameCtrl.text.trim(),
+                        tradeName: tradeNameCtrl.text.trim(),
+                        taxId: taxIdCtrl.text.trim(),
+                        segment: segment,
+                        status: 'Activo',
+                        activeServices: [deal.serviceType],
+                        contactPerson: contactCtrl.text.trim(),
+                        phone: phoneCtrl.text.trim(),
+                        email: emailCtrl.text.trim(),
+                        monthlyBilling: double.parse(billingCtrl.text.trim()),
+                        opportunityId: deal.id,
+                        startDate: 'Hoy',
+                        branches: [initialBranch],
+                      );
+
+                      CrmCustomersService().addCustomer(customer);
+                      setState(() {});
+                      Navigator.of(dCtx).pop();
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: const Color(0xFF0F172A),
+                          content: Text(
+                            '¡Oportunidad promovida! Cliente "${customer.tradeName}" añadido al Directorio 360° con su sede matriz.',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.check, size: 18),
+                  label: const Text('Confirmar & Promover a Cliente 360°'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
