@@ -117,40 +117,6 @@ class RrhhCompanyService extends ChangeNotifier {
     ]);
   }
 
-  /// Registrar una nueva empresa cliente o sede de servicio
-  void addCompany({
-    required String name,
-    required String serviceCategory,
-    required String address,
-    required String contactPerson,
-    required String contactPhone,
-    required String notes,
-  }) {
-    final company = WorkplaceCompanyItem(
-      id: 'comp-${DateTime.now().millisecondsSinceEpoch}',
-      name: name.trim(),
-      serviceCategory: serviceCategory,
-      address: address.trim(),
-      contactPerson: contactPerson.trim(),
-      contactPhone: contactPhone.trim(),
-      notes: notes.trim(),
-      registeredAt: DateTime.now(),
-    );
-
-    _companies.insert(0, company);
-    notifyListeners();
-
-    // Asentar el movimiento en la Bitácora Exclusiva de RRHH
-    RrhhAuditService.instance.logMovement(
-      category: 'ALTA_PERSONAL',
-      action: 'Registro de Nueva Empresa / Sede Cliente',
-      employeeCode: 'SEDE-CLIENTE',
-      employeeName: name.trim(),
-      details:
-          'Se habilitó la empresa/sede "${name.trim()}" para la asignación de colaboradores en el rubro de $serviceCategory. Dirección: ${address.trim()}. Contacto: ${contactPerson.trim()} (${contactPhone.trim()}).',
-      severity: 'INFO',
-    );
-  }
 
   /// Actualizar datos de una empresa cliente existente
   void updateCompany({

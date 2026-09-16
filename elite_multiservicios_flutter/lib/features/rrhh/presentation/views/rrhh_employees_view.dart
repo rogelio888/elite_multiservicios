@@ -1349,48 +1349,27 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: DropdownButtonFormField<String>(
-                                      key: ValueKey(selectedWorkplace),
-                                      initialValue: _companyService.companyNames.contains(selectedWorkplace)
-                                          ? selectedWorkplace
-                                          : (_companyService.companyNames.isNotEmpty
-                                              ? _companyService.companyNames.first
-                                              : null),
-                                      decoration: const InputDecoration(
-                                        labelText: 'Lugar de Trabajo / Empresa *',
-                                      ),
-                                      items: _companyService.companyNames.map((name) {
-                                        return DropdownMenuItem(
-                                          value: name,
-                                          child: Text(name),
-                                        );
-                                      }).toList(),
-                                      onChanged: (v) {
-                                        if (v != null) {
-                                          setModalState(() => selectedWorkplace = v);
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  IconButton.filledTonal(
-                                    icon: const Icon(Icons.domain_add_outlined, size: 20),
-                                    tooltip: 'Ingresar Nueva Empresa / Sede',
-                                    onPressed: () async {
-                                      await _showCompanyManagementModal(
-                                        openDirectlyToCreate: true,
-                                      );
-                                      setModalState(() {
-                                        if (_companyService.companyNames.isNotEmpty) {
-                                          selectedWorkplace = _companyService.companyNames.first;
-                                        }
-                                      });
-                                    },
-                                  ),
-                                ],
+                              child: DropdownButtonFormField<String>(
+                                key: ValueKey(selectedWorkplace),
+                                initialValue: _companyService.companyNames.contains(selectedWorkplace)
+                                    ? selectedWorkplace
+                                    : (_companyService.companyNames.isNotEmpty
+                                        ? _companyService.companyNames.first
+                                        : null),
+                                decoration: const InputDecoration(
+                                  labelText: 'Lugar de Trabajo / Empresa *',
+                                ),
+                                items: _companyService.companyNames.map((name) {
+                                  return DropdownMenuItem(
+                                    value: name,
+                                    child: Text(name),
+                                  );
+                                }).toList(),
+                                onChanged: (v) {
+                                  if (v != null) {
+                                    setModalState(() => selectedWorkplace = v);
+                                  }
+                                },
                               ),
                             ),
                           ],
@@ -1691,11 +1670,10 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
   }
 
   Future<void> _showCompanyManagementModal({
-    bool openDirectlyToCreate = false,
     WorkplaceCompanyItem? initialCompanyToEdit,
   }) async {
     final formKey = GlobalKey<FormState>();
-    bool isFormView = openDirectlyToCreate || initialCompanyToEdit != null;
+    bool isFormView = initialCompanyToEdit != null;
     WorkplaceCompanyItem? editingCompany = initialCompanyToEdit;
 
     final nameCtrl =
@@ -1727,8 +1705,6 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
         return StatefulBuilder(
           builder: (dialogCtx, setDialogState) {
-            final isEditing = editingCompany != null;
-
             return AlertDialog(
               backgroundColor:
                   isDark ? const Color(0xFF0F172A) : Colors.white,
@@ -1754,18 +1730,14 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                isEditing
-                                    ? 'Editar Empresa: ${editingCompany!.name}'
-                                    : 'Registrar Nueva Empresa / Sede',
+                                'Editar Empresa: ${editingCompany?.name ?? ''}',
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 16,
                                 ),
                               ),
                               Text(
-                                isEditing
-                                    ? 'Modificación de datos con registro en bitácora'
-                                    : 'Empresa cliente asignada a servicios de Elite Multiservicios',
+                                'Modificación de datos con registro en bitácora',
                                 style: GoogleFonts.inter(
                                   fontSize: 11,
                                   color: const Color(0xFF64748B),
@@ -1777,70 +1749,39 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                       ],
                     )
                   : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF6366F1)
+                                .withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.apartment_outlined,
+                            color: Color(0xFF6366F1),
+                            size: 22,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF6366F1)
-                                    .withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(
-                                Icons.apartment_outlined,
-                                color: Color(0xFF6366F1),
-                                size: 22,
+                            Text(
+                              'Empresas y Sedes Cliente',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Empresas y Sedes Cliente',
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Text(
-                                  '${_companyService.allCompanies.length} empresas registradas',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 11,
-                                    color: const Color(0xFF64748B),
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              '${_companyService.allCompanies.length} empresas registradas',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: const Color(0xFF64748B),
+                              ),
                             ),
                           ],
-                        ),
-                        FilledButton.icon(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: const Color(0xFF6366F1),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 8,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          icon: const Icon(Icons.add, size: 16),
-                          label: Text(
-                            'Nueva Empresa',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          onPressed: () {
-                            setDialogState(() {
-                              resetForm(null);
-                              isFormView = true;
-                            });
-                          },
                         ),
                       ],
                     ),
@@ -2196,129 +2137,92 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                           ),
                         ),
                         icon: const Icon(Icons.check, size: 16),
-                        label: Text(
-                          isEditing
-                              ? 'Actualizar Empresa'
-                              : 'Guardar Empresa',
-                        ),
+                        label: const Text('Actualizar Empresa'),
                         onPressed: () {
                           if (formKey.currentState?.validate() ?? false) {
+                            if (editingCompany == null) return;
                             final newName = nameCtrl.text.trim();
-                            if (isEditing) {
-                              final oldName = editingCompany!.name;
-                              _companyService.updateCompany(
-                                id: editingCompany!.id,
-                                name: newName,
-                                serviceCategory: serviceCategory,
-                                address: addressCtrl.text.trim().isEmpty
-                                    ? 'Santa Cruz de la Sierra'
-                                    : addressCtrl.text.trim(),
-                                contactPerson:
-                                    contactNameCtrl.text.trim().isEmpty
-                                        ? 'No especificado'
-                                        : contactNameCtrl.text.trim(),
-                                contactPhone:
-                                    contactPhoneCtrl.text.trim().isEmpty
-                                        ? 'S/N'
-                                        : contactPhoneCtrl.text.trim(),
-                                notes: notesCtrl.text.trim(),
-                              );
+                            final oldName = editingCompany!.name;
+                            _companyService.updateCompany(
+                              id: editingCompany!.id,
+                              name: newName,
+                              serviceCategory: serviceCategory,
+                              address: addressCtrl.text.trim().isEmpty
+                                  ? 'Santa Cruz de la Sierra'
+                                  : addressCtrl.text.trim(),
+                              contactPerson:
+                                  contactNameCtrl.text.trim().isEmpty
+                                      ? 'No especificado'
+                                      : contactNameCtrl.text.trim(),
+                              contactPhone:
+                                  contactPhoneCtrl.text.trim().isEmpty
+                                      ? 'S/N'
+                                      : contactPhoneCtrl.text.trim(),
+                              notes: notesCtrl.text.trim(),
+                            );
 
-                              // Si cambió el nombre, actualizar referencias de colaboradores
-                              if (oldName != newName) {
-                                setState(() {
-                                  for (int i = 0;
-                                      i < _employees.length;
-                                      i++) {
-                                    if (_employees[i].workplace ==
-                                        oldName) {
-                                      final cur = _employees[i];
-                                      _employees[i] = EmployeeItem(
-                                        id: cur.id,
-                                        code: cur.code,
-                                        fullName: cur.fullName,
-                                        birthDate: cur.birthDate,
-                                        birthPlace: cur.birthPlace,
-                                        identityCard: cur.identityCard,
-                                        phone: cur.phone,
-                                        address: cur.address,
-                                        occupation: cur.occupation,
-                                        personalReference:
-                                            cur.personalReference,
-                                        referencePhone: cur.referencePhone,
-                                        workplace: newName,
-                                        employeeType: cur.employeeType,
-                                        position: cur.position,
-                                        department: cur.department,
-                                        fiscalStartDate:
-                                            cur.fiscalStartDate,
-                                        realStartDate: cur.realStartDate,
-                                        agreedSalary: cur.agreedSalary,
-                                        contractType: cur.contractType,
-                                        observations: cur.observations,
-                                        status: cur.status,
-                                        hasCiCopy: cur.hasCiCopy,
-                                        hasUtilityBill:
-                                            cur.hasUtilityBill,
-                                        hasHomeSketch: cur.hasHomeSketch,
-                                        hasFelccRecord:
-                                            cur.hasFelccRecord,
-                                        hasPhoto3x4: cur.hasPhoto3x4,
-                                        hasSusInsurance:
-                                            cur.hasSusInsurance,
-                                      );
-                                    }
+                            // Si cambió el nombre, actualizar referencias de colaboradores
+                            if (oldName != newName) {
+                              setState(() {
+                                for (int i = 0;
+                                    i < _employees.length;
+                                    i++) {
+                                  if (_employees[i].workplace ==
+                                      oldName) {
+                                    final cur = _employees[i];
+                                    _employees[i] = EmployeeItem(
+                                      id: cur.id,
+                                      code: cur.code,
+                                      fullName: cur.fullName,
+                                      birthDate: cur.birthDate,
+                                      birthPlace: cur.birthPlace,
+                                      identityCard: cur.identityCard,
+                                      phone: cur.phone,
+                                      address: cur.address,
+                                      occupation: cur.occupation,
+                                      personalReference:
+                                          cur.personalReference,
+                                      referencePhone: cur.referencePhone,
+                                      workplace: newName,
+                                      employeeType: cur.employeeType,
+                                      position: cur.position,
+                                      department: cur.department,
+                                      fiscalStartDate:
+                                          cur.fiscalStartDate,
+                                      realStartDate: cur.realStartDate,
+                                      agreedSalary: cur.agreedSalary,
+                                      contractType: cur.contractType,
+                                      observations: cur.observations,
+                                      status: cur.status,
+                                      hasCiCopy: cur.hasCiCopy,
+                                      hasUtilityBill:
+                                          cur.hasUtilityBill,
+                                      hasHomeSketch: cur.hasHomeSketch,
+                                      hasFelccRecord:
+                                          cur.hasFelccRecord,
+                                      hasPhoto3x4: cur.hasPhoto3x4,
+                                      hasSusInsurance:
+                                          cur.hasSusInsurance,
+                                    );
                                   }
-                                });
-                              }
-
-                              setState(() {});
-                              setDialogState(() {
-                                isFormView = false;
-                                resetForm(null);
+                                }
                               });
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Datos de la empresa "$newName" actualizados exitosamente.',
-                                  ),
-                                  backgroundColor: const Color(0xFF10B981),
-                                ),
-                              );
-                            } else {
-                              _companyService.addCompany(
-                                name: newName,
-                                serviceCategory: serviceCategory,
-                                address: addressCtrl.text.trim().isEmpty
-                                    ? 'Santa Cruz de la Sierra'
-                                    : addressCtrl.text.trim(),
-                                contactPerson:
-                                    contactNameCtrl.text.trim().isEmpty
-                                        ? 'No especificado'
-                                        : contactNameCtrl.text.trim(),
-                                contactPhone:
-                                    contactPhoneCtrl.text.trim().isEmpty
-                                        ? 'S/N'
-                                        : contactPhoneCtrl.text.trim(),
-                                notes: notesCtrl.text.trim(),
-                              );
-
-                              setState(() {});
-                              setDialogState(() {
-                                isFormView = false;
-                                resetForm(null);
-                              });
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Empresa "$newName" registrada y habilitada para asignación de personal.',
-                                  ),
-                                  backgroundColor: const Color(0xFF10B981),
-                                ),
-                              );
                             }
+
+                            setState(() {});
+                            setDialogState(() {
+                              isFormView = false;
+                              resetForm(null);
+                            });
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Datos de la empresa "$newName" actualizados exitosamente.',
+                                ),
+                                backgroundColor: const Color(0xFF10B981),
+                              ),
+                            );
                           }
                         },
                       ),
