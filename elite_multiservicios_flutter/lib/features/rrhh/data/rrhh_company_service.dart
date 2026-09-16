@@ -151,4 +151,53 @@ class RrhhCompanyService extends ChangeNotifier {
       severity: 'INFO',
     );
   }
+
+  /// Actualizar datos de una empresa cliente existente
+  void updateCompany({
+    required String id,
+    required String name,
+    required String serviceCategory,
+    required String address,
+    required String contactPerson,
+    required String contactPhone,
+    required String notes,
+  }) {
+    final idx = _companies.indexWhere((c) => c.id == id);
+    if (idx != -1) {
+      final old = _companies[idx];
+      _companies[idx] = WorkplaceCompanyItem(
+        id: id,
+        name: name.trim(),
+        serviceCategory: serviceCategory,
+        address: address.trim(),
+        contactPerson: contactPerson.trim(),
+        contactPhone: contactPhone.trim(),
+        notes: notes.trim(),
+        registeredAt: old.registeredAt,
+      );
+      notifyListeners();
+
+      // Registro auditable en la Bitácora de RRHH
+      RrhhAuditService.instance.logMovement(
+        category: 'EXPEDIENTE',
+        action: 'Actualización de Datos de Empresa Cliente',
+        employeeCode: 'SEDE-CLIENTE',
+        employeeName: name.trim(),
+        details:
+            'Se actualizaron los datos de la sede "${old.name}" (actualizada a "${name.trim()}"). Rubro: $serviceCategory, Dirección: ${address.trim()}, Contacto: ${contactPerson.trim()} (${contactPhone.trim()}).',
+        severity: 'INFO',
+      );
+    }
+  }
+
+  /// Buscar empresa por nombre
+  WorkplaceCompanyItem? findByName(String name) {
+    try {
+      return _companies.firstWhere(
+        (c) => c.name.toLowerCase() == name.toLowerCase(),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
 }

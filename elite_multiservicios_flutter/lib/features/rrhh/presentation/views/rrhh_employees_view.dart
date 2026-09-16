@@ -1048,14 +1048,16 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
     );
   }
 
-  Future<void> _showCreateCompanyModal() async {
+  Future<void> _showCreateCompanyModal([WorkplaceCompanyItem? initialCompanyToEdit]) async {
     final formKey = GlobalKey<FormState>();
-    final nameCtrl = TextEditingController();
-    final addressCtrl = TextEditingController();
-    final contactNameCtrl = TextEditingController();
-    final contactPhoneCtrl = TextEditingController();
-    final notesCtrl = TextEditingController();
-    String serviceCategory = 'Limpieza';
+    WorkplaceCompanyItem? selectedCompanyToEdit = initialCompanyToEdit;
+
+    final nameCtrl = TextEditingController(text: initialCompanyToEdit?.name ?? '');
+    final addressCtrl = TextEditingController(text: initialCompanyToEdit?.address ?? '');
+    final contactNameCtrl = TextEditingController(text: initialCompanyToEdit?.contactPerson ?? '');
+    final contactPhoneCtrl = TextEditingController(text: initialCompanyToEdit?.contactPhone ?? '');
+    final notesCtrl = TextEditingController(text: initialCompanyToEdit?.notes ?? '');
+    String serviceCategory = initialCompanyToEdit?.serviceCategory ?? 'Limpieza';
 
     await showDialog(
       context: context,
@@ -1063,6 +1065,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
         return StatefulBuilder(
           builder: (dialogCtx, setDialogState) {
+            final isEditing = selectedCompanyToEdit != null;
+
             return AlertDialog(
               backgroundColor:
                   isDark ? const Color(0xFF0F172A) : Colors.white,
@@ -1077,9 +1081,11 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                       color: const Color(0xFF6366F1).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(
-                      Icons.domain_add_outlined,
-                      color: Color(0xFF6366F1),
+                    child: Icon(
+                      isEditing
+                          ? Icons.edit_note_outlined
+                          : Icons.domain_add_outlined,
+                      color: const Color(0xFF6366F1),
                       size: 22,
                     ),
                   ),
@@ -1089,14 +1095,18 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Ingresar Nueva Empresa / Sede',
+                          isEditing
+                              ? 'Editar Empresa / Sede Cliente'
+                              : 'Ingresar Nueva Empresa / Sede',
                           style: GoogleFonts.inter(
                             fontWeight: FontWeight.w700,
                             fontSize: 16,
                           ),
                         ),
                         Text(
-                          'Empresa cliente asignada a servicios de Elite Multiservicios',
+                          isEditing
+                              ? 'Modificación de datos con registro en bitácora'
+                              : 'Empresa cliente asignada a servicios de Elite Multiservicios',
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             color: const Color(0xFF64748B),
@@ -1108,7 +1118,7 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                 ],
               ),
               content: SizedBox(
-                width: 520,
+                width: 540,
                 child: Form(
                   key: formKey,
                   child: SingleChildScrollView(
@@ -1116,6 +1126,97 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Selector para alternar entre Crear o Editar existente
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          margin: const EdgeInsets.only(bottom: 14),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(0xFF334155)
+                                  : const Color(0xFFCBD5E1),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                isEditing
+                                    ? Icons.edit_outlined
+                                    : Icons.add_circle_outline,
+                                size: 16,
+                                color: const Color(0xFF6366F1),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: DropdownButton<String?>(
+                                  value: selectedCompanyToEdit?.id,
+                                  isExpanded: true,
+                                  underline: const SizedBox(),
+                                  hint: Text(
+                                    '¿Editar una empresa existente? Seleccionar...',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: const Color(0xFF64748B),
+                                    ),
+                                  ),
+                                  items: [
+                                    const DropdownMenuItem<String?>(
+                                      value: null,
+                                      child: Text(
+                                        '+ Crear Nueva Empresa (Formulario en blanco)',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                    ..._companyService.allCompanies.map((c) {
+                                      return DropdownMenuItem<String?>(
+                                        value: c.id,
+                                        child: Text(
+                                          'Editar: ${c.name} (${c.serviceCategory})',
+                                        ),
+                                      );
+                                    }),
+                                  ],
+                                  onChanged: (val) {
+                                    setDialogState(() {
+                                      if (val == null) {
+                                        selectedCompanyToEdit = null;
+                                        nameCtrl.clear();
+                                        serviceCategory = 'Limpieza';
+                                        addressCtrl.clear();
+                                        contactNameCtrl.clear();
+                                        contactPhoneCtrl.clear();
+                                        notesCtrl.clear();
+                                      } else {
+                                        final found = _companyService
+                                            .allCompanies
+                                            .firstWhere((c) => c.id == val);
+                                        selectedCompanyToEdit = found;
+                                        nameCtrl.text = found.name;
+                                        serviceCategory = found.serviceCategory;
+                                        addressCtrl.text = found.address;
+                                        contactNameCtrl.text =
+                                            found.contactPerson;
+                                        contactPhoneCtrl.text =
+                                            found.contactPhone;
+                                        notesCtrl.text = found.notes;
+                                      }
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
                         TextFormField(
                           controller: nameCtrl,
                           decoration: const InputDecoration(
@@ -1130,6 +1231,7 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                         ),
                         const SizedBox(height: 14),
                         DropdownButtonFormField<String>(
+                          key: ValueKey(serviceCategory),
                           initialValue: serviceCategory,
                           decoration: const InputDecoration(
                             labelText: 'Tipo de Servicio Prestado por Elite *',
@@ -1138,27 +1240,27 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                           items: const [
                             DropdownMenuItem(
                               value: 'Limpieza',
-                              child: Text('🧹 Limpieza y Desinfección Operativa'),
+                              child: Text('Limpieza y Desinfección Operativa'),
                             ),
                             DropdownMenuItem(
                               value: 'Jardinería',
-                              child: Text('🌿 Jardinería y Áreas Verdes'),
+                              child: Text('Jardinería y Mantenimiento de Áreas Verdes'),
                             ),
                             DropdownMenuItem(
                               value: 'Sistemas',
-                              child: Text('💻 Sistemas, TI y Telecomunicaciones'),
+                              child: Text('Sistemas, Soporte TI y Telecomunicaciones'),
                             ),
                             DropdownMenuItem(
                               value: 'Mantenimiento',
-                              child: Text('🔧 Mantenimiento Técnico / Bombas'),
+                              child: Text('Mantenimiento Técnico y Electromecánico'),
                             ),
                             DropdownMenuItem(
                               value: 'Seguridad',
-                              child: Text('🛡️ Seguridad y Vigilancia Operativa'),
+                              child: Text('Seguridad y Vigilancia Operativa'),
                             ),
                             DropdownMenuItem(
                               value: 'Multiservicios',
-                              child: Text('🏢 Multiservicios Integral'),
+                              child: Text('Multiservicios Integral'),
                             ),
                           ],
                           onChanged: (v) {
@@ -1236,33 +1338,104 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                     ),
                   ),
                   icon: const Icon(Icons.check, size: 16),
-                  label: const Text('Guardar Empresa'),
+                  label: Text(
+                    isEditing ? 'Actualizar Empresa' : 'Guardar Empresa',
+                  ),
                   onPressed: () {
                     if (formKey.currentState?.validate() ?? false) {
                       final newName = nameCtrl.text.trim();
-                      _companyService.addCompany(
-                        name: newName,
-                        serviceCategory: serviceCategory,
-                        address: addressCtrl.text.trim().isEmpty
-                            ? 'Santa Cruz de la Sierra'
-                            : addressCtrl.text.trim(),
-                        contactPerson: contactNameCtrl.text.trim().isEmpty
-                            ? 'No especificado'
-                            : contactNameCtrl.text.trim(),
-                        contactPhone: contactPhoneCtrl.text.trim().isEmpty
-                            ? 'S/N'
-                            : contactPhoneCtrl.text.trim(),
-                        notes: notesCtrl.text.trim(),
-                      );
-                      Navigator.pop(ctx);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Empresa "$newName" registrada y habilitada para asignación de personal.',
+                      if (isEditing) {
+                        final oldName = selectedCompanyToEdit!.name;
+                        _companyService.updateCompany(
+                          id: selectedCompanyToEdit!.id,
+                          name: newName,
+                          serviceCategory: serviceCategory,
+                          address: addressCtrl.text.trim().isEmpty
+                              ? 'Santa Cruz de la Sierra'
+                              : addressCtrl.text.trim(),
+                          contactPerson: contactNameCtrl.text.trim().isEmpty
+                              ? 'No especificado'
+                              : contactNameCtrl.text.trim(),
+                          contactPhone: contactPhoneCtrl.text.trim().isEmpty
+                              ? 'S/N'
+                              : contactPhoneCtrl.text.trim(),
+                          notes: notesCtrl.text.trim(),
+                        );
+
+                        // Si cambió el nombre, actualizar referencias de colaboradores
+                        if (oldName != newName) {
+                          setState(() {
+                            for (int i = 0; i < _employees.length; i++) {
+                              if (_employees[i].workplace == oldName) {
+                                final cur = _employees[i];
+                                _employees[i] = EmployeeItem(
+                                  id: cur.id,
+                                  code: cur.code,
+                                  fullName: cur.fullName,
+                                  birthDate: cur.birthDate,
+                                  birthPlace: cur.birthPlace,
+                                  identityCard: cur.identityCard,
+                                  phone: cur.phone,
+                                  address: cur.address,
+                                  occupation: cur.occupation,
+                                  personalReference: cur.personalReference,
+                                  referencePhone: cur.referencePhone,
+                                  workplace: newName,
+                                  employeeType: cur.employeeType,
+                                  position: cur.position,
+                                  department: cur.department,
+                                  fiscalStartDate: cur.fiscalStartDate,
+                                  realStartDate: cur.realStartDate,
+                                  agreedSalary: cur.agreedSalary,
+                                  contractType: cur.contractType,
+                                  observations: cur.observations,
+                                  status: cur.status,
+                                  hasCiCopy: cur.hasCiCopy,
+                                  hasUtilityBill: cur.hasUtilityBill,
+                                  hasHomeSketch: cur.hasHomeSketch,
+                                  hasFelccRecord: cur.hasFelccRecord,
+                                  hasPhoto3x4: cur.hasPhoto3x4,
+                                  hasSusInsurance: cur.hasSusInsurance,
+                                );
+                              }
+                            }
+                          });
+                        }
+
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Datos de la empresa "$newName" actualizados exitosamente.',
+                            ),
+                            backgroundColor: const Color(0xFF10B981),
                           ),
-                          backgroundColor: const Color(0xFF10B981),
-                        ),
-                      );
+                        );
+                      } else {
+                        _companyService.addCompany(
+                          name: newName,
+                          serviceCategory: serviceCategory,
+                          address: addressCtrl.text.trim().isEmpty
+                              ? 'Santa Cruz de la Sierra'
+                              : addressCtrl.text.trim(),
+                          contactPerson: contactNameCtrl.text.trim().isEmpty
+                              ? 'No especificado'
+                              : contactNameCtrl.text.trim(),
+                          contactPhone: contactPhoneCtrl.text.trim().isEmpty
+                              ? 'S/N'
+                              : contactPhoneCtrl.text.trim(),
+                          notes: notesCtrl.text.trim(),
+                        );
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Empresa "$newName" registrada y habilitada para asignación de personal.',
+                            ),
+                            backgroundColor: const Color(0xFF10B981),
+                          ),
+                        );
+                      }
                     }
                   },
                 ),
@@ -1534,8 +1707,21 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                             icon: const Icon(Icons.add_business_outlined, size: 18),
                             tooltip: 'Ingresar Nueva Empresa o Sede',
                             color: const Color(0xFF6366F1),
-                            onPressed: _showCreateCompanyModal,
+                            onPressed: () => _showCreateCompanyModal(),
                           ),
+                          if (_workplaceFilter != 'TODOS')
+                            IconButton(
+                              icon: const Icon(Icons.edit_outlined, size: 18),
+                              tooltip: 'Editar datos de $_workplaceFilter',
+                              color: const Color(0xFFF59E0B),
+                              onPressed: () {
+                                final comp =
+                                    _companyService.findByName(_workplaceFilter);
+                                if (comp != null) {
+                                  _showCreateCompanyModal(comp);
+                                }
+                              },
+                            ),
                         ],
                       ),
                       const SizedBox(width: 12),
