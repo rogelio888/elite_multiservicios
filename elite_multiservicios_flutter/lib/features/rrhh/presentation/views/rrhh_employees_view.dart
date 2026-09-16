@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/rrhh_audit_service.dart';
@@ -2620,333 +2621,628 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
 
             const SizedBox(height: 20),
 
-            // Tabla de Colaboradores sin RenderFlex Overflows
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF0F172A) : Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isDark
-                      ? const Color(0xFF1E293B)
-                      : const Color(0xFFE2E8F0),
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    dataRowMinHeight: 64,
-                    dataRowMaxHeight: 72,
-                    headingRowHeight: 48,
-                    horizontalMargin: 16,
-                    columnSpacing: 24,
-                    headingRowColor: WidgetStatePropertyAll(
-                      isDark
-                          ? const Color(0xFF161F30)
-                          : const Color(0xFFF8FAFC),
+            // Vista Adaptativa (Card View < 768px / Full-Width Table >= 768px)
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isMobile = constraints.maxWidth < 768;
+                if (isMobile) {
+                  return _buildMobileCardView(_filteredEmployees, isDark);
+                }
+                return _buildDesktopTable(
+                  context,
+                  _filteredEmployees,
+                  isDark,
+                  constraints.maxWidth,
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDesktopTable(
+    BuildContext context,
+    List<EmployeeItem> employees,
+    bool isDark,
+    double maxWidth,
+  ) {
+    if (employees.isEmpty) {
+      return _buildEmptyState(isDark);
+    }
+
+    final tableWidth = max(maxWidth - 48, 1100.0);
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: tableWidth,
+            child: Table(
+              columnWidths: const {
+                0: FlexColumnWidth(2.6), // Colaborador
+                1: FlexColumnWidth(1.3), // CI / Documento
+                2: FlexColumnWidth(2.0), // Lugar de Trabajo / Tipo
+                3: FlexColumnWidth(2.6), // Cargo y Sueldo
+                4: FlexColumnWidth(1.3), // Expediente Físico
+                5: FlexColumnWidth(1.1), // Estado
+                6: FlexColumnWidth(1.7), // Contacto / Ref.
+                7: FlexColumnWidth(1.2), // Acciones
+              },
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              children: [
+                // Fila de encabezado
+                TableRow(
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF161F30)
+                        : const Color(0xFFF8FAFC),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFE2E8F0),
+                        width: 1,
+                      ),
                     ),
-                    columns: [
-                      DataColumn(
-                        label: Text(
-                          'Colaborador',
+                  ),
+                  children: [
+                    _buildHeaderCell('Colaborador', isDark),
+                    _buildHeaderCell('CI / Documento', isDark),
+                    _buildHeaderCell('Lugar de Trabajo / Tipo', isDark),
+                    _buildHeaderCell('Cargo y Sueldo', isDark),
+                    _buildHeaderCell('Expediente Físico', isDark),
+                    _buildHeaderCell('Estado', isDark),
+                    _buildHeaderCell('Contacto / Ref.', isDark),
+                    _buildHeaderCell(
+                      'Acciones',
+                      isDark,
+                      alignment: Alignment.centerRight,
+                    ),
+                  ],
+                ),
+                // Filas de datos
+                ...employees.map((emp) {
+                  return TableRow(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFE2E8F0),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    children: [
+                      // 0: Colaborador
+                      _buildBodyCell(
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundColor: const Color(
+                                0xFF2563EB,
+                              ).withValues(alpha: 0.15),
+                              child: Text(
+                                emp.fullName.isNotEmpty
+                                    ? emp.fullName.substring(0, 1)
+                                    : '?',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF2563EB),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    emp.fullName,
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                      color: isDark
+                                          ? Colors.white
+                                          : const Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    emp.code,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      color: const Color(0xFF64748B),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // 1: CI / Documento
+                      _buildBodyCell(
+                        Text(
+                          emp.identityCard,
                           style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
                             fontSize: 12,
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF334155),
                           ),
                         ),
                       ),
-                      DataColumn(
-                        label: Text(
-                          'CI / Documento',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
+                      // 2: Lugar de Trabajo / Tipo
+                      _buildBodyCell(
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              emp.workplace,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              emp.employeeType == 'ADMINISTRATIVO'
+                                  ? 'Oficina'
+                                  : 'Campo / Operativo',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: emp.employeeType == 'ADMINISTRATIVO'
+                                    ? const Color(0xFF8B5CF6)
+                                    : const Color(0xFF06B6D4),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // 3: Cargo y Sueldo
+                      _buildBodyCell(
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              emp.position,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Bs. ${emp.agreedSalary.toStringAsFixed(2)}',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: const Color(0xFF10B981),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // 4: Expediente Físico
+                      _buildBodyCell(
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: emp.attachedDocumentsCount == 6
+                                ? const Color(
+                                    0xFF10B981,
+                                  ).withValues(alpha: 0.12)
+                                : const Color(
+                                    0xFFF59E0B,
+                                  ).withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: emp.attachedDocumentsCount == 6
+                                  ? const Color(
+                                      0xFF10B981,
+                                    ).withValues(alpha: 0.3)
+                                  : const Color(
+                                      0xFFF59E0B,
+                                    ).withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                emp.attachedDocumentsCount == 6
+                                    ? Icons.verified
+                                    : Icons.attachment,
+                                size: 14,
+                                color: emp.attachedDocumentsCount == 6
+                                    ? const Color(0xFF10B981)
+                                    : const Color(0xFFF59E0B),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '${emp.attachedDocumentsCount}/6 docs',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: emp.attachedDocumentsCount == 6
+                                      ? const Color(0xFF10B981)
+                                      : const Color(0xFFF59E0B),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      DataColumn(
-                        label: Text(
-                          'Lugar de Trabajo / Tipo',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
+                      // 5: Estado
+                      _buildBodyCell(_buildStatusChip(emp.status)),
+                      // 6: Contacto / Ref.
+                      _buildBodyCell(
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              emp.phone,
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: isDark
+                                    ? const Color(0xFFCBD5E1)
+                                    : const Color(0xFF334155),
+                              ),
+                            ),
+                            Text(
+                              'Ref: ${emp.referencePhone}',
+                              style: GoogleFonts.inter(
+                                fontSize: 10,
+                                color: const Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      DataColumn(
-                        label: Text(
-                          'Cargo y Sueldo',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Expediente Físico',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Estado',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Contacto / Ref.',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Acciones',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
+                      // 7: Acciones
+                      _buildBodyCell(
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: FilledButton.tonalIcon(
+                            style: FilledButton.styleFrom(
+                              visualDensity: VisualDensity.compact,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                            ),
+                            icon: const Icon(Icons.folder_open, size: 14),
+                            label: const Text(
+                              'Expediente',
+                              style: TextStyle(fontSize: 11),
+                            ),
+                            onPressed: () => _showEmployeeDetailsModal(emp),
                           ),
                         ),
                       ),
                     ],
-                    rows: _filteredEmployees.map((emp) {
-                      return DataRow(
-                        cells: [
-                          DataCell(
-                            ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 220),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 16,
-                                    backgroundColor: const Color(
-                                      0xFF2563EB,
-                                    ).withValues(alpha: 0.15),
-                                    child: Text(
-                                      emp.fullName.isNotEmpty
-                                          ? emp.fullName.substring(0, 1)
-                                          : '?',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                        color: const Color(0xFF2563EB),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          emp.fullName,
-                                          style: GoogleFonts.inter(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 13,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        Text(
-                                          emp.code,
-                                          style: GoogleFonts.inter(
-                                            fontSize: 11,
-                                            color: isDark
-                                                ? const Color(0xFF64748B)
-                                                : const Color(0xFF94A3B8),
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderCell(
+    String text,
+    bool isDark, {
+    Alignment alignment = Alignment.centerLeft,
+  }) {
+    return Container(
+      alignment: alignment,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      child: Text(
+        text,
+        style: GoogleFonts.inter(
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBodyCell(Widget child) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: child,
+    );
+  }
+
+  Widget _buildMobileCardView(
+    List<EmployeeItem> employees,
+    bool isDark,
+  ) {
+    if (employees.isEmpty) {
+      return _buildEmptyState(isDark);
+    }
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: employees.length,
+      separatorBuilder: (sepCtx, index) => const SizedBox(height: 12),
+      itemBuilder: (itemCtx, index) {
+        final emp = employees[index];
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0F172A) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundColor: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                          child: Text(
+                            emp.fullName.isNotEmpty ? emp.fullName.substring(0, 1) : '?',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF2563EB),
                             ),
                           ),
-                          DataCell(
-                            Text(
-                              emp.identityCard,
-                              style: GoogleFonts.inter(fontSize: 12),
-                            ),
-                          ),
-                          DataCell(
-                            ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 220),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    emp.workplace,
-                                    style: GoogleFonts.inter(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    emp.employeeType == 'ADMINISTRATIVO'
-                                        ? 'Oficina'
-                                        : 'Campo / Operativo',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 11,
-                                      color:
-                                          emp.employeeType == 'ADMINISTRATIVO'
-                                          ? const Color(0xFF8B5CF6)
-                                          : const Color(0xFF06B6D4),
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          DataCell(
-                            ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 200),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    emp.position,
-                                    style: GoogleFonts.inter(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    'Bs. ${emp.agreedSalary.toStringAsFixed(2)}',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 11,
-                                      color: const Color(0xFF10B981),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          DataCell(
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: emp.attachedDocumentsCount == 6
-                                    ? const Color(
-                                        0xFF10B981,
-                                      ).withValues(alpha: 0.12)
-                                    : const Color(
-                                        0xFFF59E0B,
-                                      ).withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    emp.attachedDocumentsCount == 6
-                                        ? Icons.verified
-                                        : Icons.attachment,
-                                    size: 14,
-                                    color: emp.attachedDocumentsCount == 6
-                                        ? const Color(0xFF10B981)
-                                        : const Color(0xFFF59E0B),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    '${emp.attachedDocumentsCount}/6 docs',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                      color: emp.attachedDocumentsCount == 6
-                                          ? const Color(0xFF10B981)
-                                          : const Color(0xFFF59E0B),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          DataCell(_buildStatusChip(emp.status)),
-                          DataCell(
-                            ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 180),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    emp.phone,
-                                    style: GoogleFonts.inter(fontSize: 11),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    'Ref: ${emp.referencePhone}',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 10,
-                                      color: const Color(0xFF64748B),
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          DataCell(
-                            FilledButton.tonalIcon(
-                              style: FilledButton.styleFrom(
-                                visualDensity: VisualDensity.compact,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                emp.fullName,
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color: isDark ? Colors.white : const Color(0xFF0F172A),
                                 ),
                               ),
-                              icon: const Icon(Icons.folder_open, size: 14),
-                              label: const Text(
-                                'Expediente',
-                                style: TextStyle(fontSize: 11),
+                              Text(
+                                '${emp.code} • C.I. ${emp.identityCard}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: const Color(0xFF64748B),
+                                ),
                               ),
-                              onPressed: () => _showEmployeeDetailsModal(emp),
-                            ),
+                            ],
                           ),
-                        ],
-                      );
-                    }).toList(),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                  _buildStatusChip(emp.status),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              Divider(
+                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                height: 1,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Cargo / Función',
+                          style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B)),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          emp.position,
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Sueldo Pactado',
+                          style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B)),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Bs. ${emp.agreedSalary.toStringAsFixed(2)}',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF10B981),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Lugar de Trabajo',
+                          style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B)),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          emp.workplace,
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Área / Tipo',
+                          style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B)),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          emp.employeeType == 'ADMINISTRATIVO' ? 'Oficina' : 'Campo / Operativo',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: emp.employeeType == 'ADMINISTRATIVO'
+                                ? const Color(0xFF8B5CF6)
+                                : const Color(0xFF06B6D4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: emp.attachedDocumentsCount == 6
+                          ? const Color(0xFF10B981).withValues(alpha: 0.12)
+                          : const Color(0xFFF59E0B).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          emp.attachedDocumentsCount == 6 ? Icons.verified : Icons.attachment,
+                          size: 13,
+                          color: emp.attachedDocumentsCount == 6
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFFF59E0B),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${emp.attachedDocumentsCount}/6 docs',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: emp.attachedDocumentsCount == 6
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFFF59E0B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  FilledButton.tonalIcon(
+                    style: FilledButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    ),
+                    icon: const Icon(Icons.folder_open, size: 14),
+                    label: const Text('Expediente', style: TextStyle(fontSize: 11)),
+                    onPressed: () => _showEmployeeDetailsModal(emp),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyState(bool isDark) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(48),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
         ),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.search_off, size: 48, color: const Color(0xFF94A3B8)),
+          const SizedBox(height: 12),
+          Text(
+            'No se encontraron colaboradores',
+            style: GoogleFonts.inter(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : const Color(0xFF0F172A),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Intente cambiar los criterios de búsqueda o los filtros de tipo y estado.',
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: const Color(0xFF64748B),
+            ),
+          ),
+        ],
       ),
     );
   }
