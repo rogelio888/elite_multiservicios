@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/rrhh_audit_service.dart';
 import '../../data/rrhh_company_service.dart';
@@ -39,6 +40,10 @@ class EmployeeItem {
   final bool hasPhoto3x4; // FOTO 3X4
   final bool hasSusInsurance; // SEGURO DE SUS
 
+  // Credenciales institucionales para acceso a APK móvil de Asistencia
+  final String? corporateEmail;
+  final String? temporaryPassword;
+
   const EmployeeItem({
     required this.id,
     required this.code,
@@ -67,6 +72,8 @@ class EmployeeItem {
     required this.hasFelccRecord,
     required this.hasPhoto3x4,
     required this.hasSusInsurance,
+    this.corporateEmail,
+    this.temporaryPassword,
   });
 
   int get attachedDocumentsCount {
@@ -78,6 +85,32 @@ class EmployeeItem {
     if (hasPhoto3x4) count++;
     if (hasSusInsurance) count++;
     return count;
+  }
+
+  /// Correo corporativo efectivo para inicio de sesión en APK de Asistencia
+  String get effectiveCorporateEmail {
+    if (corporateEmail != null && corporateEmail!.trim().isNotEmpty) {
+      return corporateEmail!.trim();
+    }
+    final parts = fullName.trim().toLowerCase().split(RegExp(r'\s+'));
+    if (parts.length >= 2) {
+      final cleanFirst = parts[0].replaceAll(RegExp(r'[^a-z0-9]'), '');
+      final cleanLast = parts[1].replaceAll(RegExp(r'[^a-z0-9]'), '');
+      return '$cleanFirst.$cleanLast@elitemultiservicios.com';
+    } else if (parts.isNotEmpty) {
+      final clean = parts[0].replaceAll(RegExp(r'[^a-z0-9]'), '');
+      return '$clean@elitemultiservicios.com';
+    }
+    return '${code.toLowerCase()}@elitemultiservicios.com';
+  }
+
+  /// Contraseña temporal efectiva para primer acceso a APK de Asistencia
+  String get effectiveTemporaryPassword {
+    if (temporaryPassword != null && temporaryPassword!.trim().isNotEmpty) {
+      return temporaryPassword!.trim();
+    }
+    final cleanCode = code.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+    return 'Elite.$cleanCode.2026!';
   }
 }
 
@@ -990,9 +1023,111 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                     ],
                   ),
 
+                  const SizedBox(height: 16),
+                  _buildSectionHeader('4. ACCESO A APK DE ASISTENCIA (MARCAJE MÓVIL)'),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF161F30)
+                          : const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFCBD5E1),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.alternate_email,
+                              size: 16,
+                              color: Color(0xFF2563EB),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Correo: ${emp.effectiveCorporateEmail}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.copy, size: 14),
+                              tooltip: 'Copiar correo',
+                              onPressed: () {
+                                Clipboard.setData(
+                                  ClipboardData(
+                                    text: emp.effectiveCorporateEmail,
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Correo corporativo copiado al portapapeles.',
+                                    ),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.key_outlined,
+                              size: 16,
+                              color: Color(0xFF10B981),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Contraseña: ${emp.effectiveTemporaryPassword}',
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF10B981),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.copy, size: 14),
+                              tooltip: 'Copiar contraseña',
+                              onPressed: () {
+                                Clipboard.setData(
+                                  ClipboardData(
+                                    text: emp.effectiveTemporaryPassword,
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Contraseña temporal copiada al portapapeles.',
+                                    ),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
                   if (emp.observations.isNotEmpty) ...[
                     const SizedBox(height: 16),
-                    _buildSectionHeader('4. OBSERVACIONES'),
+                    _buildSectionHeader('5. OBSERVACIONES'),
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
@@ -1018,11 +1153,462 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
             ),
           ),
           actions: [
+            OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              ),
+              icon: const Icon(Icons.badge_outlined, size: 15),
+              label: const Text('Credenciales APK'),
+              onPressed: () =>
+                  _showAttendanceCredentialsModal(context, emp, isDark),
+            ),
             TextButton(
               onPressed: () => Navigator.pop(ctx),
               child: const Text('Cerrar'),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void _showAttendanceCredentialsModal(
+    BuildContext context,
+    EmployeeItem emp,
+    bool isDark,
+  ) {
+    bool obscurePassword = false;
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) {
+        return StatefulBuilder(
+          builder: (stCtx, setModalState) {
+            return AlertDialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF2563EB), Color(0xFF06B6D4)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF2563EB).withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.smartphone_rounded,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Credenciales para APK de Asistencia',
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                          ),
+                        ),
+                        Text(
+                          'Alta oficial en nómina completada con éxito',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF10B981),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              content: SizedBox(
+                width: 520,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Resumen de Colaborador
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFE2E8F0),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: const Color(
+                              0xFF2563EB,
+                            ).withValues(alpha: 0.15),
+                            child: Text(
+                              emp.fullName.isNotEmpty
+                                  ? emp.fullName.substring(0, 1)
+                                  : '?',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF2563EB),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  emp.fullName,
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13,
+                                    color: isDark
+                                        ? Colors.white
+                                        : const Color(0xFF0F172A),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${emp.code} • ${emp.position} (${emp.workplace})',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    Text(
+                      'ACCESOS GENERADOS PARA EL MARCAJE MÓVIL',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Tarjeta de credenciales (correo + pass)
+                    Container(
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF161F30)
+                            : const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFCBD5E1),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          // Correo institucional
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      0xFF2563EB,
+                                    ).withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    Icons.alternate_email,
+                                    size: 18,
+                                    color: Color(0xFF2563EB),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Correo de Empresa (Usuario)',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w600,
+                                          color: const Color(0xFF64748B),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      SelectableText(
+                                        emp.effectiveCorporateEmail,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                          color: isDark
+                                              ? Colors.white
+                                              : const Color(0xFF0F172A),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.copy, size: 18),
+                                  tooltip: 'Copiar correo',
+                                  onPressed: () {
+                                    Clipboard.setData(
+                                      ClipboardData(
+                                        text: emp.effectiveCorporateEmail,
+                                      ),
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Correo de empresa copiado al portapapeles.',
+                                        ),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFE2E8F0),
+                          ),
+
+                          // Contraseña temporal
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      0xFF10B981,
+                                    ).withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    Icons.key_outlined,
+                                    size: 18,
+                                    color: Color(0xFF10B981),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Contraseña Temporal de Acceso',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w600,
+                                          color: const Color(0xFF64748B),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      SelectableText(
+                                        obscurePassword
+                                            ? '••••••••••••••••'
+                                            : emp.effectiveTemporaryPassword,
+                                        style: GoogleFonts.jetBrainsMono(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                          color: const Color(0xFF10B981),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(
+                                    obscurePassword
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                    size: 18,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                  tooltip: obscurePassword
+                                      ? 'Mostrar'
+                                      : 'Ocultar',
+                                  onPressed: () {
+                                    setModalState(
+                                      () => obscurePassword = !obscurePassword,
+                                    );
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.copy, size: 18),
+                                  tooltip: 'Copiar contraseña temporal',
+                                  onPressed: () {
+                                    Clipboard.setData(
+                                      ClipboardData(
+                                        text: emp.effectiveTemporaryPassword,
+                                      ),
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Contraseña temporal copiada al portapapeles.',
+                                        ),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    // Aviso explicativo de la APK de Asistencia
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0284C7).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: const Color(0xFF0284C7).withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.info_outline,
+                            color: Color(0xFF0284C7),
+                            size: 18,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Estas credenciales permiten al colaborador iniciar sesión en la APK Móvil de Asistencia de Elite Multiservicios para el registro biométrico y de turnos. Se le solicitará cambiar la contraseña en su primer inicio de sesión.',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                height: 1.4,
+                                color: isDark
+                                    ? const Color(0xFFBAE6FD)
+                                    : const Color(0xFF0369A1),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  icon: const Icon(Icons.copy_all, size: 16),
+                  label: const Text('Copiar Todo para Envío'),
+                  onPressed: () {
+                    final summary =
+                        '*ELITE MULTISERVICIOS - ACCESO A APK DE ASISTENCIA*\n'
+                        'Colaborador: ${emp.fullName}\n'
+                        'Código: ${emp.code}\n'
+                        'Sede: ${emp.workplace}\n'
+                        '-----------------------------------\n'
+                        'Usuario / Correo: ${emp.effectiveCorporateEmail}\n'
+                        'Contraseña Temporal: ${emp.effectiveTemporaryPassword}\n'
+                        '-----------------------------------\n'
+                        'Ingresa con estos accesos a la APK de Asistencia. Deberás actualizar tu contraseña al ingresar.';
+                    Clipboard.setData(ClipboardData(text: summary));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Accesos completos copiados en formato mensaje.',
+                        ),
+                        duration: Duration(seconds: 3),
+                        backgroundColor: Color(0xFF10B981),
+                      ),
+                    );
+                  },
+                ),
+                FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF2563EB),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 10,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text('Entendido / Finalizar'),
+                  onPressed: () => Navigator.pop(dialogCtx),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -1500,7 +2086,65 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
 
                         const SizedBox(height: 20),
                         _buildSectionHeader(
-                          '4. DOCUMENTOS ADJUNTOS (CHECKLIST DE RECEPCIÓN)',
+                          '4. ACCESO A APK DE ASISTENCIA (CORREO CORPORATIVO & TEMPORAL)',
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2563EB).withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: const Color(0xFF2563EB).withValues(alpha: 0.25),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.smartphone_rounded,
+                                  color: Color(0xFF2563EB),
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Alta en Nómina con Generación de Accesos',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF0F172A),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'Al guardar el expediente, se generará automáticamente el correo institucional (@elitemultiservicios.com) y contraseña temporal para el marcaje en la APK de Asistencia.',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 11,
+                                        color: const Color(0xFF64748B),
+                                        height: 1.35,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+                        _buildSectionHeader(
+                          '5. DOCUMENTOS ADJUNTOS (CHECKLIST DE RECEPCIÓN)',
                         ),
                         Container(
                           padding: const EdgeInsets.all(12),
@@ -1569,7 +2213,7 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                         ),
 
                         const SizedBox(height: 20),
-                        _buildSectionHeader('5. OBSERVACIONES'),
+                        _buildSectionHeader('6. OBSERVACIONES'),
                         TextFormField(
                           controller: obsCtrl,
                           maxLines: 2,
@@ -1603,60 +2247,86 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                   label: const Text('Guardar Expediente'),
                   onPressed: () {
                     if (formKey.currentState?.validate() ?? false) {
+                      final empCode = codeCtrl.text.trim().toUpperCase();
+                      final empName = nameCtrl.text.trim();
+
+                      // Generar correo de empresa y contraseña temporal para la APK
+                      final parts = empName.toLowerCase().split(RegExp(r'\s+'));
+                      String genEmail;
+                      if (parts.length >= 2) {
+                        final cleanFirst =
+                            parts[0].replaceAll(RegExp(r'[^a-z0-9]'), '');
+                        final cleanLast =
+                            parts[1].replaceAll(RegExp(r'[^a-z0-9]'), '');
+                        genEmail =
+                            '$cleanFirst.$cleanLast@elitemultiservicios.com';
+                      } else if (parts.isNotEmpty) {
+                        final clean =
+                            parts[0].replaceAll(RegExp(r'[^a-z0-9]'), '');
+                        genEmail = '$clean@elitemultiservicios.com';
+                      } else {
+                        genEmail =
+                            '${empCode.toLowerCase()}@elitemultiservicios.com';
+                      }
+                      final cleanCode =
+                          empCode.replaceAll(RegExp(r'[^A-Z0-9]'), '');
+                      final genPassword = 'Elite.$cleanCode.2026!';
+
+                      final newEmployee = EmployeeItem(
+                        id: 'emp-${DateTime.now().millisecondsSinceEpoch}',
+                        code: empCode,
+                        fullName: empName,
+                        birthDate: birthDate,
+                        birthPlace: birthPlaceCtrl.text.trim(),
+                        identityCard: ciCtrl.text.trim(),
+                        phone: phoneCtrl.text.trim(),
+                        address: addressCtrl.text.trim(),
+                        occupation: occupationCtrl.text.trim(),
+                        personalReference: refNameCtrl.text.trim(),
+                        referencePhone: refPhoneCtrl.text.trim(),
+                        workplace: selectedWorkplace,
+                        employeeType: selectedType,
+                        position: positionCtrl.text.trim().isEmpty
+                            ? 'Personal Operativo'
+                            : positionCtrl.text.trim(),
+                        department: selectedDept,
+                        realStartDate: realStartDate,
+                        fiscalStartDate: fiscalStartDate,
+                        agreedSalary:
+                            double.tryParse(salaryCtrl.text.trim()) ?? 0.0,
+                        contractType: selectedContract,
+                        observations: obsCtrl.text.trim(),
+                        status: 'ACTIVO',
+                        hasCiCopy: hasCiCopy,
+                        hasUtilityBill: hasUtilityBill,
+                        hasHomeSketch: hasHomeSketch,
+                        hasFelccRecord: hasFelccRecord,
+                        hasPhoto3x4: hasPhoto3x4,
+                        hasSusInsurance: hasSusInsurance,
+                        corporateEmail: genEmail,
+                        temporaryPassword: genPassword,
+                      );
+
                       setState(() {
-                        _employees.insert(
-                          0,
-                          EmployeeItem(
-                            id: 'emp-${DateTime.now().millisecondsSinceEpoch}',
-                            code: codeCtrl.text.trim(),
-                            fullName: nameCtrl.text.trim(),
-                            birthDate: birthDate,
-                            birthPlace: birthPlaceCtrl.text.trim(),
-                            identityCard: ciCtrl.text.trim(),
-                            phone: phoneCtrl.text.trim(),
-                            address: addressCtrl.text.trim(),
-                            occupation: occupationCtrl.text.trim(),
-                            personalReference: refNameCtrl.text.trim(),
-                            referencePhone: refPhoneCtrl.text.trim(),
-                            workplace: selectedWorkplace,
-                            employeeType: selectedType,
-                            position: positionCtrl.text.trim().isEmpty
-                                ? 'Personal Operativo'
-                                : positionCtrl.text.trim(),
-                            department: selectedDept,
-                            realStartDate: realStartDate,
-                            fiscalStartDate: fiscalStartDate,
-                            agreedSalary:
-                                double.tryParse(salaryCtrl.text.trim()) ?? 0.0,
-                            contractType: selectedContract,
-                            observations: obsCtrl.text.trim(),
-                            status: 'ACTIVO',
-                            hasCiCopy: hasCiCopy,
-                            hasUtilityBill: hasUtilityBill,
-                            hasHomeSketch: hasHomeSketch,
-                            hasFelccRecord: hasFelccRecord,
-                            hasPhoto3x4: hasPhoto3x4,
-                            hasSusInsurance: hasSusInsurance,
-                          ),
-                        );
+                        _employees.insert(0, newEmployee);
                         RrhhAuditService.instance.logMovement(
                           category: 'ALTA_PERSONAL',
-                          action: 'Registro de Nuevo Colaborador',
-                          employeeCode: codeCtrl.text.trim().toUpperCase(),
-                          employeeName: nameCtrl.text.trim(),
+                          action:
+                              'Registro Oficial en Nómina & Credenciales APK',
+                          employeeCode: empCode,
+                          employeeName: empName,
                           details:
-                              'Asignado a la empresa/sede "$selectedWorkplace" en cargo de ${positionCtrl.text.trim().isEmpty ? "Personal Operativo" : positionCtrl.text.trim()} con sueldo pactado Bs. ${salaryCtrl.text.trim()}.',
+                              'Alta oficial en nómina en "$selectedWorkplace". Correo institucional: $genEmail. Habilitado para APK de Asistencia.',
                           severity: 'INFO',
                         );
                       });
                       Navigator.pop(ctx);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Colaborador "${nameCtrl.text.trim()}" registrado en el expediente digital.',
-                          ),
-                          backgroundColor: const Color(0xFF10B981),
-                        ),
+
+                      // Abrir modal con las credenciales corporativas para la APK de Asistencia
+                      _showAttendanceCredentialsModal(
+                        context,
+                        newEmployee,
+                        isDark,
                       );
                     }
                   },
