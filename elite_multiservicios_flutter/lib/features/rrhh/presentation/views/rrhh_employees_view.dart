@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../data/rrhh_audit_service.dart';
+import '../../data/rrhh_company_service.dart';
 
 /// Modelo en memoria para Colaborador / Ficha Completa Digital
 /// Mapeado 1:1 con la ficha física de "DATOS DEL PERSONAL" de Elite Multiservicios.
@@ -87,10 +89,27 @@ class RrhhEmployeesView extends StatefulWidget {
 }
 
 class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
+  final RrhhCompanyService _companyService = RrhhCompanyService.instance;
   String _searchQuery = '';
   String _typeFilter = 'TODOS'; // 'TODOS', 'ADMINISTRATIVO', 'OPERATIVO'
   String _statusFilter = 'TODOS';
   String _workplaceFilter = 'TODOS';
+
+  @override
+  void initState() {
+    super.initState();
+    _companyService.addListener(_onCompanyUpdated);
+  }
+
+  @override
+  void dispose() {
+    _companyService.removeListener(_onCompanyUpdated);
+    super.dispose();
+  }
+
+  void _onCompanyUpdated() {
+    if (mounted) setState(() {});
+  }
 
   // Lista inicial de demostración con datos reales de la estructura de Elite Multiservicios
   final List<EmployeeItem> _employees = [
@@ -710,54 +729,46 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: DropdownButtonFormField<String>(
-                                initialValue: selectedWorkplace,
-                                decoration: const InputDecoration(
-                                  labelText: 'Lugar de Trabajo / Sede',
-                                ),
-                                items: const [
-                                  DropdownMenuItem(
-                                    value: 'Kolping - Central',
-                                    child: Text('Kolping - Central'),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: DropdownButtonFormField<String>(
+                                      key: ValueKey(selectedWorkplace),
+                                      initialValue: _companyService.companyNames.contains(selectedWorkplace)
+                                          ? selectedWorkplace
+                                          : (_companyService.companyNames.isNotEmpty
+                                              ? _companyService.companyNames.first
+                                              : null),
+                                      decoration: const InputDecoration(
+                                        labelText: 'Lugar de Trabajo / Empresa *',
+                                      ),
+                                      items: _companyService.companyNames.map((name) {
+                                        return DropdownMenuItem(
+                                          value: name,
+                                          child: Text(name),
+                                        );
+                                      }).toList(),
+                                      onChanged: (v) {
+                                        if (v != null) {
+                                          setModalState(() => selectedWorkplace = v);
+                                        }
+                                      },
+                                    ),
                                   ),
-                                  DropdownMenuItem(
-                                    value: 'Kolping - 15 de Diciembre',
-                                    child: Text('Kolping - 15 Dic'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Kolping - Los Chacos',
-                                    child: Text('Kolping - Los Chacos'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Ventura Mall',
-                                    child: Text('Ventura Mall'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Kinesis',
-                                    child: Text('Kinesis'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Segomeit',
-                                    child: Text('Segomeit'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Acegal',
-                                    child: Text('Acegal'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Alianza Bravsa',
-                                    child: Text('Alianza Bravsa'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'Oficina Central Elite',
-                                    child: Text('Oficina Central Elite'),
+                                  const SizedBox(width: 8),
+                                  IconButton.filledTonal(
+                                    icon: const Icon(Icons.domain_add_outlined, size: 20),
+                                    tooltip: 'Ingresar Nueva Empresa / Sede',
+                                    onPressed: () async {
+                                      await _showCreateCompanyModal();
+                                      setModalState(() {
+                                        if (_companyService.companyNames.isNotEmpty) {
+                                          selectedWorkplace = _companyService.companyNames.first;
+                                        }
+                                      });
+                                    },
                                   ),
                                 ],
-                                onChanged: (v) {
-                                  if (v != null) {
-                                    setModalState(() => selectedWorkplace = v);
-                                  }
-                                },
                               ),
                             ),
                           ],
@@ -1007,12 +1018,247 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                             hasSusInsurance: hasSusInsurance,
                           ),
                         );
+                        RrhhAuditService.instance.logMovement(
+                          category: 'ALTA_PERSONAL',
+                          action: 'Registro de Nuevo Colaborador',
+                          employeeCode: codeCtrl.text.trim().toUpperCase(),
+                          employeeName: nameCtrl.text.trim(),
+                          details:
+                              'Asignado a la empresa/sede "$selectedWorkplace" en cargo de $selectedPosition con sueldo pactado Bs. ${salaryCtrl.text.trim()}.',
+                          severity: 'INFO',
+                        );
                       });
                       Navigator.pop(ctx);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
                             'Colaborador "${nameCtrl.text.trim()}" registrado en el expediente digital.',
+                          ),
+                          backgroundColor: const Color(0xFF10B981),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _showCreateCompanyModal() async {
+    final formKey = GlobalKey<FormState>();
+    final nameCtrl = TextEditingController();
+    final addressCtrl = TextEditingController();
+    final contactNameCtrl = TextEditingController();
+    final contactPhoneCtrl = TextEditingController();
+    final notesCtrl = TextEditingController();
+    String serviceCategory = 'Limpieza';
+
+    await showDialog(
+      context: context,
+      builder: (ctx) {
+        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+        return StatefulBuilder(
+          builder: (dialogCtx, setDialogState) {
+            return AlertDialog(
+              backgroundColor:
+                  isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6366F1).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.domain_add_outlined,
+                      color: Color(0xFF6366F1),
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Ingresar Nueva Empresa / Sede',
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          'Empresa cliente asignada a servicios de Elite Multiservicios',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              content: SizedBox(
+                width: 520,
+                child: Form(
+                  key: formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextFormField(
+                          controller: nameCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Nombre de la Empresa o Sede Cliente *',
+                            hintText:
+                                'Ej. Banco FIE - Sucursal Norte / Condominio La Riviera',
+                            prefixIcon: Icon(Icons.business_outlined, size: 18),
+                          ),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Campo requerido'
+                              : null,
+                        ),
+                        const SizedBox(height: 14),
+                        DropdownButtonFormField<String>(
+                          initialValue: serviceCategory,
+                          decoration: const InputDecoration(
+                            labelText: 'Tipo de Servicio Prestado por Elite *',
+                            prefixIcon: Icon(Icons.category_outlined, size: 18),
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'Limpieza',
+                              child: Text('🧹 Limpieza y Desinfección Operativa'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Jardinería',
+                              child: Text('🌿 Jardinería y Áreas Verdes'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Sistemas',
+                              child: Text('💻 Sistemas, TI y Telecomunicaciones'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Mantenimiento',
+                              child: Text('🔧 Mantenimiento Técnico / Bombas'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Seguridad',
+                              child: Text('🛡️ Seguridad y Vigilancia Operativa'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Multiservicios',
+                              child: Text('🏢 Multiservicios Integral'),
+                            ),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) {
+                              setDialogState(() => serviceCategory = v);
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          controller: addressCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Dirección o Ubicación de la Sede *',
+                            hintText: 'Ej. 4to Anillo y Av. San Martín, Equipetrol',
+                            prefixIcon: Icon(Icons.place_outlined, size: 18),
+                          ),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Campo requerido'
+                              : null,
+                        ),
+                        const SizedBox(height: 14),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: contactNameCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Persona de Contacto / Supervisor',
+                                  hintText: 'Ej. Ing. Carlos Suárez',
+                                  prefixIcon:
+                                      Icon(Icons.person_outline, size: 18),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: contactPhoneCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Teléfono de Contacto',
+                                  hintText: 'Ej. +591 76543210',
+                                  prefixIcon:
+                                      Icon(Icons.phone_outlined, size: 18),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          controller: notesCtrl,
+                          maxLines: 2,
+                          decoration: const InputDecoration(
+                            labelText: 'Observaciones / Requerimientos de Turno',
+                            hintText:
+                                'Ej. Turnos 24/7, cuadrilla de operarios con EPP especializado.',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Cancelar'),
+                ),
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF6366F1),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                  ),
+                  icon: const Icon(Icons.check, size: 16),
+                  label: const Text('Guardar Empresa'),
+                  onPressed: () {
+                    if (formKey.currentState?.validate() ?? false) {
+                      final newName = nameCtrl.text.trim();
+                      _companyService.addCompany(
+                        name: newName,
+                        serviceCategory: serviceCategory,
+                        address: addressCtrl.text.trim().isEmpty
+                            ? 'Santa Cruz de la Sierra'
+                            : addressCtrl.text.trim(),
+                        contactPerson: contactNameCtrl.text.trim().isEmpty
+                            ? 'No especificado'
+                            : contactNameCtrl.text.trim(),
+                        contactPhone: contactPhoneCtrl.text.trim().isEmpty
+                            ? 'S/N'
+                            : contactPhoneCtrl.text.trim(),
+                        notes: notesCtrl.text.trim(),
+                      );
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Empresa "$newName" registrada y habilitada para asignación de personal.',
                           ),
                           backgroundColor: const Color(0xFF10B981),
                         ),
@@ -1102,27 +1348,61 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                     ),
                   ],
                 ),
-                FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: isDark
+                            ? const Color(0xFF818CF8)
+                            : const Color(0xFF4F46E5),
+                        side: BorderSide(
+                          color: isDark
+                              ? const Color(0xFF6366F1)
+                              : const Color(0xFF4F46E5),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                      ),
+                      icon: const Icon(Icons.domain_add_outlined, size: 18),
+                      label: Text(
+                        'Ingresar Nueva Empresa',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ),
+                      onPressed: _showCreateCompanyModal,
                     ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+                    const SizedBox(width: 12),
+                    FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF2563EB),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                      ),
+                      icon: const Icon(Icons.person_add_alt_1, size: 18),
+                      label: Text(
+                        'Nuevo Colaborador',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ),
+                      onPressed: _showCreateEmployeeModal,
                     ),
-                  ),
-                  icon: const Icon(Icons.person_add_alt_1, size: 18),
-                  label: Text(
-                    'Nuevo Colaborador',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                    ),
-                  ),
-                  onPressed: _showCreateEmployeeModal,
+                  ],
                 ),
               ],
             ),
@@ -1224,36 +1504,39 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                         },
                       ),
                       const SizedBox(width: 12),
-                      DropdownButton<String>(
-                        value: _workplaceFilter,
-                        underline: const SizedBox(),
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'TODOS',
-                            child: Text('Lugar: Todos'),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          DropdownButton<String>(
+                            value: _companyService.companyNames.contains(_workplaceFilter)
+                                ? _workplaceFilter
+                                : 'TODOS',
+                            underline: const SizedBox(),
+                            items: [
+                              const DropdownMenuItem(
+                                value: 'TODOS',
+                                child: Text('Lugar: Todos'),
+                              ),
+                              ..._companyService.companyNames.map((name) {
+                                return DropdownMenuItem(
+                                  value: name,
+                                  child: Text(name),
+                                );
+                              }),
+                            ],
+                            onChanged: (val) {
+                              if (val != null) {
+                                setState(() => _workplaceFilter = val);
+                              }
+                            },
                           ),
-                          DropdownMenuItem(
-                            value: 'Kolping - Central',
-                            child: Text('Kolping Central'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'Ventura Mall',
-                            child: Text('Ventura Mall'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'Kinesis',
-                            child: Text('Kinesis'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'Oficina Central Elite',
-                            child: Text('Oficina Central'),
+                          IconButton(
+                            icon: const Icon(Icons.add_business_outlined, size: 18),
+                            tooltip: 'Ingresar Nueva Empresa o Sede',
+                            color: const Color(0xFF6366F1),
+                            onPressed: _showCreateCompanyModal,
                           ),
                         ],
-                        onChanged: (val) {
-                          if (val != null) {
-                            setState(() => _workplaceFilter = val);
-                          }
-                        },
                       ),
                       const SizedBox(width: 12),
                       DropdownButton<String>(
