@@ -185,5 +185,66 @@ void main() {
       expect(promoCustomer.monthlyBilling, equals(1000.0));
       expect(promoCustomer.totalProjectBilling, equals(15000.0));
     });
+
+    test(
+      'supports full stage gates promotion: inspection branch, legal taxId and multi-modal contract',
+      () {
+        const branchFromGate = CustomerBranch(
+          id: 'BR-GATE-01',
+          name: 'Sede Operativa Norte / Equipetrol',
+          address: 'Av. San Martín #450, Piso 3',
+          localContact: 'Lic. Marcelo Justiniano',
+          localPhone: '77312890',
+          isHeadquarters: true,
+          notes: 'EPP obligatorio, ingreso por recepción principal',
+        );
+
+        const contractFromGate = CustomerContract(
+          id: 'CTR-GATE-01',
+          title: 'Vigilancia Física Perimetral 24/7',
+          contractType: 'Recurrente Mensual',
+          serviceCategory: 'Seguridad',
+          totalAmount: 14500.0,
+          recurringMonthlyAmount: 14500.0,
+          oneTimeAmount: 0.0,
+          paymentTerms: 'Facturación mensual a 30 días',
+          executionTime: 'Contrato 12 meses',
+          advancePercentage: 0,
+          status: 'Vigente',
+          startDate: '01 Oct 2026',
+        );
+
+        final customerFromWonGate = CustomerItem(
+          id: 'CLI-GATE-WON',
+          legalName: 'Corporación Inmobiliaria del Sur S.A.',
+          tradeName: 'Condominio Las Palmas Real',
+          taxId: '1029384756',
+          segment: 'Residencial B2C',
+          status: 'Activo',
+          activeServices: const ['Seguridad'],
+          contactPerson: 'Lic. Marcelo Justiniano',
+          phone: '77312890',
+          email: 'facturacion@laspalmas.bo',
+          opportunityId: 'OPP-101-WON',
+          startDate: '01 Oct 2026',
+          branches: const [branchFromGate],
+          contracts: const [contractFromGate],
+          notes: 'Contrato cerrado con compuertas progresivas completadas.',
+        );
+
+        service.addCustomer(customerFromWonGate);
+
+        expect(service.isOpportunityPromoted('OPP-101-WON'), isTrue);
+        final stored = service.getCustomerByOpportunityId('OPP-101-WON');
+        expect(stored, isNotNull);
+        expect(stored!.legalName, equals('Corporación Inmobiliaria del Sur S.A.'));
+        expect(stored.taxId, equals('1029384756'));
+        expect(stored.branches.length, equals(1));
+        expect(stored.branches.first.isHeadquarters, isTrue);
+        expect(stored.branches.first.address, contains('Av. San Martín'));
+        expect(stored.contracts.first.contractType, equals('Recurrente Mensual'));
+        expect(stored.monthlyBilling, equals(14500.0));
+      },
+    );
   });
 }

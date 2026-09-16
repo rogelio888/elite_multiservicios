@@ -59,13 +59,37 @@ class OpportunityItem {
   final String closingDate;
   final String notes;
   final String
-  contractType; // 'Proyecto Único', 'Recurrente Mensual', 'Híbrido'
+  contractType; // 'Proyecto Único', 'Recurrente Mensual', 'Servicio por Evento', 'Híbrido'
   final String
   executionTime; // Ej: '7 días hábiles', 'Contrato 12 meses', '15 días + Abono'
   final String
   paymentTerms; // Ej: '50% Anticipo / 50% Recepción Conforme', 'Facturación mensual a 30 días'
   final int advancePercentage; // 0, 30, 50, 70, 100
   final List<QuoteItem> quoteItems;
+
+  // Compuerta 1: Perfil del Decisor & Segmento
+  final String contactRole;
+  final String businessSegment;
+
+  // Compuerta 2: Sede Operativa de Inspección (Visita Técnica)
+  final String siteName;
+  final String siteAddress;
+  final String siteCity;
+  final String siteContactName;
+  final String siteContactPhone;
+  final String siteAccessRequirements;
+  final bool isSiteHeadquarters;
+
+  // Compuerta 3: Datos Fiscales & Minuta Legal (Negociación)
+  final String legalBusinessName;
+  final String taxId;
+  final String legalRepresentative;
+  final String billingEmail;
+
+  // Compuerta 4: Cierre Formal & Traspaso (Ganada)
+  final String serviceStartDate;
+  final double advancePaid;
+  final String wonNotes;
 
   const OpportunityItem({
     required this.id,
@@ -85,6 +109,22 @@ class OpportunityItem {
     this.paymentTerms = 'Facturación mensual a 30 días',
     this.advancePercentage = 0,
     this.quoteItems = const [],
+    this.contactRole = 'Administrador',
+    this.businessSegment = 'Corporativo B2B',
+    this.siteName = '',
+    this.siteAddress = '',
+    this.siteCity = 'Santa Cruz',
+    this.siteContactName = '',
+    this.siteContactPhone = '',
+    this.siteAccessRequirements = '',
+    this.isSiteHeadquarters = true,
+    this.legalBusinessName = '',
+    this.taxId = '',
+    this.legalRepresentative = '',
+    this.billingEmail = '',
+    this.serviceStartDate = '',
+    this.advancePaid = 0.0,
+    this.wonNotes = '',
   });
 
   OpportunityItem copyWith({
@@ -97,6 +137,22 @@ class OpportunityItem {
     String? paymentTerms,
     int? advancePercentage,
     List<QuoteItem>? quoteItems,
+    String? contactRole,
+    String? businessSegment,
+    String? siteName,
+    String? siteAddress,
+    String? siteCity,
+    String? siteContactName,
+    String? siteContactPhone,
+    String? siteAccessRequirements,
+    bool? isSiteHeadquarters,
+    String? legalBusinessName,
+    String? taxId,
+    String? legalRepresentative,
+    String? billingEmail,
+    String? serviceStartDate,
+    double? advancePaid,
+    String? wonNotes,
   }) {
     final newQuoteItems = quoteItems ?? this.quoteItems;
     final newAmount =
@@ -123,6 +179,23 @@ class OpportunityItem {
       paymentTerms: paymentTerms ?? this.paymentTerms,
       advancePercentage: advancePercentage ?? this.advancePercentage,
       quoteItems: newQuoteItems,
+      contactRole: contactRole ?? this.contactRole,
+      businessSegment: businessSegment ?? this.businessSegment,
+      siteName: siteName ?? this.siteName,
+      siteAddress: siteAddress ?? this.siteAddress,
+      siteCity: siteCity ?? this.siteCity,
+      siteContactName: siteContactName ?? this.siteContactName,
+      siteContactPhone: siteContactPhone ?? this.siteContactPhone,
+      siteAccessRequirements:
+          siteAccessRequirements ?? this.siteAccessRequirements,
+      isSiteHeadquarters: isSiteHeadquarters ?? this.isSiteHeadquarters,
+      legalBusinessName: legalBusinessName ?? this.legalBusinessName,
+      taxId: taxId ?? this.taxId,
+      legalRepresentative: legalRepresentative ?? this.legalRepresentative,
+      billingEmail: billingEmail ?? this.billingEmail,
+      serviceStartDate: serviceStartDate ?? this.serviceStartDate,
+      advancePaid: advancePaid ?? this.advancePaid,
+      wonNotes: wonNotes ?? this.wonNotes,
     );
   }
 }
@@ -522,10 +595,36 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
     );
   }
 
+  void _requestMoveDeal(OpportunityItem deal, String targetStage) {
+    if (deal.stage == targetStage) return;
+
+    if (targetStage == 'Visita Técnica') {
+      if (deal.siteAddress.trim().isEmpty) {
+        _showStageGateInspectionDialog(deal);
+        return;
+      }
+    } else if (targetStage == 'Propuesta') {
+      if (deal.quoteItems.isEmpty) {
+        _showQuotationBuilderDialog(deal, targetStage: 'Propuesta');
+        return;
+      }
+    } else if (targetStage == 'Negociación') {
+      if (deal.taxId.trim().isEmpty || deal.legalBusinessName.trim().isEmpty) {
+        _showStageGateLegalDialog(deal);
+        return;
+      }
+    } else if (targetStage == 'Ganada') {
+      _showStageGateWonDialog(deal);
+      return;
+    }
+
+    _moveDeal(deal, targetStage);
+  }
+
   void _advanceDeal(OpportunityItem deal) {
     final curIdx = _stages.indexOf(deal.stage);
     if (curIdx != -1 && curIdx < _stages.length - 1) {
-      _moveDeal(deal, _stages[curIdx + 1]);
+      _requestMoveDeal(deal, _stages[curIdx + 1]);
     }
   }
 
@@ -1813,8 +1912,8 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                   ? const Color(0xFF1E293B)
                                   : const Color(0xFFF1F5F9)),
                         onPressed: () {
-                          _moveDeal(deal, st);
                           Navigator.pop(ctx);
+                          _requestMoveDeal(deal, st);
                         },
                       );
                     }).toList(),
@@ -1832,6 +1931,905 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  // ==========================================
+  // COMPUERTAS DE ETAPA (STAGE GATES DIALOGS)
+  // ==========================================
+
+  void _showStageGateInspectionDialog(OpportunityItem deal) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final formKey = GlobalKey<FormState>();
+    final siteNameCtrl = TextEditingController(
+      text: deal.siteName.isNotEmpty
+          ? deal.siteName
+          : 'Sede Principal / ${deal.clientName}',
+    );
+    final siteAddressCtrl = TextEditingController(text: deal.siteAddress);
+    final siteContactCtrl = TextEditingController(
+      text: deal.siteContactName.isNotEmpty
+          ? deal.siteContactName
+          : deal.contactPerson,
+    );
+    final sitePhoneCtrl = TextEditingController(
+      text: deal.siteContactPhone.isNotEmpty
+          ? deal.siteContactPhone
+          : deal.phone,
+    );
+    final siteAccessCtrl = TextEditingController(
+      text: deal.siteAccessRequirements,
+    );
+    String selectedCity = deal.siteCity.isNotEmpty
+        ? deal.siteCity
+        : 'Santa Cruz';
+    bool isHq = deal.isSiteHeadquarters;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dCtx) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return AlertDialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              titlePadding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF3B82F6).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.location_on_outlined,
+                      color: Color(0xFF3B82F6),
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Compuerta de Etapa: Visita Técnica',
+                              style: GoogleFonts.inter(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF3B82F6,
+                                ).withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'ETAPA 2/5',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF3B82F6),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          'Registra la sede operativa donde se realizará la inspección física.',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              content: SizedBox(
+                width: 520,
+                child: Form(
+                  key: formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: siteNameCtrl,
+                          style: GoogleFonts.inter(fontSize: 12.5),
+                          decoration: InputDecoration(
+                            labelText: 'Nombre de la Sede / Inmueble *',
+                            hintText: 'Ej: Torre Corporativa Titanium - Sede Central',
+                            prefixIcon: const Icon(Icons.business, size: 18),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          validator: (v) => v == null || v.trim().isEmpty
+                              ? 'Ingresa el nombre de la sede'
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: siteAddressCtrl,
+                          style: GoogleFonts.inter(fontSize: 12.5),
+                          decoration: InputDecoration(
+                            labelText: 'Dirección Exacta de Inspección *',
+                            hintText: 'Ej: Av. San Martín #450, Equipetrol Norte',
+                            prefixIcon: const Icon(Icons.place_outlined, size: 18),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          validator: (v) => v == null || v.trim().isEmpty
+                              ? 'La dirección de la sede es obligatoria para la visita técnica'
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                initialValue: selectedCity,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12.5,
+                                  color: isDark ? Colors.white : Colors.black,
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Ciudad',
+                                  isDense: true,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 'Santa Cruz',
+                                    child: Text('Santa Cruz'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'La Paz',
+                                    child: Text('La Paz'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Cochabamba',
+                                    child: Text('Cochabamba'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Tarija',
+                                    child: Text('Tarija'),
+                                  ),
+                                ],
+                                onChanged: (val) {
+                                  if (val != null) {
+                                    setDialogState(() => selectedCity = val);
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: sitePhoneCtrl,
+                                style: GoogleFonts.inter(fontSize: 12.5),
+                                decoration: InputDecoration(
+                                  labelText: 'Teléfono en Sitio',
+                                  isDense: true,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: siteContactCtrl,
+                          style: GoogleFonts.inter(fontSize: 12.5),
+                          decoration: InputDecoration(
+                            labelText: 'Persona que Recibe / Atiende la Visita',
+                            hintText: 'Ej: Lic. Marcelo Justiniano (Administrador)',
+                            prefixIcon: const Icon(Icons.person_outline, size: 18),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: siteAccessCtrl,
+                          maxLines: 2,
+                          style: GoogleFonts.inter(fontSize: 12),
+                          decoration: InputDecoration(
+                            labelText: 'Requisitos de Acceso & Restricciones',
+                            hintText: 'Ej: Presentar cédula de identidad en garita, portar casco y chaleco reflectivo.',
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          title: Text(
+                            '¿Esta sede es la Casa Matriz del cliente?',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Se configurará como sede principal cuando se promueva a Clientes 360°.',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: const Color(0xFF64748B),
+                            ),
+                          ),
+                          value: isHq,
+                          activeThumbColor: const Color(0xFF3B82F6),
+                          onChanged: (val) {
+                            setDialogState(() => isHq = val);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dCtx),
+                  child: Text(
+                    'Cancelar',
+                    style: GoogleFonts.inter(color: const Color(0xFF64748B)),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3B82F6),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                  ),
+                  onPressed: () {
+                    if (formKey.currentState?.validate() ?? false) {
+                      final updatedDeal = deal.copyWith(
+                        siteName: siteNameCtrl.text.trim(),
+                        siteAddress: siteAddressCtrl.text.trim(),
+                        siteCity: selectedCity,
+                        siteContactName: siteContactCtrl.text.trim(),
+                        siteContactPhone: sitePhoneCtrl.text.trim(),
+                        siteAccessRequirements: siteAccessCtrl.text.trim(),
+                        isSiteHeadquarters: isHq,
+                      );
+                      Navigator.pop(dCtx);
+                      _moveDeal(updatedDeal, 'Visita Técnica');
+                    }
+                  },
+                  icon: const Icon(Icons.check, size: 18),
+                  label: Text(
+                    'Guardar Sede & Avanzar a Visita',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showStageGateLegalDialog(OpportunityItem deal) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final formKey = GlobalKey<FormState>();
+    final legalNameCtrl = TextEditingController(
+      text: deal.legalBusinessName.isNotEmpty
+          ? deal.legalBusinessName
+          : '${deal.clientName} S.R.L.',
+    );
+    final taxIdCtrl = TextEditingController(
+      text: deal.taxId.isNotEmpty ? deal.taxId : '',
+    );
+    final repCtrl = TextEditingController(
+      text: deal.legalRepresentative.isNotEmpty
+          ? deal.legalRepresentative
+          : deal.contactPerson,
+    );
+    final billingEmailCtrl = TextEditingController(
+      text: deal.billingEmail.isNotEmpty
+          ? deal.billingEmail
+          : 'facturacion@${deal.clientName.toLowerCase().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}.bo',
+    );
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dCtx) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return AlertDialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              titlePadding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF8B5CF6).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.gavel_outlined,
+                      color: Color(0xFF8B5CF6),
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Compuerta: Datos Fiscales & Minuta',
+                              style: GoogleFonts.inter(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF8B5CF6,
+                                ).withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'ETAPA 4/5',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF8B5CF6),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          'Completa la información jurídica para negociar la minuta y contrato.',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              content: SizedBox(
+                width: 500,
+                child: Form(
+                  key: formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: legalNameCtrl,
+                          style: GoogleFonts.inter(fontSize: 12.5),
+                          decoration: InputDecoration(
+                            labelText: 'Razón Social Oficial (Facturación) *',
+                            hintText: 'Ej: Corporación Inmobiliaria del Sur S.A.',
+                            prefixIcon: const Icon(Icons.apartment, size: 18),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          validator: (v) => v == null || v.trim().isEmpty
+                              ? 'La razón social oficial es obligatoria'
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: taxIdCtrl,
+                          style: GoogleFonts.jetBrainsMono(fontSize: 12.5),
+                          decoration: InputDecoration(
+                            labelText: 'NIT / Identificación Tributaria *',
+                            hintText: 'Ej: 1029384756',
+                            prefixIcon: const Icon(Icons.badge_outlined, size: 18),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          validator: (v) => v == null || v.trim().isEmpty
+                              ? 'El NIT es obligatorio para emitir la minuta'
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: repCtrl,
+                          style: GoogleFonts.inter(fontSize: 12.5),
+                          decoration: InputDecoration(
+                            labelText: 'Representante Legal / Apoderado',
+                            hintText: 'Ej: Lic. Mariana Soto Mendoza (C.I. 4892102 SC)',
+                            prefixIcon: const Icon(Icons.how_to_reg_outlined, size: 18),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: billingEmailCtrl,
+                          style: GoogleFonts.inter(fontSize: 12.5),
+                          decoration: InputDecoration(
+                            labelText: 'Correo de Facturación Electrónica *',
+                            hintText: 'Ej: facturacion@titanium.bo',
+                            prefixIcon: const Icon(Icons.email_outlined, size: 18),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          validator: (v) => v == null || v.trim().isEmpty
+                              ? 'Ingresa el correo para envío de facturas'
+                              : null,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dCtx),
+                  child: Text(
+                    'Cancelar',
+                    style: GoogleFonts.inter(color: const Color(0xFF64748B)),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF8B5CF6),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                  ),
+                  onPressed: () {
+                    if (formKey.currentState?.validate() ?? false) {
+                      final updatedDeal = deal.copyWith(
+                        legalBusinessName: legalNameCtrl.text.trim(),
+                        taxId: taxIdCtrl.text.trim(),
+                        legalRepresentative: repCtrl.text.trim(),
+                        billingEmail: billingEmailCtrl.text.trim(),
+                      );
+                      Navigator.pop(dCtx);
+                      _moveDeal(updatedDeal, 'Negociación');
+                    }
+                  },
+                  icon: const Icon(Icons.check, size: 18),
+                  label: Text(
+                    'Guardar Datos Fiscales & Avanzar',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showStageGateWonDialog(OpportunityItem deal) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final formKey = GlobalKey<FormState>();
+    final startDateCtrl = TextEditingController(
+      text: deal.serviceStartDate.isNotEmpty
+          ? deal.serviceStartDate
+          : '01 Oct 2026',
+    );
+    final advancePaidCtrl = TextEditingController(
+      text: deal.advancePaid > 0
+          ? deal.advancePaid.toStringAsFixed(2)
+          : (deal.amount * (deal.advancePercentage / 100)).toStringAsFixed(2),
+    );
+    final wonNotesCtrl = TextEditingController(
+      text: deal.wonNotes.isNotEmpty
+          ? deal.wonNotes
+          : 'Contrato firmado conforme a propuesta técnica. Traspaso inmediato a Operaciones.',
+    );
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dCtx) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return AlertDialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              titlePadding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.celebration_outlined,
+                      color: Color(0xFF10B981),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Formalizar Cierre: Venta Ganada',
+                              style: GoogleFonts.inter(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF10B981,
+                                ).withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'ETAPA FINAL',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF10B981),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          'Cierra la venta y transfiere automáticamente la cuenta a Clientes 360°.',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              content: SizedBox(
+                width: 520,
+                child: Form(
+                  key: formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        // Resumen consolidado de lo capturado en las etapas previas
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF1E293B).withValues(alpha: 0.5)
+                                : const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(0xFF334155)
+                                  : const Color(0xFFCBD5E1),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    deal.clientName,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: isDark
+                                          ? Colors.white
+                                          : const Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(
+                                        0xFF10B981,
+                                      ).withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      deal.contractType,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color(0xFF10B981),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Razón Social: ${deal.legalBusinessName.isNotEmpty ? deal.legalBusinessName : deal.clientName} • NIT: ${deal.taxId.isNotEmpty ? deal.taxId : "Pendiente"}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11.5,
+                                  color: const Color(0xFF64748B),
+                                ),
+                              ),
+                              Text(
+                                'Sede Operativa: ${deal.siteAddress.isNotEmpty ? deal.siteAddress : "Sede Central"}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11.5,
+                                  color: const Color(0xFF64748B),
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Monto Acordado: Bs. ${deal.amount.toStringAsFixed(2)} ${deal.contractType == "Recurrente Mensual" ? "/ mes" : "cerrado"}',
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF10B981),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          controller: startDateCtrl,
+                          style: GoogleFonts.inter(fontSize: 12.5),
+                          decoration: InputDecoration(
+                            labelText: 'Fecha de Inicio de Operaciones / Entrega *',
+                            hintText: 'Ej: 01 Oct 2026',
+                            prefixIcon: const Icon(
+                              Icons.calendar_today_outlined,
+                              size: 18,
+                            ),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          validator: (v) => v == null || v.trim().isEmpty
+                              ? 'Ingresa la fecha de inicio de operaciones'
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: advancePaidCtrl,
+                          keyboardType: TextInputType.number,
+                          style: GoogleFonts.jetBrainsMono(fontSize: 12.5),
+                          decoration: InputDecoration(
+                            labelText: 'Anticipo / Garantía Recibida (Bs.)',
+                            prefixIcon: const Icon(Icons.payments_outlined, size: 18),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: wonNotesCtrl,
+                          maxLines: 2,
+                          style: GoogleFonts.inter(fontSize: 12),
+                          decoration: InputDecoration(
+                            labelText: 'Instrucciones para Despliegue Operativo',
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dCtx),
+                  child: Text(
+                    'Cancelar',
+                    style: GoogleFonts.inter(color: const Color(0xFF64748B)),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF10B981),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 11,
+                    ),
+                  ),
+                  onPressed: () {
+                    if (formKey.currentState?.validate() ?? false) {
+                      final parsedAdvance =
+                          double.tryParse(advancePaidCtrl.text.trim()) ?? 0.0;
+                      final updatedDeal = deal.copyWith(
+                        serviceStartDate: startDateCtrl.text.trim(),
+                        advancePaid: parsedAdvance,
+                        wonNotes: wonNotesCtrl.text.trim(),
+                      );
+
+                      // Promoción automática a Clientes 360° si no está registrado
+                      if (!CrmCustomersService().isOpportunityPromoted(deal.id)) {
+                        final initialBranch = CustomerBranch(
+                          id: 'BR-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                          name: deal.siteName.isNotEmpty
+                              ? deal.siteName
+                              : 'Sede Principal / ${deal.clientName}',
+                          address: deal.siteAddress.isNotEmpty
+                              ? deal.siteAddress
+                              : 'Dirección coordinada en inspección',
+                          localContact: deal.siteContactName.isNotEmpty
+                              ? deal.siteContactName
+                              : deal.contactPerson,
+                          localPhone: deal.siteContactPhone.isNotEmpty
+                              ? deal.siteContactPhone
+                              : deal.phone,
+                          isHeadquarters: deal.isSiteHeadquarters,
+                          notes: deal.siteAccessRequirements,
+                        );
+
+                        final contract = CustomerContract(
+                          id: 'CTR-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                          title: deal.title,
+                          contractType: deal.contractType,
+                          serviceCategory: deal.serviceType,
+                          totalAmount: deal.amount,
+                          recurringMonthlyAmount:
+                              deal.contractType == 'Recurrente Mensual'
+                              ? deal.amount
+                              : 0.0,
+                          oneTimeAmount:
+                              deal.contractType != 'Recurrente Mensual'
+                              ? deal.amount
+                              : 0.0,
+                          paymentTerms: deal.paymentTerms,
+                          executionTime: deal.executionTime,
+                          advancePercentage: deal.advancePercentage,
+                          status: 'Vigente',
+                          startDate: startDateCtrl.text.trim(),
+                          notes: wonNotesCtrl.text.trim(),
+                        );
+
+                        final customer = CustomerItem(
+                          id: 'CLI-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                          legalName: deal.legalBusinessName.isNotEmpty
+                              ? deal.legalBusinessName
+                              : '${deal.clientName} S.R.L.',
+                          tradeName: deal.clientName,
+                          taxId: deal.taxId.isNotEmpty
+                              ? deal.taxId
+                              : '1029384756',
+                          segment: deal.businessSegment,
+                          status: 'Activo',
+                          activeServices: [deal.serviceType],
+                          contactPerson: deal.contactPerson,
+                          phone: deal.phone,
+                          email: deal.billingEmail.isNotEmpty
+                              ? deal.billingEmail
+                              : 'contacto@${deal.clientName.toLowerCase().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}.bo',
+                          opportunityId: deal.id,
+                          startDate: startDateCtrl.text.trim(),
+                          branches: [initialBranch],
+                          contracts: [contract],
+                          notes: wonNotesCtrl.text.trim(),
+                        );
+
+                        CrmCustomersService().addCustomer(customer);
+                      }
+
+                      Navigator.pop(dCtx);
+                      _moveDeal(updatedDeal, 'Ganada');
+                    }
+                  },
+                  icon: const Icon(Icons.verified, size: 18),
+                  label: Text(
+                    'Confirmar Cierre & Promover a 360°',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -2256,7 +3254,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
     );
   }
 
-  void _showQuotationBuilderDialog(OpportunityItem deal) {
+  void _showQuotationBuilderDialog(OpportunityItem deal, {String? targetStage}) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     String selectedContractType = deal.contractType;
     String executionTime = deal.executionTime;
@@ -3604,28 +4602,34 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                   ),
                   onPressed: () {
                     final idx = _deals.indexWhere((d) => d.id == deal.id);
+                    OpportunityItem? updatedDeal;
                     if (idx != -1) {
+                      updatedDeal = deal.copyWith(
+                        contractType: selectedContractType,
+                        executionTime: executionTime,
+                        paymentTerms: paymentTerms,
+                        advancePercentage: advancePct,
+                        quoteItems: localItems,
+                        amount: currentTotal,
+                      );
                       setState(() {
-                        _deals[idx] = deal.copyWith(
-                          contractType: selectedContractType,
-                          executionTime: executionTime,
-                          paymentTerms: paymentTerms,
-                          advancePercentage: advancePct,
-                          quoteItems: localItems,
-                          amount: currentTotal,
-                        );
+                        _deals[idx] = updatedDeal!;
                       });
                     }
                     Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: const Color(0xFF065F46),
-                        behavior: SnackBarBehavior.floating,
-                        content: Text(
-                          'Cotización ($selectedContractType) de "${deal.title}" actualizada: Bs. ${currentTotal.toStringAsFixed(2)}',
+                    if (targetStage != null && updatedDeal != null) {
+                      _moveDeal(updatedDeal, targetStage);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: const Color(0xFF065F46),
+                          behavior: SnackBarBehavior.floating,
+                          content: Text(
+                            'Cotización ($selectedContractType) de "${deal.title}" actualizada: Bs. ${currentTotal.toStringAsFixed(2)}',
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }
                   },
                 ),
               ],
@@ -5666,7 +6670,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                       _showProposalPreviewDialog(deal);
                     } else if (action.startsWith('move:')) {
                       final targetStage = action.replaceFirst('move:', '');
-                      _moveDeal(deal, targetStage);
+                      _requestMoveDeal(deal, targetStage);
                     }
                   },
                   itemBuilder: (ctx) => [
