@@ -2019,8 +2019,9 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                   ),
                                 ],
                                 onChanged: (v) {
-                                  if (v != null)
+                                  if (v != null) {
                                     setDialogState(() => segment = v);
+                                  }
                                 },
                               ),
                             ),
@@ -2190,6 +2191,29 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                         isHeadquarters: true,
                       );
 
+                      final parsedAmount = double.parse(
+                        billingCtrl.text.trim(),
+                      );
+                      final contract = CustomerContract(
+                        id: 'CTR-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                        title: deal.title,
+                        contractType: deal.contractType,
+                        serviceCategory: deal.serviceType,
+                        totalAmount: parsedAmount,
+                        recurringMonthlyAmount:
+                            deal.contractType == 'Recurrente Mensual'
+                            ? parsedAmount
+                            : 0.0,
+                        oneTimeAmount: deal.contractType != 'Recurrente Mensual'
+                            ? parsedAmount
+                            : 0.0,
+                        paymentTerms: deal.paymentTerms,
+                        executionTime: deal.executionTime,
+                        advancePercentage: deal.advancePercentage,
+                        status: 'Vigente',
+                        startDate: 'Hoy',
+                      );
+
                       final customer = CustomerItem(
                         id: newId,
                         legalName: legalNameCtrl.text.trim(),
@@ -2201,10 +2225,10 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                         contactPerson: contactCtrl.text.trim(),
                         phone: phoneCtrl.text.trim(),
                         email: emailCtrl.text.trim(),
-                        monthlyBilling: double.parse(billingCtrl.text.trim()),
                         opportunityId: deal.id,
                         startDate: 'Hoy',
                         branches: [initialBranch],
+                        contracts: [contract],
                       );
 
                       CrmCustomersService().addCustomer(customer);

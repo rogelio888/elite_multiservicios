@@ -10,12 +10,6 @@
       "env": {
         "STITCH_API_KEY": "${STITCH_API_KEY}"
       }
-    },
-    "supabase": {
-      "serverUrl": "https://mcp.supabase.com/mcp",
-      "headers": {
-        "Authorization": "Bearer ${SUPABASE_ACCESS_TOKEN}"
-      }
     }
   }
 }

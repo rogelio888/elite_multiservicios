@@ -17,6 +17,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
   String _searchQuery = '';
   String _selectedSegment = 'Todos';
   String _selectedStatus = 'Todos';
+  String _selectedContractType = 'Todos';
 
   @override
   void initState() {
@@ -45,7 +46,15 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
           _selectedSegment == 'Todos' || c.segment == _selectedSegment;
       final matchesStatus =
           _selectedStatus == 'Todos' || c.status == _selectedStatus;
-      return matchesSearch && matchesSegment && matchesStatus;
+      final matchesContractType =
+          _selectedContractType == 'Todos' ||
+          c.primaryContractType == _selectedContractType ||
+          c.contracts.any((ctr) => ctr.contractType == _selectedContractType);
+
+      return matchesSearch &&
+          matchesSegment &&
+          matchesStatus &&
+          matchesContractType;
     }).toList();
   }
 
@@ -60,8 +69,8 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
       builder: (ctx) {
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
         return DraggableScrollableSheet(
-          initialChildSize: 0.85,
-          maxChildSize: 0.95,
+          initialChildSize: 0.88,
+          maxChildSize: 0.96,
           minChildSize: 0.5,
           builder: (_, scrollController) {
             return DefaultTabController(
@@ -102,8 +111,8 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            width: 50,
-                            height: 50,
+                            width: 52,
+                            height: 52,
                             decoration: BoxDecoration(
                               color: const Color(
                                 0xFF2563EB,
@@ -119,7 +128,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                               child: Icon(
                                 Icons.business,
                                 color: Color(0xFF3B82F6),
-                                size: 26,
+                                size: 28,
                               ),
                             ),
                           ),
@@ -145,6 +154,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                       ),
                                     ),
                                     const SizedBox(width: 8),
+                                    _buildContractTypeBadge(
+                                      customer.primaryContractType,
+                                    ),
+                                    const SizedBox(width: 6),
                                     _buildStatusBadge(customer.status),
                                   ],
                                 ),
@@ -178,26 +191,24 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         fontWeight: FontWeight.w600,
                       ),
                       tabs: [
-                        const Tab(text: 'General & Facturación'),
+                        const Tab(text: 'General & Fiscal'),
                         Tab(
                           text:
                               'Sedes Operativas (${customer.branches.length})',
                         ),
-                        const Tab(text: 'Servicios & Contrato'),
+                        Tab(
+                          text:
+                              'Contratos & Trabajos (${customer.contracts.length})',
+                        ),
                       ],
                     ),
 
                     Expanded(
                       child: TabBarView(
                         children: [
-                          // Tab 1: General & Facturación
                           _buildGeneralTab(customer, isDark),
-
-                          // Tab 2: Sedes Operativas
                           _buildBranchesTab(customer, isDark),
-
-                          // Tab 3: Servicios & Contrato
-                          _buildServicesTab(customer, isDark),
+                          _buildContractsTab(customer, isDark),
                         ],
                       ),
                     ),
@@ -259,17 +270,17 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
           children: [
             Expanded(
               child: _buildInfoCard(
-                'Estado Operativo',
-                customer.status,
-                Icons.toggle_on_outlined,
+                'Modalidad Comercial Principal',
+                customer.primaryContractType,
+                Icons.handshake_outlined,
                 isDark,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _buildInfoCard(
-                'Fecha de Inicio',
-                customer.startDate ?? 'No definida',
+                'Fecha de Ingreso',
+                customer.startDate ?? 'Registro Reciente',
                 Icons.calendar_today_outlined,
                 isDark,
               ),
@@ -343,8 +354,8 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
               ),
               label: Text(
                 customer.status == 'Activo'
-                    ? 'Pausar Cliente'
-                    : 'Reactivar Cliente',
+                    ? 'Pausar Cuenta'
+                    : 'Reactivar Cuenta',
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -369,7 +380,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'SEDES REGISTRADAS',
+                  'SEDES REGISTRADAS (${customer.branches.length})',
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
@@ -378,7 +389,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                   ),
                 ),
                 Text(
-                  'Ubicaciones físicas donde Elite despliega personal y servicios.',
+                  'Ubicaciones físicas donde se ejecutan los servicios.',
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     color: const Color(0xFF94A3B8),
@@ -567,126 +578,321 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     );
   }
 
-  Widget _buildServicesTab(CustomerItem customer, bool isDark) {
+  Widget _buildContractsTab(CustomerItem customer, bool isDark) {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: const Color(0xFF10B981).withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: const Color(0xFF10B981).withValues(alpha: 0.25),
+        // Resumen Financiero Consolidado
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.25),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'ABONO MENSUAL (MRR)',
+                      style: GoogleFonts.inter(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF10B981),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Bs. ${customer.monthlyBilling.toStringAsFixed(2)} / mes',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF10B981),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          child: Row(
+            const SizedBox(width: 12),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: const Color(0xFF8B5CF6).withValues(alpha: 0.25),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'OBRAS & PROYECTOS CERRADOS',
+                      style: GoogleFonts.inter(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF8B5CF6),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Bs. ${customer.totalProjectBilling.toStringAsFixed(2)}',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF8B5CF6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'HISTORIAL DE CONTRATOS & SERVICIOS (${customer.contracts.length})',
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF64748B),
+                letterSpacing: 0.6,
+              ),
+            ),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF10B981),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                elevation: 0,
+              ),
+              onPressed: () => _showAddContractDialog(customer),
+              icon: const Icon(Icons.add_task, size: 15),
+              label: Text(
+                'Nuevo Contrato / Proyecto',
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        if (customer.contracts.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Center(
+              child: Text('Sin contratos registrados para este cliente.'),
+            ),
+          )
+        else
+          ...customer.contracts.map((ctr) => _buildContractCard(ctr, isDark)),
+      ],
+    );
+  }
+
+  Widget _buildContractCard(CustomerContract contract, bool isDark) {
+    final typeColor = _getContractTypeColor(contract.contractType);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
-                  Text(
-                    'CANON MENSUAL RECURRENTE (MRR)',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF10B981),
-                      letterSpacing: 0.6,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: typeColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: typeColor.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Text(
+                      contract.contractType.toUpperCase(),
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: typeColor,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Bs. ${customer.monthlyBilling.toStringAsFixed(2)} / mes',
-                    style: GoogleFonts.jetBrainsMono(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF10B981),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF0F172A)
+                          : const Color(0xFFE2E8F0),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      contract.serviceCategory,
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
               ),
-              const Icon(
-                Icons.verified_outlined,
-                color: Color(0xFF10B981),
-                size: 32,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color:
+                      contract.status == 'Vigente' ||
+                          contract.status == 'En Ejecución'
+                      ? const Color(0xFF10B981).withValues(alpha: 0.12)
+                      : const Color(0xFF64748B).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  contract.status,
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color:
+                        contract.status == 'Vigente' ||
+                            contract.status == 'En Ejecución'
+                        ? const Color(0xFF10B981)
+                        : const Color(0xFF64748B),
+                  ),
+                ),
               ),
             ],
           ),
-        ),
-        const SizedBox(height: 20),
-        Text(
-          'LÍNEAS DE SERVICIO ACTIVAS',
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: const Color(0xFF64748B),
-            letterSpacing: 0.6,
+          const SizedBox(height: 8),
+          Text(
+            contract.title,
+            style: GoogleFonts.inter(
+              fontSize: 14.5,
+              fontWeight: FontWeight.w700,
+              color: isDark ? Colors.white : const Color(0xFF0F172A),
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: customer.activeServices.map((srv) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFF161F30)
-                    : const Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: isDark
-                      ? const Color(0xFF1E293B)
-                      : const Color(0xFFE2E8F0),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Icon(
+                Icons.timer_outlined,
+                size: 14,
+                color: Color(0xFF64748B),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                contract.executionTime,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: const Color(0xFF64748B),
                 ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.check_circle_outline,
-                    size: 16,
-                    color: Color(0xFF10B981),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    srv,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
-                    ),
-                  ),
-                ],
+              const SizedBox(width: 12),
+              const Icon(
+                Icons.payments_outlined,
+                size: 14,
+                color: Color(0xFF64748B),
               ),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 24),
-        const Divider(),
-        const SizedBox(height: 16),
-        Text(
-          'ORIGEN Y TRAZABILIDAD',
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: const Color(0xFF64748B),
-            letterSpacing: 0.6,
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  contract.paymentTerms,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF64748B),
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          customer.opportunityId != null
-              ? 'Cliente promovido desde Oportunidad Comercial: ${customer.opportunityId}'
-              : 'Cliente de alta directa en el directorio corporativo.',
-          style: GoogleFonts.inter(
-            fontSize: 12.5,
-            color: const Color(0xFF94A3B8),
+          const SizedBox(height: 12),
+          const Divider(height: 1),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Inicio: ${contract.startDate}',
+                style: GoogleFonts.inter(
+                  fontSize: 11.5,
+                  color: const Color(0xFF94A3B8),
+                ),
+              ),
+              if (contract.contractType == 'Recurrente Mensual')
+                Text(
+                  'Canon: Bs. ${contract.recurringMonthlyAmount.toStringAsFixed(2)} / mes',
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF10B981),
+                  ),
+                )
+              else if (contract.contractType == 'Híbrido')
+                Text(
+                  'Obra: Bs. ${contract.oneTimeAmount.toStringAsFixed(0)} + Bs. ${contract.recurringMonthlyAmount.toStringAsFixed(0)}/mes',
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF3B82F6),
+                  ),
+                )
+              else
+                Text(
+                  'Monto Total: Bs. ${contract.oneTimeAmount.toStringAsFixed(2)}',
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: typeColor,
+                  ),
+                ),
+            ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -747,6 +953,41 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     );
   }
 
+  Color _getContractTypeColor(String type) {
+    switch (type) {
+      case 'Recurrente Mensual':
+        return const Color(0xFF10B981);
+      case 'Proyecto Único':
+        return const Color(0xFF8B5CF6);
+      case 'Servicio por Evento':
+        return const Color(0xFFF59E0B);
+      case 'Híbrido':
+        return const Color(0xFF3B82F6);
+      default:
+        return const Color(0xFF64748B);
+    }
+  }
+
+  Widget _buildContractTypeBadge(String type) {
+    final color = _getContractTypeColor(type);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Text(
+        type,
+        style: GoogleFonts.inter(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
+      ),
+    );
+  }
+
   Widget _buildStatusBadge(String status) {
     Color color;
     switch (status) {
@@ -787,6 +1028,248 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
           'Estado de ${customer.tradeName} actualizado a $nextStatus',
         ),
       ),
+    );
+  }
+
+  // ===========================================================================
+  // DIÁLOGO: AGREGAR CONTRATO A CLIENTE EXISTENTE
+  // ===========================================================================
+  void _showAddContractDialog(CustomerItem customer) {
+    final titleCtrl = TextEditingController();
+    final amountCtrl = TextEditingController(text: '15000');
+    final termsCtrl = TextEditingController(text: '50% Anticipo / 50% Entrega');
+    final timeCtrl = TextEditingController(text: '15 días hábiles');
+    String contractType = 'Proyecto Único';
+    String category = 'Limpieza';
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (dCtx) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            final isDark = Theme.of(ctx).brightness == Brightness.dark;
+            return AlertDialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Text(
+                'Nuevo Contrato / Proyecto para ${customer.tradeName}',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                ),
+              ),
+              content: SizedBox(
+                width: 480,
+                child: Form(
+                  key: formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        DropdownButtonFormField<String>(
+                          initialValue: contractType,
+                          decoration: const InputDecoration(
+                            labelText: 'Modalidad de Contratación *',
+                            isDense: true,
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'Recurrente Mensual',
+                              child: Text('Recurrente Mensual'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Proyecto Único',
+                              child: Text('Proyecto Único / Obra'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Servicio por Evento',
+                              child: Text('Servicio por Evento'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Híbrido',
+                              child: Text('Híbrido'),
+                            ),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) {
+                              setDialogState(() {
+                                contractType = v;
+                                if (v == 'Recurrente Mensual') {
+                                  termsCtrl.text =
+                                      'Facturación mensual a 30 días';
+                                  timeCtrl.text = 'Contrato 12 meses';
+                                } else if (v == 'Servicio por Evento') {
+                                  termsCtrl.text =
+                                      '50% Anticipo / 50% Cierre del Evento';
+                                  timeCtrl.text = '3 días (Feria)';
+                                } else {
+                                  termsCtrl.text =
+                                      '50% Anticipo / 50% Entrega Conforme';
+                                  timeCtrl.text = '15 días hábiles';
+                                }
+                              });
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: titleCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Nombre / Objeto del Contrato *',
+                            hintText:
+                                'Ej: Pulido de Pisos o Seguridad para Evento',
+                            isDense: true,
+                          ),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Requerido'
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                initialValue: category,
+                                decoration: const InputDecoration(
+                                  labelText: 'Categoría *',
+                                  isDense: true,
+                                ),
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 'Seguridad',
+                                    child: Text('Seguridad'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Limpieza',
+                                    child: Text('Limpieza'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Mantenimiento',
+                                    child: Text('Mantenimiento'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Software',
+                                    child: Text('Software'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Jardinería',
+                                    child: Text('Jardinería'),
+                                  ),
+                                ],
+                                onChanged: (v) {
+                                  if (v != null) {
+                                    setDialogState(() => category = v);
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: amountCtrl,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText:
+                                      contractType == 'Recurrente Mensual'
+                                      ? 'Canon Mensual (Bs.) *'
+                                      : 'Monto Total (Bs.) *',
+                                  isDense: true,
+                                ),
+                                validator: (v) =>
+                                    (v == null || double.tryParse(v) == null)
+                                    ? 'Monto inválido'
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: timeCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Plazo de Ejecución / Duración *',
+                            isDense: true,
+                          ),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Requerido'
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: termsCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Condiciones de Pago *',
+                            isDense: true,
+                          ),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Requerido'
+                              : null,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dCtx).pop(),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF10B981),
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () {
+                    if (formKey.currentState?.validate() ?? false) {
+                      final parsedAmount = double.parse(amountCtrl.text.trim());
+                      final newContract = CustomerContract(
+                        id: 'CTR-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                        title: titleCtrl.text.trim(),
+                        contractType: contractType,
+                        serviceCategory: category,
+                        totalAmount: parsedAmount,
+                        recurringMonthlyAmount:
+                            contractType == 'Recurrente Mensual'
+                            ? parsedAmount
+                            : 0.0,
+                        oneTimeAmount: contractType != 'Recurrente Mensual'
+                            ? parsedAmount
+                            : 0.0,
+                        paymentTerms: termsCtrl.text.trim(),
+                        executionTime: timeCtrl.text.trim(),
+                        status: 'Vigente',
+                        startDate: 'Hoy',
+                      );
+
+                      _service.addContractToCustomer(customer.id, newContract);
+                      Navigator.of(dCtx).pop();
+                      Navigator.of(context).pop();
+                      _showCustomerDetail(
+                        _service.customers.firstWhere(
+                          (c) => c.id == customer.id,
+                        ),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Contrato "${newContract.title}" añadido con éxito.',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('Guardar Contrato'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
@@ -902,7 +1385,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                   );
                   _service.addBranchToCustomer(customer.id, newBranch);
                   Navigator.of(dCtx).pop();
-                  Navigator.of(context).pop(); // Cierra el modal para refrescar
+                  Navigator.of(context).pop();
                   _showCustomerDetail(
                     _service.customers.firstWhere((c) => c.id == customer.id),
                   );
@@ -924,7 +1407,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
   }
 
   // ===========================================================================
-  // DIÁLOGO: ALTA NUEVO CLIENTE 360° (CON SEDE INICIAL OBLIGATORIA)
+  // DIÁLOGO: ALTA NUEVO CLIENTE 360° (MULTI-MODALIDAD + SEDE OBLIGATORIA)
   // ===========================================================================
   void _showCreateCustomerDialog() {
     final formKey = GlobalKey<FormState>();
@@ -934,7 +1417,17 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     final contactCtrl = TextEditingController();
     final phoneCtrl = TextEditingController();
     final emailCtrl = TextEditingController();
-    final billingCtrl = TextEditingController(text: '12000');
+
+    // Modalidad y Contrato inicial
+    String contractType = 'Recurrente Mensual';
+    final contractTitleCtrl = TextEditingController(
+      text: 'Servicio Recurrente Integral',
+    );
+    final amountCtrl = TextEditingController(text: '12000');
+    final executionTimeCtrl = TextEditingController(text: 'Contrato 12 meses');
+    final paymentTermsCtrl = TextEditingController(
+      text: 'Facturación mensual a 30 días',
+    );
 
     // Sede inicial obligatoria
     final branchNameCtrl = TextEditingController(text: 'Sede Central / Matriz');
@@ -947,13 +1440,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
       'Seguridad Física',
       'Limpieza Integral',
       'Mantenimiento',
+      'Software / Tecnología',
       'Jardinería',
-      'Desinfección Especializada',
     ];
-    final Set<String> selectedServices = {
-      'Seguridad Física',
-      'Limpieza Integral',
-    };
+    final Set<String> selectedServices = {'Seguridad Física'};
 
     showDialog(
       context: context,
@@ -998,7 +1488,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                           ),
                         ),
                         Text(
-                          'Registro fiscal, contratos y sede operativa matriz inicial.',
+                          'Configuración fiscal, contrato inicial y sede matriz obligatoria.',
                           style: GoogleFonts.inter(
                             fontSize: 11.5,
                             color: const Color(0xFF64748B),
@@ -1010,7 +1500,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                 ],
               ),
               content: SizedBox(
-                width: 620,
+                width: 640,
                 child: Form(
                   key: formKey,
                   child: SingleChildScrollView(
@@ -1028,7 +1518,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                 controller: tradeNameCtrl,
                                 decoration: const InputDecoration(
                                   labelText: 'Nombre Comercial *',
-                                  hintText: 'Ej: Condominio Las Palmas',
+                                  hintText: 'Ej: Condominio Las Palmas Real',
                                   isDense: true,
                                 ),
                                 validator: (v) =>
@@ -1101,17 +1591,18 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                   ),
                                 ],
                                 onChanged: (v) {
-                                  if (v != null)
+                                  if (v != null) {
                                     setDialogState(() => segment = v);
+                                  }
                                 },
                               ),
                             ),
                           ],
                         ),
 
-                        const SizedBox(height: 20),
-                        // SECCIÓN 2: CONTACTO Y FACTURACIÓN
-                        _buildSectionHeader('2. CONTACTO PRINCIPAL & CANON'),
+                        const SizedBox(height: 18),
+                        // SECCIÓN 2: CONTACTO
+                        _buildSectionHeader('2. CONTACTO PRINCIPAL'),
                         const SizedBox(height: 10),
                         Row(
                           children: [
@@ -1147,15 +1638,112 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                           ],
                         ),
                         const SizedBox(height: 12),
+                        TextFormField(
+                          controller: emailCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Correo de Facturación *',
+                            hintText: 'Ej: contabilidad@cliente.com',
+                            isDense: true,
+                          ),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Requerido'
+                              : null,
+                        ),
+
+                        const SizedBox(height: 18),
+                        // SECCIÓN 3: CONTRATO / MODALIDAD INICIAL
+                        _buildSectionHeader(
+                          '3. MODALIDAD DEL TRABAJO / CONTRATO INICIAL',
+                        ),
+                        const SizedBox(height: 10),
+                        DropdownButtonFormField<String>(
+                          initialValue: contractType,
+                          decoration: const InputDecoration(
+                            labelText: 'Tipo de Contrato *',
+                            isDense: true,
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'Recurrente Mensual',
+                              child: Text('Recurrente Mensual (Abono fijo)'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Proyecto Único',
+                              child: Text('Proyecto Único / Obra Cerrada'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Servicio por Evento',
+                              child: Text('Servicio por Evento / Feria'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Híbrido',
+                              child: Text('Híbrido (Implementación + Abono)'),
+                            ),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) {
+                              setDialogState(() {
+                                contractType = v;
+                                if (v == 'Recurrente Mensual') {
+                                  contractTitleCtrl.text =
+                                      'Servicio Recurrente Mensual';
+                                  executionTimeCtrl.text = 'Contrato 12 meses';
+                                  paymentTermsCtrl.text =
+                                      'Facturación mensual a 30 días';
+                                } else if (v == 'Servicio por Evento') {
+                                  contractTitleCtrl.text =
+                                      'Operativo Especial para Evento';
+                                  executionTimeCtrl.text = '3 días (Evento)';
+                                  paymentTermsCtrl.text =
+                                      '50% Anticipo / 50% Cierre del Evento';
+                                } else {
+                                  contractTitleCtrl.text =
+                                      'Obra Cerrada / Mantenimiento Especial';
+                                  executionTimeCtrl.text = '15 días hábiles';
+                                  paymentTermsCtrl.text =
+                                      '50% Anticipo / 50% Entrega Conforme';
+                                }
+                              });
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: contractTitleCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Objeto del Contrato / Trabajo *',
+                            isDense: true,
+                          ),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Requerido'
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
                         Row(
                           children: [
                             Expanded(
-                              flex: 3,
                               child: TextFormField(
-                                controller: emailCtrl,
+                                controller: amountCtrl,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText:
+                                      contractType == 'Recurrente Mensual'
+                                      ? 'Canon Mensual (Bs.) *'
+                                      : 'Monto Total del Trabajo (Bs.) *',
+                                  isDense: true,
+                                ),
+                                validator: (v) =>
+                                    (v == null || double.tryParse(v) == null)
+                                    ? 'Monto inválido'
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: executionTimeCtrl,
                                 decoration: const InputDecoration(
-                                  labelText: 'Correo de Facturación *',
-                                  hintText: 'Ej: contabilidad@cliente.com',
+                                  labelText: 'Plazo / Duración *',
                                   isDense: true,
                                 ),
                                 validator: (v) =>
@@ -1164,36 +1752,28 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                     : null,
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              flex: 2,
-                              child: TextFormField(
-                                controller: billingCtrl,
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                  labelText: 'Canon Mensual (Bs.) *',
-                                  hintText: '12000.00',
-                                  isDense: true,
-                                ),
-                                validator: (v) {
-                                  if (v == null || double.tryParse(v) == null) {
-                                    return 'Monto inválido';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
                           ],
                         ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: paymentTermsCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Condiciones de Pago *',
+                            isDense: true,
+                          ),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Requerido'
+                              : null,
+                        ),
 
-                        const SizedBox(height: 20),
-                        // SECCIÓN 3: SEDE OPERATIVA INICIAL OBLIGATORIA
+                        const SizedBox(height: 18),
+                        // SECCIÓN 4: SEDE MATRIZ
                         _buildSectionHeader(
-                          '3. SEDE INICIAL MATRIZ (OBLIGATORIA)',
+                          '4. SEDE OPERATIVA MATRIZ (OBLIGATORIA)',
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Todo cliente debe contar con al menos una sede física asignada para operaciones.',
+                          'Punto físico de partida para el despliegue del servicio.',
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             color: const Color(0xFF94A3B8),
@@ -1207,7 +1787,6 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                 controller: branchNameCtrl,
                                 decoration: const InputDecoration(
                                   labelText: 'Nombre Sede Matriz *',
-                                  hintText: 'Ej: Torre Principal',
                                   isDense: true,
                                 ),
                                 validator: (v) =>
@@ -1233,42 +1812,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                controller: branchContactCtrl,
-                                decoration: InputDecoration(
-                                  labelText: 'Contacto en Sede',
-                                  hintText: contactCtrl.text.isNotEmpty
-                                      ? contactCtrl.text
-                                      : 'Encargado local',
-                                  isDense: true,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: TextFormField(
-                                controller: branchPhoneCtrl,
-                                decoration: InputDecoration(
-                                  labelText: 'Teléfono de Sede',
-                                  hintText: phoneCtrl.text.isNotEmpty
-                                      ? phoneCtrl.text
-                                      : 'Teléfono',
-                                  isDense: true,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
 
-                        const SizedBox(height: 20),
-                        // SECCIÓN 4: SERVICIOS
-                        _buildSectionHeader(
-                          '4. LÍNEAS DE SERVICIO CONTRATADAS',
-                        ),
+                        const SizedBox(height: 18),
+                        // SECCIÓN 5: SERVICIOS
+                        _buildSectionHeader('5. LÍNEAS DE SERVICIO'),
                         const SizedBox(height: 10),
                         Wrap(
                           spacing: 8,
@@ -1295,10 +1842,8 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                 setDialogState(() {
                                   if (selected) {
                                     selectedServices.add(srv);
-                                  } else {
-                                    if (selectedServices.length > 1) {
-                                      selectedServices.remove(srv);
-                                    }
+                                  } else if (selectedServices.length > 1) {
+                                    selectedServices.remove(srv);
                                   }
                                 });
                               },
@@ -1341,6 +1886,26 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         isHeadquarters: true,
                       );
 
+                      final parsedAmount = double.parse(amountCtrl.text.trim());
+                      final initialContract = CustomerContract(
+                        id: 'CTR-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                        title: contractTitleCtrl.text.trim(),
+                        contractType: contractType,
+                        serviceCategory: selectedServices.first,
+                        totalAmount: parsedAmount,
+                        recurringMonthlyAmount:
+                            contractType == 'Recurrente Mensual'
+                            ? parsedAmount
+                            : 0.0,
+                        oneTimeAmount: contractType != 'Recurrente Mensual'
+                            ? parsedAmount
+                            : 0.0,
+                        paymentTerms: paymentTermsCtrl.text.trim(),
+                        executionTime: executionTimeCtrl.text.trim(),
+                        status: 'Vigente',
+                        startDate: 'Hoy',
+                      );
+
                       final newCustomer = CustomerItem(
                         id: newId,
                         legalName: legalNameCtrl.text.trim(),
@@ -1352,9 +1917,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         contactPerson: contactCtrl.text.trim(),
                         phone: phoneCtrl.text.trim(),
                         email: emailCtrl.text.trim(),
-                        monthlyBilling: double.parse(billingCtrl.text.trim()),
                         startDate: 'Hoy',
                         branches: [initialBranch],
+                        contracts: [initialContract],
                       );
 
                       _service.addCustomer(newCustomer);
@@ -1364,7 +1929,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         SnackBar(
                           backgroundColor: const Color(0xFF0F172A),
                           content: Text(
-                            'Cliente "${newCustomer.tradeName}" registrado con sede "${initialBranch.name}".',
+                            'Cliente "${newCustomer.tradeName}" registrado como ${initialContract.contractType}.',
                           ),
                         ),
                       );
@@ -1451,7 +2016,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'Directorio de Clientes & Sedes',
+                      'Directorio Clientes 360° & Contratos',
                       style: GoogleFonts.inter(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
@@ -1461,7 +2026,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Ficha unificada de clientes corporativos, residenciales y sedes operativas desplegadas.',
+                      'Ficha unificada multi-modalidad: recurrentes mensuales, proyectos únicos, eventos y sedes operativas.',
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         color: isDark
@@ -1500,7 +2065,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
 
           const SizedBox(height: 20),
 
-          // 2. Tarjetas de Métricas Ejecutivas (KPIs)
+          // 2. Tarjetas de Métricas Ejecutivas (KPIs Multi-Modalidad)
           _buildKpiMetricsRow(isDark),
 
           const SizedBox(height: 20),
@@ -1523,12 +2088,12 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 SizedBox(
-                  width: 320,
+                  width: 300,
                   child: TextField(
                     onChanged: (v) => setState(() => _searchQuery = v),
                     style: GoogleFonts.inter(fontSize: 13),
                     decoration: InputDecoration(
-                      hintText: 'Buscar razón social, comercial o NIT...',
+                      hintText: 'Buscar cliente, NIT o contacto...',
                       prefixIcon: const Icon(Icons.search, size: 18),
                       isDense: true,
                       border: OutlineInputBorder(
@@ -1540,6 +2105,45 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                       ),
                     ),
                   ),
+                ),
+                DropdownButton<String>(
+                  value: _selectedContractType,
+                  underline: const SizedBox(),
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    fontWeight: FontWeight.w500,
+                  ),
+                  dropdownColor: isDark
+                      ? const Color(0xFF1E293B)
+                      : Colors.white,
+                  items: const [
+                    DropdownMenuItem(
+                      value: 'Todos',
+                      child: Text('Modalidad: Todas'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Recurrente Mensual',
+                      child: Text('Modalidad: Recurrente'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Proyecto Único',
+                      child: Text('Modalidad: Proyecto Único'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Servicio por Evento',
+                      child: Text('Modalidad: Por Evento'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Híbrido',
+                      child: Text('Modalidad: Híbrido'),
+                    ),
+                  ],
+                  onChanged: (val) {
+                    if (val != null) {
+                      setState(() => _selectedContractType = val);
+                    }
+                  },
                 ),
                 DropdownButton<String>(
                   value: _selectedSegment,
@@ -1662,10 +2266,13 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                     crossAxisCount: isWide ? 2 : 1,
                     crossAxisSpacing: 14,
                     mainAxisSpacing: 14,
-                    mainAxisExtent: 195,
+                    mainAxisExtent: 205,
                   ),
                   itemBuilder: (context, idx) {
                     final customer = filtered[idx];
+                    final primaryType = customer.primaryContractType;
+                    final typeColor = _getContractTypeColor(primaryType);
+
                     return InkWell(
                       onTap: () => _showCustomerDetail(customer),
                       borderRadius: BorderRadius.circular(12),
@@ -1701,7 +2308,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 6),
+                                _buildContractTypeBadge(primaryType),
+                                const SizedBox(width: 6),
                                 _buildStatusBadge(customer.status),
                               ],
                             ),
@@ -1764,16 +2373,43 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                             : const Color(0xFF0F172A),
                                       ),
                                     ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '• ${customer.contracts.length} ${customer.contracts.length == 1 ? 'trabajo' : 'trabajos'}',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 11,
+                                        color: const Color(0xFF64748B),
+                                      ),
+                                    ),
                                   ],
                                 ),
-                                Text(
-                                  'Bs. ${customer.monthlyBilling.toStringAsFixed(2)} / mes',
-                                  style: GoogleFonts.jetBrainsMono(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF10B981),
+                                if (primaryType == 'Recurrente Mensual')
+                                  Text(
+                                    'Bs. ${customer.monthlyBilling.toStringAsFixed(2)} / mes',
+                                    style: GoogleFonts.jetBrainsMono(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFF10B981),
+                                    ),
+                                  )
+                                else if (primaryType == 'Híbrido')
+                                  Text(
+                                    'Bs. ${customer.monthlyBilling.toStringAsFixed(0)}/m + Obra',
+                                    style: GoogleFonts.jetBrainsMono(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFF3B82F6),
+                                    ),
+                                  )
+                                else
+                                  Text(
+                                    'Bs. ${customer.totalProjectBilling.toStringAsFixed(2)}',
+                                    style: GoogleFonts.jetBrainsMono(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: typeColor,
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                           ],
@@ -1805,24 +2441,24 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
           _buildKpiCard(
             'FACTURACIÓN MRR',
             'Bs. ${_service.totalMrr.toStringAsFixed(0)}',
-            'ingresos mensuales recurrentes',
-            Icons.attach_money,
+            'canon recurrente mensual',
+            Icons.autorenew,
             const Color(0xFF10B981),
             isDark,
           ),
           _buildKpiCard(
-            'SEDES OPERATIVAS',
-            '${_service.totalBranches}',
-            'puntos de servicio atendidos',
-            Icons.pin_drop_outlined,
+            'PROYECTOS & EVENTOS',
+            'Bs. ${_service.totalProjectVolume.toStringAsFixed(0)}',
+            'obras cerradas y especiales',
+            Icons.construction,
             const Color(0xFF8B5CF6),
             isDark,
           ),
           _buildKpiCard(
-            'DISTRIBUCIÓN B2B / B2C',
-            '${_service.totalB2B} / ${_service.totalB2C}',
-            'cuentas corporativas vs residenciales',
-            Icons.balance,
+            'SEDES ATENDIDAS',
+            '${_service.totalBranches}',
+            'puntos físicos desplegados',
+            Icons.pin_drop_outlined,
             const Color(0xFFF59E0B),
             isDark,
           ),

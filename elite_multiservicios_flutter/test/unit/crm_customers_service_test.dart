@@ -2,77 +2,128 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:elite_multiservicios_flutter/features/crm/data/crm_customers_service.dart';
 
 void main() {
-  group('CrmCustomersService Tests', () {
+  group('CrmCustomersService Multi-Contract Tests', () {
     late CrmCustomersService service;
 
     setUp(() {
       service = CrmCustomersService();
     });
 
-    test('initializes with default customer accounts and valid MRR', () {
-      expect(service.customers.isNotEmpty, isTrue);
-      expect(service.totalActiveCustomers, greaterThanOrEqualTo(3));
-      expect(service.totalMrr, greaterThan(0));
-      expect(service.totalBranches, greaterThanOrEqualTo(7));
-    });
+    test(
+      'initializes with multi-modal accounts: recurrent, projects and events',
+      () {
+        expect(service.customers.isNotEmpty, isTrue);
+        expect(service.totalActiveCustomers, greaterThanOrEqualTo(4));
+        expect(service.totalMrr, greaterThan(0));
+        expect(service.totalProjectVolume, greaterThan(0));
+        expect(service.totalBranches, greaterThanOrEqualTo(8));
+        expect(service.totalContracts, greaterThanOrEqualTo(7));
 
-    test('addCustomer inserts new customer at index 0 and updates metrics', () {
-      final initialCount = service.customers.length;
-      final initialBranches = service.totalBranches;
+        // Checks diverse contract types exist
+        final contractTypes = service.customers
+            .expand((c) => c.contracts)
+            .map((ctr) => ctr.contractType)
+            .toSet();
+        expect(contractTypes.contains('Recurrente Mensual'), isTrue);
+        expect(contractTypes.contains('Proyecto Único'), isTrue);
+        expect(contractTypes.contains('Servicio por Evento'), isTrue);
+        expect(contractTypes.contains('Híbrido'), isTrue);
+      },
+    );
 
-      const newBranch = CustomerBranch(
-        id: 'BR-TEST-1',
-        name: 'Sede Principal Test',
-        address: 'Av. Cristo Redentor #100',
-        localContact: 'Lic. Juan Perez',
-        localPhone: '70012345',
-        isHeadquarters: true,
+    test(
+      'addCustomer supports project-based and event contracts without recurring billing',
+      () {
+        final initialCount = service.customers.length;
+        final initialProjectVolume = service.totalProjectVolume;
+        final initialMrr = service.totalMrr;
+
+        const projectContract = CustomerContract(
+          id: 'CTR-TEST-PROJ',
+          title: 'Vitrificado y Sellado de Pisos Industriales',
+          contractType: 'Proyecto Único',
+          serviceCategory: 'Limpieza Integral',
+          totalAmount: 24000.0,
+          oneTimeAmount: 24000.0,
+          recurringMonthlyAmount: 0.0,
+          paymentTerms: '50% Anticipo / 50% Entrega',
+          executionTime: '10 días hábiles',
+          advancePercentage: 50,
+          status: 'Vigente',
+          startDate: 'Hoy',
+        );
+
+        const branch = CustomerBranch(
+          id: 'BR-TEST-PROJ',
+          name: 'Planta Principal',
+          address: 'Parque Industrial PI-24',
+          localContact: 'Ing. Ronald Rojas',
+          localPhone: '71009988',
+          isHeadquarters: true,
+        );
+
+        final projectCustomer = CustomerItem(
+          id: 'CLI-TEST-PROJ',
+          legalName: 'Industrias del Oriente S.A.',
+          tradeName: 'Industrias Oriente',
+          taxId: '8091827364',
+          segment: 'Corporativo B2B',
+          status: 'Activo',
+          activeServices: const ['Limpieza Integral'],
+          contactPerson: 'Ing. Ronald Rojas',
+          phone: '71009988',
+          email: 'planta@oriente.bo',
+          branches: const [branch],
+          contracts: const [projectContract],
+        );
+
+        service.addCustomer(projectCustomer);
+
+        expect(service.customers.length, equals(initialCount + 1));
+        expect(projectCustomer.primaryContractType, equals('Proyecto Único'));
+        expect(projectCustomer.monthlyBilling, equals(0.0));
+        expect(projectCustomer.totalProjectBilling, equals(24000.0));
+        // MRR remains unchanged, project volume increases
+        expect(service.totalMrr, equals(initialMrr));
+        expect(
+          service.totalProjectVolume,
+          equals(initialProjectVolume + 24000.0),
+        );
+      },
+    );
+
+    test(
+      'addContractToCustomer appends a new contract and updates activeServices',
+      () {
+        final target = service.customers.first;
+        final initialContractsCount = target.contracts.length;
+
+        const eventContract = CustomerContract(
+          id: 'CTR-EVENT-TEST',
+          title: 'Operativo de Seguridad para Lanzamiento de Producto',
+          contractType: 'Servicio por Evento',
+          serviceCategory: 'Seguridad Física',
+          totalAmount: 18000.0,
+          oneTimeAmount: 18000.0,
+          paymentTerms: '100% Contra Entrega',
+          executionTime: '2 días',
+          status: 'Vigente',
+          startDate: 'Hoy',
+        );
+
+        service.addContractToCustomer(target.id, eventContract);
+
+        final updated = service.customers.firstWhere((c) => c.id == target.id);
+        expect(updated.contracts.length, equals(initialContractsCount + 1));
+        expect(updated.contracts.any((c) => c.id == 'CTR-EVENT-TEST'), isTrue);
+        expect(updated.activeServices.contains('Seguridad Física'), isTrue);
+      },
+    );
+
+    test('updateCustomer toggles status and properly adjusts active MRR', () {
+      final target = service.customers.firstWhere(
+        (c) => c.status == 'Activo' && c.monthlyBilling > 0,
       );
-
-      final newCustomer = CustomerItem(
-        id: 'CLI-TEST-01',
-        legalName: 'Empresa Test S.A.',
-        tradeName: 'Empresa Test',
-        taxId: '987654321',
-        segment: 'Corporativo B2B',
-        status: 'Activo',
-        activeServices: const ['Limpieza Integral'],
-        contactPerson: 'Lic. Juan Perez',
-        phone: '70012345',
-        email: 'contacto@test.bo',
-        monthlyBilling: 8500.0,
-        branches: const [newBranch],
-      );
-
-      service.addCustomer(newCustomer);
-
-      expect(service.customers.length, equals(initialCount + 1));
-      expect(service.customers.first.id, equals('CLI-TEST-01'));
-      expect(service.totalBranches, equals(initialBranches + 1));
-    });
-
-    test('addBranchToCustomer appends a branch to existing customer', () {
-      final target = service.customers.first;
-      final initialBranchesCount = target.branches.length;
-
-      const secondaryBranch = CustomerBranch(
-        id: 'BR-SEC-01',
-        name: 'Sucursal Secundaria',
-        address: 'Calle 4 Oeste #50',
-        localContact: 'Pedro Gomez',
-        localPhone: '71122334',
-        isHeadquarters: false,
-      );
-
-      service.addBranchToCustomer(target.id, secondaryBranch);
-
-      final updated = service.customers.firstWhere((c) => c.id == target.id);
-      expect(updated.branches.length, equals(initialBranchesCount + 1));
-      expect(updated.branches.any((b) => b.id == 'BR-SEC-01'), isTrue);
-    });
-
-    test('updateCustomer toggles status and adjusts active MRR', () {
-      final target = service.customers.firstWhere((c) => c.status == 'Activo');
       final mrrBefore = service.totalMrr;
 
       final paused = target.copyWith(status: 'En Pausa');
@@ -85,41 +136,54 @@ void main() {
       expect(service.totalMrr, equals(mrrBefore));
     });
 
-    test('isOpportunityPromoted returns correct status for opportunityId', () {
-      expect(service.isOpportunityPromoted('OPP-999-NOT-EXISTS'), isFalse);
+    test('isOpportunityPromoted returns true for linked opportunity', () {
+      expect(service.isOpportunityPromoted('OPP-UNPROMOTED'), isFalse);
 
       final promoCustomer = CustomerItem(
-        id: 'CLI-PROMO-1',
-        legalName: 'Promo S.R.L.',
-        tradeName: 'Promo Corp',
-        taxId: '11223344',
+        id: 'CLI-PROMO-HYBRID',
+        legalName: 'Clínica Nueva S.R.L.',
+        tradeName: 'Clínica Nueva',
+        taxId: '99887766',
         segment: 'Corporativo B2B',
         status: 'Activo',
-        activeServices: const ['Seguridad Física'],
-        contactPerson: 'Admin',
-        phone: '78899000',
-        email: 'admin@promo.bo',
-        monthlyBilling: 15000.0,
-        opportunityId: 'OPP-PROMO-999',
+        activeServices: const ['Software / Tecnología'],
+        contactPerson: 'Dr. Flores',
+        phone: '77665544',
+        email: 'admin@clinicanueva.bo',
+        opportunityId: 'OPP-HYBRID-101',
         branches: const [
           CustomerBranch(
-            id: 'BR-PROMO',
-            name: 'Sede Promo',
-            address: 'Dir 1',
-            localContact: 'Admin',
-            localPhone: '78899000',
+            id: 'BR-CLINICA',
+            name: 'Consultorios Central',
+            address: 'Calle Sucre #25',
+            localContact: 'Dr. Flores',
+            localPhone: '77665544',
             isHeadquarters: true,
+          ),
+        ],
+        contracts: const [
+          CustomerContract(
+            id: 'CTR-HYBRID-1',
+            title: 'Software de Gestión + Póliza Mensual',
+            contractType: 'Híbrido',
+            serviceCategory: 'Software / Tecnología',
+            totalAmount: 25000.0,
+            oneTimeAmount: 15000.0,
+            recurringMonthlyAmount: 1000.0,
+            paymentTerms: '50% Anticipo + Abono mensual',
+            executionTime: '30 días + 12 meses',
+            status: 'Vigente',
+            startDate: 'Hoy',
           ),
         ],
       );
 
       service.addCustomer(promoCustomer);
 
-      expect(service.isOpportunityPromoted('OPP-PROMO-999'), isTrue);
-      expect(
-        service.getCustomerByOpportunityId('OPP-PROMO-999')?.tradeName,
-        equals('Promo Corp'),
-      );
+      expect(service.isOpportunityPromoted('OPP-HYBRID-101'), isTrue);
+      expect(promoCustomer.primaryContractType, equals('Híbrido'));
+      expect(promoCustomer.monthlyBilling, equals(1000.0));
+      expect(promoCustomer.totalProjectBilling, equals(15000.0));
     });
   });
 }
