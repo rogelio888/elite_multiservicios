@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/rrhh_audit_service.dart';
@@ -792,194 +793,292 @@ class _RrhhAuditViewState extends State<RrhhAuditView> {
                           ),
                         ),
                       )
-                    : SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          dataRowMinHeight: 64,
-                          dataRowMaxHeight: 74,
-                          headingRowHeight: 48,
-                          horizontalMargin: 16,
-                          columnSpacing: 24,
-                          headingRowColor: WidgetStatePropertyAll(
-                            isDark
-                                ? const Color(0xFF161F30)
-                                : const Color(0xFFF8FAFC),
-                          ),
-                          columns: [
-                            DataColumn(
-                              label: Text(
-                                'Fecha y Hora',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Categoría RRHH',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Colaborador',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Acción Realizada',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Registrado por',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Severidad',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Detalles',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ],
-                          rows: events.map((ev) {
-                            return DataRow(
-                              cells: [
-                                DataCell(
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        '${ev.timestamp.day.toString().padLeft(2, '0')}/${ev.timestamp.month.toString().padLeft(2, '0')}/${ev.timestamp.year}',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      Text(
-                                        '${ev.timestamp.hour.toString().padLeft(2, '0')}:${ev.timestamp.minute.toString().padLeft(2, '0')} hrs',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 10,
-                                          color: const Color(0xFF64748B),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                DataCell(_buildCategoryBadge(ev.category)),
-                                DataCell(
-                                  ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 180,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          ev.employeeName,
-                                          style: GoogleFonts.inter(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        Text(
-                                          ev.employeeCode,
-                                          style: GoogleFonts.inter(
-                                            fontSize: 10,
-                                            color: const Color(0xFF64748B),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 240,
-                                    ),
-                                    child: Text(
-                                      ev.action,
-                                      style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 170,
-                                    ),
-                                    child: Text(
-                                      ev.performedBy,
-                                      style: GoogleFonts.inter(
-                                        fontSize: 11,
-                                        color: const Color(0xFF64748B),
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                DataCell(_buildSeverityBadge(ev.severity)),
-                                DataCell(
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.visibility_outlined,
-                                      size: 18,
-                                    ),
-                                    tooltip: 'Ver detalle del movimiento',
-                                    onPressed: () => _showEventDetails(ev),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
+                    : LayoutBuilder(
+                        builder: (layoutCtx, constraints) {
+                          final isMobile = constraints.maxWidth < 768;
+                          if (isMobile) {
+                            return _buildAuditMobileCardView(events, isDark);
+                          }
+                          return _buildAuditDesktopTable(
+                            events,
+                            isDark,
+                            constraints.maxWidth,
+                          );
+                        },
                       ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAuditDesktopTable(
+    List<RrhhAuditEvent> events,
+    bool isDark,
+    double maxWidth,
+  ) {
+    final tableWidth = max(maxWidth - 48, 1060.0);
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SizedBox(
+        width: tableWidth,
+        child: Table(
+          columnWidths: const {
+            0: FlexColumnWidth(1.6), // Fecha y Hora
+            1: FlexColumnWidth(1.8), // Categoría RRHH
+            2: FlexColumnWidth(2.0), // Colaborador
+            3: FlexColumnWidth(2.6), // Acción Realizada
+            4: FlexColumnWidth(2.0), // Registrado por
+            5: FlexColumnWidth(1.2), // Severidad
+            6: FlexColumnWidth(1.0), // Detalles
+          },
+          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+          children: [
+            // Fila de Encabezado
+            TableRow(
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
+                border: Border(
+                  bottom: BorderSide(
+                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                    width: 1,
+                  ),
+                ),
+              ),
+              children: [
+                _buildAuditHeaderCell('Fecha y Hora', isDark),
+                _buildAuditHeaderCell('Categoría RRHH', isDark),
+                _buildAuditHeaderCell('Colaborador', isDark),
+                _buildAuditHeaderCell('Acción Realizada', isDark),
+                _buildAuditHeaderCell('Registrado por', isDark),
+                _buildAuditHeaderCell('Severidad', isDark),
+                _buildAuditHeaderCell('Detalles', isDark, alignment: Alignment.centerRight),
+              ],
+            ),
+            // Filas de Datos
+            ...events.map((ev) {
+              return TableRow(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                children: [
+                  // Fecha y Hora
+                  _buildAuditBodyCell(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${ev.timestamp.day.toString().padLeft(2, '0')}/${ev.timestamp.month.toString().padLeft(2, '0')}/${ev.timestamp.year}',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          ),
+                        ),
+                        Text(
+                          '${ev.timestamp.hour.toString().padLeft(2, '0')}:${ev.timestamp.minute.toString().padLeft(2, '0')} hrs',
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Categoría
+                  _buildAuditBodyCell(_buildCategoryBadge(ev.category)),
+                  // Colaborador
+                  _buildAuditBodyCell(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          ev.employeeName,
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          ev.employeeCode,
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Acción
+                  _buildAuditBodyCell(
+                    Text(
+                      ev.action,
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  // Registrado por
+                  _buildAuditBodyCell(
+                    Text(
+                      ev.performedBy,
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: const Color(0xFF64748B),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  // Severidad
+                  _buildAuditBodyCell(_buildSeverityBadge(ev.severity)),
+                  // Detalles
+                  _buildAuditBodyCell(
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                        icon: const Icon(Icons.visibility_outlined, size: 18),
+                        tooltip: 'Ver detalle del movimiento',
+                        onPressed: () => _showEventDetails(ev),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAuditMobileCardView(
+    List<RrhhAuditEvent> events,
+    bool isDark,
+  ) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: events.length,
+      separatorBuilder: (sepCtx, index) => const SizedBox(height: 12),
+      itemBuilder: (itemCtx, index) {
+        final ev = events[index];
+        return Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0F172A) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${ev.timestamp.day.toString().padLeft(2, '0')}/${ev.timestamp.month.toString().padLeft(2, '0')}/${ev.timestamp.year} ${ev.timestamp.hour.toString().padLeft(2, '0')}:${ev.timestamp.minute.toString().padLeft(2, '0')}',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF64748B),
+                    ),
+                  ),
+                  _buildSeverityBadge(ev.severity),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  _buildCategoryBadge(ev.category),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${ev.employeeName} (${ev.employeeCode})',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                ev.action,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Por: ${ev.performedBy}',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  color: const Color(0xFF64748B),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                height: 44, // Touch target mínimo de 44px
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.visibility_outlined, size: 16),
+                  label: const Text('Ver Detalle del Movimiento'),
+                  onPressed: () => _showEventDetails(ev),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAuditHeaderCell(
+    String text,
+    bool isDark, {
+    Alignment alignment = Alignment.centerLeft,
+  }) {
+    return Container(
+      alignment: alignment,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      child: Text(
+        text,
+        style: GoogleFonts.inter(
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAuditBodyCell(Widget child) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: child,
     );
   }
 
