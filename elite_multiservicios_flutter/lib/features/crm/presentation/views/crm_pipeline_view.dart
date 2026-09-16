@@ -604,10 +604,8 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
         return;
       }
     } else if (targetStage == 'Propuesta') {
-      if (deal.quoteItems.isEmpty) {
-        _showQuotationBuilderDialog(deal, targetStage: 'Propuesta');
-        return;
-      }
+      _showQuotationBuilderDialog(deal, targetStage: 'Propuesta');
+      return;
     } else if (targetStage == 'Negociación') {
       if (deal.taxId.trim().isEmpty || deal.legalBusinessName.trim().isEmpty) {
         _showStageGateLegalDialog(deal);
@@ -3329,15 +3327,42 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Cotizador & Presupuesto Comercial',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: isDark
-                                ? Colors.white
-                                : const Color(0xFF0F172A),
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              'Cotizador & Presupuesto Comercial',
+                              style: GoogleFonts.inter(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
+                            ),
+                            if (targetStage != null) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(
+                                    0xFF10B981,
+                                  ).withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  'COMPUERTA ETAPA 3/5: PROPUESTA',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF10B981),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                         Text(
                           '${deal.id} • ${deal.clientName} (${deal.serviceType})',
@@ -3398,7 +3423,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                             children: [
                               Expanded(
                                 child: _buildContractTypeTab(
-                                  label: 'Proyecto Único / Obra',
+                                  label: 'Proyecto Único',
                                   icon: Icons.construction_outlined,
                                   color: const Color(0xFF8B5CF6),
                                   isSelected:
@@ -3411,6 +3436,28 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                       executionTime = '7 días hábiles';
                                       paymentTerms =
                                           '50% Anticipo / 50% Recepción Conforme';
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: _buildContractTypeTab(
+                                  label: 'Servicio por Evento',
+                                  icon: Icons.festival_outlined,
+                                  color: const Color(0xFFEAB308),
+                                  isSelected:
+                                      selectedContractType ==
+                                      'Servicio por Evento',
+                                  isDark: isDark,
+                                  onTap: () {
+                                    setModalState(() {
+                                      selectedContractType =
+                                          'Servicio por Evento';
+                                      advancePct = 50;
+                                      executionTime = '3 días (Evento/Feria)';
+                                      paymentTerms =
+                                          '50% Reserva / 50% Inicio del Evento';
                                     });
                                   },
                                 ),
@@ -4592,9 +4639,16 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                       vertical: 10,
                     ),
                   ),
-                  icon: const Icon(Icons.check_circle_outline, size: 18),
+                  icon: Icon(
+                    targetStage != null
+                        ? Icons.arrow_forward
+                        : Icons.check_circle_outline,
+                    size: 18,
+                  ),
                   label: Text(
-                    'Guardar Cotización',
+                    targetStage != null
+                        ? 'Guardar Cotización & Avanzar a Propuesta'
+                        : 'Guardar Cotización',
                     style: GoogleFonts.inter(
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
