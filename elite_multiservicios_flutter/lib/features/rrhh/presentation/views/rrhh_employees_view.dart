@@ -845,6 +845,10 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                     initialDate: realStartDate,
                                     firstDate: DateTime(2020),
                                     lastDate: DateTime(2030),
+                                    locale: const Locale('es', 'ES'),
+                                    helpText: 'SELECCIONAR FECHA DE INICIO REAL',
+                                    cancelText: 'Cancelar',
+                                    confirmText: 'Aceptar',
                                   );
                                   if (picked != null) {
                                     setModalState(() => realStartDate = picked);
@@ -868,6 +872,10 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                     initialDate: fiscalStartDate,
                                     firstDate: DateTime(2020),
                                     lastDate: DateTime(2030),
+                                    locale: const Locale('es', 'ES'),
+                                    helpText: 'SELECCIONAR FECHA DE INICIO FISCAL',
+                                    cancelText: 'Cancelar',
+                                    confirmText: 'Aceptar',
                                   );
                                   if (picked != null) {
                                     setModalState(
