@@ -501,19 +501,19 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       text: 'EMP-00${_employees.length + 1}',
     );
     final nameCtrl = TextEditingController();
-    final birthPlaceCtrl = TextEditingController(text: 'Santa Cruz');
+    final birthPlaceCtrl = TextEditingController();
     final ciCtrl = TextEditingController();
     final phoneCtrl = TextEditingController();
     final addressCtrl = TextEditingController();
     final occupationCtrl = TextEditingController();
     final refNameCtrl = TextEditingController();
     final refPhoneCtrl = TextEditingController();
-    final salaryCtrl = TextEditingController(text: '3500');
+    final salaryCtrl = TextEditingController();
+    final positionCtrl = TextEditingController();
     final obsCtrl = TextEditingController();
 
     String selectedType = 'OPERATIVO';
     String selectedWorkplace = 'Kolping - Central';
-    String selectedPosition = 'Personal de Limpieza';
     String selectedDept = 'Operaciones';
     String selectedContract = 'Indefinido';
 
@@ -625,6 +625,7 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                 controller: birthPlaceCtrl,
                                 decoration: const InputDecoration(
                                   labelText: 'Lugar de Nacimiento',
+                                  hintText: 'Ej. Santa Cruz',
                                 ),
                               ),
                             ),
@@ -784,10 +785,18 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                 keyboardType: TextInputType.number,
                                 decoration: const InputDecoration(
                                   labelText: 'Sueldo Pactado Bs. *',
+                                  hintText: 'Ej. 3500',
                                 ),
-                                validator: (v) => v == null || v.trim().isEmpty
-                                    ? 'Requerido'
-                                    : null,
+                                validator: (v) {
+                                  if (v == null || v.trim().isEmpty) {
+                                    return 'Requerido';
+                                  }
+                                  final num = double.tryParse(v.trim());
+                                  if (num == null || num < 0) {
+                                    return 'Monto no válido';
+                                  }
+                                  return null;
+                                },
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -821,11 +830,14 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: TextFormField(
-                                initialValue: selectedPosition,
+                                controller: positionCtrl,
                                 decoration: const InputDecoration(
-                                  labelText: 'Cargo Asignado',
+                                  labelText: 'Cargo Asignado *',
+                                  hintText: 'Ej. Personal de Limpieza',
                                 ),
-                                onChanged: (v) => selectedPosition = v,
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? 'Requerido'
+                                    : null,
                               ),
                             ),
                           ],
@@ -1010,13 +1022,14 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                             referencePhone: refPhoneCtrl.text.trim(),
                             workplace: selectedWorkplace,
                             employeeType: selectedType,
-                            position: selectedPosition,
+                            position: positionCtrl.text.trim().isEmpty
+                                ? 'Personal Operativo'
+                                : positionCtrl.text.trim(),
                             department: selectedDept,
                             realStartDate: realStartDate,
                             fiscalStartDate: fiscalStartDate,
                             agreedSalary:
-                                double.tryParse(salaryCtrl.text.trim()) ??
-                                3500.0,
+                                double.tryParse(salaryCtrl.text.trim()) ?? 0.0,
                             contractType: selectedContract,
                             observations: obsCtrl.text.trim(),
                             status: 'ACTIVO',
@@ -1034,7 +1047,7 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                           employeeCode: codeCtrl.text.trim().toUpperCase(),
                           employeeName: nameCtrl.text.trim(),
                           details:
-                              'Asignado a la empresa/sede "$selectedWorkplace" en cargo de $selectedPosition con sueldo pactado Bs. ${salaryCtrl.text.trim()}.',
+                              'Asignado a la empresa/sede "$selectedWorkplace" en cargo de ${positionCtrl.text.trim().isEmpty ? "Personal Operativo" : positionCtrl.text.trim()} con sueldo pactado Bs. ${salaryCtrl.text.trim()}.',
                           severity: 'INFO',
                         );
                       });
