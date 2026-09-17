@@ -22,14 +22,31 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
   // Tipo de Trabajador: OFICINA vs CAMPO
   late String _employeeType;
 
-  // Controladores de datos personales
+  // Controladores de datos personales (DATOS DEL PERSONAL)
   late final TextEditingController _fullNameController;
+  late final TextEditingController _codeController;
+  DateTime? _birthDate;
+  late final TextEditingController _birthPlaceController;
   late final TextEditingController _idCardController;
   late final TextEditingController _phoneController;
   late final TextEditingController _addressController;
+  late final TextEditingController _occupationController;
+  late final TextEditingController _personalRefController;
+  late final TextEditingController _refPhoneController;
   late final TextEditingController _salaryController;
-  late final TextEditingController _codeController;
   late final TextEditingController _observationsController;
+
+  // Fechas del Expediente
+  late DateTime _realStartDate;
+  late DateTime _fiscalStartDate;
+
+  // Documentos Físicos Adjuntos (Checklist Oficial)
+  bool _hasCiCopy = true;
+  bool _hasUtilityBill = false;
+  bool _hasHomeSketch = false;
+  bool _hasFelccRecord = false;
+  bool _hasPhoto3x4 = false;
+  bool _hasSusInsurance = false;
 
   // Variables específicas de Oficina
   late String _selectedArea;
@@ -49,6 +66,78 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
   // Contrato
   String _contractType = 'Indefinido';
 
+  /// Determina si el cargo/servicio/área actual corresponde al área de seguridad o guardia
+  bool get _isSecurityRole {
+    final occ = _occupationController.text.toLowerCase();
+    if (_employeeType == 'CAMPO') {
+      final s = _selectedService.toLowerCase();
+      return s.contains('seguridad') ||
+          s.contains('guardia') ||
+          s.contains('vigilancia') ||
+          s.contains('control de acceso') ||
+          occ.contains('seguridad') ||
+          occ.contains('guardia') ||
+          occ.contains('vigilancia');
+    } else {
+      final pos = _selectedPosition.toLowerCase();
+      final area = _selectedArea.toLowerCase();
+      return pos.contains('seguridad') ||
+          pos.contains('guardia') ||
+          pos.contains('vigilancia') ||
+          area.contains('seguridad') ||
+          occ.contains('seguridad') ||
+          occ.contains('guardia') ||
+          occ.contains('vigilancia');
+    }
+  }
+
+  String _formatDate(DateTime? dt) {
+    if (dt == null) return 'Seleccionar fecha';
+    final d = dt.day.toString().padLeft(2, '0');
+    final m = dt.month.toString().padLeft(2, '0');
+    final y = dt.year.toString();
+    return '$d/$m/$y';
+  }
+
+  Future<void> _pickDate({
+    required BuildContext context,
+    required DateTime initialDate,
+    required DateTime firstDate,
+    required DateTime lastDate,
+    required ValueChanged<DateTime> onPicked,
+  }) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      builder: (context, child) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: isDark
+                ? const ColorScheme.dark(
+                    primary: Color(0xFF2563EB),
+                    onPrimary: Colors.white,
+                    surface: Color(0xFF0F172A),
+                    onSurface: Colors.white,
+                  )
+                : const ColorScheme.light(
+                    primary: Color(0xFF2563EB),
+                    onPrimary: Colors.white,
+                    surface: Colors.white,
+                    onSurface: Color(0xFF0F172A),
+                  ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      onPicked(picked);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -57,21 +146,47 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
     _employeeType = app?.targetType ?? 'CAMPO';
 
     _fullNameController = TextEditingController(text: app?.fullName ?? '');
-    _idCardController = TextEditingController(text: app?.identityCard ?? '');
-    _phoneController = TextEditingController(text: app?.phone ?? '');
-    _addressController = TextEditingController(text: app?.address ?? '');
-    _salaryController = TextEditingController(
-      text: (app?.expectedSalary ?? 3500.0).toStringAsFixed(2),
-    );
     _codeController = TextEditingController(
       text:
           'EMP-${(_rrhhService.totalEmployeesCount + 1).toString().padLeft(3, '0')}',
     );
+    _birthDate = app?.birthDate ?? DateTime(1996, 4, 12);
+    _birthPlaceController = TextEditingController(text: 'Santa Cruz, Bolivia');
+    _idCardController = TextEditingController(text: app?.identityCard ?? '');
+    _phoneController = TextEditingController(text: app?.phone ?? '');
+    _addressController = TextEditingController(text: app?.address ?? '');
+    _occupationController = TextEditingController(
+      text:
+          app?.targetPosition ??
+          (_employeeType == 'OFICINA'
+              ? 'Administrativo'
+              : 'Operario de Servicios'),
+    );
+    _occupationController.addListener(() => setState(() {}));
+    _personalRefController = TextEditingController(
+      text: app?.referencePerson ?? 'Familiar Directo',
+    );
+    _refPhoneController = TextEditingController(
+      text: app?.referencePhone ?? '',
+    );
+    _salaryController = TextEditingController(
+      text: (app?.expectedSalary ?? 3500.0).toStringAsFixed(2),
+    );
     _observationsController = TextEditingController(
       text: app != null
           ? 'Contratado tras proceso de selección. Postulación: ${app.code}.'
-          : 'Nuevo ingreso en nómina.',
+          : 'Nuevo ingreso en nómina oficial.',
     );
+
+    _realStartDate = DateTime.now();
+    _fiscalStartDate = DateTime.now();
+
+    _hasCiCopy = app?.hasIdentityCardCopy ?? true;
+    _hasUtilityBill = false;
+    _hasHomeSketch = false;
+    _hasFelccRecord = false;
+    _hasPhoto3x4 = false;
+    _hasSusInsurance = false;
 
     // Valores iniciales para Oficina
     _selectedArea = _rrhhService.areas.isNotEmpty
@@ -110,11 +225,15 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
   @override
   void dispose() {
     _fullNameController.dispose();
+    _codeController.dispose();
+    _birthPlaceController.dispose();
     _idCardController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
+    _occupationController.dispose();
+    _personalRefController.dispose();
+    _refPhoneController.dispose();
     _salaryController.dispose();
-    _codeController.dispose();
     _observationsController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -128,6 +247,39 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
 
   void _submitHire() {
     if (!_formKey.currentState!.validate()) return;
+
+    // VALIDACIÓN ESTRICTA: Guardia / Área de Seguridad exige antecedentes FELCC
+    if (_isSecurityRole && !_hasFelccRecord) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: const [
+              Icon(Icons.warning_amber_rounded, color: Colors.white),
+              SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Bloqueo de seguridad: Para personal del área de Seguridad / Guardia, el Certificado de Antecedentes (FELCC) es OBLIGATORIO por normativa legal.',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: const Color(0xFFDC2626),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 5),
+          action: SnackBarAction(
+            label: 'MARCAR FELCC',
+            textColor: Colors.white,
+            onPressed: () {
+              setState(() {
+                _hasFelccRecord = true;
+              });
+            },
+          ),
+        ),
+      );
+      return;
+    }
 
     final salary = double.tryParse(_salaryController.text.trim()) ?? 3500.0;
     final code = _codeController.text.trim();
@@ -160,21 +312,53 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
             : _selectedFieldSchedule,
         observations: _observationsController.text.trim(),
         processedBy: 'Paola Andrea Torrico Vaca',
+        birthDate: _birthDate,
+        birthPlace: _birthPlaceController.text.trim().isNotEmpty
+            ? _birthPlaceController.text.trim()
+            : 'Santa Cruz, Bolivia',
+        occupation: _occupationController.text.trim().isNotEmpty
+            ? _occupationController.text.trim()
+            : (_employeeType == 'OFICINA'
+                  ? _selectedPosition
+                  : _selectedService),
+        personalReference: _personalRefController.text.trim().isNotEmpty
+            ? _personalRefController.text.trim()
+            : 'Familiar Directo',
+        referencePhone: _refPhoneController.text.trim().isNotEmpty
+            ? _refPhoneController.text.trim()
+            : _phoneController.text.trim(),
+        realStartDate: _realStartDate,
+        fiscalStartDate: _fiscalStartDate,
+        hasCiCopy: _hasCiCopy,
+        hasUtilityBill: _hasUtilityBill,
+        hasHomeSketch: _hasHomeSketch,
+        hasFelccRecord: _hasFelccRecord,
+        hasPhoto3x4: _hasPhoto3x4,
+        hasSusInsurance: _hasSusInsurance,
       );
     } else {
       newEmployee = RrhhEmployee(
         id: 'emp-${DateTime.now().millisecondsSinceEpoch}',
         code: code,
         fullName: _fullNameController.text.trim(),
-        birthPlace: 'Bolivia',
+        birthDate: _birthDate,
+        birthPlace: _birthPlaceController.text.trim().isNotEmpty
+            ? _birthPlaceController.text.trim()
+            : 'Santa Cruz, Bolivia',
         identityCard: _idCardController.text.trim(),
         phone: _phoneController.text.trim(),
         address: _addressController.text.trim(),
-        occupation: _employeeType == 'OFICINA'
-            ? _selectedPosition
-            : _selectedService,
-        personalReference: 'Familiar Directo',
-        referencePhone: _phoneController.text.trim(),
+        occupation: _occupationController.text.trim().isNotEmpty
+            ? _occupationController.text.trim()
+            : (_employeeType == 'OFICINA'
+                  ? _selectedPosition
+                  : _selectedService),
+        personalReference: _personalRefController.text.trim().isNotEmpty
+            ? _personalRefController.text.trim()
+            : 'Familiar Directo',
+        referencePhone: _refPhoneController.text.trim().isNotEmpty
+            ? _refPhoneController.text.trim()
+            : _phoneController.text.trim(),
         employeeType: _employeeType,
         area: _employeeType == 'OFICINA'
             ? _selectedArea
@@ -191,12 +375,18 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
         supervisor: _employeeType == 'OFICINA'
             ? _selectedSupervisor
             : _selectedFieldSupervisor,
-        realStartDate: DateTime.now(),
-        fiscalStartDate: DateTime.now(),
+        realStartDate: _realStartDate,
+        fiscalStartDate: _fiscalStartDate,
         agreedSalary: salary,
         contractType: _contractType,
         observations: _observationsController.text.trim(),
         status: 'ACTIVO',
+        hasCiCopy: _hasCiCopy,
+        hasUtilityBill: _hasUtilityBill,
+        hasHomeSketch: _hasHomeSketch,
+        hasFelccRecord: _hasFelccRecord,
+        hasPhoto3x4: _hasPhoto3x4,
+        hasSusInsurance: _hasSusInsurance,
       );
       _rrhhService.addEmployee(newEmployee);
     }
@@ -593,9 +783,9 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                         ),
                         const SizedBox(height: 20),
 
-                        // Datos Personales
+                        // Datos Personales (Hoja Oficial: DATOS DEL PERSONAL)
                         Text(
-                          '2. DATOS GENERALES DEL TRABAJADOR:',
+                          '2. DATOS GENERALES DEL TRABAJADOR (EXPEDIENTE OFICIAL):',
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
@@ -610,7 +800,7 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                               child: TextFormField(
                                 controller: _fullNameController,
                                 decoration: const InputDecoration(
-                                  labelText: 'Nombre Completo *',
+                                  labelText: 'Nombre y Apellidos *',
                                   border: OutlineInputBorder(),
                                 ),
                                 validator: (v) => v == null || v.trim().isEmpty
@@ -638,10 +828,45 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                         Row(
                           children: [
                             Expanded(
+                              child: _buildDateField(
+                                context: context,
+                                label: 'Fecha de Nacimiento *',
+                                date: _birthDate,
+                                isDark: isDark,
+                                onTap: () => _pickDate(
+                                  context: context,
+                                  initialDate:
+                                      _birthDate ?? DateTime(1996, 4, 12),
+                                  firstDate: DateTime(1940),
+                                  lastDate: DateTime.now(),
+                                  onPicked: (d) =>
+                                      setState(() => _birthDate = d),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _birthPlaceController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Lugar de Nacimiento *',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
                               child: TextFormField(
                                 controller: _idCardController,
                                 decoration: const InputDecoration(
-                                  labelText: 'C.I. / Documento *',
+                                  labelText: 'N° de C.I. *',
                                   border: OutlineInputBorder(),
                                 ),
                                 validator: (v) => v == null || v.trim().isEmpty
@@ -654,7 +879,7 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                               child: TextFormField(
                                 controller: _phoneController,
                                 decoration: const InputDecoration(
-                                  labelText: 'Teléfono Celular *',
+                                  labelText: 'N° de Teléfono *',
                                   border: OutlineInputBorder(),
                                 ),
                                 validator: (v) => v == null || v.trim().isEmpty
@@ -665,15 +890,64 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        TextFormField(
-                          controller: _addressController,
-                          decoration: const InputDecoration(
-                            labelText: 'Dirección Domiciliaria *',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (v) => v == null || v.trim().isEmpty
-                              ? 'Requerido'
-                              : null,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _addressController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Dirección Domiciliaria *',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _occupationController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Ocupación / Profesión *',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _personalRefController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Referencia Personal *',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _refPhoneController,
+                                decoration: const InputDecoration(
+                                  labelText: 'N° Telf. Referencia *',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 20),
 
@@ -925,9 +1199,9 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                         ],
 
                         const SizedBox(height: 20),
-                        // Sueldo y Tipo de Contrato
+                        // Sueldo y Tipo de Contrato (Hoja Oficial)
                         Text(
-                          '4. CONDICIONES LABORALES & CONTRATO:',
+                          '4. CONDICIONES LABORALES & FECHAS DE INICIO:',
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
@@ -935,6 +1209,44 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                           ),
                         ),
                         const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDateField(
+                                context: context,
+                                label: 'Fecha de Inicio Fiscal *',
+                                date: _fiscalStartDate,
+                                isDark: isDark,
+                                onTap: () => _pickDate(
+                                  context: context,
+                                  initialDate: _fiscalStartDate,
+                                  firstDate: DateTime(2020),
+                                  lastDate: DateTime(2035),
+                                  onPicked: (d) =>
+                                      setState(() => _fiscalStartDate = d),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildDateField(
+                                context: context,
+                                label: 'Fecha de Inicio Real *',
+                                date: _realStartDate,
+                                isDark: isDark,
+                                onTap: () => _pickDate(
+                                  context: context,
+                                  initialDate: _realStartDate,
+                                  firstDate: DateTime(2020),
+                                  lastDate: DateTime(2035),
+                                  onPicked: (d) =>
+                                      setState(() => _realStartDate = d),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
                         Row(
                           children: [
                             Expanded(
@@ -988,7 +1300,198 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+
+                        const SizedBox(height: 20),
+                        // Expediente y Documentos Adjuntos
+                        Row(
+                          children: [
+                            Text(
+                              '5. DOCUMENTOS ADJUNTOS (CHECKLIST DE EXPEDIENTE):',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF2563EB),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF2563EB,
+                                ).withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'Hoja Física Oficial',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF2563EB),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+
+                        // Alerta especial si es de seguridad
+                        if (_isSecurityRole) ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFFDC2626,
+                              ).withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: const Color(
+                                  0xFFDC2626,
+                                ).withValues(alpha: 0.35),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      0xFFDC2626,
+                                    ).withValues(alpha: 0.18),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    Icons.shield,
+                                    color: Color(0xFFDC2626),
+                                    size: 22,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Requisito Excluyente para Personal de Seguridad',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                          color: const Color(0xFFDC2626),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'Por disposición reglamentaria y normativa de seguridad, todo postulante a Guardia de Seguridad o Vigilancia debe presentar OBLIGATORIAMENTE el Certificado de Antecedentes FELCC para su contratación.',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 11,
+                                          color: isDark
+                                              ? const Color(0xFFFCA5A5)
+                                              : const Color(0xFF991B1B),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+
+                        // Checkbox Grid / Rows
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDocCheckbox(
+                                title: 'FOTOCOPIA CI',
+                                value: _hasCiCopy,
+                                onChanged: (v) =>
+                                    setState(() => _hasCiCopy = v),
+                                isDark: isDark,
+                                icon: Icons.badge_outlined,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildDocCheckbox(
+                                title: 'FOT. AVISO LUZ/AGUA',
+                                value: _hasUtilityBill,
+                                onChanged: (v) =>
+                                    setState(() => _hasUtilityBill = v),
+                                isDark: isDark,
+                                icon: Icons.receipt_long_outlined,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDocCheckbox(
+                                title: 'CROQUIS DOM.',
+                                value: _hasHomeSketch,
+                                onChanged: (v) =>
+                                    setState(() => _hasHomeSketch = v),
+                                isDark: isDark,
+                                icon: Icons.map_outlined,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildDocCheckbox(
+                                title: 'ANTECEDENTES FELCC',
+                                value: _hasFelccRecord,
+                                onChanged: (v) =>
+                                    setState(() => _hasFelccRecord = v),
+                                isDark: isDark,
+                                isRequired: _isSecurityRole,
+                                icon: Icons.verified_user_outlined,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDocCheckbox(
+                                title: 'FOTO 3X4',
+                                value: _hasPhoto3x4,
+                                onChanged: (v) =>
+                                    setState(() => _hasPhoto3x4 = v),
+                                isDark: isDark,
+                                icon: Icons.portrait_outlined,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildDocCheckbox(
+                                title: 'SEGURO DE SUS',
+                                value: _hasSusInsurance,
+                                onChanged: (v) =>
+                                    setState(() => _hasSusInsurance = v),
+                                isDark: isDark,
+                                icon: Icons.medical_services_outlined,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20),
+                        Text(
+                          '6. OBSERVACIONES:',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF2563EB),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
                         TextFormField(
                           controller: _observationsController,
                           maxLines: 2,
@@ -1082,6 +1585,123 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                       color: const Color(0xFF64748B),
                     ),
                   ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateField({
+    required BuildContext context,
+    required String label,
+    required DateTime? date,
+    required VoidCallback onTap,
+    required bool isDark,
+    IconData icon = Icons.calendar_today_outlined,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(4),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+          suffixIcon: Icon(icon, size: 18),
+        ),
+        child: Text(
+          _formatDate(date),
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            color: date != null
+                ? (isDark ? Colors.white : const Color(0xFF0F172A))
+                : const Color(0xFF64748B),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDocCheckbox({
+    required String title,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+    required bool isDark,
+    bool isRequired = false,
+    IconData icon = Icons.description_outlined,
+  }) {
+    final activeBorderColor = isRequired && !value
+        ? const Color(0xFFEF4444)
+        : (value
+              ? const Color(0xFF10B981)
+              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)));
+    final activeBgColor = isRequired && !value
+        ? const Color(0xFFEF4444).withValues(alpha: 0.08)
+        : (value
+              ? const Color(0xFF10B981).withValues(alpha: 0.08)
+              : (isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC)));
+
+    return InkWell(
+      onTap: () => onChanged(!value),
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: activeBgColor,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: activeBorderColor,
+            width: isRequired && !value ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Checkbox(
+              value: value,
+              onChanged: (v) => onChanged(v ?? false),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              activeColor: const Color(0xFF10B981),
+            ),
+            Icon(
+              icon,
+              size: 18,
+              color: value
+                  ? const Color(0xFF10B981)
+                  : (isRequired
+                        ? const Color(0xFFEF4444)
+                        : const Color(0xFF64748B)),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                  ),
+                  if (isRequired)
+                    Text(
+                      value
+                          ? '✓ Presentado (Obligatorio)'
+                          : '⚠️ Faltante Obligatorio',
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: value
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFFEF4444),
+                      ),
+                    ),
                 ],
               ),
             ),
