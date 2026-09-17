@@ -128,6 +128,10 @@ class _AuditLogViewState extends State<AuditLogView> {
       lastDate: DateTime.now().add(const Duration(days: 365)),
       initialDateRange: _selectedDateRange,
       helpText: 'Seleccionar rango de auditoría',
+      cancelText: 'Cancelar',
+      confirmText: 'Aceptar',
+      saveText: 'Guardar',
+      locale: const Locale('es', 'ES'),
     );
 
     if (picked != null && picked != _selectedDateRange) {

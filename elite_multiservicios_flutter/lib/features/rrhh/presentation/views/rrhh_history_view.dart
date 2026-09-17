@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -36,6 +37,8 @@ class RrhhHistoryView extends StatefulWidget {
 }
 
 class _RrhhHistoryViewState extends State<RrhhHistoryView> {
+  String _search = '';
+
   final List<TerminationRecord> _records = [
     TerminationRecord(
       id: 'term-001',
@@ -102,13 +105,8 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Se reactivará la ficha de ${record.employeeName} (${record.employeeCode}) conservando su histórico anterior e iniciando un nuevo periodo contractual.',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  color: isDark
-                      ? const Color(0xFFCBD5E1)
-                      : const Color(0xFF334155),
-                ),
+                '¿Desea iniciar el proceso de reactivación/recontratación para ${record.employeeName} (${record.employeeCode})?',
+                style: GoogleFonts.inter(fontSize: 13),
               ),
               const SizedBox(height: 12),
               Container(
@@ -119,12 +117,33 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                       : const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(
-                  'Regla inquebrantable: No se duplica la persona en la base de datos. Se genera un nuevo Contrato vinculado al mismo identificador.',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: const Color(0xFF64748B),
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Último cargo: ${record.lastPosition}',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Motivo de salida: ${record.reason}',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: const Color(0xFF64748B),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Observaciones previas: ${record.notes}',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: const Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -137,16 +156,13 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
             FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: const Color(0xFF10B981),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
               ),
               onPressed: () {
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Proceso de recontratación iniciado para ${record.employeeName}.',
+                      'Se ha iniciado el expediente de recontratación para ${record.employeeName}.',
                     ),
                     backgroundColor: const Color(0xFF10B981),
                   ),
@@ -164,254 +180,734 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    final filtered = _records.where((r) {
+      if (_search.isEmpty) return true;
+      final q = _search.toLowerCase();
+      return r.employeeName.toLowerCase().contains(q) ||
+          r.employeeCode.toLowerCase().contains(q) ||
+          r.lastPosition.toLowerCase().contains(q) ||
+          r.reason.toLowerCase().contains(q);
+    }).toList();
+
+    final totalBajas = _records.length;
+    final totalRenuncias = _records
+        .where((r) => r.reason.contains('Renuncia'))
+        .length;
+    final totalFinContrato = _records
+        .where((r) => r.reason.contains('Fin de Contrato'))
+        .length;
+
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Encabezado
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isMobile = constraints.maxWidth < 768;
+
+          return SingleChildScrollView(
+            padding: EdgeInsets.all(isMobile ? 16 : 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Bajas & Historial Laboral',
-                      style: GoogleFonts.inter(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                // Encabezado
+                if (isMobile)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Bajas & Historial Laboral',
+                        style: GoogleFonts.inter(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Auditoría y trazabilidad histórica de desvinculaciones.',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildZeroLossBadge(),
+                    ],
+                  )
+                else
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Bajas & Historial Laboral',
+                            style: GoogleFonts.inter(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Auditoría y trazabilidad histórica de desvinculaciones y recontrataciones sin pérdida de datos.',
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              color: isDark
+                                  ? const Color(0xFF94A3B8)
+                                  : const Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
+                      _buildZeroLossBadge(),
+                    ],
+                  ),
+
+                const SizedBox(height: 20),
+
+                // Tarjetas KPI Rápidas
+                if (isMobile)
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          _buildKpiCard(
+                            'Total Bajas Registradas',
+                            '$totalBajas',
+                            Icons.history_outlined,
+                            const Color(0xFFEF4444),
+                            isDark,
+                          ),
+                          const SizedBox(width: 12),
+                          _buildKpiCard(
+                            'Renuncias Voluntarias',
+                            '$totalRenuncias',
+                            Icons.person_off_outlined,
+                            const Color(0xFFF59E0B),
+                            isDark,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          _buildKpiCard(
+                            'Fin de Contrato',
+                            '$totalFinContrato',
+                            Icons.event_busy_outlined,
+                            const Color(0xFF3B82F6),
+                            isDark,
+                          ),
+                          const SizedBox(width: 12),
+                          _buildKpiCard(
+                            'Expedientes Aptos Reingreso',
+                            '$totalBajas',
+                            Icons.how_to_reg_outlined,
+                            const Color(0xFF10B981),
+                            isDark,
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                else
+                  Row(
+                    children: [
+                      _buildKpiCard(
+                        'Total Bajas Registradas',
+                        '$totalBajas',
+                        Icons.history_outlined,
+                        const Color(0xFFEF4444),
+                        isDark,
+                      ),
+                      const SizedBox(width: 16),
+                      _buildKpiCard(
+                        'Renuncias Voluntarias',
+                        '$totalRenuncias',
+                        Icons.person_off_outlined,
+                        const Color(0xFFF59E0B),
+                        isDark,
+                      ),
+                      const SizedBox(width: 16),
+                      _buildKpiCard(
+                        'Fin de Contrato',
+                        '$totalFinContrato',
+                        Icons.event_busy_outlined,
+                        const Color(0xFF3B82F6),
+                        isDark,
+                      ),
+                      const SizedBox(width: 16),
+                      _buildKpiCard(
+                        'Expedientes Aptos Reingreso',
+                        '$totalBajas',
+                        Icons.how_to_reg_outlined,
+                        const Color(0xFF10B981),
+                        isDark,
+                      ),
+                    ],
+                  ),
+
+                const SizedBox(height: 20),
+
+                // Buscador
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF0F172A) : Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFE2E8F0),
+                    ),
+                  ),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText:
+                          'Buscar por ex-colaborador, código de ficha o motivo de salida...',
+                      prefixIcon: const Icon(Icons.search, size: 18),
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Auditoría y trazabilidad histórica de desvinculaciones y recontrataciones sin pérdida de datos.',
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
+                    onChanged: (v) => setState(() => _search = v),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Vista de Datos: Card View en móvil, Tabla Proporcional 100% en Desktop
+                if (isMobile)
+                  _buildMobileCardView(filtered, isDark)
+                else
+                  _buildDesktopTable(filtered, isDark, constraints.maxWidth),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildZeroLossBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF10B981).withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: const Color(0xFF10B981).withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.shield_outlined, size: 16, color: Color(0xFF10B981)),
+          const SizedBox(width: 8),
+          Text(
+            'POLÍTICA ZERO DATA LOSS',
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF10B981),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildKpiCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+    bool isDark,
+  ) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF0F172A) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: const Color(0xFF64748B),
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    value,
+                    style: GoogleFonts.inter(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDesktopTable(
+    List<TerminationRecord> records,
+    bool isDark,
+    double maxWidth,
+  ) {
+    if (records.isEmpty) {
+      return _buildEmptyState(isDark);
+    }
+
+    final tableWidth = max(maxWidth, 920.0);
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: tableWidth,
+            child: Table(
+              columnWidths: const {
+                0: FlexColumnWidth(2.3), // Ex-Colaborador
+                1: FlexColumnWidth(2.3), // Último Cargo
+                2: FlexColumnWidth(1.6), // Fecha de Baja
+                3: FlexColumnWidth(2.0), // Motivo de Salida
+                4: FlexColumnWidth(2.2), // Registrado Por
+                5: FlexColumnWidth(1.4), // Acciones
+              },
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              children: [
+                // Header
+                TableRow(
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF161F30)
+                        : const Color(0xFFF8FAFC),
+                    border: Border(
+                      bottom: BorderSide(
                         color: isDark
-                            ? const Color(0xFF94A3B8)
-                            : const Color(0xFF64748B),
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFE2E8F0),
+                        width: 1,
                       ),
+                    ),
+                  ),
+                  children: [
+                    _buildHeaderCell('Ex-Colaborador', isDark),
+                    _buildHeaderCell('Último Cargo', isDark),
+                    _buildHeaderCell('Fecha de Baja', isDark),
+                    _buildHeaderCell('Motivo de Salida', isDark),
+                    _buildHeaderCell('Registrado Por', isDark),
+                    _buildHeaderCell(
+                      'Acciones',
+                      isDark,
+                      alignment: Alignment.centerRight,
                     ),
                   ],
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                // Rows
+                ...records.map((rec) {
+                  return TableRow(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFE2E8F0),
+                          width: 1,
+                        ),
+                      ),
                     ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
-                        Icons.shield_outlined,
-                        size: 16,
-                        color: Color(0xFF10B981),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'POLÍTICA ZERO DATA LOSS',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF10B981),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-
-            // Tabla de Bajas
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF0F172A) : Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isDark
-                      ? const Color(0xFF1E293B)
-                      : const Color(0xFFE2E8F0),
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    dataRowMinHeight: 64,
-                    dataRowMaxHeight: 72,
-                    headingRowHeight: 48,
-                    horizontalMargin: 16,
-                    columnSpacing: 24,
-                    headingRowColor: WidgetStatePropertyAll(
-                      isDark
-                          ? const Color(0xFF161F30)
-                          : const Color(0xFFF8FAFC),
-                    ),
-                    columns: [
-                      DataColumn(
-                        label: Text(
-                          'Ex-Colaborador',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Último Cargo',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Fecha de Baja',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Motivo de Salida',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Registrado Por',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Acciones',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ],
-                    rows: _records.map((rec) {
-                      return DataRow(
-                        cells: [
-                          DataCell(
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  rec.employeeName,
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                Text(
-                                  rec.employeeCode,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 10,
-                                    color: const Color(0xFF64748B),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          DataCell(
+                      // Ex-Colaborador
+                      _buildBodyCell(
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
                             Text(
-                              rec.lastPosition,
-                              style: GoogleFonts.inter(fontSize: 12),
-                            ),
-                          ),
-                          DataCell(
-                            Text(
-                              '${rec.terminationDate.day}/${rec.terminationDate.month}/${rec.terminationDate.year}',
-                              style: GoogleFonts.inter(fontSize: 12),
-                            ),
-                          ),
-                          DataCell(
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(
-                                  0xFFEF4444,
-                                ).withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                rec.reason,
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFFEF4444),
-                                ),
+                              rec.employeeName,
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
                               ),
                             ),
-                          ),
-                          DataCell(
+                            const SizedBox(height: 2),
                             Text(
-                              rec.registeredBy,
+                              rec.employeeCode,
                               style: GoogleFonts.inter(
                                 fontSize: 11,
                                 color: const Color(0xFF64748B),
                               ),
                             ),
+                          ],
+                        ),
+                      ),
+                      // Último Cargo
+                      _buildBodyCell(
+                        Text(
+                          rec.lastPosition,
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF334155),
                           ),
-                          DataCell(
-                            FilledButton.tonalIcon(
-                              style: FilledButton.styleFrom(
-                                visualDensity: VisualDensity.compact,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
+                        ),
+                      ),
+                      // Fecha de Baja
+                      _buildBodyCell(
+                        Text(
+                          '${rec.terminationDate.day}/${rec.terminationDate.month}/${rec.terminationDate.year}',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                          ),
+                        ),
+                      ),
+                      // Motivo
+                      _buildBodyCell(
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFFEF4444,
+                              ).withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: const Color(
+                                  0xFFEF4444,
+                                ).withValues(alpha: 0.3),
                               ),
-                              icon: const Icon(Icons.refresh, size: 14),
-                              label: const Text(
-                                'Recontratar',
-                                style: TextStyle(fontSize: 11),
+                            ),
+                            child: Text(
+                              rec.reason,
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFFEF4444),
                               ),
-                              onPressed: () => _showRehireDialog(rec),
                             ),
                           ),
-                        ],
-                      );
-                    }).toList(),
+                        ),
+                      ),
+                      // Registrado Por
+                      _buildBodyCell(
+                        Text(
+                          rec.registeredBy,
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ),
+                      // Acciones
+                      _buildBodyCell(
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: FilledButton.tonalIcon(
+                            style: FilledButton.styleFrom(
+                              visualDensity: VisualDensity.compact,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                            ),
+                            icon: const Icon(Icons.refresh, size: 14),
+                            label: const Text(
+                              'Recontratar',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            onPressed: () => _showRehireDialog(rec),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderCell(
+    String text,
+    bool isDark, {
+    Alignment alignment = Alignment.centerLeft,
+  }) {
+    return Container(
+      alignment: alignment,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      child: Text(
+        text,
+        style: GoogleFonts.inter(
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBodyCell(Widget child) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: child,
+    );
+  }
+
+  Widget _buildMobileCardView(
+    List<TerminationRecord> records,
+    bool isDark,
+  ) {
+    if (records.isEmpty) {
+      return _buildEmptyState(isDark);
+    }
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: records.length,
+      separatorBuilder: (sepCtx, index) => const SizedBox(height: 12),
+      itemBuilder: (itemCtx, index) {
+        final rec = records[index];
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0F172A) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          rec.employeeName,
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                          ),
+                        ),
+                        Text(
+                          rec.employeeCode,
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEF4444).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      rec.reason,
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFFEF4444),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _buildMobileRow(
+                Icons.work_outline,
+                'Último Cargo',
+                rec.lastPosition,
+                isDark,
+              ),
+              _buildMobileRow(
+                Icons.calendar_today_outlined,
+                'Periodo Laboral',
+                '${rec.hireDate.day}/${rec.hireDate.month}/${rec.hireDate.year} al ${rec.terminationDate.day}/${rec.terminationDate.month}/${rec.terminationDate.year}',
+                isDark,
+              ),
+              _buildMobileRow(
+                Icons.person_outline,
+                'Registrado Por',
+                rec.registeredBy,
+                isDark,
+              ),
+              _buildMobileRow(
+                Icons.notes_outlined,
+                'Observaciones',
+                rec.notes,
+                isDark,
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 44, // Touch target mínimo de 44px
+                child: FilledButton.tonalIcon(
+                  icon: const Icon(Icons.refresh, size: 16),
+                  label: const Text('Iniciar Recontratación'),
+                  onPressed: () => _showRehireDialog(rec),
                 ),
               ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMobileRow(
+    IconData icon,
+    String label,
+    String value,
+    bool isDark,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 14, color: const Color(0xFF64748B)),
+          const SizedBox(width: 8),
+          Text(
+            '$label: ',
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: const Color(0xFF64748B),
             ),
-          ],
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(bool isDark) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(36),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
         ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.search_off_outlined,
+            size: 40,
+            color: isDark ? const Color(0xFF475569) : const Color(0xFF94A3B8),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'No se encontraron registros de bajas coincidentes',
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              color: isDark ? Colors.white : const Color(0xFF0F172A),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Intente con otro término o limpie el buscador.',
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: const Color(0xFF64748B),
+            ),
+          ),
+        ],
       ),
     );
   }
