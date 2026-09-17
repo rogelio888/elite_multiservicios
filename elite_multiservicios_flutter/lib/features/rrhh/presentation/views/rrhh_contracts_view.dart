@@ -7,7 +7,8 @@ class ContractItem {
   final String id;
   final String employeeCode;
   final String employeeName;
-  final String contractType; // 'Indefinido', 'Plazo Fijo (1 año)', 'Prestación de Servicios'
+  final String
+  contractType; // 'Indefinido', 'Plazo Fijo (1 año)', 'Prestación de Servicios'
   final String position;
   final String workplace; // Sucursal o Sede Operativa
   final DateTime startDate;
@@ -103,9 +104,15 @@ class _RrhhContractsViewState extends State<RrhhContractsView> {
     }).toList();
 
     final totalActivos = _contracts.where((c) => c.status == 'Vigente').length;
-    final totalIndefinidos = _contracts.where((c) => c.contractType.contains('Indefinido')).length;
-    final totalPlazoFijo = _contracts.where((c) => !c.contractType.contains('Indefinido')).length;
-    final totalRenovacion = _contracts.where((c) => c.status == 'En Renovación').length;
+    final totalIndefinidos = _contracts
+        .where((c) => c.contractType.contains('Indefinido'))
+        .length;
+    final totalPlazoFijo = _contracts
+        .where((c) => !c.contractType.contains('Indefinido'))
+        .length;
+    final totalRenovacion = _contracts
+        .where((c) => c.status == 'En Renovación')
+        .length;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -128,7 +135,9 @@ class _RrhhContractsViewState extends State<RrhhContractsView> {
                         style: GoogleFonts.inter(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
-                          color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -136,7 +145,9 @@ class _RrhhContractsViewState extends State<RrhhContractsView> {
                         'Control de periodos laborales y asignaciones de cargo.',
                         style: GoogleFonts.inter(
                           fontSize: 12,
-                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -155,7 +166,9 @@ class _RrhhContractsViewState extends State<RrhhContractsView> {
                             style: GoogleFonts.inter(
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
-                              color: isDark ? Colors.white : const Color(0xFF0F172A),
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -583,16 +596,18 @@ class _RrhhContractsViewState extends State<RrhhContractsView> {
                               vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: (cnt.status == 'Vigente'
-                                      ? const Color(0xFF10B981)
-                                      : const Color(0xFFF59E0B))
-                                  .withValues(alpha: 0.15),
+                              color:
+                                  (cnt.status == 'Vigente'
+                                          ? const Color(0xFF10B981)
+                                          : const Color(0xFFF59E0B))
+                                      .withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(
-                                color: (cnt.status == 'Vigente'
-                                        ? const Color(0xFF10B981)
-                                        : const Color(0xFFF59E0B))
-                                    .withValues(alpha: 0.3),
+                                color:
+                                    (cnt.status == 'Vigente'
+                                            ? const Color(0xFF10B981)
+                                            : const Color(0xFFF59E0B))
+                                        .withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(
@@ -625,7 +640,10 @@ class _RrhhContractsViewState extends State<RrhhContractsView> {
                                     : const Color(0xFFCBD5E1),
                               ),
                             ),
-                            icon: const Icon(Icons.description_outlined, size: 14),
+                            icon: const Icon(
+                              Icons.description_outlined,
+                              size: 14,
+                            ),
                             label: Text(
                               'Ficha',
                               style: GoogleFonts.inter(
@@ -716,7 +734,9 @@ class _RrhhContractsViewState extends State<RrhhContractsView> {
                           style: GoogleFonts.inter(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                         Text(
@@ -730,12 +750,16 @@ class _RrhhContractsViewState extends State<RrhhContractsView> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
-                      color: (cnt.status == 'Vigente'
-                              ? const Color(0xFF10B981)
-                              : const Color(0xFFF59E0B))
-                          .withValues(alpha: 0.15),
+                      color:
+                          (cnt.status == 'Vigente'
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFFF59E0B))
+                              .withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
@@ -752,8 +776,18 @@ class _RrhhContractsViewState extends State<RrhhContractsView> {
                 ],
               ),
               const SizedBox(height: 12),
-              _buildMobileItemRow(Icons.badge_outlined, 'Tipo', cnt.contractType, isDark),
-              _buildMobileItemRow(Icons.business_outlined, 'Cargo', '${cnt.position} (${cnt.workplace})', isDark),
+              _buildMobileItemRow(
+                Icons.badge_outlined,
+                'Tipo',
+                cnt.contractType,
+                isDark,
+              ),
+              _buildMobileItemRow(
+                Icons.business_outlined,
+                'Cargo',
+                '${cnt.position} (${cnt.workplace})',
+                isDark,
+              ),
               _buildMobileItemRow(
                 Icons.calendar_today_outlined,
                 'Vigencia',
@@ -762,7 +796,12 @@ class _RrhhContractsViewState extends State<RrhhContractsView> {
                     : '${cnt.startDate.day}/${cnt.startDate.month}/${cnt.startDate.year} (Indefinido)',
                 isDark,
               ),
-              _buildMobileItemRow(Icons.payments_outlined, 'Salario', 'Bs. ${cnt.wage.toStringAsFixed(2)}', isDark),
+              _buildMobileItemRow(
+                Icons.payments_outlined,
+                'Salario',
+                'Bs. ${cnt.wage.toStringAsFixed(2)}',
+                isDark,
+              ),
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
@@ -770,7 +809,8 @@ class _RrhhContractsViewState extends State<RrhhContractsView> {
                 child: OutlinedButton.icon(
                   icon: const Icon(Icons.description_outlined, size: 16),
                   label: const Text('Ver Ficha Contractual'),
-                  onPressed: () => _showContractDetailsModal(context, cnt, isDark),
+                  onPressed: () =>
+                      _showContractDetailsModal(context, cnt, isDark),
                 ),
               ),
             ],
@@ -908,10 +948,11 @@ class _RrhhContractsViewState extends State<RrhhContractsView> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: (contract.status == 'Vigente'
-                          ? const Color(0xFF10B981)
-                          : const Color(0xFFF59E0B))
-                      .withValues(alpha: 0.15),
+                  color:
+                      (contract.status == 'Vigente'
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFFF59E0B))
+                          .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -933,7 +974,11 @@ class _RrhhContractsViewState extends State<RrhhContractsView> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildDetailRow('Tipo de Contrato', contract.contractType, isDark),
+                _buildDetailRow(
+                  'Tipo de Contrato',
+                  contract.contractType,
+                  isDark,
+                ),
                 _buildDetailRow('Cargo Oficial', contract.position, isDark),
                 _buildDetailRow('Sede / Ubicación', contract.workplace, isDark),
                 _buildDetailRow(

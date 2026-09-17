@@ -840,10 +840,14 @@ class _RrhhAuditViewState extends State<RrhhAuditView> {
             // Fila de Encabezado
             TableRow(
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
+                color: isDark
+                    ? const Color(0xFF161F30)
+                    : const Color(0xFFF8FAFC),
                 border: Border(
                   bottom: BorderSide(
-                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFE2E8F0),
                     width: 1,
                   ),
                 ),
@@ -855,7 +859,11 @@ class _RrhhAuditViewState extends State<RrhhAuditView> {
                 _buildAuditHeaderCell('Acción Realizada', isDark),
                 _buildAuditHeaderCell('Registrado por', isDark),
                 _buildAuditHeaderCell('Severidad', isDark),
-                _buildAuditHeaderCell('Detalles', isDark, alignment: Alignment.centerRight),
+                _buildAuditHeaderCell(
+                  'Detalles',
+                  isDark,
+                  alignment: Alignment.centerRight,
+                ),
               ],
             ),
             // Filas de Datos
@@ -864,7 +872,9 @@ class _RrhhAuditViewState extends State<RrhhAuditView> {
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                      color: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFE2E8F0),
                       width: 1,
                     ),
                   ),
@@ -881,7 +891,9 @@ class _RrhhAuditViewState extends State<RrhhAuditView> {
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                         Text(
@@ -907,7 +919,9 @@ class _RrhhAuditViewState extends State<RrhhAuditView> {
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -929,7 +943,9 @@ class _RrhhAuditViewState extends State<RrhhAuditView> {
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+                        color: isDark
+                            ? const Color(0xFFCBD5E1)
+                            : const Color(0xFF334155),
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -1028,7 +1044,9 @@ class _RrhhAuditViewState extends State<RrhhAuditView> {
                 ev.action,
                 style: GoogleFonts.inter(
                   fontSize: 12,
-                  color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+                  color: isDark
+                      ? const Color(0xFFCBD5E1)
+                      : const Color(0xFF334155),
                 ),
               ),
               const SizedBox(height: 6),

@@ -10,7 +10,8 @@ class TerminationRecord {
   final String lastPosition;
   final DateTime hireDate;
   final DateTime terminationDate;
-  final String reason; // 'Renuncia Voluntaria', 'Fin de Contrato', 'Mutuo Acuerdo'
+  final String
+  reason; // 'Renuncia Voluntaria', 'Fin de Contrato', 'Mutuo Acuerdo'
   final String registeredBy;
   final String notes;
 
@@ -189,8 +190,12 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
     }).toList();
 
     final totalBajas = _records.length;
-    final totalRenuncias = _records.where((r) => r.reason.contains('Renuncia')).length;
-    final totalFinContrato = _records.where((r) => r.reason.contains('Fin de Contrato')).length;
+    final totalRenuncias = _records
+        .where((r) => r.reason.contains('Renuncia'))
+        .length;
+    final totalFinContrato = _records
+        .where((r) => r.reason.contains('Fin de Contrato'))
+        .length;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -213,7 +218,9 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                         style: GoogleFonts.inter(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
-                          color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -221,7 +228,9 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                         'Auditoría y trazabilidad histórica de desvinculaciones.',
                         style: GoogleFonts.inter(
                           fontSize: 12,
-                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -240,7 +249,9 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                             style: GoogleFonts.inter(
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
-                              color: isDark ? Colors.white : const Color(0xFF0F172A),
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -267,17 +278,41 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                     children: [
                       Row(
                         children: [
-                          _buildKpiCard('Total Bajas Registradas', '$totalBajas', Icons.history_outlined, const Color(0xFFEF4444), isDark),
+                          _buildKpiCard(
+                            'Total Bajas Registradas',
+                            '$totalBajas',
+                            Icons.history_outlined,
+                            const Color(0xFFEF4444),
+                            isDark,
+                          ),
                           const SizedBox(width: 12),
-                          _buildKpiCard('Renuncias Voluntarias', '$totalRenuncias', Icons.person_off_outlined, const Color(0xFFF59E0B), isDark),
+                          _buildKpiCard(
+                            'Renuncias Voluntarias',
+                            '$totalRenuncias',
+                            Icons.person_off_outlined,
+                            const Color(0xFFF59E0B),
+                            isDark,
+                          ),
                         ],
                       ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          _buildKpiCard('Fin de Contrato', '$totalFinContrato', Icons.event_busy_outlined, const Color(0xFF3B82F6), isDark),
+                          _buildKpiCard(
+                            'Fin de Contrato',
+                            '$totalFinContrato',
+                            Icons.event_busy_outlined,
+                            const Color(0xFF3B82F6),
+                            isDark,
+                          ),
                           const SizedBox(width: 12),
-                          _buildKpiCard('Expedientes Aptos Reingreso', '$totalBajas', Icons.how_to_reg_outlined, const Color(0xFF10B981), isDark),
+                          _buildKpiCard(
+                            'Expedientes Aptos Reingreso',
+                            '$totalBajas',
+                            Icons.how_to_reg_outlined,
+                            const Color(0xFF10B981),
+                            isDark,
+                          ),
                         ],
                       ),
                     ],
@@ -285,13 +320,37 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                 else
                   Row(
                     children: [
-                      _buildKpiCard('Total Bajas Registradas', '$totalBajas', Icons.history_outlined, const Color(0xFFEF4444), isDark),
+                      _buildKpiCard(
+                        'Total Bajas Registradas',
+                        '$totalBajas',
+                        Icons.history_outlined,
+                        const Color(0xFFEF4444),
+                        isDark,
+                      ),
                       const SizedBox(width: 16),
-                      _buildKpiCard('Renuncias Voluntarias', '$totalRenuncias', Icons.person_off_outlined, const Color(0xFFF59E0B), isDark),
+                      _buildKpiCard(
+                        'Renuncias Voluntarias',
+                        '$totalRenuncias',
+                        Icons.person_off_outlined,
+                        const Color(0xFFF59E0B),
+                        isDark,
+                      ),
                       const SizedBox(width: 16),
-                      _buildKpiCard('Fin de Contrato', '$totalFinContrato', Icons.event_busy_outlined, const Color(0xFF3B82F6), isDark),
+                      _buildKpiCard(
+                        'Fin de Contrato',
+                        '$totalFinContrato',
+                        Icons.event_busy_outlined,
+                        const Color(0xFF3B82F6),
+                        isDark,
+                      ),
                       const SizedBox(width: 16),
-                      _buildKpiCard('Expedientes Aptos Reingreso', '$totalBajas', Icons.how_to_reg_outlined, const Color(0xFF10B981), isDark),
+                      _buildKpiCard(
+                        'Expedientes Aptos Reingreso',
+                        '$totalBajas',
+                        Icons.how_to_reg_outlined,
+                        const Color(0xFF10B981),
+                        isDark,
+                      ),
                     ],
                   ),
 
@@ -304,16 +363,24 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                     color: isDark ? const Color(0xFF0F172A) : Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                      color: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFE2E8F0),
                     ),
                   ),
                   child: TextField(
                     decoration: InputDecoration(
-                      hintText: 'Buscar por ex-colaborador, código de ficha o motivo de salida...',
+                      hintText:
+                          'Buscar por ex-colaborador, código de ficha o motivo de salida...',
                       prefixIcon: const Icon(Icons.search, size: 18),
                       isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     onChanged: (v) => setState(() => _search = v),
                   ),
@@ -461,10 +528,14 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                 // Header
                 TableRow(
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
+                    color: isDark
+                        ? const Color(0xFF161F30)
+                        : const Color(0xFFF8FAFC),
                     border: Border(
                       bottom: BorderSide(
-                        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFE2E8F0),
                         width: 1,
                       ),
                     ),
@@ -475,7 +546,11 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                     _buildHeaderCell('Fecha de Baja', isDark),
                     _buildHeaderCell('Motivo de Salida', isDark),
                     _buildHeaderCell('Registrado Por', isDark),
-                    _buildHeaderCell('Acciones', isDark, alignment: Alignment.centerRight),
+                    _buildHeaderCell(
+                      'Acciones',
+                      isDark,
+                      alignment: Alignment.centerRight,
+                    ),
                   ],
                 ),
                 // Rows
@@ -484,7 +559,9 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFE2E8F0),
                           width: 1,
                         ),
                       ),
@@ -501,7 +578,9 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                               style: GoogleFonts.inter(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
-                                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -521,7 +600,9 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                           rec.lastPosition,
                           style: GoogleFonts.inter(
                             fontSize: 12,
-                            color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF334155),
                           ),
                         ),
                       ),
@@ -532,7 +613,9 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                       ),
@@ -541,12 +624,19 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFEF4444).withValues(alpha: 0.12),
+                              color: const Color(
+                                0xFFEF4444,
+                              ).withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(
-                                color: const Color(0xFFEF4444).withValues(alpha: 0.3),
+                                color: const Color(
+                                  0xFFEF4444,
+                                ).withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(
@@ -577,12 +667,18 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                           child: FilledButton.tonalIcon(
                             style: FilledButton.styleFrom(
                               visualDensity: VisualDensity.compact,
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
                             ),
                             icon: const Icon(Icons.refresh, size: 14),
                             label: const Text(
                               'Recontratar',
-                              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             onPressed: () => _showRehireDialog(rec),
                           ),
@@ -663,7 +759,9 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                           style: GoogleFonts.inter(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                         Text(
@@ -677,7 +775,10 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFEF4444).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(6),
@@ -694,15 +795,30 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
                 ],
               ),
               const SizedBox(height: 12),
-              _buildMobileRow(Icons.work_outline, 'Último Cargo', rec.lastPosition, isDark),
+              _buildMobileRow(
+                Icons.work_outline,
+                'Último Cargo',
+                rec.lastPosition,
+                isDark,
+              ),
               _buildMobileRow(
                 Icons.calendar_today_outlined,
                 'Periodo Laboral',
                 '${rec.hireDate.day}/${rec.hireDate.month}/${rec.hireDate.year} al ${rec.terminationDate.day}/${rec.terminationDate.month}/${rec.terminationDate.year}',
                 isDark,
               ),
-              _buildMobileRow(Icons.person_outline, 'Registrado Por', rec.registeredBy, isDark),
-              _buildMobileRow(Icons.notes_outlined, 'Observaciones', rec.notes, isDark),
+              _buildMobileRow(
+                Icons.person_outline,
+                'Registrado Por',
+                rec.registeredBy,
+                isDark,
+              ),
+              _buildMobileRow(
+                Icons.notes_outlined,
+                'Observaciones',
+                rec.notes,
+                isDark,
+              ),
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
@@ -720,7 +836,12 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
     );
   }
 
-  Widget _buildMobileRow(IconData icon, String label, String value, bool isDark) {
+  Widget _buildMobileRow(
+    IconData icon,
+    String label,
+    String value,
+    bool isDark,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -730,7 +851,10 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
           const SizedBox(width: 8),
           Text(
             '$label: ',
-            style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: const Color(0xFF64748B),
+            ),
           ),
           Expanded(
             child: Text(
@@ -778,7 +902,10 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
           const SizedBox(height: 4),
           Text(
             'Intente con otro término o limpie el buscador.',
-            style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: const Color(0xFF64748B),
+            ),
           ),
         ],
       ),

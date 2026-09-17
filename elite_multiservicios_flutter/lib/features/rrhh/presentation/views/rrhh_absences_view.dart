@@ -6,7 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 class AbsenceRequestItem {
   final String id;
   final String employeeName;
-  final String leaveType; // 'Vacación Anual', 'Permiso Médico', 'Duelo Familiar', 'Paternidad'
+  final String
+  leaveType; // 'Vacación Anual', 'Permiso Médico', 'Duelo Familiar', 'Paternidad'
   final DateTime startDate;
   final DateTime endDate;
   final int daysCount;
@@ -86,8 +87,12 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
           r.reason.toLowerCase().contains(q);
     }).toList();
 
-    final totalAprobados = _requests.where((r) => r.status == 'Aprobado').length;
-    final totalPendientes = _requests.where((r) => r.status == 'Pendiente').length;
+    final totalAprobados = _requests
+        .where((r) => r.status == 'Aprobado')
+        .length;
+    final totalPendientes = _requests
+        .where((r) => r.status == 'Pendiente')
+        .length;
     final totalDias = _requests.fold<int>(0, (sum, r) => sum + r.daysCount);
 
     return Scaffold(
@@ -111,7 +116,9 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                         style: GoogleFonts.inter(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
-                          color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -119,7 +126,9 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                         'Gestión de ausencias justificadas y control de licencias.',
                         style: GoogleFonts.inter(
                           fontSize: 12,
-                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -138,7 +147,9 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                             style: GoogleFonts.inter(
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
-                              color: isDark ? Colors.white : const Color(0xFF0F172A),
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -165,17 +176,41 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                     children: [
                       Row(
                         children: [
-                          _buildKpiCard('Total Solicitudes', '${_requests.length}', Icons.list_alt_outlined, const Color(0xFF3B82F6), isDark),
+                          _buildKpiCard(
+                            'Total Solicitudes',
+                            '${_requests.length}',
+                            Icons.list_alt_outlined,
+                            const Color(0xFF3B82F6),
+                            isDark,
+                          ),
                           const SizedBox(width: 12),
-                          _buildKpiCard('Aprobadas', '$totalAprobados', Icons.check_circle_outline, const Color(0xFF10B981), isDark),
+                          _buildKpiCard(
+                            'Aprobadas',
+                            '$totalAprobados',
+                            Icons.check_circle_outline,
+                            const Color(0xFF10B981),
+                            isDark,
+                          ),
                         ],
                       ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          _buildKpiCard('Pendientes', '$totalPendientes', Icons.pending_outlined, const Color(0xFFF59E0B), isDark),
+                          _buildKpiCard(
+                            'Pendientes',
+                            '$totalPendientes',
+                            Icons.pending_outlined,
+                            const Color(0xFFF59E0B),
+                            isDark,
+                          ),
                           const SizedBox(width: 12),
-                          _buildKpiCard('Días Acumulados', '$totalDias d', Icons.calendar_month_outlined, const Color(0xFF8B5CF6), isDark),
+                          _buildKpiCard(
+                            'Días Acumulados',
+                            '$totalDias d',
+                            Icons.calendar_month_outlined,
+                            const Color(0xFF8B5CF6),
+                            isDark,
+                          ),
                         ],
                       ),
                     ],
@@ -183,13 +218,37 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                 else
                   Row(
                     children: [
-                      _buildKpiCard('Total Solicitudes', '${_requests.length}', Icons.list_alt_outlined, const Color(0xFF3B82F6), isDark),
+                      _buildKpiCard(
+                        'Total Solicitudes',
+                        '${_requests.length}',
+                        Icons.list_alt_outlined,
+                        const Color(0xFF3B82F6),
+                        isDark,
+                      ),
                       const SizedBox(width: 16),
-                      _buildKpiCard('Aprobadas', '$totalAprobados', Icons.check_circle_outline, const Color(0xFF10B981), isDark),
+                      _buildKpiCard(
+                        'Aprobadas',
+                        '$totalAprobados',
+                        Icons.check_circle_outline,
+                        const Color(0xFF10B981),
+                        isDark,
+                      ),
                       const SizedBox(width: 16),
-                      _buildKpiCard('Pendientes de Aprobación', '$totalPendientes', Icons.pending_outlined, const Color(0xFFF59E0B), isDark),
+                      _buildKpiCard(
+                        'Pendientes de Aprobación',
+                        '$totalPendientes',
+                        Icons.pending_outlined,
+                        const Color(0xFFF59E0B),
+                        isDark,
+                      ),
                       const SizedBox(width: 16),
-                      _buildKpiCard('Días Computados', '$totalDias d', Icons.calendar_month_outlined, const Color(0xFF8B5CF6), isDark),
+                      _buildKpiCard(
+                        'Días Computados',
+                        '$totalDias d',
+                        Icons.calendar_month_outlined,
+                        const Color(0xFF8B5CF6),
+                        isDark,
+                      ),
                     ],
                   ),
 
@@ -199,10 +258,14 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDF4),
+                    color: isDark
+                        ? const Color(0xFF0F172A)
+                        : const Color(0xFFF0FDF4),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFBBF7D0),
+                      color: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFBBF7D0),
                     ),
                   ),
                   child: Row(
@@ -218,7 +281,9 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                           'Catálogo configurable: Los tipos de permisos (médico, duelo, paternidad, etc.) son parametrizables sin alterar código fuente, adaptando días y remuneración según validación legal.',
                           style: GoogleFonts.inter(
                             fontSize: 12,
-                            color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF166534),
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF166534),
                           ),
                         ),
                       ),
@@ -235,16 +300,24 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                     color: isDark ? const Color(0xFF0F172A) : Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                      color: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFE2E8F0),
                     ),
                   ),
                   child: TextField(
                     decoration: InputDecoration(
-                      hintText: 'Buscar por colaborador, tipo de permiso o motivo...',
+                      hintText:
+                          'Buscar por colaborador, tipo de permiso o motivo...',
                       prefixIcon: const Icon(Icons.search, size: 18),
                       isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     onChanged: (v) => setState(() => _search = v),
                   ),
@@ -391,10 +464,14 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                 // Header
                 TableRow(
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
+                    color: isDark
+                        ? const Color(0xFF161F30)
+                        : const Color(0xFFF8FAFC),
                     border: Border(
                       bottom: BorderSide(
-                        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFE2E8F0),
                         width: 1,
                       ),
                     ),
@@ -407,7 +484,11 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                     _buildHeaderCell('Remunerado', isDark),
                     _buildHeaderCell('Estado', isDark),
                     _buildHeaderCell('Motivo', isDark),
-                    _buildHeaderCell('Acciones', isDark, alignment: Alignment.centerRight),
+                    _buildHeaderCell(
+                      'Acciones',
+                      isDark,
+                      alignment: Alignment.centerRight,
+                    ),
                   ],
                 ),
                 // Rows
@@ -416,7 +497,9 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFE2E8F0),
                           width: 1,
                         ),
                       ),
@@ -429,7 +512,9 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                           style: GoogleFonts.inter(
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                       ),
@@ -439,7 +524,9 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                           req.leaveType,
                           style: GoogleFonts.inter(
                             fontSize: 12,
-                            color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF334155),
                           ),
                         ),
                       ),
@@ -449,7 +536,9 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                           '${req.startDate.day}/${req.startDate.month} - ${req.endDate.day}/${req.endDate.month}',
                           style: GoogleFonts.inter(
                             fontSize: 12,
-                            color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF334155),
                           ),
                         ),
                       ),
@@ -460,7 +549,9 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                       ),
@@ -471,7 +562,9 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                           children: [
                             Icon(
                               req.isPaid ? Icons.check_circle : Icons.cancel,
-                              color: req.isPaid ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
+                              color: req.isPaid
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFF94A3B8),
                               size: 16,
                             ),
                             const SizedBox(width: 4),
@@ -479,7 +572,9 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                               req.isPaid ? 'Sí' : 'No',
                               style: GoogleFonts.inter(
                                 fontSize: 11,
-                                color: req.isPaid ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
+                                color: req.isPaid
+                                    ? const Color(0xFF10B981)
+                                    : const Color(0xFF94A3B8),
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -491,18 +586,23 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
                             decoration: BoxDecoration(
-                              color: (req.status == 'Aprobado'
-                                      ? const Color(0xFF10B981)
-                                      : const Color(0xFFF59E0B))
-                                  .withValues(alpha: 0.15),
+                              color:
+                                  (req.status == 'Aprobado'
+                                          ? const Color(0xFF10B981)
+                                          : const Color(0xFFF59E0B))
+                                      .withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(
-                                color: (req.status == 'Aprobado'
-                                        ? const Color(0xFF10B981)
-                                        : const Color(0xFFF59E0B))
-                                    .withValues(alpha: 0.3),
+                                color:
+                                    (req.status == 'Aprobado'
+                                            ? const Color(0xFF10B981)
+                                            : const Color(0xFFF59E0B))
+                                        .withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(
@@ -536,18 +636,30 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                           alignment: Alignment.centerRight,
                           child: OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
                               visualDensity: VisualDensity.compact,
                               side: BorderSide(
-                                color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
+                                color: isDark
+                                    ? const Color(0xFF334155)
+                                    : const Color(0xFFCBD5E1),
                               ),
                             ),
-                            icon: const Icon(Icons.visibility_outlined, size: 14),
+                            icon: const Icon(
+                              Icons.visibility_outlined,
+                              size: 14,
+                            ),
                             label: Text(
                               'Detalle',
-                              style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600),
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                            onPressed: () => _showAbsenceDetailModal(context, req, isDark),
+                            onPressed: () =>
+                                _showAbsenceDetailModal(context, req, isDark),
                           ),
                         ),
                       ),
@@ -628,12 +740,16 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
-                      color: (req.status == 'Aprobado'
-                              ? const Color(0xFF10B981)
-                              : const Color(0xFFF59E0B))
-                          .withValues(alpha: 0.15),
+                      color:
+                          (req.status == 'Aprobado'
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFFF59E0B))
+                              .withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
@@ -650,7 +766,12 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                 ],
               ),
               const SizedBox(height: 12),
-              _buildMobileRow(Icons.category_outlined, 'Tipo', req.leaveType, isDark),
+              _buildMobileRow(
+                Icons.category_outlined,
+                'Tipo',
+                req.leaveType,
+                isDark,
+              ),
               _buildMobileRow(
                 Icons.date_range_outlined,
                 'Fechas',
@@ -663,7 +784,12 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                 req.isPaid ? 'Con goce de haberes' : 'Sin goce de haberes',
                 isDark,
               ),
-              _buildMobileRow(Icons.notes_outlined, 'Motivo', req.reason, isDark),
+              _buildMobileRow(
+                Icons.notes_outlined,
+                'Motivo',
+                req.reason,
+                isDark,
+              ),
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
@@ -671,7 +797,8 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                 child: OutlinedButton.icon(
                   icon: const Icon(Icons.visibility_outlined, size: 16),
                   label: const Text('Ver Detalle de Permiso'),
-                  onPressed: () => _showAbsenceDetailModal(context, req, isDark),
+                  onPressed: () =>
+                      _showAbsenceDetailModal(context, req, isDark),
                 ),
               ),
             ],
@@ -681,7 +808,12 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
     );
   }
 
-  Widget _buildMobileRow(IconData icon, String label, String value, bool isDark) {
+  Widget _buildMobileRow(
+    IconData icon,
+    String label,
+    String value,
+    bool isDark,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -691,7 +823,10 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
           const SizedBox(width: 8),
           Text(
             '$label: ',
-            style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: const Color(0xFF64748B),
+            ),
           ),
           Expanded(
             child: Text(
@@ -739,7 +874,10 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
           const SizedBox(height: 4),
           Text(
             'Intente con otro término o limpie el buscador.',
-            style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: const Color(0xFF64748B),
+            ),
           ),
         ],
       ),
@@ -756,7 +894,9 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Row(
             children: [
               Container(
@@ -765,7 +905,11 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                   color: const Color(0xFF10B981).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.event_note, color: Color(0xFF10B981), size: 22),
+                child: const Icon(
+                  Icons.event_note,
+                  color: Color(0xFF10B981),
+                  size: 22,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -774,11 +918,17 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                   children: [
                     Text(
                       'Ficha de Ausencia / Permiso',
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16),
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
                     ),
                     Text(
                       req.employeeName,
-                      style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: const Color(0xFF64748B),
+                      ),
                     ),
                   ],
                 ),
@@ -796,14 +946,28 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
                   '${req.startDate.day}/${req.startDate.month}/${req.startDate.year} al ${req.endDate.day}/${req.endDate.month}/${req.endDate.year}',
                   isDark,
                 ),
-                _buildModalDetailRow('Total Días', '${req.daysCount} días hábiles', isDark),
                 _buildModalDetailRow(
-                  'Remuneración',
-                  req.isPaid ? 'Con goce de haberes (Remunerado)' : 'Sin goce de haberes',
+                  'Total Días',
+                  '${req.daysCount} días hábiles',
                   isDark,
                 ),
-                _buildModalDetailRow('Estado de Aprobación', req.status, isDark),
-                _buildModalDetailRow('Justificación / Motivo', req.reason, isDark),
+                _buildModalDetailRow(
+                  'Remuneración',
+                  req.isPaid
+                      ? 'Con goce de haberes (Remunerado)'
+                      : 'Sin goce de haberes',
+                  isDark,
+                ),
+                _buildModalDetailRow(
+                  'Estado de Aprobación',
+                  req.status,
+                  isDark,
+                ),
+                _buildModalDetailRow(
+                  'Justificación / Motivo',
+                  req.reason,
+                  isDark,
+                ),
               ],
             ),
           ),
@@ -827,7 +991,10 @@ class _RrhhAbsencesViewState extends State<RrhhAbsencesView> {
         children: [
           Text(
             label,
-            style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: const Color(0xFF64748B),
+            ),
           ),
           const SizedBox(width: 12),
           Flexible(

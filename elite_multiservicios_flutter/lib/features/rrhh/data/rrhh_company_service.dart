@@ -5,7 +5,8 @@ import 'rrhh_audit_service.dart';
 class WorkplaceCompanyItem {
   final String id;
   final String name; // Nombre de la empresa o sede cliente
-  final String serviceCategory; // 'Limpieza', 'Jardinería', 'Sistemas', 'Mantenimiento', 'Seguridad', 'Multiservicios'
+  final String
+  serviceCategory; // 'Limpieza', 'Jardinería', 'Sistemas', 'Mantenimiento', 'Seguridad', 'Multiservicios'
   final String address; // Ubicación / Dirección física de la sede
   final String contactPerson; // Nombre del supervisor o enlace
   final String contactPhone; // Teléfono
@@ -51,7 +52,8 @@ class RrhhCompanyService extends ChangeNotifier {
         address: 'Calle Bernabé Sosa #250, Barrio Central',
         contactPerson: 'Ing. Marcelo Vargas',
         contactPhone: '+591 71023450',
-        notes: 'Sede con cuadrilla mixta de mantenimiento preventivo y limpieza.',
+        notes:
+            'Sede con cuadrilla mixta de mantenimiento preventivo y limpieza.',
         registeredAt: now.subtract(const Duration(days: 180)),
       ),
       WorkplaceCompanyItem(
@@ -116,7 +118,6 @@ class RrhhCompanyService extends ChangeNotifier {
       ),
     ]);
   }
-
 
   /// Actualizar datos de una empresa cliente existente
   void updateCompany({
