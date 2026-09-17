@@ -3435,13 +3435,15 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         label,
+        textAlign: TextAlign.center,
         style: GoogleFonts.inter(
           fontSize: 11,
           fontWeight: FontWeight.w600,
