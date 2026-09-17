@@ -2640,14 +2640,14 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
             width: tableWidth,
             child: Table(
               columnWidths: const {
-                0: FlexColumnWidth(2.8), // Colaborador (flex)
-                1: FixedColumnWidth(125), // CI / Documento (fijo)
-                2: FlexColumnWidth(2.0), // Lugar de Trabajo / Tipo (flex)
-                3: FlexColumnWidth(2.8), // Cargo y Sueldo (flex)
-                4: FixedColumnWidth(140), // Expediente Físico (fijo, sin desbordamiento)
-                5: FixedColumnWidth(110), // Estado (fijo)
-                6: FixedColumnWidth(155), // Contacto / Ref. (fijo)
-                7: FixedColumnWidth(135), // Acciones (fijo)
+                0: FlexColumnWidth(2.7), // Colaborador (flex)
+                1: FixedColumnWidth(120), // CI / Documento (fijo)
+                2: FlexColumnWidth(2.5), // Cargo / Función (flex)
+                3: FlexColumnWidth(2.3), // Sucursal Asignada (flex)
+                4: FixedColumnWidth(135), // Sueldo Pactado (fijo)
+                5: FixedColumnWidth(125), // Expediente Físico (fijo)
+                6: FixedColumnWidth(100), // Estado (fijo)
+                7: FixedColumnWidth(125), // Acciones (fijo)
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
@@ -2669,11 +2669,11 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                   children: [
                     _buildHeaderCell('Colaborador', isDark),
                     _buildHeaderCell('CI / Documento', isDark),
-                    _buildHeaderCell('Lugar de Trabajo / Tipo', isDark),
-                    _buildHeaderCell('Cargo y Sueldo', isDark),
-                    _buildHeaderCell('Expediente Físico', isDark),
+                    _buildHeaderCell('Cargo / Función', isDark),
+                    _buildHeaderCell('Sucursal Asignada', isDark),
+                    _buildHeaderCell('Sueldo Pactado', isDark),
+                    _buildHeaderCell('Expediente', isDark),
                     _buildHeaderCell('Estado', isDark),
-                    _buildHeaderCell('Contacto / Ref.', isDark),
                     _buildHeaderCell(
                       'Acciones',
                       isDark,
@@ -2723,6 +2723,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                 children: [
                                   Text(
                                     emp.fullName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                     style: GoogleFonts.inter(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 13,
@@ -2757,39 +2759,7 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                           ),
                         ),
                       ),
-                      // 2: Lugar de Trabajo / Tipo
-                      _buildBodyCell(
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              emp.workplace,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: isDark
-                                    ? Colors.white
-                                    : const Color(0xFF0F172A),
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              emp.employeeType == 'ADMINISTRATIVO'
-                                  ? 'Oficina'
-                                  : 'Campo / Operativo',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                                color: emp.employeeType == 'ADMINISTRATIVO'
-                                    ? const Color(0xFF8B5CF6)
-                                    : const Color(0xFF06B6D4),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // 3: Cargo y Sueldo
+                      // 2: Cargo / Función
                       _buildBodyCell(
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2797,27 +2767,131 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                           children: [
                             Text(
                               emp.position,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.inter(
                                 fontSize: 12,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w600,
                                 color: isDark
                                     ? Colors.white
                                     : const Color(0xFF0F172A),
                               ),
                             ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Bs. ${emp.agreedSalary.toStringAsFixed(2)}',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                color: const Color(0xFF10B981),
-                                fontWeight: FontWeight.w600,
+                            const SizedBox(height: 3),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: (emp.employeeType == 'ADMINISTRATIVO'
+                                        ? const Color(0xFF8B5CF6)
+                                        : const Color(0xFF06B6D4))
+                                    .withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                emp.employeeType == 'ADMINISTRATIVO'
+                                    ? 'Oficina'
+                                    : 'Campo / Operativo',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: emp.employeeType == 'ADMINISTRATIVO'
+                                      ? const Color(0xFF8B5CF6)
+                                      : const Color(0xFF06B6D4),
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      // 4: Expediente Físico
+                      // 3: Sucursal Asignada
+                      _buildBodyCell(
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: (isDark
+                                        ? const Color(0xFF3B82F6)
+                                        : const Color(0xFF2563EB))
+                                    .withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Icon(
+                                emp.employeeType == 'ADMINISTRATIVO'
+                                    ? Icons.corporate_fare_outlined
+                                    : Icons.storefront_outlined,
+                                size: 14,
+                                color: isDark
+                                    ? const Color(0xFF60A5FA)
+                                    : const Color(0xFF2563EB),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    emp.workplace,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: isDark
+                                          ? Colors.white
+                                          : const Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Sede de trabajo',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      color: const Color(0xFF64748B),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // 4: Sueldo Pactado
+                      _buildBodyCell(
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Bs. ${emp.agreedSalary.toStringAsFixed(2)}',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: const Color(0xFF10B981),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              emp.contractType,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                fontSize: 10,
+                                color: const Color(0xFF64748B),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // 5: Expediente Físico
                       _buildBodyCell(
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -2832,7 +2906,7 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                 : const Color(
                                     0xFFF59E0B,
                                   ).withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(6),
                             border: Border.all(
                               color: emp.attachedDocumentsCount == 6
                                   ? const Color(
@@ -2873,33 +2947,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                           ),
                         ),
                       ),
-                      // 5: Estado
+                      // 6: Estado
                       _buildBodyCell(_buildStatusChip(emp.status)),
-                      // 6: Contacto / Ref.
-                      _buildBodyCell(
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              emp.phone,
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                color: isDark
-                                    ? const Color(0xFFCBD5E1)
-                                    : const Color(0xFF334155),
-                              ),
-                            ),
-                            Text(
-                              'Ref: ${emp.referencePhone}',
-                              style: GoogleFonts.inter(
-                                fontSize: 10,
-                                color: const Color(0xFF64748B),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                       // 7: Acciones
                       _buildBodyCell(
                         Align(
@@ -3093,7 +3142,7 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Lugar de Trabajo',
+                          'Sucursal de Trabajo',
                           style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B)),
                         ),
                         const SizedBox(height: 2),
@@ -3101,6 +3150,7 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                           emp.workplace,
                           style: GoogleFonts.inter(
                             fontSize: 12,
+                            fontWeight: FontWeight.w600,
                             color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
                           ),
                         ),
