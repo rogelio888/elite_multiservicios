@@ -11,6 +11,16 @@ jwtRefresh:
   - refreshAccessToken:
 greeting:
   - hello:
+crmLeads:
+  - listLeads:
+  - getLead:
+  - createLead:
+  - updateLead:
+  - updateStatus:
+  - updateTemperature:
+  - markPromoted:
+  - deleteLead:
+  - getMetrics:
 audit:
   - listLogs:
   - listLogsPaged:

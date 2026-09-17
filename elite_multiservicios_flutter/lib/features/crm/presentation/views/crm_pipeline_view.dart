@@ -91,6 +91,11 @@ class OpportunityItem {
   final double advancePaid;
   final String wonNotes;
 
+  // Enlace Cliente 360° / Recontratación
+  final String? customerId;
+  final String? branchId;
+  final String? branchName;
+
   const OpportunityItem({
     required this.id,
     required this.title,
@@ -125,6 +130,9 @@ class OpportunityItem {
     this.serviceStartDate = '',
     this.advancePaid = 0.0,
     this.wonNotes = '',
+    this.customerId,
+    this.branchId,
+    this.branchName,
   });
 
   OpportunityItem copyWith({
@@ -153,6 +161,9 @@ class OpportunityItem {
     String? serviceStartDate,
     double? advancePaid,
     String? wonNotes,
+    String? customerId,
+    String? branchId,
+    String? branchName,
   }) {
     final newQuoteItems = quoteItems ?? this.quoteItems;
     final newAmount =
@@ -196,6 +207,9 @@ class OpportunityItem {
       serviceStartDate: serviceStartDate ?? this.serviceStartDate,
       advancePaid: advancePaid ?? this.advancePaid,
       wonNotes: wonNotes ?? this.wonNotes,
+      customerId: customerId ?? this.customerId,
+      branchId: branchId ?? this.branchId,
+      branchName: branchName ?? this.branchName,
     );
   }
 }
@@ -720,254 +734,573 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
     String serviceVal = 'Seguridad';
     String stageVal = 'Calificación';
 
+    final customersService = CrmCustomersService();
+    final existingCustomers = customersService.customers;
+
+    bool isExistingCustomer = false;
+    CustomerItem? selectedCustomer;
+    CustomerBranch? selectedBranch;
+
     showDialog(
       context: context,
       builder: (ctx) {
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
-        return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          title: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF3B82F6).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.add_chart,
-                  color: Color(0xFF3B82F6),
-                  size: 20,
-                ),
+        return StatefulBuilder(
+          builder: (dlgCtx, setDialogState) {
+            return AlertDialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Nueva Oportunidad Comercial',
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          content: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 460),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              title: Row(
                 children: [
-                  Text(
-                    'TÍTULO DEL NEGOCIO *',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF64748B),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF3B82F6).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.add_chart,
+                      color: Color(0xFF3B82F6),
+                      size: 20,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  TextField(
-                    controller: titleCtrl,
-                    style: GoogleFonts.inter(fontSize: 13),
-                    decoration: InputDecoration(
-                      hintText: 'Ej. Vigilancia Perimetral 24h',
-                      hintStyle: GoogleFonts.inter(fontSize: 12.5),
-                      isDense: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Nueva Oportunidad Comercial',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Row(
+                ],
+              ),
+              content: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 500),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      // Toggle: Prospecto Nuevo vs Cliente 360° Existente
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 14),
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
                           children: [
-                            Text(
-                              'CLIENTE / EMPRESA *',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF64748B),
+                            Expanded(
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8),
+                                onTap: () {
+                                  setDialogState(() {
+                                    isExistingCustomer = false;
+                                    selectedCustomer = null;
+                                    selectedBranch = null;
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: !isExistingCustomer
+                                        ? (isDark
+                                              ? const Color(0xFF3B82F6)
+                                              : Colors.white)
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: !isExistingCustomer
+                                        ? [
+                                            BoxShadow(
+                                              color: Colors.black.withValues(
+                                                alpha: 0.06,
+                                              ),
+                                              blurRadius: 4,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ]
+                                        : null,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'Prospecto Nuevo',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        fontWeight: !isExistingCustomer
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                        color: !isExistingCustomer
+                                            ? (!isDark
+                                                  ? const Color(0xFF0F172A)
+                                                  : Colors.white)
+                                            : const Color(0xFF64748B),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            TextField(
-                              controller: clientCtrl,
-                              style: GoogleFonts.inter(fontSize: 13),
-                              decoration: InputDecoration(
-                                hintText: 'Empresa o Razón Social',
-                                hintStyle: GoogleFonts.inter(fontSize: 12.5),
-                                isDense: true,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
+                            Expanded(
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8),
+                                onTap: () {
+                                  setDialogState(() {
+                                    isExistingCustomer = true;
+                                    if (existingCustomers.isNotEmpty &&
+                                        selectedCustomer == null) {
+                                      selectedCustomer =
+                                          existingCustomers.first;
+                                      clientCtrl.text =
+                                          selectedCustomer!.tradeName;
+                                      contactCtrl.text =
+                                          selectedCustomer!.contactPerson;
+                                      phoneCtrl.text = selectedCustomer!.phone;
+                                      selectedBranch =
+                                          selectedCustomer!.branches.isNotEmpty
+                                          ? selectedCustomer!.branches.first
+                                          : null;
+                                    }
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isExistingCustomer
+                                        ? const Color(0xFF10B981)
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: isExistingCustomer
+                                        ? [
+                                            BoxShadow(
+                                              color: const Color(
+                                                0xFF10B981,
+                                              ).withValues(alpha: 0.3),
+                                              blurRadius: 4,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ]
+                                        : null,
+                                  ),
+                                  child: Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.verified,
+                                          size: 14,
+                                          color: isExistingCustomer
+                                              ? Colors.white
+                                              : const Color(0xFF64748B),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'Cliente 360° Existente',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            fontWeight: isExistingCustomer
+                                                ? FontWeight.w700
+                                                : FontWeight.w500,
+                                            color: isExistingCustomer
+                                                ? Colors.white
+                                                : const Color(0xFF64748B),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'CONTACTO',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF64748B),
+
+                      if (isExistingCustomer) ...[
+                        Text(
+                          'SELECCIONAR CLIENTE 360° *',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF10B981),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        DropdownButtonFormField<CustomerItem>(
+                          initialValue: selectedCustomer,
+                          isExpanded: true,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 8,
+                            ),
+                          ),
+                          items: existingCustomers.map((c) {
+                            return DropdownMenuItem(
+                              value: c,
+                              child: Text(
+                                '${c.tradeName} (${c.id})',
+                                style: GoogleFonts.inter(fontSize: 12.5),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (c) {
+                            if (c != null) {
+                              setDialogState(() {
+                                selectedCustomer = c;
+                                clientCtrl.text = c.tradeName;
+                                contactCtrl.text = c.contactPerson;
+                                phoneCtrl.text = c.phone;
+                                selectedBranch = c.branches.isNotEmpty
+                                    ? c.branches.first
+                                    : null;
+                              });
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        if (selectedCustomer != null &&
+                            selectedCustomer!.branches.isNotEmpty) ...[
+                          Text(
+                            'SEDE / SUCURSAL DEL SERVICIO',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF64748B),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          DropdownButtonFormField<CustomerBranch>(
+                            initialValue: selectedBranch,
+                            isExpanded: true,
+                            decoration: InputDecoration(
+                              isDense: true,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 8,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            TextField(
-                              controller: contactCtrl,
-                              style: GoogleFonts.inter(fontSize: 13),
-                              decoration: InputDecoration(
-                                hintText: 'Persona clave',
-                                hintStyle: GoogleFonts.inter(fontSize: 12.5),
-                                isDense: true,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                            items: selectedCustomer!.branches.map((b) {
+                              return DropdownMenuItem(
+                                value: b,
+                                child: Text(
+                                  '${b.name} (${b.address})',
+                                  style: GoogleFonts.inter(fontSize: 12),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
-                                ),
-                              ),
-                            ),
-                          ],
+                              );
+                            }).toList(),
+                            onChanged: (b) {
+                              if (b != null) {
+                                setDialogState(() {
+                                  selectedBranch = b;
+                                  if (b.localContact.isNotEmpty) {
+                                    contactCtrl.text = b.localContact;
+                                  }
+                                  if (b.localPhone.isNotEmpty) {
+                                    phoneCtrl.text = b.localPhone;
+                                  }
+                                });
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                      ],
+
+                      Text(
+                        'TÍTULO DEL NEGOCIO *',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF64748B),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'MONTO ESTIMADO (BS.) *',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF64748B),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            TextField(
-                              controller: amountCtrl,
-                              keyboardType: TextInputType.number,
-                              style: GoogleFonts.jetBrainsMono(fontSize: 13),
-                              decoration: InputDecoration(
-                                hintText: '0.00',
-                                hintStyle: GoogleFonts.inter(fontSize: 12.5),
-                                isDense: true,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
-                                ),
-                              ),
-                            ),
-                          ],
+                      const SizedBox(height: 4),
+                      TextField(
+                        controller: titleCtrl,
+                        style: GoogleFonts.inter(fontSize: 13),
+                        decoration: InputDecoration(
+                          hintText: isExistingCustomer
+                              ? 'Ej. Recontratación Seguridad / Ampliación 2026'
+                              : 'Ej. Vigilancia Perimetral 24h',
+                          hintStyle: GoogleFonts.inter(fontSize: 12.5),
+                          isDense: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'TELÉFONO',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF64748B),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            TextField(
-                              controller: phoneCtrl,
-                              keyboardType: TextInputType.phone,
-                              style: GoogleFonts.jetBrainsMono(fontSize: 13),
-                              decoration: InputDecoration(
-                                hintText: '77000000',
-                                hintStyle: GoogleFonts.inter(fontSize: 12.5),
-                                isDense: true,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'CLIENTE / EMPRESA *',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF64748B),
+                                  ),
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
+                                const SizedBox(height: 4),
+                                TextField(
+                                  controller: clientCtrl,
+                                  readOnly: isExistingCustomer,
+                                  style: GoogleFonts.inter(fontSize: 13),
+                                  decoration: InputDecoration(
+                                    hintText: 'Empresa o Razón Social',
+                                    hintStyle: GoogleFonts.inter(
+                                      fontSize: 12.5,
+                                    ),
+                                    isDense: true,
+                                    filled: isExistingCustomer,
+                                    fillColor: isExistingCustomer
+                                        ? (isDark
+                                              ? Colors.white10
+                                              : const Color(0xFFF8FAFC))
+                                        : null,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 10,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'CONTACTO',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                TextField(
+                                  controller: contactCtrl,
+                                  style: GoogleFonts.inter(fontSize: 13),
+                                  decoration: InputDecoration(
+                                    hintText: 'Persona clave',
+                                    hintStyle: GoogleFonts.inter(
+                                      fontSize: 12.5,
+                                    ),
+                                    isDense: true,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 10,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'SERVICIO',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF64748B),
-                              ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'MONTO ESTIMADO (BS.) *',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                TextField(
+                                  controller: amountCtrl,
+                                  keyboardType: TextInputType.number,
+                                  style: GoogleFonts.jetBrainsMono(
+                                    fontSize: 13,
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: '0.00',
+                                    hintStyle: GoogleFonts.inter(
+                                      fontSize: 12.5,
+                                    ),
+                                    isDense: true,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 10,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4),
-                            DropdownButtonFormField<String>(
-                              initialValue: serviceVal,
-                              isExpanded: true,
-                              decoration: InputDecoration(
-                                isDense: true,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'TELÉFONO',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF64748B),
+                                  ),
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 8,
+                                const SizedBox(height: 4),
+                                TextField(
+                                  controller: phoneCtrl,
+                                  keyboardType: TextInputType.phone,
+                                  style: GoogleFonts.jetBrainsMono(
+                                    fontSize: 13,
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: '77000000',
+                                    hintStyle: GoogleFonts.inter(
+                                      fontSize: 12.5,
+                                    ),
+                                    isDense: true,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 10,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              items:
-                                  [
-                                        'Seguridad',
-                                        'Limpieza',
-                                        'Mantenimiento',
-                                        'Software',
-                                        'Jardinería',
-                                      ]
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'SERVICIO',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                DropdownButtonFormField<String>(
+                                  initialValue: serviceVal,
+                                  isExpanded: true,
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                  items:
+                                      [
+                                            'Seguridad',
+                                            'Limpieza',
+                                            'Mantenimiento',
+                                            'Software',
+                                            'Jardinería',
+                                          ]
+                                          .map(
+                                            (s) => DropdownMenuItem(
+                                              value: s,
+                                              child: Text(
+                                                s,
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 12.5,
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                          .toList(),
+                                  onChanged: (v) {
+                                    if (v != null) serviceVal = v;
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'ETAPA INICIAL',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                DropdownButtonFormField<String>(
+                                  initialValue: stageVal,
+                                  isExpanded: true,
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                  items: _stages
                                       .map(
                                         (s) => DropdownMenuItem(
                                           value: s,
@@ -980,167 +1313,150 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                         ),
                                       )
                                       .toList(),
-                              onChanged: (v) {
-                                if (v != null) serviceVal = v;
-                              },
+                                  onChanged: (v) {
+                                    if (v != null) stageVal = v;
+                                  },
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'NOTAS / REQUERIMIENTOS',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF64748B),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'ETAPA INICIAL',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF64748B),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            DropdownButtonFormField<String>(
-                              initialValue: stageVal,
-                              isExpanded: true,
-                              decoration: InputDecoration(
-                                isDense: true,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 8,
-                                ),
-                              ),
-                              items: _stages
-                                  .map(
-                                    (s) => DropdownMenuItem(
-                                      value: s,
-                                      child: Text(
-                                        s,
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12.5,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChanged: (v) {
-                                if (v != null) stageVal = v;
-                              },
-                            ),
-                          ],
+                      const SizedBox(height: 4),
+                      TextField(
+                        controller: notesCtrl,
+                        maxLines: 2,
+                        style: GoogleFonts.inter(fontSize: 12.5),
+                        decoration: InputDecoration(
+                          hintText: isExistingCustomer
+                              ? 'Ej. Recontratación del servicio anual con ajuste de alcance...'
+                              : 'Detalles técnicos, turnos, especificaciones...',
+                          hintStyle: GoogleFonts.inter(fontSize: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.all(10),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'NOTAS / REQUERIMIENTOS',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF64748B),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  TextField(
-                    controller: notesCtrl,
-                    maxLines: 2,
-                    style: GoogleFonts.inter(fontSize: 12.5),
-                    decoration: InputDecoration(
-                      hintText:
-                          'Detalles técnicos, turnos, especificaciones...',
-                      hintStyle: GoogleFonts.inter(fontSize: 12),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.all(10),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(
-                'Cancelar',
-                style: GoogleFonts.inter(color: const Color(0xFF64748B)),
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF10B981),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                elevation: 0,
               ),
-              onPressed: () {
-                if (titleCtrl.text.isNotEmpty && clientCtrl.text.isNotEmpty) {
-                  final parsedAmount =
-                      double.tryParse(amountCtrl.text) ?? 8500.0;
-                  final newDeal = OpportunityItem(
-                    id: 'OPP-${_deals.length + 101}',
-                    title: titleCtrl.text.trim(),
-                    clientName: clientCtrl.text.trim(),
-                    contactPerson: contactCtrl.text.trim().isEmpty
-                        ? 'Contacto Comercial'
-                        : contactCtrl.text.trim(),
-                    phone: phoneCtrl.text.trim().isEmpty
-                        ? '70000000'
-                        : phoneCtrl.text.trim(),
-                    serviceType: serviceVal,
-                    amount: parsedAmount,
-                    stage: stageVal,
-                    probability: stageVal == 'Ganada' ? 100 : 40,
-                    owner: 'Carlos V.',
-                    closingDate: 'Fin de mes',
-                    notes: notesCtrl.text.trim().isEmpty
-                        ? 'Registrado desde el sistema comercial.'
-                        : notesCtrl.text.trim(),
-                    quoteItems: [
-                      QuoteItem(
-                        id: 'Q-${DateTime.now().millisecondsSinceEpoch}',
-                        category: serviceVal,
-                        concept: titleCtrl.text.trim(),
-                        unitType: 'Servicio',
-                        quantity: 1,
-                        unitPrice: parsedAmount,
-                      ),
-                    ],
-                  );
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(
+                    'Cancelar',
+                    style: GoogleFonts.inter(color: const Color(0xFF64748B)),
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF10B981),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    elevation: 0,
+                  ),
+                  onPressed: () {
+                    if (titleCtrl.text.isNotEmpty &&
+                        clientCtrl.text.isNotEmpty) {
+                      final parsedAmount =
+                          double.tryParse(amountCtrl.text) ?? 8500.0;
+                      final newDeal = OpportunityItem(
+                        id: 'OPP-${_deals.length + 101}',
+                        title: titleCtrl.text.trim(),
+                        clientName: clientCtrl.text.trim(),
+                        contactPerson: contactCtrl.text.trim().isEmpty
+                            ? 'Contacto Comercial'
+                            : contactCtrl.text.trim(),
+                        phone: phoneCtrl.text.trim().isEmpty
+                            ? '70000000'
+                            : phoneCtrl.text.trim(),
+                        serviceType: serviceVal,
+                        amount: parsedAmount,
+                        stage: stageVal,
+                        probability: stageVal == 'Ganada' ? 100 : 40,
+                        owner: 'Carlos V.',
+                        closingDate: 'Fin de mes',
+                        notes: notesCtrl.text.trim().isEmpty
+                            ? (isExistingCustomer
+                                  ? 'Recontratación comercial registrada para cliente 360°.'
+                                  : 'Registrado desde el sistema comercial.')
+                            : notesCtrl.text.trim(),
+                        customerId: isExistingCustomer
+                            ? selectedCustomer?.id
+                            : null,
+                        branchId: isExistingCustomer
+                            ? selectedBranch?.id
+                            : null,
+                        branchName: isExistingCustomer
+                            ? selectedBranch?.name
+                            : null,
+                        siteName: selectedBranch?.name ?? '',
+                        siteAddress: selectedBranch?.address ?? '',
+                        siteContactName:
+                            selectedBranch?.localContact ??
+                            (selectedCustomer?.contactPerson ?? ''),
+                        siteContactPhone:
+                            selectedBranch?.localPhone ??
+                            (selectedCustomer?.phone ?? ''),
+                        legalBusinessName: selectedCustomer?.legalName ?? '',
+                        taxId: selectedCustomer?.taxId ?? '',
+                        billingEmail: selectedCustomer?.email ?? '',
+                        businessSegment:
+                            selectedCustomer?.segment ?? 'Corporativo B2B',
+                        quoteItems: [
+                          QuoteItem(
+                            id: 'Q-${DateTime.now().millisecondsSinceEpoch}',
+                            category: serviceVal,
+                            concept: titleCtrl.text.trim(),
+                            unitType: 'Servicio',
+                            quantity: 1,
+                            unitPrice: parsedAmount,
+                          ),
+                        ],
+                      );
 
-                  setState(() {
-                    _deals.add(newDeal);
-                  });
-                  Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      backgroundColor: const Color(0xFF065F46),
-                      behavior: SnackBarBehavior.floating,
-                      content: Text(
-                        'Oportunidad "${newDeal.title}" añadida con éxito.',
-                      ),
-                    ),
-                  );
-                }
-              },
-              child: Text(
-                'Guardar Oportunidad',
-                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-              ),
-            ),
-          ],
+                      setState(() {
+                        _deals.add(newDeal);
+                      });
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: const Color(0xFF065F46),
+                          behavior: SnackBarBehavior.floating,
+                          content: Text(
+                            isExistingCustomer
+                                ? 'Oportunidad "${newDeal.title}" vinculada a ${selectedCustomer?.tradeName} con éxito.'
+                                : 'Oportunidad "${newDeal.title}" añadida con éxito.',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: Text(
+                    'Guardar Oportunidad',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -2794,53 +3110,115 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           notes: deal.siteAccessRequirements,
                         );
 
-                        final contract = CustomerContract(
-                          id: 'CTR-${DateTime.now().millisecondsSinceEpoch % 10000}',
-                          title: deal.title,
-                          contractType: deal.contractType,
-                          serviceCategory: deal.serviceType,
-                          totalAmount: deal.amount,
-                          recurringMonthlyAmount:
-                              deal.contractType == 'Recurrente Mensual'
-                              ? deal.amount
-                              : 0.0,
-                          oneTimeAmount:
-                              deal.contractType != 'Recurrente Mensual'
-                              ? deal.amount
-                              : 0.0,
-                          paymentTerms: deal.paymentTerms,
-                          executionTime: deal.executionTime,
-                          advancePercentage: deal.advancePercentage,
-                          status: 'Vigente',
-                          startDate: startDateCtrl.text.trim(),
-                          notes: wonNotesCtrl.text.trim(),
-                        );
+                        final customersService = CrmCustomersService();
+                        CustomerItem? existingCustomer;
+                        if (deal.customerId != null) {
+                          existingCustomer = customersService.getCustomerById(
+                            deal.customerId!,
+                          );
+                        }
+                        existingCustomer ??= customersService.customers
+                            .cast<CustomerItem?>()
+                            .firstWhere(
+                              (c) =>
+                                  c?.tradeName.trim().toLowerCase() ==
+                                      deal.clientName.trim().toLowerCase() ||
+                                  c?.legalName.trim().toLowerCase() ==
+                                      deal.clientName.trim().toLowerCase(),
+                              orElse: () => null,
+                            );
 
-                        final customer = CustomerItem(
-                          id: 'CLI-${DateTime.now().millisecondsSinceEpoch % 10000}',
-                          legalName: deal.legalBusinessName.isNotEmpty
-                              ? deal.legalBusinessName
-                              : '${deal.clientName} S.R.L.',
-                          tradeName: deal.clientName,
-                          taxId: deal.taxId.isNotEmpty
-                              ? deal.taxId
-                              : '1029384756',
-                          segment: deal.businessSegment,
-                          status: 'Activo',
-                          activeServices: [deal.serviceType],
-                          contactPerson: deal.contactPerson,
-                          phone: deal.phone,
-                          email: deal.billingEmail.isNotEmpty
-                              ? deal.billingEmail
-                              : 'contacto@${deal.clientName.toLowerCase().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}.bo',
-                          opportunityId: deal.id,
-                          startDate: startDateCtrl.text.trim(),
-                          branches: [initialBranch],
-                          contracts: [contract],
-                          notes: wonNotesCtrl.text.trim(),
-                        );
+                        if (existingCustomer != null) {
+                          // Cliente 360° existente: vincular contrato sin duplicar cliente
+                          final contract = CustomerContract(
+                            id: 'CTR-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                            title: deal.title,
+                            contractType: deal.contractType,
+                            serviceCategory: deal.serviceType,
+                            branchId:
+                                deal.branchId ??
+                                (existingCustomer.branches.isNotEmpty
+                                    ? existingCustomer.branches.first.id
+                                    : null),
+                            branchName:
+                                deal.branchName ??
+                                (existingCustomer.branches.isNotEmpty
+                                    ? existingCustomer.branches.first.name
+                                    : null),
+                            originType: 'Pipeline Ganada',
+                            totalAmount: deal.amount,
+                            recurringMonthlyAmount:
+                                deal.contractType == 'Recurrente Mensual'
+                                ? deal.amount
+                                : 0.0,
+                            oneTimeAmount:
+                                deal.contractType != 'Recurrente Mensual'
+                                ? deal.amount
+                                : 0.0,
+                            paymentTerms: deal.paymentTerms,
+                            executionTime: deal.executionTime,
+                            advancePercentage: deal.advancePercentage,
+                            status: 'Vigente',
+                            startDate: startDateCtrl.text.trim(),
+                            notes: wonNotesCtrl.text.trim(),
+                          );
+                          customersService.addContractToCustomer(
+                            existingCustomer.id,
+                            contract,
+                          );
+                        } else {
+                          // Cliente nuevo: registrar expediente 360° con sede matriz y primer contrato
+                          final contract = CustomerContract(
+                            id: 'CTR-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                            title: deal.title,
+                            contractType: deal.contractType,
+                            serviceCategory: deal.serviceType,
+                            branchId: initialBranch.id,
+                            branchName: initialBranch.name,
+                            originType: 'Pipeline Ganada',
+                            totalAmount: deal.amount,
+                            recurringMonthlyAmount:
+                                deal.contractType == 'Recurrente Mensual'
+                                ? deal.amount
+                                : 0.0,
+                            oneTimeAmount:
+                                deal.contractType != 'Recurrente Mensual'
+                                ? deal.amount
+                                : 0.0,
+                            paymentTerms: deal.paymentTerms,
+                            executionTime: deal.executionTime,
+                            advancePercentage: deal.advancePercentage,
+                            status: 'Vigente',
+                            startDate: startDateCtrl.text.trim(),
+                            notes: wonNotesCtrl.text.trim(),
+                          );
 
-                        CrmCustomersService().addCustomer(customer);
+                          final customer = CustomerItem(
+                            id: 'CLI-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                            legalName: deal.legalBusinessName.isNotEmpty
+                                ? deal.legalBusinessName
+                                : '${deal.clientName} S.R.L.',
+                            tradeName: deal.clientName,
+                            taxId: deal.taxId.isNotEmpty
+                                ? deal.taxId
+                                : '1029384756',
+                            segment: deal.businessSegment,
+                            status: 'Activo',
+                            activeServices: [deal.serviceType],
+                            contactPerson: deal.contactPerson,
+                            phone: deal.phone,
+                            email: deal.billingEmail.isNotEmpty
+                                ? deal.billingEmail
+                                : 'contacto@${deal.clientName.toLowerCase().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}.bo',
+                            opportunityId: deal.id,
+                            startDate: startDateCtrl.text.trim(),
+                            branches: [initialBranch],
+                            contracts: [contract],
+                            notes: wonNotesCtrl.text.trim(),
+                          );
+
+                          customersService.addCustomer(customer);
+                        }
                       }
 
                       Navigator.pop(dCtx);
@@ -2863,33 +3241,77 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
 
   void _showPromoteToCustomerDialog(OpportunityItem deal) {
     final formKey = GlobalKey<FormState>();
-    final tradeNameCtrl = TextEditingController(text: deal.clientName);
-    final legalNameCtrl = TextEditingController(
-      text: '${deal.clientName} S.R.L.',
+    final customersService = CrmCustomersService();
+    CustomerItem? existingCustomer;
+    if (deal.customerId != null) {
+      existingCustomer = customersService.getCustomerById(deal.customerId!);
+    }
+    existingCustomer ??= customersService.customers
+        .cast<CustomerItem?>()
+        .firstWhere(
+          (c) =>
+              c?.tradeName.trim().toLowerCase() ==
+                  deal.clientName.trim().toLowerCase() ||
+              c?.legalName.trim().toLowerCase() ==
+                  deal.clientName.trim().toLowerCase(),
+          orElse: () => null,
+        );
+
+    final tradeNameCtrl = TextEditingController(
+      text: existingCustomer?.tradeName ?? deal.clientName,
     );
-    final taxIdCtrl = TextEditingController();
-    final contactCtrl = TextEditingController(text: deal.contactPerson);
-    final phoneCtrl = TextEditingController(text: deal.phone);
+    final legalNameCtrl = TextEditingController(
+      text:
+          existingCustomer?.legalName ??
+          (deal.legalBusinessName.isNotEmpty
+              ? deal.legalBusinessName
+              : '${deal.clientName} S.R.L.'),
+    );
+    final taxIdCtrl = TextEditingController(
+      text:
+          existingCustomer?.taxId ?? (deal.taxId.isNotEmpty ? deal.taxId : ''),
+    );
+    final contactCtrl = TextEditingController(
+      text: existingCustomer?.contactPerson ?? deal.contactPerson,
+    );
+    final phoneCtrl = TextEditingController(
+      text: existingCustomer?.phone ?? deal.phone,
+    );
     final emailCtrl = TextEditingController(
       text:
-          'contacto@${deal.clientName.toLowerCase().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}.bo',
+          existingCustomer?.email ??
+          (deal.billingEmail.isNotEmpty
+              ? deal.billingEmail
+              : 'contacto@${deal.clientName.toLowerCase().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}.bo'),
     );
     final billingCtrl = TextEditingController(
       text: deal.amount.toStringAsFixed(2),
     );
 
     final branchNameCtrl = TextEditingController(
-      text: 'Sede Matriz / ${deal.clientName}',
+      text: deal.siteName.isNotEmpty
+          ? deal.siteName
+          : 'Sede Matriz / ${deal.clientName}',
     );
-    final branchAddressCtrl = TextEditingController();
-    final branchContactCtrl = TextEditingController(text: deal.contactPerson);
-    final branchPhoneCtrl = TextEditingController(text: deal.phone);
+    final branchAddressCtrl = TextEditingController(text: deal.siteAddress);
+    final branchContactCtrl = TextEditingController(
+      text: deal.siteContactName.isNotEmpty
+          ? deal.siteContactName
+          : deal.contactPerson,
+    );
+    final branchPhoneCtrl = TextEditingController(
+      text: deal.siteContactPhone.isNotEmpty
+          ? deal.siteContactPhone
+          : deal.phone,
+    );
 
-    String segment = deal.clientName.toLowerCase().contains('condominio')
-        ? 'Residencial B2C'
-        : (deal.clientName.toLowerCase().contains('colegio')
-              ? 'Sector Educativo'
-              : 'Corporativo B2B');
+    String segment =
+        existingCustomer?.segment ??
+        (deal.clientName.toLowerCase().contains('condominio')
+            ? 'Residencial B2C'
+            : (deal.clientName.toLowerCase().contains('colegio')
+                  ? 'Sector Educativo'
+                  : 'Corporativo B2B'));
 
     showDialog(
       context: context,
@@ -2925,7 +3347,9 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Promover a Cliente 360°',
+                          existingCustomer != null
+                              ? 'Vincular a Cliente 360° Existente'
+                              : 'Promover a Cliente 360°',
                           style: GoogleFonts.inter(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -2935,7 +3359,9 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           ),
                         ),
                         Text(
-                          'Convertir oportunidad "${deal.id}" en ficha de cliente permanente.',
+                          existingCustomer != null
+                              ? 'Vincular oportunidad "${deal.id}" al expediente 360° de ${existingCustomer.tradeName}.'
+                              : 'Convertir oportunidad "${deal.id}" en ficha de cliente permanente.',
                           style: GoogleFonts.inter(
                             fontSize: 11.5,
                             color: const Color(0xFF64748B),
@@ -2954,6 +3380,42 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (existingCustomer != null)
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 14),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF10B981,
+                              ).withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: const Color(
+                                  0xFF10B981,
+                                ).withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.verified,
+                                  color: Color(0xFF10B981),
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'Cliente ya registrado en Directorio 360° (${existingCustomer.id}). El nuevo contrato se añadirá a su ficha histórica sin duplicar.',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xFF059669),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         Text(
                           '1. DATOS FISCALES DEL CLIENTE',
                           style: GoogleFonts.inter(
@@ -3200,73 +3662,128 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                   ),
                   onPressed: () {
                     if (formKey.currentState?.validate() ?? false) {
-                      final newId =
-                          'CLI-${DateTime.now().millisecondsSinceEpoch % 10000}';
-                      final initialBranch = CustomerBranch(
-                        id: 'BR-${DateTime.now().millisecondsSinceEpoch % 10000}',
-                        name: branchNameCtrl.text.trim(),
-                        address: branchAddressCtrl.text.trim(),
-                        localContact: branchContactCtrl.text.trim().isNotEmpty
-                            ? branchContactCtrl.text.trim()
-                            : contactCtrl.text.trim(),
-                        localPhone: branchPhoneCtrl.text.trim().isNotEmpty
-                            ? branchPhoneCtrl.text.trim()
-                            : phoneCtrl.text.trim(),
-                        isHeadquarters: true,
-                      );
-
                       final parsedAmount = double.parse(
                         billingCtrl.text.trim(),
                       );
-                      final contract = CustomerContract(
-                        id: 'CTR-${DateTime.now().millisecondsSinceEpoch % 10000}',
-                        title: deal.title,
-                        contractType: deal.contractType,
-                        serviceCategory: deal.serviceType,
-                        totalAmount: parsedAmount,
-                        recurringMonthlyAmount:
-                            deal.contractType == 'Recurrente Mensual'
-                            ? parsedAmount
-                            : 0.0,
-                        oneTimeAmount: deal.contractType != 'Recurrente Mensual'
-                            ? parsedAmount
-                            : 0.0,
-                        paymentTerms: deal.paymentTerms,
-                        executionTime: deal.executionTime,
-                        advancePercentage: deal.advancePercentage,
-                        status: 'Vigente',
-                        startDate: 'Hoy',
-                      );
 
-                      final customer = CustomerItem(
-                        id: newId,
-                        legalName: legalNameCtrl.text.trim(),
-                        tradeName: tradeNameCtrl.text.trim(),
-                        taxId: taxIdCtrl.text.trim(),
-                        segment: segment,
-                        status: 'Activo',
-                        activeServices: [deal.serviceType],
-                        contactPerson: contactCtrl.text.trim(),
-                        phone: phoneCtrl.text.trim(),
-                        email: emailCtrl.text.trim(),
-                        opportunityId: deal.id,
-                        startDate: 'Hoy',
-                        branches: [initialBranch],
-                        contracts: [contract],
-                      );
+                      if (existingCustomer != null) {
+                        final contract = CustomerContract(
+                          id: 'CTR-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                          title: deal.title,
+                          contractType: deal.contractType,
+                          serviceCategory: deal.serviceType,
+                          branchId:
+                              deal.branchId ??
+                              (existingCustomer.branches.isNotEmpty
+                                  ? existingCustomer.branches.first.id
+                                  : null),
+                          branchName:
+                              deal.branchName ??
+                              (existingCustomer.branches.isNotEmpty
+                                  ? existingCustomer.branches.first.name
+                                  : null),
+                          originType: 'Recontratación Pipeline',
+                          totalAmount: parsedAmount,
+                          recurringMonthlyAmount:
+                              deal.contractType == 'Recurrente Mensual'
+                              ? parsedAmount
+                              : 0.0,
+                          oneTimeAmount:
+                              deal.contractType != 'Recurrente Mensual'
+                              ? parsedAmount
+                              : 0.0,
+                          paymentTerms: deal.paymentTerms,
+                          executionTime: deal.executionTime,
+                          advancePercentage: deal.advancePercentage,
+                          status: 'Vigente',
+                          startDate: 'Hoy',
+                        );
 
-                      CrmCustomersService().addCustomer(customer);
-                      setState(() {});
-                      Navigator.of(dCtx).pop();
+                        customersService.addContractToCustomer(
+                          existingCustomer.id,
+                          contract,
+                        );
+                        setState(() {});
+                        Navigator.of(dCtx).pop();
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: const Color(0xFF0F172A),
-                          content: Text(
-                            '¡Oportunidad promovida! Cliente "${customer.tradeName}" añadido al Directorio 360° con su sede matriz.',
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: const Color(0xFF0F172A),
+                            content: Text(
+                              '¡Nuevo contrato vinculado con éxito a la ficha 360° de "${existingCustomer.tradeName}" sin duplicar!',
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      } else {
+                        final newId =
+                            'CLI-${DateTime.now().millisecondsSinceEpoch % 10000}';
+                        final initialBranch = CustomerBranch(
+                          id: 'BR-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                          name: branchNameCtrl.text.trim(),
+                          address: branchAddressCtrl.text.trim(),
+                          localContact: branchContactCtrl.text.trim().isNotEmpty
+                              ? branchContactCtrl.text.trim()
+                              : contactCtrl.text.trim(),
+                          localPhone: branchPhoneCtrl.text.trim().isNotEmpty
+                              ? branchPhoneCtrl.text.trim()
+                              : phoneCtrl.text.trim(),
+                          isHeadquarters: true,
+                        );
+
+                        final contract = CustomerContract(
+                          id: 'CTR-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                          title: deal.title,
+                          contractType: deal.contractType,
+                          serviceCategory: deal.serviceType,
+                          branchId: initialBranch.id,
+                          branchName: initialBranch.name,
+                          originType: 'Pipeline Ganada',
+                          totalAmount: parsedAmount,
+                          recurringMonthlyAmount:
+                              deal.contractType == 'Recurrente Mensual'
+                              ? parsedAmount
+                              : 0.0,
+                          oneTimeAmount:
+                              deal.contractType != 'Recurrente Mensual'
+                              ? parsedAmount
+                              : 0.0,
+                          paymentTerms: deal.paymentTerms,
+                          executionTime: deal.executionTime,
+                          advancePercentage: deal.advancePercentage,
+                          status: 'Vigente',
+                          startDate: 'Hoy',
+                        );
+
+                        final customer = CustomerItem(
+                          id: newId,
+                          legalName: legalNameCtrl.text.trim(),
+                          tradeName: tradeNameCtrl.text.trim(),
+                          taxId: taxIdCtrl.text.trim(),
+                          segment: segment,
+                          status: 'Activo',
+                          activeServices: [deal.serviceType],
+                          contactPerson: contactCtrl.text.trim(),
+                          phone: phoneCtrl.text.trim(),
+                          email: emailCtrl.text.trim(),
+                          opportunityId: deal.id,
+                          startDate: 'Hoy',
+                          branches: [initialBranch],
+                          contracts: [contract],
+                        );
+
+                        customersService.addCustomer(customer);
+                        setState(() {});
+                        Navigator.of(dCtx).pop();
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: const Color(0xFF0F172A),
+                            content: Text(
+                              '¡Oportunidad promovida! Cliente "${customer.tradeName}" añadido al Directorio 360° con su sede matriz.',
+                            ),
+                          ),
+                        );
+                      }
                     }
                   },
                   icon: const Icon(Icons.check, size: 18),

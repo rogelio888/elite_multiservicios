@@ -8,6 +8,8 @@ class CrmTaskType {
   static const String meeting = 'Reunión Presencial / Virtual';
   static const String whatsapp = 'Mensaje WhatsApp';
   static const String payment = 'Cobro / Seguimiento de Anticipo';
+  static const String postSale = 'Postventa / Control de Calidad';
+  static const String renewal = 'Renovación de Contrato';
 
   static const List<String> all = [
     call,
@@ -16,6 +18,8 @@ class CrmTaskType {
     meeting,
     whatsapp,
     payment,
+    postSale,
+    renewal,
   ];
 }
 
@@ -36,6 +40,8 @@ class CrmTaskItem {
   final String? notes;
   final DateTime createdAt;
   final String? relatedOpportunityId;
+  final String? customerId;
+  final String? relatedContractId;
 
   const CrmTaskItem({
     required this.id,
@@ -52,6 +58,8 @@ class CrmTaskItem {
     this.notes,
     required this.createdAt,
     this.relatedOpportunityId,
+    this.customerId,
+    this.relatedContractId,
   });
 
   bool get isCompleted => status == 'Completada';
@@ -85,6 +93,8 @@ class CrmTaskItem {
     String? callContext,
     String? notes,
     String? relatedOpportunityId,
+    String? customerId,
+    String? relatedContractId,
   }) {
     return CrmTaskItem(
       id: id,
@@ -101,6 +111,8 @@ class CrmTaskItem {
       notes: notes ?? this.notes,
       createdAt: createdAt,
       relatedOpportunityId: relatedOpportunityId ?? this.relatedOpportunityId,
+      customerId: customerId ?? this.customerId,
+      relatedContractId: relatedContractId ?? this.relatedContractId,
     );
   }
 }
@@ -176,6 +188,71 @@ class CrmAgendaService extends ChangeNotifier {
   void addTask(CrmTaskItem task) {
     _tasks.insert(0, task);
     notifyListeners();
+  }
+
+  /// Programa automáticamente una tarea de control de calidad a 72h tras concluir un trabajo.
+  void scheduleQualityCheckTask({
+    required String clientName,
+    required String contactPerson,
+    required String phone,
+    required String contractTitle,
+    String? customerId,
+    String? contractId,
+  }) {
+    final targetDate = DateTime.now().add(const Duration(days: 3));
+    final task = CrmTaskItem(
+      id: 'TSK-PS-${DateTime.now().millisecondsSinceEpoch}',
+      title: 'Control de calidad: $contractTitle',
+      taskType: CrmTaskType.postSale,
+      clientName: clientName,
+      contactPerson: contactPerson,
+      phone: phone,
+      scheduledAt: targetDate,
+      scheduledTimeText: '10:00',
+      priority: 'Alta / Urgente',
+      status: 'Pendiente',
+      callContext:
+          'Servicio concluido. Realizar llamada de verificación de satisfacción, entrega conforme y ofrecer plan de mantenimiento recurrente o nuevos servicios.',
+      createdAt: DateTime.now(),
+      customerId: customerId,
+      relatedContractId: contractId,
+    );
+    addTask(task);
+  }
+
+  /// Programa automáticamente una alerta comercial 30 días antes del vencimiento de un contrato recurrente.
+  void scheduleRenewalTask({
+    required String clientName,
+    required String contactPerson,
+    required String phone,
+    required String contractTitle,
+    required DateTime expiryDate,
+    String? customerId,
+    String? contractId,
+  }) {
+    final reminderDate = expiryDate.subtract(const Duration(days: 30));
+    final effectiveDate = reminderDate.isBefore(DateTime.now())
+        ? DateTime.now().add(const Duration(days: 1))
+        : reminderDate;
+
+    final task = CrmTaskItem(
+      id: 'TSK-RN-${DateTime.now().millisecondsSinceEpoch}',
+      title: 'Renovación de Contrato: $contractTitle',
+      taskType: CrmTaskType.renewal,
+      clientName: clientName,
+      contactPerson: contactPerson,
+      phone: phone,
+      scheduledAt: effectiveDate,
+      scheduledTimeText: '11:00',
+      priority: 'Alta / Urgente',
+      status: 'Pendiente',
+      callContext:
+          'El contrato vencerá próximamente. Contactar para acordar la renovación del período (+12 meses) y actualizar la tarifa según ajuste acordado.',
+      createdAt: DateTime.now(),
+      customerId: customerId,
+      relatedContractId: contractId,
+    );
+    addTask(task);
   }
 
   void toggleTaskCompleted(String taskId) {
