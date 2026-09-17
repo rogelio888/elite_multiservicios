@@ -237,12 +237,18 @@ void main() {
         expect(service.isOpportunityPromoted('OPP-101-WON'), isTrue);
         final stored = service.getCustomerByOpportunityId('OPP-101-WON');
         expect(stored, isNotNull);
-        expect(stored!.legalName, equals('Corporación Inmobiliaria del Sur S.A.'));
+        expect(
+          stored!.legalName,
+          equals('Corporación Inmobiliaria del Sur S.A.'),
+        );
         expect(stored.taxId, equals('1029384756'));
         expect(stored.branches.length, equals(1));
         expect(stored.branches.first.isHeadquarters, isTrue);
         expect(stored.branches.first.address, contains('Av. San Martín'));
-        expect(stored.contracts.first.contractType, equals('Recurrente Mensual'));
+        expect(
+          stored.contracts.first.contractType,
+          equals('Recurrente Mensual'),
+        );
         expect(stored.monthlyBilling, equals(14500.0));
       },
     );

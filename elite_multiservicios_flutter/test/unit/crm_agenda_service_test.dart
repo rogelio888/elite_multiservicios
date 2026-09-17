@@ -49,21 +49,24 @@ void main() {
       expect(stored.isToday, isTrue);
     });
 
-    test('toggleTaskCompleted switches status between Pendiente and Completada', () {
-      final task = service.tasks.firstWhere((t) => !t.isCompleted);
-      final initialCompleted = service.completedTasksCount;
+    test(
+      'toggleTaskCompleted switches status between Pendiente and Completada',
+      () {
+        final task = service.tasks.firstWhere((t) => !t.isCompleted);
+        final initialCompleted = service.completedTasksCount;
 
-      service.toggleTaskCompleted(task.id);
-      final updated = service.tasks.firstWhere((t) => t.id == task.id);
-      expect(updated.isCompleted, isTrue);
-      expect(service.completedTasksCount, equals(initialCompleted + 1));
+        service.toggleTaskCompleted(task.id);
+        final updated = service.tasks.firstWhere((t) => t.id == task.id);
+        expect(updated.isCompleted, isTrue);
+        expect(service.completedTasksCount, equals(initialCompleted + 1));
 
-      // Toggle back
-      service.toggleTaskCompleted(task.id);
-      final restored = service.tasks.firstWhere((t) => t.id == task.id);
-      expect(restored.isCompleted, isFalse);
-      expect(service.completedTasksCount, equals(initialCompleted));
-    });
+        // Toggle back
+        service.toggleTaskCompleted(task.id);
+        final restored = service.tasks.firstWhere((t) => t.id == task.id);
+        expect(restored.isCompleted, isFalse);
+        expect(service.completedTasksCount, equals(initialCompleted));
+      },
+    );
 
     test('postponeTask updates scheduledAt and sets status to Pospuesta', () {
       final task = service.tasks.first;
@@ -77,7 +80,10 @@ void main() {
 
       final updated = service.tasks.firstWhere((t) => t.id == task.id);
       expect(updated.status, equals('Pospuesta'));
-      expect(updated.scheduledAt, equals(originalDate.add(const Duration(days: 1))));
+      expect(
+        updated.scheduledAt,
+        equals(originalDate.add(const Duration(days: 1))),
+      );
       expect(updated.notes, contains('Cliente pidió llamar mañana'));
     });
 

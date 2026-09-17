@@ -3,23 +3,56 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../data/crm_agenda_service.dart';
 
 String _formatDateShort(DateTime d) {
-  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  const months = [
+    'Ene',
+    'Feb',
+    'Mar',
+    'Abr',
+    'May',
+    'Jun',
+    'Jul',
+    'Ago',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dic',
+  ];
   const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
   return '${d.day.toString().padLeft(2, '0')}/${months[d.month - 1]}/${d.year} (${days[d.weekday - 1]})';
 }
 
 String _formatMonthYear(DateTime d) {
   const months = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
   ];
   return '${months[d.month - 1]} ${d.year}';
 }
 
 String _formatDateLong(DateTime d) {
   const months = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
   ];
   return '${d.day} de ${months[d.month - 1]}, ${d.year}';
 }
@@ -37,7 +70,8 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
 
   late DateTime _selectedDate;
   late DateTime _currentMonth;
-  String _activeFilter = 'Fecha'; // 'Fecha', 'Hoy', 'Vencidas', 'Semana', 'Completadas', 'Todas'
+  String _activeFilter =
+      'Fecha'; // 'Fecha', 'Hoy', 'Vencidas', 'Semana', 'Completadas', 'Todas'
   String _typeFilter = 'Todos';
 
   @override
@@ -109,7 +143,9 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
       final start = now.subtract(Duration(days: now.weekday - 1));
       final end = start.add(const Duration(days: 7));
       baseTasks = baseTasks
-          .where((t) => t.scheduledAt.isAfter(start) && t.scheduledAt.isBefore(end))
+          .where(
+            (t) => t.scheduledAt.isAfter(start) && t.scheduledAt.isBefore(end),
+          )
           .toList();
     } else if (_activeFilter == 'Completadas') {
       baseTasks = baseTasks.where((t) => t.isCompleted).toList();
@@ -180,7 +216,9 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                           style: GoogleFonts.inter(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                         Text(
@@ -234,10 +272,14 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                               selectedColor: col,
                               labelStyle: GoogleFonts.inter(
                                 fontSize: 11,
-                                fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
+                                fontWeight: isSel
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
                                 color: isSel
                                     ? Colors.white
-                                    : (isDark ? Colors.white70 : const Color(0xFF334155)),
+                                    : (isDark
+                                          ? Colors.white70
+                                          : const Color(0xFF334155)),
                               ),
                               onSelected: (val) {
                                 if (val) {
@@ -248,11 +290,14 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                                         titleCtrl.text.startsWith('Enviar') ||
                                         titleCtrl.text.startsWith('Visita')) {
                                       if (t == CrmTaskType.call) {
-                                        titleCtrl.text = 'Llamada de seguimiento';
+                                        titleCtrl.text =
+                                            'Llamada de seguimiento';
                                       } else if (t == CrmTaskType.quotation) {
-                                        titleCtrl.text = 'Enviar cotización formal';
+                                        titleCtrl.text =
+                                            'Enviar cotización formal';
                                       } else if (t == CrmTaskType.siteVisit) {
-                                        titleCtrl.text = 'Inspección técnica en sitio';
+                                        titleCtrl.text =
+                                            'Inspección técnica en sitio';
                                       }
                                     }
                                   });
@@ -275,7 +320,10 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                                 decoration: InputDecoration(
                                   labelText: 'Empresa o Cliente *',
                                   hintText: 'Ej: Torre Titanium',
-                                  prefixIcon: const Icon(Icons.business, size: 18),
+                                  prefixIcon: const Icon(
+                                    Icons.business,
+                                    size: 18,
+                                  ),
                                   isDense: true,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
@@ -291,7 +339,9 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                               flex: 2,
                               child: TextFormField(
                                 controller: phoneCtrl,
-                                style: GoogleFonts.jetBrainsMono(fontSize: 12.5),
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 12.5,
+                                ),
                                 decoration: InputDecoration(
                                   labelText: 'Teléfono / WhatsApp',
                                   hintText: '77312890',
@@ -313,8 +363,12 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                           style: GoogleFonts.inter(fontSize: 12.5),
                           decoration: InputDecoration(
                             labelText: 'Persona de Contacto / Cargo',
-                            hintText: 'Ej: Lic. Marcelo Justiniano (Administrador)',
-                            prefixIcon: const Icon(Icons.person_outline, size: 18),
+                            hintText:
+                                'Ej: Lic. Marcelo Justiniano (Administrador)',
+                            prefixIcon: const Icon(
+                              Icons.person_outline,
+                              size: 18,
+                            ),
                             isDense: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -328,10 +382,14 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF59E0B).withValues(alpha: 0.08),
+                            color: const Color(
+                              0xFFF59E0B,
+                            ).withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: const Color(0xFFF59E0B).withValues(alpha: 0.3),
+                              color: const Color(
+                                0xFFF59E0B,
+                              ).withValues(alpha: 0.3),
                             ),
                           ),
                           child: Column(
@@ -364,12 +422,16 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                                   hintText:
                                       'Ej: "La secretaria indicó que el administrador llega a las 4:00 PM, llamar a esa hora puntual para revisar el presupuesto."',
                                   isDense: true,
-                                  fillColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+                                  fillColor: isDark
+                                      ? const Color(0xFF0F172A)
+                                      : Colors.white,
                                   filled: true,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(6),
                                     borderSide: BorderSide(
-                                      color: const Color(0xFFF59E0B).withValues(alpha: 0.4),
+                                      color: const Color(
+                                        0xFFF59E0B,
+                                      ).withValues(alpha: 0.4),
                                     ),
                                   ),
                                 ),
@@ -409,7 +471,9 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                                         lastDate: DateTime(2030),
                                       );
                                       if (picked != null) {
-                                        setModalState(() => selectedDay = picked);
+                                        setModalState(
+                                          () => selectedDay = picked,
+                                        );
                                       }
                                     },
                                     borderRadius: BorderRadius.circular(8),
@@ -427,7 +491,8 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                                         ),
                                       ),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
                                             _formatDateShort(selectedDay),
@@ -436,7 +501,10 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
-                                          const Icon(Icons.calendar_month, size: 16),
+                                          const Icon(
+                                            Icons.calendar_month,
+                                            size: 16,
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -460,34 +528,53 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                                   ),
                                   const SizedBox(height: 6),
                                   DropdownButtonFormField<String>(
-                                    initialValue: ['09:00', '10:30', '11:30', '14:00', '16:00', '17:30', '18:00']
-                                            .contains(selectedTime)
+                                    initialValue:
+                                        [
+                                          '09:00',
+                                          '10:30',
+                                          '11:30',
+                                          '14:00',
+                                          '16:00',
+                                          '17:30',
+                                          '18:00',
+                                        ].contains(selectedTime)
                                         ? selectedTime
                                         : '16:00',
                                     style: GoogleFonts.jetBrainsMono(
                                       fontSize: 12,
-                                      color: isDark ? Colors.white : Colors.black,
+                                      color: isDark
+                                          ? Colors.white
+                                          : Colors.black,
                                       fontWeight: FontWeight.w600,
                                     ),
                                     decoration: InputDecoration(
                                       isDense: true,
-                                      contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 9,
-                                      ),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 9,
+                                          ),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                     ),
-                                    items: [
-                                      '09:00',
-                                      '10:30',
-                                      '11:30',
-                                      '14:00',
-                                      '16:00',
-                                      '17:30',
-                                      '18:00',
-                                    ].map((h) => DropdownMenuItem(value: h, child: Text(h))).toList(),
+                                    items:
+                                        [
+                                              '09:00',
+                                              '10:30',
+                                              '11:30',
+                                              '14:00',
+                                              '16:00',
+                                              '17:30',
+                                              '18:00',
+                                            ]
+                                            .map(
+                                              (h) => DropdownMenuItem(
+                                                value: h,
+                                                child: Text(h),
+                                              ),
+                                            )
+                                            .toList(),
                                     onChanged: (v) {
                                       if (v != null) {
                                         setModalState(() => selectedTime = v);
@@ -516,25 +603,31 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                             const SizedBox(width: 8),
                             Wrap(
                               spacing: 6,
-                              children: ['Alta / Urgente', 'Media', 'Normal'].map((p) {
-                                final isSel = selectedPriority == p;
-                                final col = _getPriorityColor(p);
-                                return ChoiceChip(
-                                  label: Text(p),
-                                  selected: isSel,
-                                  selectedColor: col,
-                                  labelStyle: GoogleFonts.inter(
-                                    fontSize: 10.5,
-                                    fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
-                                    color: isSel ? Colors.white : col,
-                                  ),
-                                  onSelected: (val) {
-                                    if (val) {
-                                      setModalState(() => selectedPriority = p);
-                                    }
-                                  },
-                                );
-                              }).toList(),
+                              children: ['Alta / Urgente', 'Media', 'Normal']
+                                  .map((p) {
+                                    final isSel = selectedPriority == p;
+                                    final col = _getPriorityColor(p);
+                                    return ChoiceChip(
+                                      label: Text(p),
+                                      selected: isSel,
+                                      selectedColor: col,
+                                      labelStyle: GoogleFonts.inter(
+                                        fontSize: 10.5,
+                                        fontWeight: isSel
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                        color: isSel ? Colors.white : col,
+                                      ),
+                                      onSelected: (val) {
+                                        if (val) {
+                                          setModalState(
+                                            () => selectedPriority = p,
+                                          );
+                                        }
+                                      },
+                                    );
+                                  })
+                                  .toList(),
                             ),
                           ],
                         ),
@@ -603,7 +696,11 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                           backgroundColor: const Color(0xFF0F172A),
                           content: Row(
                             children: [
-                              const Icon(Icons.check_circle, color: Color(0xFF10B981), size: 18),
+                              const Icon(
+                                Icons.check_circle,
+                                color: Color(0xFF10B981),
+                                size: 18,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -651,18 +748,27 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                     const SizedBox(width: 8),
                     Text(
                       'Posponer Compromiso',
-                      style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700),
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Selecciona cuánto tiempo posponer "${task.title}":',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF64748B),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 ListTile(
-                  leading: const Icon(Icons.timer_outlined, color: Color(0xFF3B82F6)),
+                  leading: const Icon(
+                    Icons.timer_outlined,
+                    color: Color(0xFF3B82F6),
+                  ),
                   title: const Text('Posponer +2 Horas (Hoy más tarde)'),
                   onTap: () {
                     _agendaService.postponeTask(
@@ -675,7 +781,10 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.today_outlined, color: Color(0xFF10B981)),
+                  leading: const Icon(
+                    Icons.today_outlined,
+                    color: Color(0xFF10B981),
+                  ),
                   title: const Text('Posponer para Mañana a la misma hora'),
                   onTap: () {
                     _agendaService.postponeTask(
@@ -688,7 +797,10 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.date_range_outlined, color: Color(0xFF8B5CF6)),
+                  leading: const Icon(
+                    Icons.date_range_outlined,
+                    color: Color(0xFF8B5CF6),
+                  ),
                   title: const Text('Posponer +3 Días'),
                   onTap: () {
                     _agendaService.postponeTask(
@@ -701,8 +813,13 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.next_plan_outlined, color: Color(0xFFF59E0B)),
-                  title: const Text('Posponer para la Próxima Semana (+7 días)'),
+                  leading: const Icon(
+                    Icons.next_plan_outlined,
+                    color: Color(0xFFF59E0B),
+                  ),
+                  title: const Text(
+                    'Posponer para la Próxima Semana (+7 días)',
+                  ),
                   onTap: () {
                     _agendaService.postponeTask(
                       task.id,
@@ -751,7 +868,13 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
               const SizedBox(height: 16),
 
               // 3. KPIs de Seguimiento
-              _buildKpiCards(overdueCount, todayCount, weekCount, completedCount, isDark),
+              _buildKpiCards(
+                overdueCount,
+                todayCount,
+                weekCount,
+                completedCount,
+                isDark,
+              ),
 
               const SizedBox(height: 20),
 
@@ -810,7 +933,10 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF10B981).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(6),
@@ -851,7 +977,9 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                 'Calendario interactivo de compromisos, llamadas y envíos de cotizaciones programadas.',
                 style: GoogleFonts.inter(
                   fontSize: 13,
-                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
                 ),
               ),
             ],
@@ -902,7 +1030,9 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
         children: [
           Icon(
             overdue > 0 ? Icons.error_outline : Icons.alarm_on,
-            color: overdue > 0 ? const Color(0xFFEF4444) : const Color(0xFFF59E0B),
+            color: overdue > 0
+                ? const Color(0xFFEF4444)
+                : const Color(0xFFF59E0B),
             size: 22,
           ),
           const SizedBox(width: 12),
@@ -1124,7 +1254,9 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
             ? Colors.white
             : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
       ),
-      backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+      backgroundColor: isDark
+          ? const Color(0xFF1E293B)
+          : const Color(0xFFF1F5F9),
       onSelected: (val) {
         if (val) {
           setState(() => _activeFilter = value);
@@ -1281,11 +1413,13 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                 dayNumber,
               );
 
-              final isToday = cellDate.year == DateTime.now().year &&
+              final isToday =
+                  cellDate.year == DateTime.now().year &&
                   cellDate.month == DateTime.now().month &&
                   cellDate.day == DateTime.now().day;
 
-              final isSelected = cellDate.year == _selectedDate.year &&
+              final isSelected =
+                  cellDate.year == _selectedDate.year &&
                   cellDate.month == _selectedDate.month &&
                   cellDate.day == _selectedDate.day;
 
@@ -1305,8 +1439,10 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                     color: isSelected
                         ? const Color(0xFF10B981)
                         : (isToday
-                            ? (isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9))
-                            : Colors.transparent),
+                              ? (isDark
+                                    ? const Color(0xFF1E293B)
+                                    : const Color(0xFFF1F5F9))
+                              : Colors.transparent),
                     borderRadius: BorderRadius.circular(8),
                     border: isToday && !isSelected
                         ? Border.all(color: const Color(0xFF10B981), width: 1.2)
@@ -1324,7 +1460,9 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                               : FontWeight.w500,
                           color: isSelected
                               ? Colors.white
-                              : (isDark ? Colors.white : const Color(0xFF0F172A)),
+                              : (isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A)),
                         ),
                       ),
                       if (dayTasks.isNotEmpty) ...[
@@ -1386,7 +1524,10 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
         const SizedBox(width: 4),
         Text(
           label,
-          style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFF64748B)),
+          style: GoogleFonts.inter(
+            fontSize: 10.5,
+            color: const Color(0xFF64748B),
+          ),
         ),
       ],
     );
@@ -1429,7 +1570,11 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.schedule, size: 18, color: Color(0xFF10B981)),
+                  const Icon(
+                    Icons.schedule,
+                    size: 18,
+                    color: Color(0xFF10B981),
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     headerTitle,
@@ -1444,7 +1589,9 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -1466,7 +1613,11 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                 padding: const EdgeInsets.symmetric(vertical: 40),
                 child: Column(
                   children: [
-                    Icon(Icons.event_available, size: 48, color: const Color(0xFF64748B).withValues(alpha: 0.5)),
+                    Icon(
+                      Icons.event_available,
+                      size: 48,
+                      color: const Color(0xFF64748B).withValues(alpha: 0.5),
+                    ),
                     const SizedBox(height: 10),
                     Text(
                       'No hay compromisos pendientes para esta fecha.',
@@ -1481,9 +1632,13 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF10B981),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                       ),
-                      onPressed: () => _showNewTaskDialog(initialDate: _selectedDate),
+                      onPressed: () =>
+                          _showNewTaskDialog(initialDate: _selectedDate),
                       icon: const Icon(Icons.add, size: 16),
                       label: const Text('Programar Tarea para este Día'),
                     ),
@@ -1531,24 +1686,35 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: isDark ? const Color(0xFF0F172A) : Colors.white,
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(
-                        color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
+                        color: isDark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFCBD5E1),
                       ),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.access_time, size: 12, color: Color(0xFF64748B)),
+                        const Icon(
+                          Icons.access_time,
+                          size: 12,
+                          color: Color(0xFF64748B),
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           task.scheduledTimeText,
                           style: GoogleFonts.jetBrainsMono(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                       ],
@@ -1556,14 +1722,21 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: typeCol.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Row(
                       children: [
-                        Icon(_getTaskTypeIcon(task.taskType), size: 12, color: typeCol),
+                        Icon(
+                          _getTaskTypeIcon(task.taskType),
+                          size: 12,
+                          color: typeCol,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           task.taskType,
@@ -1583,7 +1756,10 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                   if (task.isOverdue)
                     Container(
                       margin: const EdgeInsets.only(right: 6),
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFEF4444).withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4),
@@ -1598,7 +1774,10 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                       ),
                     ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: priorityCol.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(4),
@@ -1648,7 +1827,10 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                 const SizedBox(width: 8),
                 Text(
                   task.contactPerson,
-                  style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.inter(
+                    fontSize: 11.5,
+                    color: const Color(0xFF64748B),
+                  ),
                 ),
               ],
             ],
@@ -1670,7 +1852,11 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.format_quote, size: 16, color: Color(0xFFF59E0B)),
+                  const Icon(
+                    Icons.format_quote,
+                    size: 16,
+                    color: Color(0xFFF59E0B),
+                  ),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
@@ -1678,7 +1864,9 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                       style: GoogleFonts.inter(
                         fontSize: 11.5,
                         fontStyle: FontStyle.italic,
-                        color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+                        color: isDark
+                            ? const Color(0xFFCBD5E1)
+                            : const Color(0xFF334155),
                       ),
                     ),
                   ),
@@ -1700,18 +1888,27 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                   if (task.phone.isNotEmpty) ...[
                     OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         side: const BorderSide(color: Color(0xFF10B981)),
                       ),
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             backgroundColor: const Color(0xFF0F172A),
-                            content: Text('Llamando a ${task.contactPerson} (${task.phone})...'),
+                            content: Text(
+                              'Llamando a ${task.contactPerson} (${task.phone})...',
+                            ),
                           ),
                         );
                       },
-                      icon: const Icon(Icons.phone, size: 14, color: Color(0xFF10B981)),
+                      icon: const Icon(
+                        Icons.phone,
+                        size: 14,
+                        color: Color(0xFF10B981),
+                      ),
                       label: Text(
                         task.phone,
                         style: GoogleFonts.jetBrainsMono(
@@ -1723,7 +1920,11 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                     ),
                     const SizedBox(width: 6),
                     IconButton(
-                      icon: const Icon(Icons.chat, size: 16, color: Color(0xFF22C55E)),
+                      icon: const Icon(
+                        Icons.chat,
+                        size: 16,
+                        color: Color(0xFF22C55E),
+                      ),
                       tooltip: 'WhatsApp Directo',
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
@@ -1731,7 +1932,9 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             backgroundColor: const Color(0xFF0F172A),
-                            content: Text('Abriendo WhatsApp con ${task.phone}...'),
+                            content: Text(
+                              'Abriendo WhatsApp con ${task.phone}...',
+                            ),
                           ),
                         );
                       },
@@ -1743,7 +1946,11 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                 children: [
                   TextButton.icon(
                     onPressed: () => _showPostponeMenu(context, task),
-                    icon: const Icon(Icons.update, size: 14, color: Color(0xFFF59E0B)),
+                    icon: const Icon(
+                      Icons.update,
+                      size: 14,
+                      color: Color(0xFFF59E0B),
+                    ),
                     label: Text(
                       'Posponer',
                       style: GoogleFonts.inter(
@@ -1760,7 +1967,10 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                           ? const Color(0xFF64748B)
                           : const Color(0xFF10B981),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       elevation: 0,
                     ),
                     onPressed: () {

@@ -31,7 +31,8 @@ class CrmTaskItem {
   final String scheduledTimeText; // Ej: '16:00', '10:30'
   final String priority; // 'Alta / Urgente', 'Media', 'Normal'
   final String status; // 'Pendiente', 'Completada', 'Pospuesta', 'Vencida'
-  final String callContext; // Ej: "El encargado llega a las 4, llamar a esa hora"
+  final String
+  callContext; // Ej: "El encargado llega a las 4, llamar a esa hora"
   final String? notes;
   final DateTime createdAt;
   final String? relatedOpportunityId;
@@ -296,7 +297,8 @@ class CrmAgendaService extends ChangeNotifier {
         scheduledAt: yesterday,
         scheduledTimeText: '14:00',
         priority: 'Media',
-        status: 'Pendiente', // Vencida intencionalmente para mostrar alerta visual
+        status:
+            'Pendiente', // Vencida intencionalmente para mostrar alerta visual
         callContext:
             'Llenaron formulario en la web solicitando cotización de limpieza de vidrios en altura.',
         notes: 'No contestó en el primer intento. Reintentar hoy.',

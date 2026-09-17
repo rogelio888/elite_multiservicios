@@ -2059,7 +2059,8 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           style: GoogleFonts.inter(fontSize: 12.5),
                           decoration: InputDecoration(
                             labelText: 'Nombre de la Sede / Inmueble *',
-                            hintText: 'Ej: Torre Corporativa Titanium - Sede Central',
+                            hintText:
+                                'Ej: Torre Corporativa Titanium - Sede Central',
                             prefixIcon: const Icon(Icons.business, size: 18),
                             isDense: true,
                             border: OutlineInputBorder(
@@ -2076,8 +2077,12 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           style: GoogleFonts.inter(fontSize: 12.5),
                           decoration: InputDecoration(
                             labelText: 'Dirección Exacta de Inspección *',
-                            hintText: 'Ej: Av. San Martín #450, Equipetrol Norte',
-                            prefixIcon: const Icon(Icons.place_outlined, size: 18),
+                            hintText:
+                                'Ej: Av. San Martín #450, Equipetrol Norte',
+                            prefixIcon: const Icon(
+                              Icons.place_outlined,
+                              size: 18,
+                            ),
                             isDense: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -2151,8 +2156,12 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           style: GoogleFonts.inter(fontSize: 12.5),
                           decoration: InputDecoration(
                             labelText: 'Persona que Recibe / Atiende la Visita',
-                            hintText: 'Ej: Lic. Marcelo Justiniano (Administrador)',
-                            prefixIcon: const Icon(Icons.person_outline, size: 18),
+                            hintText:
+                                'Ej: Lic. Marcelo Justiniano (Administrador)',
+                            prefixIcon: const Icon(
+                              Icons.person_outline,
+                              size: 18,
+                            ),
                             isDense: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -2166,7 +2175,8 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           style: GoogleFonts.inter(fontSize: 12),
                           decoration: InputDecoration(
                             labelText: 'Requisitos de Acceso & Restricciones',
-                            hintText: 'Ej: Presentar cédula de identidad en garita, portar casco y chaleco reflectivo.',
+                            hintText:
+                                'Ej: Presentar cédula de identidad en garita, portar casco y chaleco reflectivo.',
                             isDense: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -2366,7 +2376,8 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           style: GoogleFonts.inter(fontSize: 12.5),
                           decoration: InputDecoration(
                             labelText: 'Razón Social Oficial (Facturación) *',
-                            hintText: 'Ej: Corporación Inmobiliaria del Sur S.A.',
+                            hintText:
+                                'Ej: Corporación Inmobiliaria del Sur S.A.',
                             prefixIcon: const Icon(Icons.apartment, size: 18),
                             isDense: true,
                             border: OutlineInputBorder(
@@ -2384,7 +2395,10 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           decoration: InputDecoration(
                             labelText: 'NIT / Identificación Tributaria *',
                             hintText: 'Ej: 1029384756',
-                            prefixIcon: const Icon(Icons.badge_outlined, size: 18),
+                            prefixIcon: const Icon(
+                              Icons.badge_outlined,
+                              size: 18,
+                            ),
                             isDense: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -2400,8 +2414,12 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           style: GoogleFonts.inter(fontSize: 12.5),
                           decoration: InputDecoration(
                             labelText: 'Representante Legal / Apoderado',
-                            hintText: 'Ej: Lic. Mariana Soto Mendoza (C.I. 4892102 SC)',
-                            prefixIcon: const Icon(Icons.how_to_reg_outlined, size: 18),
+                            hintText:
+                                'Ej: Lic. Mariana Soto Mendoza (C.I. 4892102 SC)',
+                            prefixIcon: const Icon(
+                              Icons.how_to_reg_outlined,
+                              size: 18,
+                            ),
                             isDense: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -2415,7 +2433,10 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           decoration: InputDecoration(
                             labelText: 'Correo de Facturación Electrónica *',
                             hintText: 'Ej: facturacion@titanium.bo',
-                            prefixIcon: const Icon(Icons.email_outlined, size: 18),
+                            prefixIcon: const Icon(
+                              Icons.email_outlined,
+                              size: 18,
+                            ),
                             isDense: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -2669,7 +2690,8 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           controller: startDateCtrl,
                           style: GoogleFonts.inter(fontSize: 12.5),
                           decoration: InputDecoration(
-                            labelText: 'Fecha de Inicio de Operaciones / Entrega *',
+                            labelText:
+                                'Fecha de Inicio de Operaciones / Entrega *',
                             hintText: 'Ej: 01 Oct 2026',
                             prefixIcon: const Icon(
                               Icons.calendar_today_outlined,
@@ -2691,7 +2713,10 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           style: GoogleFonts.jetBrainsMono(fontSize: 12.5),
                           decoration: InputDecoration(
                             labelText: 'Anticipo / Garantía Recibida (Bs.)',
-                            prefixIcon: const Icon(Icons.payments_outlined, size: 18),
+                            prefixIcon: const Icon(
+                              Icons.payments_outlined,
+                              size: 18,
+                            ),
                             isDense: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -2704,7 +2729,8 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           maxLines: 2,
                           style: GoogleFonts.inter(fontSize: 12),
                           decoration: InputDecoration(
-                            labelText: 'Instrucciones para Despliegue Operativo',
+                            labelText:
+                                'Instrucciones para Despliegue Operativo',
                             isDense: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -2747,7 +2773,9 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                       );
 
                       // Promoción automática a Clientes 360° si no está registrado
-                      if (!CrmCustomersService().isOpportunityPromoted(deal.id)) {
+                      if (!CrmCustomersService().isOpportunityPromoted(
+                        deal.id,
+                      )) {
                         final initialBranch = CustomerBranch(
                           id: 'BR-${DateTime.now().millisecondsSinceEpoch % 10000}',
                           name: deal.siteName.isNotEmpty
@@ -3252,7 +3280,10 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
     );
   }
 
-  void _showQuotationBuilderDialog(OpportunityItem deal, {String? targetStage}) {
+  void _showQuotationBuilderDialog(
+    OpportunityItem deal, {
+    String? targetStage,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     String selectedContractType = deal.contractType;
     String executionTime = deal.executionTime;
