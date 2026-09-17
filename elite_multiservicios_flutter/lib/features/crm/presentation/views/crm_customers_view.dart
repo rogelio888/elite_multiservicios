@@ -23,8 +23,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
   String _selectedLifecycle = 'Todos';
 
   CustomerItem? _selectedCustomer;
-  String _viewMode = 'console'; // 'console' (Master-Detail), 'cards' (Mosaico), 'table' (Tabla)
-  String _quickFilter = 'Todos'; // 'Todos', 'Activos', 'En Servicio', 'Por Vencer', 'Recontratar', 'Recurrentes', 'Proyectos'
+  String _viewMode =
+      'console'; // 'console' (Master-Detail), 'cards' (Mosaico), 'table' (Tabla)
+  String _quickFilter =
+      'Todos'; // 'Todos', 'Activos', 'En Servicio', 'Por Vencer', 'Recontratar', 'Recurrentes', 'Proyectos'
 
   @override
   void initState() {
@@ -45,14 +47,17 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
   List<CustomerItem> get _filteredCustomers {
     final list = _service.customers.where((c) {
       final q = _searchQuery.trim().toLowerCase();
-      final matchesSearch = q.isEmpty ||
+      final matchesSearch =
+          q.isEmpty ||
           c.legalName.toLowerCase().contains(q) ||
           c.tradeName.toLowerCase().contains(q) ||
           c.taxId.contains(q) ||
           c.contactPerson.toLowerCase().contains(q) ||
-          c.branches.any((b) =>
-              b.name.toLowerCase().contains(q) ||
-              b.address.toLowerCase().contains(q));
+          c.branches.any(
+            (b) =>
+                b.name.toLowerCase().contains(q) ||
+                b.address.toLowerCase().contains(q),
+          );
 
       final matchesSegment =
           _selectedSegment == 'Todos' || c.segment == _selectedSegment;
@@ -81,15 +86,21 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
           matchesQuickFilter = c.lifecycleStage == 'Listo para Recontratar';
           break;
         case 'Recurrentes':
-          matchesQuickFilter = c.primaryContractType == 'Recurrente Mensual' ||
-              c.contracts.any((ctr) => ctr.contractType == 'Recurrente Mensual');
+          matchesQuickFilter =
+              c.primaryContractType == 'Recurrente Mensual' ||
+              c.contracts.any(
+                (ctr) => ctr.contractType == 'Recurrente Mensual',
+              );
           break;
         case 'Proyectos':
-          matchesQuickFilter = c.primaryContractType == 'Proyecto Único' ||
+          matchesQuickFilter =
+              c.primaryContractType == 'Proyecto Único' ||
               c.primaryContractType == 'Servicio por Evento' ||
-              c.contracts.any((ctr) =>
-                  ctr.contractType == 'Proyecto Único' ||
-                  ctr.contractType == 'Servicio por Evento');
+              c.contracts.any(
+                (ctr) =>
+                    ctr.contractType == 'Proyecto Único' ||
+                    ctr.contractType == 'Servicio por Evento',
+              );
           break;
         default:
           matchesQuickFilter = true;
@@ -104,7 +115,8 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     }).toList();
 
     // Mantener sincronizado el cliente seleccionado en modo consola
-    if (_selectedCustomer != null && !list.any((c) => c.id == _selectedCustomer!.id)) {
+    if (_selectedCustomer != null &&
+        !list.any((c) => c.id == _selectedCustomer!.id)) {
       _selectedCustomer = list.isNotEmpty ? list.first : null;
     } else if (_selectedCustomer == null && list.isNotEmpty) {
       _selectedCustomer = list.first;
@@ -137,7 +149,11 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     return (words[0][0] + words[1][0]).toUpperCase();
   }
 
-  Widget _buildCompanyAvatar(CustomerItem customer, {double size = 48, double fontSize = 16}) {
+  Widget _buildCompanyAvatar(
+    CustomerItem customer, {
+    double size = 48,
+    double fontSize = 16,
+  }) {
     final color = _getSegmentColor(customer.segment);
     final initials = _getInitials(customer.tradeName);
 
@@ -179,7 +195,11 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
   double _calculateLtv(CustomerItem customer) {
     return customer.contracts.fold<double>(
       0.0,
-      (acc, c) => acc + (c.recurringMonthlyAmount > 0 ? c.recurringMonthlyAmount * 12 : c.totalAmount),
+      (acc, c) =>
+          acc +
+          (c.recurringMonthlyAmount > 0
+              ? c.recurringMonthlyAmount * 12
+              : c.totalAmount),
     );
   }
 
@@ -248,7 +268,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                   width: 48,
                   height: 5,
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
+                    color: isDark
+                        ? const Color(0xFF334155)
+                        : const Color(0xFFCBD5E1),
                     borderRadius: BorderRadius.circular(3),
                   ),
                 ),
@@ -278,7 +300,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                 style: GoogleFonts.inter(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w800,
-                                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
                                   letterSpacing: -0.3,
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -314,9 +338,14 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                             ),
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
-                                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                                color: isDark
+                                    ? const Color(0xFF1E293B)
+                                    : const Color(0xFFF1F5F9),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Row(
@@ -333,15 +362,25 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                   const SizedBox(width: 4),
                                   InkWell(
                                     onTap: () {
-                                      Clipboard.setData(ClipboardData(text: customer.taxId));
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      Clipboard.setData(
+                                        ClipboardData(text: customer.taxId),
+                                      );
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
-                                          content: Text('NIT copiado al portapapeles'),
+                                          content: Text(
+                                            'NIT copiado al portapapeles',
+                                          ),
                                           duration: Duration(seconds: 1),
                                         ),
                                       );
                                     },
-                                    child: const Icon(Icons.copy, size: 11, color: Color(0xFF64748B)),
+                                    child: const Icon(
+                                      Icons.copy,
+                                      size: 11,
+                                      color: Color(0xFF64748B),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -361,12 +400,19 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
+                  color: isDark
+                      ? const Color(0xFF161F30)
+                      : const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFE2E8F0),
                   ),
                 ),
                 child: Row(
@@ -395,7 +441,13 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         ],
                       ),
                     ),
-                    Container(height: 26, width: 1, color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                    Container(
+                      height: 26,
+                      width: 1,
+                      color: isDark
+                          ? const Color(0xFF334155)
+                          : const Color(0xFFCBD5E1),
+                    ),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 12),
@@ -418,14 +470,22 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                               style: GoogleFonts.jetBrainsMono(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w800,
-                                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    Container(height: 26, width: 1, color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                    Container(
+                      height: 26,
+                      width: 1,
+                      color: isDark
+                          ? const Color(0xFF334155)
+                          : const Color(0xFFCBD5E1),
+                    ),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 12),
@@ -453,7 +513,13 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         ),
                       ),
                     ),
-                    Container(height: 26, width: 1, color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                    Container(
+                      height: 26,
+                      width: 1,
+                      color: isDark
+                          ? const Color(0xFF334155)
+                          : const Color(0xFFCBD5E1),
+                    ),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 12),
@@ -471,7 +537,11 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                             const SizedBox(height: 2),
                             Row(
                               children: [
-                                const Icon(Icons.star, size: 13, color: Color(0xFFF59E0B)),
+                                const Icon(
+                                  Icons.star,
+                                  size: 13,
+                                  color: Color(0xFFF59E0B),
+                                ),
                                 const SizedBox(width: 3),
                                 Text(
                                   '4.9 / 5.0',
@@ -506,51 +576,81 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         foregroundColor: Colors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 10),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       onPressed: () => _showAddContractDialog(customer),
                       icon: const Icon(Icons.add_task, size: 16),
                       label: Text(
                         'Nuevo Contrato / Servicio',
-                        style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w700),
+                        style: GoogleFonts.inter(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      side: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      side: BorderSide(
+                        color: isDark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFCBD5E1),
+                      ),
                     ),
                     onPressed: () => _showAddBranchDialog(customer),
                     icon: const Icon(Icons.add_location_alt_outlined, size: 16),
                     label: Text(
                       'Añadir Sede',
-                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       side: BorderSide(
-                        color: customer.status == 'Activo' ? const Color(0xFFD97706) : const Color(0xFF10B981),
+                        color: customer.status == 'Activo'
+                            ? const Color(0xFFD97706)
+                            : const Color(0xFF10B981),
                       ),
                     ),
                     onPressed: () => _toggleCustomerStatus(customer),
                     icon: Icon(
-                      customer.status == 'Activo' ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                      customer.status == 'Activo'
+                          ? Icons.pause_circle_outline
+                          : Icons.play_circle_outline,
                       size: 16,
-                      color: customer.status == 'Activo' ? const Color(0xFFD97706) : const Color(0xFF10B981),
+                      color: customer.status == 'Activo'
+                          ? const Color(0xFFD97706)
+                          : const Color(0xFF10B981),
                     ),
                     label: Text(
                       customer.status == 'Activo' ? 'Pausar' : 'Activar',
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: customer.status == 'Activo' ? const Color(0xFFD97706) : const Color(0xFF10B981),
+                        color: customer.status == 'Activo'
+                            ? const Color(0xFFD97706)
+                            : const Color(0xFF10B981),
                       ),
                     ),
                   ),
@@ -565,7 +665,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFE2E8F0),
                   ),
                 ),
               ),
@@ -575,8 +677,14 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                 indicatorWeight: 2.5,
                 labelColor: const Color(0xFF10B981),
                 unselectedLabelColor: const Color(0xFF64748B),
-                labelStyle: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w700),
-                unselectedLabelStyle: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w500),
+                labelStyle: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                ),
+                unselectedLabelStyle: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w500,
+                ),
                 tabs: [
                   Tab(text: 'Contratos & Obras (${customer.contracts.length})'),
                   Tab(text: 'Sedes Operativas (${customer.branches.length})'),
@@ -1333,10 +1441,14 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
               width: double.infinity,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                color: isDark
+                    ? const Color(0xFF0F172A)
+                    : const Color(0xFFF8FAFC),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                  color: isDark
+                      ? const Color(0xFF334155)
+                      : const Color(0xFFE2E8F0),
                 ),
               ),
               child: Column(
@@ -1385,10 +1497,14 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
               width: double.infinity,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                color: isDark
+                    ? const Color(0xFF0F172A)
+                    : const Color(0xFFF8FAFC),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                  color: isDark
+                      ? const Color(0xFF334155)
+                      : const Color(0xFFE2E8F0),
                 ),
               ),
               child: Column(
@@ -1777,7 +1893,6 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
         return const Color(0xFF64748B);
     }
   }
-
 
   Widget _buildStatusBadge(String status) {
     Color color;
@@ -2237,7 +2352,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     {'value': 'Limpieza Integral', 'label': 'Limpieza Integral & Desinfección'},
     {'value': 'Seguridad Física', 'label': 'Seguridad Física & Vigilancia'},
     {'value': 'Mantenimiento', 'label': 'Mantenimiento Técnico & Edilicio'},
-    {'value': 'Software / Tecnología', 'label': 'Software & Infraestructura TI'},
+    {
+      'value': 'Software / Tecnología',
+      'label': 'Software & Infraestructura TI',
+    },
     {'value': 'Jardinería', 'label': 'Jardinería & Paisajismo'},
   ];
 
@@ -2247,7 +2365,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     if (lower.contains('limpi')) return 'Limpieza Integral';
     if (lower.contains('segur')) return 'Seguridad Física';
     if (lower.contains('manten')) return 'Mantenimiento';
-    if (lower.contains('soft') || lower.contains('tecno') || lower.contains('sist')) return 'Software / Tecnología';
+    if (lower.contains('soft') ||
+        lower.contains('tecno') ||
+        lower.contains('sist'))
+      return 'Software / Tecnología';
     if (lower.contains('jardin')) return 'Jardinería';
     return 'Limpieza Integral';
   }
@@ -2270,7 +2391,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     }
   }
 
-  List<ContractBudgetItem> _getDefaultBudgetItemsForCategory(String rawCategory, String contractType) {
+  List<ContractBudgetItem> _getDefaultBudgetItemsForCategory(
+    String rawCategory,
+    String contractType,
+  ) {
     final category = _canonicalCategory(rawCategory);
     final isRecurrent = contractType == 'Recurrente Mensual';
     switch (category) {
@@ -2278,7 +2402,8 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
         return [
           ContractBudgetItem(
             id: 'ITM-1',
-            description: 'Puesto de Vigilancia Física 24/7 (Guardias rotativos)',
+            description:
+                'Puesto de Vigilancia Física 24/7 (Guardias rotativos)',
             quantity: 2,
             unit: isRecurrent ? 'Mes' : 'Puesto',
             unitPrice: 3800,
@@ -2365,7 +2490,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     final isRecontract = prefilledContract != null;
     final initialCategoryRaw = isRecontract
         ? prefilledContract.serviceCategory
-        : (customer.activeServices.isNotEmpty ? customer.activeServices.first : 'Limpieza Integral');
+        : (customer.activeServices.isNotEmpty
+              ? customer.activeServices.first
+              : 'Limpieza Integral');
     String category = _canonicalCategory(initialCategoryRaw);
     String contractType = isRecontract
         ? prefilledContract.contractType
@@ -2378,7 +2505,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     );
 
     final scopeCtrl = TextEditingController(
-      text: isRecontract && prefilledContract.serviceScope != null && prefilledContract.serviceScope!.isNotEmpty
+      text:
+          isRecontract &&
+              prefilledContract.serviceScope != null &&
+              prefilledContract.serviceScope!.isNotEmpty
           ? prefilledContract.serviceScope
           : _getDefaultScopeForCategory(category),
     );
@@ -2386,18 +2516,28 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     final termsCtrl = TextEditingController(
       text: isRecontract
           ? prefilledContract.paymentTerms
-          : (contractType == 'Recurrente Mensual' ? 'Facturación mensual a 30 días' : '50% Anticipo / 50% Entrega Conforme'),
+          : (contractType == 'Recurrente Mensual'
+                ? 'Facturación mensual a 30 días'
+                : '50% Anticipo / 50% Entrega Conforme'),
     );
 
     final timeCtrl = TextEditingController(
-      text: isRecontract ? prefilledContract.executionTime : (contractType == 'Recurrente Mensual' ? 'Contrato 12 meses' : '15 días hábiles'),
+      text: isRecontract
+          ? prefilledContract.executionTime
+          : (contractType == 'Recurrente Mensual'
+                ? 'Contrato 12 meses'
+                : '15 días hábiles'),
     );
 
-    int advancePct = isRecontract ? prefilledContract.advancePercentage : (contractType == 'Recurrente Mensual' ? 0 : 50);
+    int advancePct = isRecontract
+        ? prefilledContract.advancePercentage
+        : (contractType == 'Recurrente Mensual' ? 0 : 50);
 
     String? selectedBranchId;
     if (customer.branches.isNotEmpty) {
-      if (isRecontract && prefilledContract.branchId != null && customer.branches.any((b) => b.id == prefilledContract.branchId)) {
+      if (isRecontract &&
+          prefilledContract.branchId != null &&
+          customer.branches.any((b) => b.id == prefilledContract.branchId)) {
         selectedBranchId = prefilledContract.branchId;
       } else {
         selectedBranchId = customer.branches.first.id;
@@ -2425,12 +2565,20 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
             final isRecurrent = contractType == 'Recurrente Mensual';
 
             // Cálculo dinámico del total de partidas
-            final totalBudget = budgetItems.fold<double>(0.0, (acc, item) => acc + item.subtotal);
+            final totalBudget = budgetItems.fold<double>(
+              0.0,
+              (acc, item) => acc + item.subtotal,
+            );
 
             return Dialog(
               backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              insetPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 20,
+              ),
               child: SizedBox(
                 width: math.min(1160.0, MediaQuery.of(ctx).size.width - 40),
                 height: math.min(880.0, MediaQuery.of(ctx).size.height - 40),
@@ -2438,23 +2586,44 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                   children: [
                     // 1. Cabecera del Cotizador
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 16,
+                      ),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF131D31) : const Color(0xFFF8FAFC),
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                        border: Border(bottom: BorderSide(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0))),
+                        color: isDark
+                            ? const Color(0xFF131D31)
+                            : const Color(0xFFF8FAFC),
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(16),
+                        ),
+                        border: Border(
+                          bottom: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFE2E8F0),
+                          ),
+                        ),
                       ),
                       child: Row(
                         children: [
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: (isRecontract ? const Color(0xFF10B981) : const Color(0xFF2563EB)).withValues(alpha: 0.12),
+                              color:
+                                  (isRecontract
+                                          ? const Color(0xFF10B981)
+                                          : const Color(0xFF2563EB))
+                                      .withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Icon(
-                              isRecontract ? Icons.replay : Icons.calculate_outlined,
-                              color: isRecontract ? const Color(0xFF10B981) : const Color(0xFF2563EB),
+                              isRecontract
+                                  ? Icons.replay
+                                  : Icons.calculate_outlined,
+                              color: isRecontract
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFF2563EB),
                               size: 22,
                             ),
                           ),
@@ -2466,20 +2635,33 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                 Row(
                                   children: [
                                     Text(
-                                      isRecontract ? 'Recontratación & Cotizador Integral' : 'Armar Presupuesto & Nuevo Contrato',
+                                      isRecontract
+                                          ? 'Recontratación & Cotizador Integral'
+                                          : 'Armar Presupuesto & Nuevo Contrato',
                                       style: GoogleFonts.inter(
                                         fontSize: 17,
                                         fontWeight: FontWeight.w800,
-                                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF0F172A),
                                       ),
                                     ),
                                     const SizedBox(width: 10),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 3,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF2563EB).withValues(alpha: 0.1),
+                                        color: const Color(
+                                          0xFF2563EB,
+                                        ).withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(5),
-                                        border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.2)),
+                                        border: Border.all(
+                                          color: const Color(
+                                            0xFF2563EB,
+                                          ).withValues(alpha: 0.2),
+                                        ),
                                       ),
                                       child: Text(
                                         customer.tradeName,
@@ -2495,7 +2677,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                 const SizedBox(height: 2),
                                 Text(
                                   'Definí el alcance técnico, costeá partidas con cálculo automático y formalizá las condiciones contractuales.',
-                                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: const Color(0xFF64748B),
+                                  ),
                                 ),
                               ],
                             ),
@@ -2513,19 +2698,32 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF10192B) : const Color(0xFFF1F5F9),
-                        border: Border(bottom: BorderSide(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0))),
+                        color: isDark
+                            ? const Color(0xFF10192B)
+                            : const Color(0xFFF1F5F9),
+                        border: Border(
+                          bottom: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFE2E8F0),
+                          ),
+                        ),
                       ),
                       child: Row(
                         children: [
                           InkWell(
                             onTap: () => setDialogState(() => currentTab = 0),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
                               decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: currentTab == 0 ? const Color(0xFF2563EB) : Colors.transparent,
+                                    color: currentTab == 0
+                                        ? const Color(0xFF2563EB)
+                                        : Colors.transparent,
                                     width: 2.5,
                                   ),
                                 ),
@@ -2535,16 +2733,22 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                   Icon(
                                     Icons.tune,
                                     size: 16,
-                                    color: currentTab == 0 ? const Color(0xFF2563EB) : const Color(0xFF64748B),
+                                    color: currentTab == 0
+                                        ? const Color(0xFF2563EB)
+                                        : const Color(0xFF64748B),
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
                                     '1. Alcance Técnico & Sede',
                                     style: GoogleFonts.inter(
                                       fontSize: 13,
-                                      fontWeight: currentTab == 0 ? FontWeight.w700 : FontWeight.w500,
+                                      fontWeight: currentTab == 0
+                                          ? FontWeight.w700
+                                          : FontWeight.w500,
                                       color: currentTab == 0
-                                          ? (isDark ? Colors.white : const Color(0xFF0F172A))
+                                          ? (isDark
+                                                ? Colors.white
+                                                : const Color(0xFF0F172A))
                                           : const Color(0xFF64748B),
                                     ),
                                   ),
@@ -2556,11 +2760,16 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                           InkWell(
                             onTap: () => setDialogState(() => currentTab = 1),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
                               decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: currentTab == 1 ? const Color(0xFF2563EB) : Colors.transparent,
+                                    color: currentTab == 1
+                                        ? const Color(0xFF2563EB)
+                                        : Colors.transparent,
                                     width: 2.5,
                                   ),
                                 ),
@@ -2570,24 +2779,35 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                   Icon(
                                     Icons.receipt_long_outlined,
                                     size: 16,
-                                    color: currentTab == 1 ? const Color(0xFF2563EB) : const Color(0xFF64748B),
+                                    color: currentTab == 1
+                                        ? const Color(0xFF2563EB)
+                                        : const Color(0xFF64748B),
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
                                     '2. Presupuesto & Partidas',
                                     style: GoogleFonts.inter(
                                       fontSize: 13,
-                                      fontWeight: currentTab == 1 ? FontWeight.w700 : FontWeight.w500,
+                                      fontWeight: currentTab == 1
+                                          ? FontWeight.w700
+                                          : FontWeight.w500,
                                       color: currentTab == 1
-                                          ? (isDark ? Colors.white : const Color(0xFF0F172A))
+                                          ? (isDark
+                                                ? Colors.white
+                                                : const Color(0xFF0F172A))
                                           : const Color(0xFF64748B),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 7,
+                                      vertical: 2,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                                      color: const Color(
+                                        0xFF10B981,
+                                      ).withValues(alpha: 0.15),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Text(
@@ -2615,26 +2835,46 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                           padding: const EdgeInsets.all(24),
                           child: currentTab == 0
                               ? // ==================== PESTAÑA 1: ALCANCE TÉCNICO Y SEDE ====================
-                              Column(
+                                Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     if (isRecontract)
                                       Container(
-                                        margin: const EdgeInsets.only(bottom: 18),
+                                        margin: const EdgeInsets.only(
+                                          bottom: 18,
+                                        ),
                                         padding: const EdgeInsets.all(14),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF10B981).withValues(alpha: 0.08),
-                                          borderRadius: BorderRadius.circular(10),
-                                          border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.25)),
+                                          color: const Color(
+                                            0xFF10B981,
+                                          ).withValues(alpha: 0.08),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                          border: Border.all(
+                                            color: const Color(
+                                              0xFF10B981,
+                                            ).withValues(alpha: 0.25),
+                                          ),
                                         ),
                                         child: Row(
                                           children: [
-                                            const Icon(Icons.verified_outlined, size: 20, color: Color(0xFF10B981)),
+                                            const Icon(
+                                              Icons.verified_outlined,
+                                              size: 20,
+                                              color: Color(0xFF10B981),
+                                            ),
                                             const SizedBox(width: 12),
                                             Expanded(
                                               child: Text(
                                                 'Recontratación de cuenta: Podés ajustar la categoría de servicio o sede según los nuevos requerimientos del cliente.',
-                                                style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF10B981), fontWeight: FontWeight.w500),
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 12.5,
+                                                  color: const Color(
+                                                    0xFF10B981,
+                                                  ),
+                                                  fontWeight: FontWeight.w500,
+                                                ),
                                               ),
                                             ),
                                           ],
@@ -2645,36 +2885,69 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                     Container(
                                       padding: const EdgeInsets.all(20),
                                       decoration: BoxDecoration(
-                                        color: isDark ? const Color(0xFF131D31) : const Color(0xFFF8FAFC),
+                                        color: isDark
+                                            ? const Color(0xFF131D31)
+                                            : const Color(0xFFF8FAFC),
                                         borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+                                        border: Border.all(
+                                          color: isDark
+                                              ? const Color(0xFF1E293B)
+                                              : const Color(0xFFE2E8F0),
+                                        ),
                                       ),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          _buildSectionTitle('PARÁMETROS DEL SERVICIO Y SEDE OPERATIVA'),
+                                          _buildSectionTitle(
+                                            'PARÁMETROS DEL SERVICIO Y SEDE OPERATIVA',
+                                          ),
                                           const SizedBox(height: 16),
                                           Row(
                                             children: [
                                               Expanded(
                                                 child: DropdownButtonFormField<String>(
-                                                  key: ValueKey('cat_$category'),
+                                                  key: ValueKey(
+                                                    'cat_$category',
+                                                  ),
                                                   initialValue: category,
                                                   isExpanded: true,
-                                                  decoration: const InputDecoration(labelText: 'Categoría de Servicio *', isDense: true),
+                                                  decoration: const InputDecoration(
+                                                    labelText:
+                                                        'Categoría de Servicio *',
+                                                    isDense: true,
+                                                  ),
                                                   items: _kCategoryOptions
-                                                      .map((opt) => DropdownMenuItem(
-                                                            value: opt['value']!,
-                                                            child: Text(opt['label']!, overflow: TextOverflow.ellipsis),
-                                                          ))
+                                                      .map(
+                                                        (
+                                                          opt,
+                                                        ) => DropdownMenuItem(
+                                                          value: opt['value']!,
+                                                          child: Text(
+                                                            opt['label']!,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ),
+                                                      )
                                                       .toList(),
                                                   onChanged: (v) {
-                                                    if (v != null && v != category) {
+                                                    if (v != null &&
+                                                        v != category) {
                                                       setDialogState(() {
                                                         category = v;
-                                                        titleCtrl.text = 'Servicio de $category para ${customer.tradeName}';
-                                                        scopeCtrl.text = _getDefaultScopeForCategory(v);
-                                                        budgetItems = _getDefaultBudgetItemsForCategory(v, contractType);
+                                                        titleCtrl.text =
+                                                            'Servicio de $category para ${customer.tradeName}';
+                                                        scopeCtrl.text =
+                                                            _getDefaultScopeForCategory(
+                                                              v,
+                                                            );
+                                                        budgetItems =
+                                                            _getDefaultBudgetItemsForCategory(
+                                                              v,
+                                                              contractType,
+                                                            );
                                                       });
                                                     }
                                                   },
@@ -2683,34 +2956,82 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                               const SizedBox(width: 16),
                                               Expanded(
                                                 child: DropdownButtonFormField<String>(
-                                                  key: ValueKey('type_$contractType'),
+                                                  key: ValueKey(
+                                                    'type_$contractType',
+                                                  ),
                                                   initialValue: contractType,
                                                   isExpanded: true,
-                                                  decoration: const InputDecoration(labelText: 'Modalidad de Contratación *', isDense: true),
+                                                  decoration: const InputDecoration(
+                                                    labelText:
+                                                        'Modalidad de Contratación *',
+                                                    isDense: true,
+                                                  ),
                                                   items: const [
-                                                    DropdownMenuItem(value: 'Recurrente Mensual', child: Text('Recurrente Mensual', overflow: TextOverflow.ellipsis)),
-                                                    DropdownMenuItem(value: 'Proyecto Único', child: Text('Proyecto Único / Obra', overflow: TextOverflow.ellipsis)),
-                                                    DropdownMenuItem(value: 'Servicio por Evento', child: Text('Servicio por Evento', overflow: TextOverflow.ellipsis)),
-                                                    DropdownMenuItem(value: 'Híbrido', child: Text('Híbrido (Mensual + Obra)', overflow: TextOverflow.ellipsis)),
+                                                    DropdownMenuItem(
+                                                      value:
+                                                          'Recurrente Mensual',
+                                                      child: Text(
+                                                        'Recurrente Mensual',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                    DropdownMenuItem(
+                                                      value: 'Proyecto Único',
+                                                      child: Text(
+                                                        'Proyecto Único / Obra',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                    DropdownMenuItem(
+                                                      value:
+                                                          'Servicio por Evento',
+                                                      child: Text(
+                                                        'Servicio por Evento',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                    DropdownMenuItem(
+                                                      value: 'Híbrido',
+                                                      child: Text(
+                                                        'Híbrido (Mensual + Obra)',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
                                                   ],
                                                   onChanged: (v) {
                                                     if (v != null) {
                                                       setDialogState(() {
                                                         contractType = v;
-                                                        if (v == 'Recurrente Mensual') {
-                                                          termsCtrl.text = 'Facturación mensual a 30 días';
-                                                          timeCtrl.text = 'Contrato 12 meses';
+                                                        if (v ==
+                                                            'Recurrente Mensual') {
+                                                          termsCtrl.text =
+                                                              'Facturación mensual a 30 días';
+                                                          timeCtrl.text =
+                                                              'Contrato 12 meses';
                                                           advancePct = 0;
-                                                        } else if (v == 'Servicio por Evento') {
-                                                          termsCtrl.text = '50% Anticipo / 50% Cierre del Evento';
-                                                          timeCtrl.text = '3 días (Feria / Evento)';
+                                                        } else if (v ==
+                                                            'Servicio por Evento') {
+                                                          termsCtrl.text =
+                                                              '50% Anticipo / 50% Cierre del Evento';
+                                                          timeCtrl.text =
+                                                              '3 días (Feria / Evento)';
                                                           advancePct = 50;
                                                         } else {
-                                                          termsCtrl.text = '50% Anticipo / 50% Entrega Conforme';
-                                                          timeCtrl.text = '15 días hábiles';
+                                                          termsCtrl.text =
+                                                              '50% Anticipo / 50% Entrega Conforme';
+                                                          timeCtrl.text =
+                                                              '15 días hábiles';
                                                           advancePct = 50;
                                                         }
-                                                        budgetItems = _getDefaultBudgetItemsForCategory(category, v);
+                                                        budgetItems =
+                                                            _getDefaultBudgetItemsForCategory(
+                                                              category,
+                                                              v,
+                                                            );
                                                       });
                                                     }
                                                   },
@@ -2720,43 +3041,82 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                           ),
                                           const SizedBox(height: 16),
                                           DropdownButtonFormField<String?>(
-                                            key: ValueKey('branch_$selectedBranchId'),
-                                            initialValue: customer.branches.any((b) => b.id == selectedBranchId)
+                                            key: ValueKey(
+                                              'branch_$selectedBranchId',
+                                            ),
+                                            initialValue:
+                                                customer.branches.any(
+                                                  (b) =>
+                                                      b.id == selectedBranchId,
+                                                )
                                                 ? selectedBranchId
-                                                : (customer.branches.isNotEmpty ? customer.branches.first.id : null),
+                                                : (customer.branches.isNotEmpty
+                                                      ? customer
+                                                            .branches
+                                                            .first
+                                                            .id
+                                                      : null),
                                             isExpanded: true,
                                             decoration: const InputDecoration(
-                                              labelText: 'Sede Operativa Asignada *',
-                                              prefixIcon: Icon(Icons.business_outlined, size: 20),
+                                              labelText:
+                                                  'Sede Operativa Asignada *',
+                                              prefixIcon: Icon(
+                                                Icons.business_outlined,
+                                                size: 20,
+                                              ),
                                               isDense: true,
                                             ),
                                             items: customer.branches.isEmpty
                                                 ? const [
                                                     DropdownMenuItem<String?>(
                                                       value: null,
-                                                      child: Text('Sin sedes asignadas'),
+                                                      child: Text(
+                                                        'Sin sedes asignadas',
+                                                      ),
                                                     ),
                                                   ]
                                                 : customer.branches
-                                                    .map((b) => DropdownMenuItem<String?>(
-                                                          value: b.id,
-                                                          child: Text('${b.name} — ${b.address}', overflow: TextOverflow.ellipsis, maxLines: 1),
-                                                        ))
-                                                    .toList(),
+                                                      .map(
+                                                        (b) =>
+                                                            DropdownMenuItem<
+                                                              String?
+                                                            >(
+                                                              value: b.id,
+                                                              child: Text(
+                                                                '${b.name} — ${b.address}',
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                maxLines: 1,
+                                                              ),
+                                                            ),
+                                                      )
+                                                      .toList(),
                                             onChanged: (v) {
-                                              if (v != null) setDialogState(() => selectedBranchId = v);
+                                              if (v != null)
+                                                setDialogState(
+                                                  () => selectedBranchId = v,
+                                                );
                                             },
                                           ),
                                           const SizedBox(height: 16),
                                           TextFormField(
                                             controller: titleCtrl,
                                             decoration: const InputDecoration(
-                                              labelText: 'Nombre / Objeto del Contrato *',
-                                              hintText: 'Ej: Servicio Integral de Limpieza Técnica y Sanitización para Torre Titanium',
-                                              prefixIcon: Icon(Icons.description_outlined, size: 20),
+                                              labelText:
+                                                  'Nombre / Objeto del Contrato *',
+                                              hintText:
+                                                  'Ej: Servicio Integral de Limpieza Técnica y Sanitización para Torre Titanium',
+                                              prefixIcon: Icon(
+                                                Icons.description_outlined,
+                                                size: 20,
+                                              ),
                                               isDense: true,
                                             ),
-                                            validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+                                            validator: (v) =>
+                                                (v == null || v.trim().isEmpty)
+                                                ? 'Requerido'
+                                                : null,
                                           ),
                                         ],
                                       ),
@@ -2768,14 +3128,23 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                     Container(
                                       padding: const EdgeInsets.all(20),
                                       decoration: BoxDecoration(
-                                        color: isDark ? const Color(0xFF131D31) : const Color(0xFFF8FAFC),
+                                        color: isDark
+                                            ? const Color(0xFF131D31)
+                                            : const Color(0xFFF8FAFC),
                                         borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+                                        border: Border.all(
+                                          color: isDark
+                                              ? const Color(0xFF1E293B)
+                                              : const Color(0xFFE2E8F0),
+                                        ),
                                       ),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          _buildSectionTitle('CONDICIONES COMERCIALES, PLAZOS Y ANTICIPOS'),
+                                          _buildSectionTitle(
+                                            'CONDICIONES COMERCIALES, PLAZOS Y ANTICIPOS',
+                                          ),
                                           const SizedBox(height: 16),
                                           Row(
                                             children: [
@@ -2783,8 +3152,16 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                                 flex: 2,
                                                 child: TextFormField(
                                                   controller: timeCtrl,
-                                                  decoration: const InputDecoration(labelText: 'Plazo de Ejecución / Duración *', isDense: true),
-                                                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+                                                  decoration: const InputDecoration(
+                                                    labelText:
+                                                        'Plazo de Ejecución / Duración *',
+                                                    isDense: true,
+                                                  ),
+                                                  validator: (v) =>
+                                                      (v == null ||
+                                                          v.trim().isEmpty)
+                                                      ? 'Requerido'
+                                                      : null,
                                                 ),
                                               ),
                                               const SizedBox(width: 16),
@@ -2792,27 +3169,89 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                                 flex: 3,
                                                 child: TextFormField(
                                                   controller: termsCtrl,
-                                                  decoration: const InputDecoration(labelText: 'Condiciones de Facturación & Pago *', isDense: true),
-                                                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+                                                  decoration: const InputDecoration(
+                                                    labelText:
+                                                        'Condiciones de Facturación & Pago *',
+                                                    isDense: true,
+                                                  ),
+                                                  validator: (v) =>
+                                                      (v == null ||
+                                                          v.trim().isEmpty)
+                                                      ? 'Requerido'
+                                                      : null,
                                                 ),
                                               ),
                                               const SizedBox(width: 16),
                                               Expanded(
                                                 flex: 2,
                                                 child: DropdownButtonFormField<int>(
-                                                  key: ValueKey('adv_$advancePct'),
-                                                  initialValue: const [0, 30, 50, 70, 100].contains(advancePct) ? advancePct : 0,
+                                                  key: ValueKey(
+                                                    'adv_$advancePct',
+                                                  ),
+                                                  initialValue:
+                                                      const [
+                                                        0,
+                                                        30,
+                                                        50,
+                                                        70,
+                                                        100,
+                                                      ].contains(advancePct)
+                                                      ? advancePct
+                                                      : 0,
                                                   isExpanded: true,
-                                                  decoration: const InputDecoration(labelText: '% Anticipo Inicial', isDense: true),
+                                                  decoration:
+                                                      const InputDecoration(
+                                                        labelText:
+                                                            '% Anticipo Inicial',
+                                                        isDense: true,
+                                                      ),
                                                   items: const [
-                                                    DropdownMenuItem(value: 0, child: Text('0% (Planilla mensual)', overflow: TextOverflow.ellipsis)),
-                                                    DropdownMenuItem(value: 30, child: Text('30% Anticipo', overflow: TextOverflow.ellipsis)),
-                                                    DropdownMenuItem(value: 50, child: Text('50% Anticipo', overflow: TextOverflow.ellipsis)),
-                                                    DropdownMenuItem(value: 70, child: Text('70% Anticipo', overflow: TextOverflow.ellipsis)),
-                                                    DropdownMenuItem(value: 100, child: Text('100% Contado', overflow: TextOverflow.ellipsis)),
+                                                    DropdownMenuItem(
+                                                      value: 0,
+                                                      child: Text(
+                                                        '0% (Planilla mensual)',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                    DropdownMenuItem(
+                                                      value: 30,
+                                                      child: Text(
+                                                        '30% Anticipo',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                    DropdownMenuItem(
+                                                      value: 50,
+                                                      child: Text(
+                                                        '50% Anticipo',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                    DropdownMenuItem(
+                                                      value: 70,
+                                                      child: Text(
+                                                        '70% Anticipo',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                    DropdownMenuItem(
+                                                      value: 100,
+                                                      child: Text(
+                                                        '100% Contado',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
                                                   ],
                                                   onChanged: (v) {
-                                                    if (v != null) setDialogState(() => advancePct = v);
+                                                    if (v != null)
+                                                      setDialogState(
+                                                        () => advancePct = v,
+                                                      );
                                                   },
                                                 ),
                                               ),
@@ -2828,48 +3267,86 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                     Container(
                                       padding: const EdgeInsets.all(20),
                                       decoration: BoxDecoration(
-                                        color: isDark ? const Color(0xFF131D31) : const Color(0xFFF8FAFC),
+                                        color: isDark
+                                            ? const Color(0xFF131D31)
+                                            : const Color(0xFFF8FAFC),
                                         borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+                                        border: Border.all(
+                                          color: isDark
+                                              ? const Color(0xFF1E293B)
+                                              : const Color(0xFFE2E8F0),
+                                        ),
                                       ),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
-                                              _buildSectionTitle('ESPECIFICACIÓN TÉCNICA & ALCANCE DEL TRABAJO'),
+                                              _buildSectionTitle(
+                                                'ESPECIFICACIÓN TÉCNICA & ALCANCE DEL TRABAJO',
+                                              ),
                                               OutlinedButton.icon(
                                                 style: OutlinedButton.styleFrom(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                                  minimumSize: const Size(0, 30),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 10,
+                                                        vertical: 4,
+                                                      ),
+                                                  minimumSize: const Size(
+                                                    0,
+                                                    30,
+                                                  ),
                                                 ),
                                                 onPressed: () {
                                                   setDialogState(() {
-                                                    scopeCtrl.text = _getDefaultScopeForCategory(category);
+                                                    scopeCtrl.text =
+                                                        _getDefaultScopeForCategory(
+                                                          category,
+                                                        );
                                                   });
                                                 },
-                                                icon: const Icon(Icons.refresh, size: 14),
-                                                label: Text('Restablecer Plantilla Sugerida', style: GoogleFonts.inter(fontSize: 11)),
+                                                icon: const Icon(
+                                                  Icons.refresh,
+                                                  size: 14,
+                                                ),
+                                                label: Text(
+                                                  'Restablecer Plantilla Sugerida',
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 11,
+                                                  ),
+                                                ),
                                               ),
                                             ],
                                           ),
                                           const SizedBox(height: 6),
                                           Text(
                                             'Detallá minuciosamente el personal asignado, horarios, maquinaria suministrada, insumos y compromisos asumidos.',
-                                            style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12,
+                                              color: const Color(0xFF64748B),
+                                            ),
                                           ),
                                           const SizedBox(height: 12),
                                           TextFormField(
                                             controller: scopeCtrl,
                                             maxLines: 5,
                                             minLines: 4,
-                                            style: GoogleFonts.inter(fontSize: 13, height: 1.45),
+                                            style: GoogleFonts.inter(
+                                              fontSize: 13,
+                                              height: 1.45,
+                                            ),
                                             decoration: const InputDecoration(
-                                              hintText: 'Detallá aquí el alcance técnico y operativo acordado con el cliente...',
+                                              hintText:
+                                                  'Detallá aquí el alcance técnico y operativo acordado con el cliente...',
                                               border: OutlineInputBorder(),
                                             ),
-                                            validator: (v) => (v == null || v.trim().isEmpty) ? 'Especificá el alcance técnico' : null,
+                                            validator: (v) =>
+                                                (v == null || v.trim().isEmpty)
+                                                ? 'Especificá el alcance técnico'
+                                                : null,
                                           ),
                                         ],
                                       ),
@@ -2882,55 +3359,110 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                       alignment: Alignment.centerRight,
                                       child: ElevatedButton.icon(
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color(0xFF2563EB),
+                                          backgroundColor: const Color(
+                                            0xFF2563EB,
+                                          ),
                                           foregroundColor: Colors.white,
-                                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 24,
+                                            vertical: 14,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
                                         ),
                                         onPressed: () {
-                                          if (formKey.currentState?.validate() ?? false) {
-                                            setDialogState(() => currentTab = 1);
+                                          if (formKey.currentState
+                                                  ?.validate() ??
+                                              false) {
+                                            setDialogState(
+                                              () => currentTab = 1,
+                                            );
                                           }
                                         },
-                                        icon: const Icon(Icons.arrow_forward, size: 16),
-                                        label: Text('Continuar a Partidas Presupuestarias (Paso 2) →', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
+                                        icon: const Icon(
+                                          Icons.arrow_forward,
+                                          size: 16,
+                                        ),
+                                        label: Text(
+                                          'Continuar a Partidas Presupuestarias (Paso 2) →',
+                                          style: GoogleFonts.inter(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 13,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ],
                                 )
                               : // ==================== PESTAÑA 2: PARTIDAS Y COTIZACIÓN ====================
-                              Column(
+                                Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.all(20),
                                       decoration: BoxDecoration(
-                                        color: isDark ? const Color(0xFF131D31) : const Color(0xFFF8FAFC),
+                                        color: isDark
+                                            ? const Color(0xFF131D31)
+                                            : const Color(0xFFF8FAFC),
                                         borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+                                        border: Border.all(
+                                          color: isDark
+                                              ? const Color(0xFF1E293B)
+                                              : const Color(0xFFE2E8F0),
+                                        ),
                                       ),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
                                               Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      _buildSectionTitle('DESGLOSE DE PARTIDAS & PRESUPUESTO'),
+                                                      _buildSectionTitle(
+                                                        'DESGLOSE DE PARTIDAS & PRESUPUESTO',
+                                                      ),
                                                       const SizedBox(width: 10),
                                                       Container(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 8,
+                                                              vertical: 3,
+                                                            ),
                                                         decoration: BoxDecoration(
-                                                          color: const Color(0xFF10B981).withValues(alpha: 0.15),
-                                                          borderRadius: BorderRadius.circular(12),
+                                                          color:
+                                                              const Color(
+                                                                0xFF10B981,
+                                                              ).withValues(
+                                                                alpha: 0.15,
+                                                              ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                12,
+                                                              ),
                                                         ),
                                                         child: Text(
                                                           '${budgetItems.length} partidas cotizadas',
-                                                          style: GoogleFonts.jetBrainsMono(fontSize: 11, fontWeight: FontWeight.w700, color: const Color(0xFF10B981)),
+                                                          style:
+                                                              GoogleFonts.jetBrainsMono(
+                                                                fontSize: 11,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                                color:
+                                                                    const Color(
+                                                                      0xFF10B981,
+                                                                    ),
+                                                              ),
                                                         ),
                                                       ),
                                                     ],
@@ -2938,31 +3470,60 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                                   const SizedBox(height: 4),
                                                   Text(
                                                     'Costeá cada ítem individualmente. El total del contrato se actualiza en tiempo real.',
-                                                    style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                                                    style: GoogleFonts.inter(
+                                                      fontSize: 12,
+                                                      color: const Color(
+                                                        0xFF64748B,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ],
                                               ),
                                               ElevatedButton.icon(
                                                 style: ElevatedButton.styleFrom(
-                                                  backgroundColor: const Color(0xFF2563EB),
+                                                  backgroundColor: const Color(
+                                                    0xFF2563EB,
+                                                  ),
                                                   foregroundColor: Colors.white,
-                                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 16,
+                                                        vertical: 10,
+                                                      ),
                                                   elevation: 0,
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                  ),
                                                 ),
                                                 onPressed: () {
                                                   setDialogState(() {
-                                                    budgetItems.add(ContractBudgetItem(
-                                                      id: 'ITM-${DateTime.now().millisecondsSinceEpoch % 10000}',
-                                                      description: '',
-                                                      quantity: 1,
-                                                      unit: isRecurrent ? 'Mes' : 'Global',
-                                                      unitPrice: 0,
-                                                    ));
+                                                    budgetItems.add(
+                                                      ContractBudgetItem(
+                                                        id: 'ITM-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                                                        description: '',
+                                                        quantity: 1,
+                                                        unit: isRecurrent
+                                                            ? 'Mes'
+                                                            : 'Global',
+                                                        unitPrice: 0,
+                                                      ),
+                                                    );
                                                   });
                                                 },
-                                                icon: const Icon(Icons.add, size: 16),
-                                                label: Text('Añadir Partida', style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                                                icon: const Icon(
+                                                  Icons.add,
+                                                  size: 16,
+                                                ),
+                                                label: Text(
+                                                  'Añadir Partida',
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 12.5,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -2974,22 +3535,51 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                               width: double.infinity,
                                               padding: const EdgeInsets.all(40),
                                               decoration: BoxDecoration(
-                                                color: isDark ? const Color(0xFF0F172A) : Colors.white,
-                                                borderRadius: BorderRadius.circular(10),
-                                                border: Border.all(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+                                                color: isDark
+                                                    ? const Color(0xFF0F172A)
+                                                    : Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                border: Border.all(
+                                                  color: isDark
+                                                      ? const Color(0xFF1E293B)
+                                                      : const Color(0xFFE2E8F0),
+                                                ),
                                               ),
                                               child: Column(
                                                 children: [
-                                                  Icon(Icons.receipt_long_outlined, size: 42, color: const Color(0xFF64748B).withValues(alpha: 0.5)),
+                                                  Icon(
+                                                    Icons.receipt_long_outlined,
+                                                    size: 42,
+                                                    color: const Color(
+                                                      0xFF64748B,
+                                                    ).withValues(alpha: 0.5),
+                                                  ),
                                                   const SizedBox(height: 10),
                                                   Text(
                                                     'No hay partidas presupuestarias registradas',
-                                                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569)),
+                                                    style: GoogleFonts.inter(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: isDark
+                                                          ? const Color(
+                                                              0xFF94A3B8,
+                                                            )
+                                                          : const Color(
+                                                              0xFF475569,
+                                                            ),
+                                                    ),
                                                   ),
                                                   const SizedBox(height: 4),
                                                   Text(
                                                     'Hacé clic en "+ Añadir Partida" para costear el servicio.',
-                                                    style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                                                    style: GoogleFonts.inter(
+                                                      fontSize: 12,
+                                                      color: const Color(
+                                                        0xFF64748B,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ],
                                               ),
@@ -2997,34 +3587,78 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                           else
                                             ListView.separated(
                                               shrinkWrap: true,
-                                              physics: const NeverScrollableScrollPhysics(),
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
                                               itemCount: budgetItems.length,
-                                              separatorBuilder: (_, _) => const SizedBox(height: 12),
+                                              separatorBuilder: (_, _) =>
+                                                  const SizedBox(height: 12),
                                               itemBuilder: (context, idx) {
                                                 final item = budgetItems[idx];
                                                 return Container(
-                                                  padding: const EdgeInsets.all(14),
+                                                  padding: const EdgeInsets.all(
+                                                    14,
+                                                  ),
                                                   decoration: BoxDecoration(
-                                                    color: isDark ? const Color(0xFF0F172A) : Colors.white,
-                                                    borderRadius: BorderRadius.circular(10),
-                                                    border: Border.all(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+                                                    color: isDark
+                                                        ? const Color(
+                                                            0xFF0F172A,
+                                                          )
+                                                        : Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          10,
+                                                        ),
+                                                    border: Border.all(
+                                                      color: isDark
+                                                          ? const Color(
+                                                              0xFF1E293B,
+                                                            )
+                                                          : const Color(
+                                                              0xFFE2E8F0,
+                                                            ),
+                                                    ),
                                                   ),
                                                   child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     children: [
                                                       // Fila 1: Concepto con ancho completo
                                                       TextFormField(
-                                                        initialValue: item.description,
-                                                        style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500),
+                                                        initialValue:
+                                                            item.description,
+                                                        style:
+                                                            GoogleFonts.inter(
+                                                              fontSize: 13,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
                                                         decoration: InputDecoration(
-                                                          labelText: 'Concepto / Partida Cotizada #${idx + 1}',
-                                                          hintText: 'Ej: 2 Operarios de limpieza para turno matutino con químicos incluidos',
+                                                          labelText:
+                                                              'Concepto / Partida Cotizada #${idx + 1}',
+                                                          hintText:
+                                                              'Ej: 2 Operarios de limpieza para turno matutino con químicos incluidos',
                                                           isDense: true,
-                                                          prefixIcon: const Icon(Icons.edit_note, size: 18, color: Color(0xFF64748B)),
+                                                          prefixIcon:
+                                                              const Icon(
+                                                                Icons.edit_note,
+                                                                size: 18,
+                                                                color: Color(
+                                                                  0xFF64748B,
+                                                                ),
+                                                              ),
                                                         ),
-                                                        onChanged: (v) => budgetItems[idx] = item.copyWith(description: v),
+                                                        onChanged: (v) =>
+                                                            budgetItems[idx] =
+                                                                item.copyWith(
+                                                                  description:
+                                                                      v,
+                                                                ),
                                                       ),
-                                                      const SizedBox(height: 12),
+                                                      const SizedBox(
+                                                        height: 12,
+                                                      ),
 
                                                       // Fila 2: Métricas numéricas bien espaciadas
                                                       Row(
@@ -3033,101 +3667,253 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                                           SizedBox(
                                                             width: 100,
                                                             child: TextFormField(
-                                                              initialValue: item.quantity.toStringAsFixed(item.quantity % 1 == 0 ? 0 : 2),
-                                                              keyboardType: TextInputType.number,
-                                                              style: GoogleFonts.jetBrainsMono(fontSize: 13, fontWeight: FontWeight.w600),
-                                                              decoration: const InputDecoration(
-                                                                labelText: 'Cantidad *',
-                                                                isDense: true,
+                                                              initialValue: item
+                                                                  .quantity
+                                                                  .toStringAsFixed(
+                                                                    item.quantity %
+                                                                                1 ==
+                                                                            0
+                                                                        ? 0
+                                                                        : 2,
+                                                                  ),
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .number,
+                                                              style: GoogleFonts.jetBrainsMono(
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
                                                               ),
+                                                              decoration:
+                                                                  const InputDecoration(
+                                                                    labelText:
+                                                                        'Cantidad *',
+                                                                    isDense:
+                                                                        true,
+                                                                  ),
                                                               onChanged: (v) {
-                                                                final parsed = double.tryParse(v) ?? 1.0;
-                                                                setDialogState(() => budgetItems[idx] = item.copyWith(quantity: parsed));
-                                                               },
+                                                                final parsed =
+                                                                    double.tryParse(
+                                                                      v,
+                                                                    ) ??
+                                                                    1.0;
+                                                                setDialogState(
+                                                                  () => budgetItems[idx] =
+                                                                      item.copyWith(
+                                                                        quantity:
+                                                                            parsed,
+                                                                      ),
+                                                                );
+                                                              },
                                                             ),
                                                           ),
-                                                          const SizedBox(width: 14),
+                                                          const SizedBox(
+                                                            width: 14,
+                                                          ),
 
                                                           // Unidad de Medida
                                                           SizedBox(
                                                             width: 140,
                                                             child: DropdownButtonFormField<String>(
-                                                              key: ValueKey('unit_${item.id}_${item.unit}'),
-                                                              initialValue: const [
-                                                                'Mes',
-                                                                'Puesto',
-                                                                'Global',
-                                                                'Horas',
-                                                                'm²',
-                                                                'Unidad',
-                                                                'Visita',
-                                                              ].contains(item.unit)
+                                                              key: ValueKey(
+                                                                'unit_${item.id}_${item.unit}',
+                                                              ),
+                                                              initialValue:
+                                                                  const [
+                                                                    'Mes',
+                                                                    'Puesto',
+                                                                    'Global',
+                                                                    'Horas',
+                                                                    'm²',
+                                                                    'Unidad',
+                                                                    'Visita',
+                                                                  ].contains(
+                                                                    item.unit,
+                                                                  )
                                                                   ? item.unit
                                                                   : 'Mes',
                                                               isExpanded: true,
-                                                              decoration: const InputDecoration(
-                                                                labelText: 'Unidad *',
-                                                                isDense: true,
-                                                              ),
+                                                              decoration:
+                                                                  const InputDecoration(
+                                                                    labelText:
+                                                                        'Unidad *',
+                                                                    isDense:
+                                                                        true,
+                                                                  ),
                                                               items: const [
-                                                                DropdownMenuItem(value: 'Mes', child: Text('Mes')),
-                                                                DropdownMenuItem(value: 'Puesto', child: Text('Puesto')),
-                                                                DropdownMenuItem(value: 'Global', child: Text('Global')),
-                                                                DropdownMenuItem(value: 'Horas', child: Text('Horas')),
-                                                                DropdownMenuItem(value: 'm²', child: Text('m²')),
-                                                                DropdownMenuItem(value: 'Unidad', child: Text('Unidad')),
-                                                                DropdownMenuItem(value: 'Visita', child: Text('Visita')),
+                                                                DropdownMenuItem(
+                                                                  value: 'Mes',
+                                                                  child: Text(
+                                                                    'Mes',
+                                                                  ),
+                                                                ),
+                                                                DropdownMenuItem(
+                                                                  value:
+                                                                      'Puesto',
+                                                                  child: Text(
+                                                                    'Puesto',
+                                                                  ),
+                                                                ),
+                                                                DropdownMenuItem(
+                                                                  value:
+                                                                      'Global',
+                                                                  child: Text(
+                                                                    'Global',
+                                                                  ),
+                                                                ),
+                                                                DropdownMenuItem(
+                                                                  value:
+                                                                      'Horas',
+                                                                  child: Text(
+                                                                    'Horas',
+                                                                  ),
+                                                                ),
+                                                                DropdownMenuItem(
+                                                                  value: 'm²',
+                                                                  child: Text(
+                                                                    'm²',
+                                                                  ),
+                                                                ),
+                                                                DropdownMenuItem(
+                                                                  value:
+                                                                      'Unidad',
+                                                                  child: Text(
+                                                                    'Unidad',
+                                                                  ),
+                                                                ),
+                                                                DropdownMenuItem(
+                                                                  value:
+                                                                      'Visita',
+                                                                  child: Text(
+                                                                    'Visita',
+                                                                  ),
+                                                                ),
                                                               ],
                                                               onChanged: (v) {
-                                                                if (v != null) setDialogState(() => budgetItems[idx] = item.copyWith(unit: v));
+                                                                if (v != null)
+                                                                  setDialogState(
+                                                                    () => budgetItems[idx] =
+                                                                        item.copyWith(
+                                                                          unit:
+                                                                              v,
+                                                                        ),
+                                                                  );
                                                               },
                                                             ),
                                                           ),
-                                                          const SizedBox(width: 14),
+                                                          const SizedBox(
+                                                            width: 14,
+                                                          ),
 
                                                           // Precio Unitario
                                                           Expanded(
                                                             child: TextFormField(
-                                                              initialValue: item.unitPrice.toStringAsFixed(0),
-                                                              keyboardType: TextInputType.number,
-                                                              style: GoogleFonts.jetBrainsMono(fontSize: 13, fontWeight: FontWeight.w600),
-                                                              decoration: const InputDecoration(
-                                                                labelText: 'Precio Unitario *',
-                                                                prefixText: 'Bs. ',
-                                                                isDense: true,
+                                                              initialValue: item
+                                                                  .unitPrice
+                                                                  .toStringAsFixed(
+                                                                    0,
+                                                                  ),
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .number,
+                                                              style: GoogleFonts.jetBrainsMono(
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
                                                               ),
+                                                              decoration:
+                                                                  const InputDecoration(
+                                                                    labelText:
+                                                                        'Precio Unitario *',
+                                                                    prefixText:
+                                                                        'Bs. ',
+                                                                    isDense:
+                                                                        true,
+                                                                  ),
                                                               onChanged: (v) {
-                                                                final parsed = double.tryParse(v) ?? 0.0;
-                                                                setDialogState(() => budgetItems[idx] = item.copyWith(unitPrice: parsed));
+                                                                final parsed =
+                                                                    double.tryParse(
+                                                                      v,
+                                                                    ) ??
+                                                                    0.0;
+                                                                setDialogState(
+                                                                  () => budgetItems[idx] =
+                                                                      item.copyWith(
+                                                                        unitPrice:
+                                                                            parsed,
+                                                                      ),
+                                                                );
                                                               },
                                                             ),
                                                           ),
-                                                          const SizedBox(width: 18),
+                                                          const SizedBox(
+                                                            width: 18,
+                                                          ),
 
                                                           // Subtotal Partida
                                                           Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .end,
                                                             children: [
-                                                              Text('SUBTOTAL', style: GoogleFonts.jetBrainsMono(fontSize: 10, fontWeight: FontWeight.w700, color: const Color(0xFF64748B))),
-                                                              const SizedBox(height: 3),
+                                                              Text(
+                                                                'SUBTOTAL',
+                                                                style: GoogleFonts.jetBrainsMono(
+                                                                  fontSize: 10,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                  color: const Color(
+                                                                    0xFF64748B,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 3,
+                                                              ),
                                                               Text(
                                                                 'Bs. ${item.subtotal.toStringAsFixed(2)}',
                                                                 style: GoogleFonts.jetBrainsMono(
                                                                   fontSize: 14,
-                                                                  fontWeight: FontWeight.w700,
-                                                                  color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF0F172A),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                  color: isDark
+                                                                      ? const Color(
+                                                                          0xFFE2E8F0,
+                                                                        )
+                                                                      : const Color(
+                                                                          0xFF0F172A,
+                                                                        ),
                                                                 ),
                                                               ),
                                                             ],
                                                           ),
-                                                          const SizedBox(width: 10),
+                                                          const SizedBox(
+                                                            width: 10,
+                                                          ),
 
                                                           // Eliminar
                                                           IconButton(
-                                                            icon: const Icon(Icons.delete_outline, size: 20, color: Color(0xFFEF4444)),
-                                                            tooltip: 'Eliminar partida',
+                                                            icon: const Icon(
+                                                              Icons
+                                                                  .delete_outline,
+                                                              size: 20,
+                                                              color: Color(
+                                                                0xFFEF4444,
+                                                              ),
+                                                            ),
+                                                            tooltip:
+                                                                'Eliminar partida',
                                                             onPressed: () {
-                                                              setDialogState(() => budgetItems.removeAt(idx));
+                                                              setDialogState(
+                                                                () => budgetItems
+                                                                    .removeAt(
+                                                                      idx,
+                                                                    ),
+                                                              );
                                                             },
                                                           ),
                                                         ],
@@ -3148,11 +3934,22 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
 
                     // 4. BARRA INFERIOR FLOTANTE DE TOTALES & ACCIONES
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
                         color: isDark ? const Color(0xFF131D31) : Colors.white,
-                        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
-                        border: Border(top: BorderSide(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0))),
+                        borderRadius: const BorderRadius.vertical(
+                          bottom: Radius.circular(16),
+                        ),
+                        border: Border(
+                          top: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFE2E8F0),
+                          ),
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -3164,7 +3961,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                               Row(
                                 children: [
                                   Text(
-                                    isRecurrent ? 'CANON MENSUAL ESTIMADO' : 'MONTO TOTAL DEL CONTRATO',
+                                    isRecurrent
+                                        ? 'CANON MENSUAL ESTIMADO'
+                                        : 'MONTO TOTAL DEL CONTRATO',
                                     style: GoogleFonts.inter(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,
@@ -3175,11 +3974,20 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                   if (advancePct > 0) ...[
                                     const SizedBox(width: 10),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 7,
+                                        vertical: 2.5,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
+                                        color: const Color(
+                                          0xFFF59E0B,
+                                        ).withValues(alpha: 0.12),
                                         borderRadius: BorderRadius.circular(5),
-                                        border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+                                        border: Border.all(
+                                          color: const Color(
+                                            0xFFF59E0B,
+                                          ).withValues(alpha: 0.3),
+                                        ),
                                       ),
                                       child: Text(
                                         'Anticipo $advancePct%: Bs. ${(totalBudget * advancePct / 100).toStringAsFixed(2)}',
@@ -3201,7 +4009,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                 style: GoogleFonts.jetBrainsMono(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w800,
-                                  color: isRecurrent ? const Color(0xFF10B981) : const Color(0xFF3B82F6),
+                                  color: isRecurrent
+                                      ? const Color(0xFF10B981)
+                                      : const Color(0xFF3B82F6),
                                 ),
                               ),
                             ],
@@ -3210,7 +4020,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                           OutlinedButton(
                             onPressed: () => Navigator.of(dCtx).pop(),
                             style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 12,
+                              ),
                             ),
                             child: const Text('Cancelar'),
                           ),
@@ -3218,42 +4031,66 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                           if (currentTab == 1)
                             OutlinedButton.icon(
                               style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
                               ),
-                              onPressed: () => setDialogState(() => currentTab = 0),
+                              onPressed: () =>
+                                  setDialogState(() => currentTab = 0),
                               icon: const Icon(Icons.arrow_back, size: 16),
                               label: const Text('Volver a Alcance'),
                             ),
-                          if (currentTab == 1)
-                            const SizedBox(width: 12),
+                          if (currentTab == 1) const SizedBox(width: 12),
                           ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: isRecontract ? const Color(0xFF10B981) : const Color(0xFF2563EB),
+                              backgroundColor: isRecontract
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFF2563EB),
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 22,
+                                vertical: 12,
+                              ),
                               elevation: 1,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                             ),
-                            icon: Icon(isRecontract ? Icons.replay : Icons.verified, size: 16),
+                            icon: Icon(
+                              isRecontract ? Icons.replay : Icons.verified,
+                              size: 16,
+                            ),
                             label: Text(
-                              isRecontract ? 'Confirmar Recontratación' : 'Aprobar & Activar Contrato',
-                              style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13),
+                              isRecontract
+                                  ? 'Confirmar Recontratación'
+                                  : 'Aprobar & Activar Contrato',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
                             ),
                             onPressed: () {
                               if (formKey.currentState?.validate() ?? false) {
                                 if (budgetItems.isEmpty || totalBudget <= 0) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Por favor agrega al menos una partida con precio unitario válido.')),
+                                    const SnackBar(
+                                      content: Text(
+                                        'Por favor agrega al menos una partida con precio unitario válido.',
+                                      ),
+                                    ),
                                   );
                                   return;
                                 }
 
-                                final selectedBranch = customer.branches.firstWhere(
-                                  (b) => b.id == selectedBranchId,
-                                  orElse: () => customer.branches.first,
-                                );
+                                final selectedBranch = customer.branches
+                                    .firstWhere(
+                                      (b) => b.id == selectedBranchId,
+                                      orElse: () => customer.branches.first,
+                                    );
                                 final now = DateTime.now();
-                                final dateStr = '${now.day} ${_getMonthName(now.month)} ${now.year}';
+                                final dateStr =
+                                    '${now.day} ${_getMonthName(now.month)} ${now.year}';
 
                                 final newContract = CustomerContract(
                                   id: 'CTR-${DateTime.now().millisecondsSinceEpoch % 10000}',
@@ -3261,8 +4098,12 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                   contractType: contractType,
                                   serviceCategory: category,
                                   totalAmount: totalBudget,
-                                  recurringMonthlyAmount: isRecurrent ? totalBudget : 0.0,
-                                  oneTimeAmount: !isRecurrent ? totalBudget : 0.0,
+                                  recurringMonthlyAmount: isRecurrent
+                                      ? totalBudget
+                                      : 0.0,
+                                  oneTimeAmount: !isRecurrent
+                                      ? totalBudget
+                                      : 0.0,
                                   paymentTerms: termsCtrl.text.trim(),
                                   executionTime: timeCtrl.text.trim(),
                                   advancePercentage: advancePct,
@@ -3270,14 +4111,20 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                   startDate: dateStr,
                                   branchId: selectedBranch.id,
                                   branchName: selectedBranch.name,
-                                  originType: isRecontract ? 'Recontratación' : 'Adicional',
+                                  originType: isRecontract
+                                      ? 'Recontratación'
+                                      : 'Adicional',
                                   budgetItems: budgetItems,
                                   serviceScope: scopeCtrl.text.trim(),
                                 );
 
-                                _service.addContractToCustomer(customer.id, newContract);
+                                _service.addContractToCustomer(
+                                  customer.id,
+                                  newContract,
+                                );
                                 setState(() {
-                                  _selectedCustomer = _service.customers.firstWhere((c) => c.id == customer.id);
+                                  _selectedCustomer = _service.customers
+                                      .firstWhere((c) => c.id == customer.id);
                                 });
                                 Navigator.of(dCtx).pop();
 
@@ -4238,12 +5085,19 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                 ),
                 const SizedBox(width: 10),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                      color: isDark
+                          ? const Color(0xFF334155)
+                          : const Color(0xFFE2E8F0),
                     ),
                   ),
                   child: Text(
@@ -4262,14 +5116,22 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                 backgroundColor: const Color(0xFF10B981),
                 foregroundColor: Colors.white,
                 elevation: 0,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               onPressed: _showCreateCustomerDialog,
               icon: const Icon(Icons.add_business, size: 16),
               label: Text(
                 'Registrar Cliente',
-                style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w700),
+                style: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
@@ -4296,10 +5158,14 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                     child: Container(
                       height: 38,
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
+                        color: isDark
+                            ? const Color(0xFF161F30)
+                            : const Color(0xFFF8FAFC),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFE2E8F0),
                         ),
                       ),
                       child: TextField(
@@ -4311,15 +5177,23 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                             fontSize: 12.5,
                             color: const Color(0xFF94A3B8),
                           ),
-                          prefixIcon: const Icon(Icons.search, size: 17, color: Color(0xFF64748B)),
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            size: 17,
+                            color: Color(0xFF64748B),
+                          ),
                           suffixIcon: _searchQuery.isNotEmpty
                               ? IconButton(
                                   icon: const Icon(Icons.close, size: 15),
-                                  onPressed: () => setState(() => _searchQuery = ''),
+                                  onPressed: () =>
+                                      setState(() => _searchQuery = ''),
                                 )
                               : null,
                           border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
+                          ),
                           isDense: true,
                         ),
                       ),
@@ -4333,10 +5207,14 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                     height: 38,
                     padding: const EdgeInsets.all(3),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF161F30) : const Color(0xFFF1F5F9),
+                      color: isDark
+                          ? const Color(0xFF161F30)
+                          : const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFE2E8F0),
                       ),
                     ),
                     child: Row(
@@ -4381,26 +5259,39 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         borderRadius: BorderRadius.circular(20),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 150),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 5,
+                          ),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? (isDark ? const Color(0xFF2563EB) : const Color(0xFF0F172A))
-                                : (isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC)),
+                                ? (isDark
+                                      ? const Color(0xFF2563EB)
+                                      : const Color(0xFF0F172A))
+                                : (isDark
+                                      ? const Color(0xFF161F30)
+                                      : const Color(0xFFF8FAFC)),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: isSelected
                                   ? Colors.transparent
-                                  : (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+                                  : (isDark
+                                        ? const Color(0xFF1E293B)
+                                        : const Color(0xFFE2E8F0)),
                             ),
                           ),
                           child: Text(
                             qf,
                             style: GoogleFonts.inter(
                               fontSize: 11.5,
-                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                              fontWeight: isSelected
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
                               color: isSelected
                                   ? Colors.white
-                                  : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                                  : (isDark
+                                        ? const Color(0xFF94A3B8)
+                                        : const Color(0xFF64748B)),
                             ),
                           ),
                         ),
@@ -4475,16 +5366,24 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
         children: customers.map((customer) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: _buildMasterListCard(customer, isDark, isSelected: false, onTap: () {
-              _showCustomerDetail(customer);
-            }),
+            child: _buildMasterListCard(
+              customer,
+              isDark,
+              isSelected: false,
+              onTap: () {
+                _showCustomerDetail(customer);
+              },
+            ),
           );
         }).toList(),
       );
     }
 
     final activeCustomer = _selectedCustomer != null
-        ? (_service.customers.where((c) => c.id == _selectedCustomer!.id).firstOrNull ?? _selectedCustomer!)
+        ? (_service.customers
+                  .where((c) => c.id == _selectedCustomer!.id)
+                  .firstOrNull ??
+              _selectedCustomer!)
         : (customers.isNotEmpty ? customers.first : null);
 
     return SizedBox(
@@ -4500,7 +5399,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                 color: isDark ? const Color(0xFF0F172A) : Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFE2E8F0),
                 ),
               ),
               child: ClipRRect(
@@ -4542,7 +5443,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                       color: isDark ? const Color(0xFF0F172A) : Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFE2E8F0),
                       ),
                     ),
                     child: Center(
@@ -4552,7 +5455,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                           Icon(
                             Icons.contact_page_outlined,
                             size: 48,
-                            color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
+                            color: isDark
+                                ? const Color(0xFF334155)
+                                : const Color(0xFFCBD5E1),
                           ),
                           const SizedBox(height: 12),
                           Text(
@@ -4560,7 +5465,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                             style: GoogleFonts.inter(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
-                              color: isDark ? Colors.white : const Color(0xFF0F172A),
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -4599,8 +5506,8 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
         decoration: BoxDecoration(
           color: isSelected
               ? (isDark
-                  ? const Color(0xFF1E293B)
-                  : const Color(0xFF2563EB).withValues(alpha: 0.07))
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFF2563EB).withValues(alpha: 0.07))
               : (isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC)),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
@@ -4627,7 +5534,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                           style: GoogleFonts.inter(
                             fontSize: 13.5,
                             fontWeight: FontWeight.w700,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -4650,7 +5559,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: segmentColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
@@ -4706,7 +5618,8 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
           itemCount: customers.length,
           itemBuilder: (context, index) {
             final customer = customers[index];
-            final isRecurrent = customer.primaryContractType == 'Recurrente Mensual';
+            final isRecurrent =
+                customer.primaryContractType == 'Recurrente Mensual';
 
             return Container(
               padding: const EdgeInsets.all(16),
@@ -4714,7 +5627,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                 color: isDark ? const Color(0xFF0F172A) : Colors.white,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFE2E8F0),
                 ),
               ),
               child: Column(
@@ -4739,7 +5654,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                     style: GoogleFonts.inter(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
-                                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                      color: isDark
+                                          ? Colors.white
+                                          : const Color(0xFF0F172A),
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -4797,7 +5714,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            isRecurrent ? 'CANON RECURRENTE' : 'VOLUMEN PROYECTO',
+                            isRecurrent
+                                ? 'CANON RECURRENTE'
+                                : 'VOLUMEN PROYECTO',
                             style: GoogleFonts.jetBrainsMono(
                               fontSize: 9,
                               fontWeight: FontWeight.w700,
@@ -4812,17 +5731,26 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                             style: GoogleFonts.jetBrainsMono(
                               fontSize: 14,
                               fontWeight: FontWeight.w800,
-                              color: isRecurrent ? const Color(0xFF10B981) : const Color(0xFF8B5CF6),
+                              color: isRecurrent
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFF8B5CF6),
                             ),
                           ),
                         ],
                       ),
                       OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                           side: BorderSide(
-                            color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
+                            color: isDark
+                                ? const Color(0xFF334155)
+                                : const Color(0xFFCBD5E1),
                           ),
                         ),
                         onPressed: () => _showCustomerDetail(customer),
@@ -4929,7 +5857,8 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                 ),
               ],
               rows: customers.map((c) {
-                final isRecurrent = c.primaryContractType == 'Recurrente Mensual';
+                final isRecurrent =
+                    c.primaryContractType == 'Recurrente Mensual';
                 return DataRow(
                   cells: [
                     DataCell(
@@ -4946,7 +5875,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                 style: GoogleFonts.inter(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
-                                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
                                 ),
                               ),
                               Text(
@@ -4963,9 +5894,14 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                     ),
                     DataCell(
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
-                          color: _getSegmentColor(c.segment).withValues(alpha: 0.1),
+                          color: _getSegmentColor(
+                            c.segment,
+                          ).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
@@ -4997,7 +5933,9 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         style: GoogleFonts.jetBrainsMono(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w700,
-                          color: isRecurrent ? const Color(0xFF10B981) : const Color(0xFF8B5CF6),
+                          color: isRecurrent
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFF8B5CF6),
                         ),
                       ),
                     ),
@@ -5006,12 +5944,19 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.remove_red_eye_outlined, size: 18),
+                            icon: const Icon(
+                              Icons.remove_red_eye_outlined,
+                              size: 18,
+                            ),
                             tooltip: 'Ver Ficha 360°',
                             onPressed: () => _showCustomerDetail(c),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.replay, size: 18, color: Color(0xFF10B981)),
+                            icon: const Icon(
+                              Icons.replay,
+                              size: 18,
+                              color: Color(0xFF10B981),
+                            ),
                             tooltip: 'Recontratar Servicio',
                             onPressed: () => _showAddContractDialog(c),
                           ),

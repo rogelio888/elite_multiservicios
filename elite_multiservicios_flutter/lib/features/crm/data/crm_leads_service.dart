@@ -11,7 +11,8 @@ class LeadModel {
   final String address; // Dirección física / Ubicación
   final String phone; // Teléfono(s) o WhatsApp
   final String? emailOrWeb; // Correo o enlace oficial
-  final String status; // 'Prospectado', 'Contactado', 'En Espera de Respuesta', 'Interesado (Calificado)', 'Descartado'
+  final String
+  status; // 'Prospectado', 'Contactado', 'En Espera de Respuesta', 'Interesado (Calificado)', 'Descartado'
   final String temperature; // 'Frío', 'Templado', 'Caliente'
   final String contactPerson; // Nombre del contacto o decisor
   final String? notes; // Historial y notas comerciales
@@ -77,7 +78,8 @@ class CrmLeadsService {
   static final CrmLeadsService _instance = CrmLeadsService._internal();
   factory CrmLeadsService() => _instance;
 
-  final ValueNotifier<List<LeadModel>> leadsNotifier = ValueNotifier<List<LeadModel>>([]);
+  final ValueNotifier<List<LeadModel>> leadsNotifier =
+      ValueNotifier<List<LeadModel>>([]);
 
   CrmLeadsService._internal() {
     _initializeSeeds();
@@ -100,7 +102,8 @@ class CrmLeadsService {
         status: 'En Espera de Respuesta',
         temperature: 'Templado',
         contactPerson: 'Lic. Maria Eugenia (Recepción)',
-        notes: 'Llamada inicial realizada. Recepción consultará con administración el martes para fijar reunión.',
+        notes:
+            'Llamada inicial realizada. Recepción consultará con administración el martes para fijar reunión.',
         estimatedValue: 6800.0,
       ),
       const LeadModel(
@@ -116,7 +119,8 @@ class CrmLeadsService {
         status: 'Contactado',
         temperature: 'Templado',
         contactPerson: 'Dr. Alejandro Peña',
-        notes: 'Se envió portafolio institucional de limpieza técnica y desinfección hospitalaria con protocolos biocidas.',
+        notes:
+            'Se envió portafolio institucional de limpieza técnica y desinfección hospitalaria con protocolos biocidas.',
         estimatedValue: 7400.0,
       ),
       const LeadModel(
@@ -132,7 +136,8 @@ class CrmLeadsService {
         status: 'Interesado (Calificado)',
         temperature: 'Caliente',
         contactPerson: 'Ing. Sandra Hurtado (Gerente Operaciones)',
-        notes: 'Solicitaron cotización formal para 2 operarios de limpieza hospitalaria turno matutino y seguridad perimetral.',
+        notes:
+            'Solicitaron cotización formal para 2 operarios de limpieza hospitalaria turno matutino y seguridad perimetral.',
         estimatedValue: 9200.0,
       ),
       const LeadModel(
@@ -142,13 +147,15 @@ class CrmLeadsService {
         company: 'Clínica Roberto Bacarreza',
         companyUrl: 'https://clinicarobertobacarreza.com/',
         sector: 'Clínicas y centros médicos',
-        address: 'Calle República Dominicana 2068, entre calles Nicaragua y Villalobos',
+        address:
+            'Calle República Dominicana 2068, entre calles Nicaragua y Villalobos',
         phone: '76787767',
         emailOrWeb: 'https://clinicarobertobacarreza.com/',
         status: 'Prospectado',
         temperature: 'Frío',
         contactPerson: 'Administración General',
-        notes: 'Ficha capturada de Google Maps. Pendiente primera llamada de prospección en frío.',
+        notes:
+            'Ficha capturada de Google Maps. Pendiente primera llamada de prospección en frío.',
         estimatedValue: 5500.0,
       ),
       const LeadModel(
@@ -164,7 +171,8 @@ class CrmLeadsService {
         status: 'Contactado',
         temperature: 'Templado',
         contactPerson: 'Dra. Paola Suarez',
-        notes: 'Interesados puntualmente en limpieza profunda de vidrios exteriores en altura y pulido de pisos.',
+        notes:
+            'Interesados puntualmente en limpieza profunda de vidrios exteriores en altura y pulido de pisos.',
         estimatedValue: 4800.0,
       ),
       const LeadModel(
@@ -174,13 +182,15 @@ class CrmLeadsService {
         company: 'Universal Tours',
         companyUrl: 'https://universaltours.com.bo/',
         sector: 'Corporativo / Oficinas',
-        address: 'Calle Dr. Alberto Seleme Antelo No. 35 (Calle-H), Equipetrol Norte',
+        address:
+            'Calle Dr. Alberto Seleme Antelo No. 35 (Calle-H), Equipetrol Norte',
         phone: '77360004',
         emailOrWeb: 'https://universaltours.com.bo/',
         status: 'En Espera de Respuesta',
         temperature: 'Templado',
         contactPerson: 'Lic. Fernando Prado',
-        notes: 'Mensaje de WhatsApp enviado directamente al gerente comercial con catálogo de mantenimiento corporativo.',
+        notes:
+            'Mensaje de WhatsApp enviado directamente al gerente comercial con catálogo de mantenimiento corporativo.',
         estimatedValue: 3900.0,
       ),
       const LeadModel(
@@ -196,7 +206,8 @@ class CrmLeadsService {
         status: 'Prospectado',
         temperature: 'Frío',
         contactPerson: 'Recepción Central',
-        notes: 'Oficina comercial dentro de complejo de departamentos y corporativos.',
+        notes:
+            'Oficina comercial dentro de complejo de departamentos y corporativos.',
         estimatedValue: 2800.0,
       ),
       const LeadModel(
@@ -212,7 +223,8 @@ class CrmLeadsService {
         status: 'Contactado',
         temperature: 'Templado',
         contactPerson: 'Ing. Rodrigo Justiniano',
-        notes: 'Empresa tecnológica con servidores en sitio. Se coordinará visita para evaluar control de acceso y limpieza técnica.',
+        notes:
+            'Empresa tecnológica con servidores en sitio. Se coordinará visita para evaluar control de acceso y limpieza técnica.',
         estimatedValue: 6200.0,
       ),
       const LeadModel(
@@ -228,7 +240,8 @@ class CrmLeadsService {
         status: 'Interesado (Calificado)',
         temperature: 'Caliente',
         contactPerson: 'Arq. Mario Valverde (Facility Manager)',
-        notes: 'Visita técnica urgente solicitada para mantenimiento preventivo integral y personal de mantenimiento fijo.',
+        notes:
+            'Visita técnica urgente solicitada para mantenimiento preventivo integral y personal de mantenimiento fijo.',
         estimatedValue: 14500.0,
       ),
       const LeadModel(
@@ -244,7 +257,8 @@ class CrmLeadsService {
         status: 'Prospectado',
         temperature: 'Frío',
         contactPerson: 'Administración',
-        notes: 'Edificio corporativo con necesidad aparente de jardinería y mantenimiento de fachada.',
+        notes:
+            'Edificio corporativo con necesidad aparente de jardinería y mantenimiento de fachada.',
         estimatedValue: 3500.0,
       ),
       const LeadModel(
@@ -260,7 +274,8 @@ class CrmLeadsService {
         status: 'Interesado (Calificado)',
         temperature: 'Caliente',
         contactPerson: 'Prof. Roberto Cuellar (Administrador)',
-        notes: 'Requieren corte de césped mecanizado quincenal, limpieza de canchas deportivas y portería.',
+        notes:
+            'Requieren corte de césped mecanizado quincenal, limpieza de canchas deportivas y portería.',
         estimatedValue: 8900.0,
       ),
       const LeadModel(
@@ -276,7 +291,8 @@ class CrmLeadsService {
         status: 'Contactado',
         temperature: 'Templado',
         contactPerson: 'Lic. Claudia Montero',
-        notes: 'Reunión acordada con el comité de compras para presentar propuesta de limpieza y suministros de papel.',
+        notes:
+            'Reunión acordada con el comité de compras para presentar propuesta de limpieza y suministros de papel.',
         estimatedValue: 5800.0,
       ),
     ];
@@ -319,12 +335,21 @@ class CrmLeadsService {
   void markPromoted(String leadId) {
     leadsNotifier.value = [
       for (final l in leadsNotifier.value)
-        if (l.id == leadId) l.copyWith(isPromoted: true, status: 'Interesado (Calificado)', temperature: 'Caliente') else l,
+        if (l.id == leadId)
+          l.copyWith(
+            isPromoted: true,
+            status: 'Interesado (Calificado)',
+            temperature: 'Caliente',
+          )
+        else
+          l,
     ];
   }
 
   void deleteLead(String leadId) {
-    leadsNotifier.value = leadsNotifier.value.where((l) => l.id != leadId).toList();
+    leadsNotifier.value = leadsNotifier.value
+        .where((l) => l.id != leadId)
+        .toList();
   }
 
   // --- Métricas Comerciales Calculadas en Tiempo Real ---
@@ -333,13 +358,16 @@ class CrmLeadsService {
 
   int get contactedCount => leads.where((l) => l.status == 'Contactado').length;
 
-  int get waitingCount => leads.where((l) => l.status == 'En Espera de Respuesta').length;
+  int get waitingCount =>
+      leads.where((l) => l.status == 'En Espera de Respuesta').length;
 
-  int get qualifiedCount => leads.where((l) => l.status == 'Interesado (Calificado)').length;
+  int get qualifiedCount =>
+      leads.where((l) => l.status == 'Interesado (Calificado)').length;
 
   int get hotCount => leads.where((l) => l.temperature == 'Caliente').length;
 
-  double get conversionRate => totalCount > 0 ? (qualifiedCount / totalCount) * 100 : 0.0;
+  double get conversionRate =>
+      totalCount > 0 ? (qualifiedCount / totalCount) * 100 : 0.0;
 
   double get totalPipelinePotential => leads
       .where((l) => l.status != 'Descartado')

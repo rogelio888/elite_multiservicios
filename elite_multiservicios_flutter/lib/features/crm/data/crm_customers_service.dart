@@ -46,7 +46,8 @@ class ContractBudgetItem {
   final String id;
   final String description;
   final double quantity;
-  final String unit; // 'Mes', 'Puesto', 'Global', 'Horas', 'm²', 'Unidad', 'Visita'
+  final String
+  unit; // 'Mes', 'Puesto', 'Global', 'Horas', 'm²', 'Unidad', 'Visita'
   final double unitPrice;
 
   const ContractBudgetItem({

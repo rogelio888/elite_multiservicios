@@ -23,7 +23,8 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
   String _selectedAdvisor = 'Todos';
   String _selectedStatus = 'Todos';
   String _selectedTemperature = 'Todos';
-  bool _isTableView = false; // Alternar entre Vista Mosaico Enterprise y Vista Hoja de Cálculo
+  bool _isTableView =
+      false; // Alternar entre Vista Mosaico Enterprise y Vista Hoja de Cálculo
 
   final List<String> _sectors = const [
     'Todos',
@@ -121,7 +122,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
               decoration: BoxDecoration(
                 color: const Color(0xFF10B981).withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.25)),
+                border: Border.all(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.25),
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -319,7 +322,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF111C30) : Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,7 +337,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 10.5,
                   fontWeight: FontWeight.w700,
-                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
                 ),
               ),
               Icon(icon, size: 17, color: accentColor),
@@ -370,7 +377,10 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
           const SizedBox(height: 2),
           Text(
             subtitle,
-            style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B)),
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              color: const Color(0xFF64748B),
+            ),
           ),
         ],
       ),
@@ -389,7 +399,13 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
           final isSelected = _selectedSector == sec;
           final count = sec == 'Todos'
               ? allLeads.length
-              : allLeads.where((l) => l.sector.toLowerCase().contains(sec.toLowerCase().split(' ')[0])).length;
+              : allLeads
+                    .where(
+                      (l) => l.sector.toLowerCase().contains(
+                        sec.toLowerCase().split(' ')[0],
+                      ),
+                    )
+                    .length;
 
           return Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -398,7 +414,10 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
               borderRadius: BorderRadius.circular(8),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? const Color(0xFF10B981)
@@ -407,7 +426,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                   border: Border.all(
                     color: isSelected
                         ? const Color(0xFF10B981)
-                        : (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+                        : (isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFE2E8F0)),
                   ),
                 ),
                 child: Row(
@@ -417,19 +438,28 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                       sec,
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
                         color: isSelected
                             ? Colors.white
-                            : (isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569)),
+                            : (isDark
+                                  ? const Color(0xFFCBD5E1)
+                                  : const Color(0xFF475569)),
                       ),
                     ),
                     const SizedBox(width: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 1.5,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? Colors.white.withValues(alpha: 0.25)
-                            : (isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9)),
+                            : (isDark
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFFF1F5F9)),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
@@ -439,7 +469,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                           fontWeight: FontWeight.w700,
                           color: isSelected
                               ? Colors.white
-                              : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                              : (isDark
+                                    ? const Color(0xFF94A3B8)
+                                    : const Color(0xFF64748B)),
                         ),
                       ),
                     ),
@@ -470,7 +502,10 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
         prefixIcon: const Icon(Icons.search, size: 18),
         isDense: true,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
+        ),
       ),
     );
 
@@ -480,10 +515,12 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       isExpanded: true,
       decoration: const InputDecoration(labelText: 'Asesor', isDense: true),
       items: _advisors
-          .map((adv) => DropdownMenuItem(
-                value: adv,
-                child: Text(adv, overflow: TextOverflow.ellipsis),
-              ))
+          .map(
+            (adv) => DropdownMenuItem(
+              value: adv,
+              child: Text(adv, overflow: TextOverflow.ellipsis),
+            ),
+          )
           .toList(),
       onChanged: (val) {
         if (val != null) setState(() => _selectedAdvisor = val);
@@ -496,10 +533,12 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       isExpanded: true,
       decoration: const InputDecoration(labelText: 'Estado', isDense: true),
       items: _statuses
-          .map((st) => DropdownMenuItem(
-                value: st,
-                child: Text(st, overflow: TextOverflow.ellipsis),
-              ))
+          .map(
+            (st) => DropdownMenuItem(
+              value: st,
+              child: Text(st, overflow: TextOverflow.ellipsis),
+            ),
+          )
           .toList(),
       onChanged: (val) {
         if (val != null) setState(() => _selectedStatus = val);
@@ -510,7 +549,10 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       key: ValueKey('temp_$_selectedTemperature'),
       initialValue: _selectedTemperature,
       isExpanded: true,
-      decoration: const InputDecoration(labelText: 'Temperatura', isDense: true),
+      decoration: const InputDecoration(
+        labelText: 'Temperatura',
+        isDense: true,
+      ),
       items: const [
         DropdownMenuItem(value: 'Todos', child: Text('Todas')),
         DropdownMenuItem(value: 'Caliente', child: Text('🔥 Caliente')),
@@ -526,7 +568,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF161F30) : const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -535,7 +579,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
             icon: Icon(
               Icons.grid_view_rounded,
               size: 18,
-              color: !_isTableView ? const Color(0xFF10B981) : const Color(0xFF64748B),
+              color: !_isTableView
+                  ? const Color(0xFF10B981)
+                  : const Color(0xFF64748B),
             ),
             tooltip: 'Vista Mosaico',
             onPressed: () => setState(() => _isTableView = false),
@@ -544,7 +590,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
             icon: Icon(
               Icons.table_rows_rounded,
               size: 18,
-              color: _isTableView ? const Color(0xFF10B981) : const Color(0xFF64748B),
+              color: _isTableView
+                  ? const Color(0xFF10B981)
+                  : const Color(0xFF64748B),
             ),
             tooltip: 'Vista Hoja de Cálculo',
             onPressed: () => setState(() => _isTableView = true),
@@ -558,7 +606,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF111C30) : Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
       ),
       child: isMobile
           ? Column(
@@ -602,7 +652,12 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
   // 5. VISTA EN CUADRÍCULA FLUIDA (SIN OVERFLOW)
   // ===========================================================================
 
-  Widget _buildGridView(List<LeadModel> filtered, bool isDark, bool isMobile, bool isTablet) {
+  Widget _buildGridView(
+    List<LeadModel> filtered,
+    bool isDark,
+    bool isMobile,
+    bool isTablet,
+  ) {
     if (isMobile) {
       return ListView.separated(
         shrinkWrap: true,
@@ -681,11 +736,17 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                 decoration: BoxDecoration(
                   color: _getSectorColor(item.sector).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: _getSectorColor(item.sector).withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: _getSectorColor(item.sector).withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Center(
                   child: Text(
-                    item.company.isNotEmpty ? item.company.substring(0, math.min(2, item.company.length)).toUpperCase() : 'PR',
+                    item.company.isNotEmpty
+                        ? item.company
+                              .substring(0, math.min(2, item.company.length))
+                              .toUpperCase()
+                        : 'PR',
                     style: GoogleFonts.jetBrainsMono(
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
@@ -709,7 +770,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                             style: GoogleFonts.inter(
                               fontSize: 14.5,
                               fontWeight: FontWeight.w700,
-                              color: isDark ? Colors.white : const Color(0xFF0F172A),
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -722,9 +785,14 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 1.5,
+                          ),
                           decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF161F30) : const Color(0xFFF1F5F9),
+                            color: isDark
+                                ? const Color(0xFF161F30)
+                                : const Color(0xFFF1F5F9),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -737,11 +805,19 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Icon(Icons.badge_outlined, size: 12, color: Color(0xFF64748B)),
+                        const Icon(
+                          Icons.badge_outlined,
+                          size: 12,
+                          color: Color(0xFF64748B),
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           item.advisor,
-                          style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B), fontWeight: FontWeight.w500),
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF64748B),
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
@@ -765,14 +841,20 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.person_outline, size: 14, color: Color(0xFF3B82F6)),
+                    const Icon(
+                      Icons.person_outline,
+                      size: 14,
+                      color: Color(0xFF3B82F6),
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       item.contactPerson,
                       style: GoogleFonts.inter(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w500,
-                        color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF334155),
+                        color: isDark
+                            ? const Color(0xFFE2E8F0)
+                            : const Color(0xFF334155),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -797,14 +879,20 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
           // Fila 3: Dirección en Maps
           Row(
             children: [
-              const Icon(Icons.place_outlined, size: 15, color: Color(0xFF3B82F6)),
+              const Icon(
+                Icons.place_outlined,
+                size: 15,
+                color: Color(0xFF3B82F6),
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   item.address,
                   style: GoogleFonts.inter(
                     fontSize: 11.5,
-                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569),
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF475569),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -825,7 +913,11 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
           // Fila 4: Teléfono con WhatsApp directo & Web
           Row(
             children: [
-              const Icon(Icons.phone_outlined, size: 15, color: Color(0xFF10B981)),
+              const Icon(
+                Icons.phone_outlined,
+                size: 15,
+                color: Color(0xFF10B981),
+              ),
               const SizedBox(width: 6),
               Text(
                 item.phone,
@@ -838,7 +930,11 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
               const SizedBox(width: 6),
               InkWell(
                 onTap: () => _copyToClipboard(item.phone, 'Teléfono'),
-                child: const Icon(Icons.copy, size: 13, color: Color(0xFF64748B)),
+                child: const Icon(
+                  Icons.copy,
+                  size: 13,
+                  color: Color(0xFF64748B),
+                ),
               ),
               const Spacer(),
               if (item.emailOrWeb != null)
@@ -846,7 +942,11 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                   onTap: () => _copyToClipboard(item.emailOrWeb!, 'Enlace Web'),
                   child: Row(
                     children: [
-                      const Icon(Icons.link, size: 13, color: Color(0xFF8B5CF6)),
+                      const Icon(
+                        Icons.link,
+                        size: 13,
+                        color: Color(0xFF8B5CF6),
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         'Sitio Web',
@@ -869,15 +969,23 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF161F30) : const Color(0xFFF1F5F9),
+                color: isDark
+                    ? const Color(0xFF161F30)
+                    : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+                border: Border.all(
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFE2E8F0),
+                ),
               ),
               child: Text(
                 'Nota: ${item.notes!}',
                 style: GoogleFonts.inter(
                   fontSize: 11,
-                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
                   fontStyle: FontStyle.italic,
                   height: 1.3,
                 ),
@@ -897,7 +1005,8 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
               // Selector de Estado Rápido
               PopupMenuButton<String>(
                 tooltip: 'Cambiar estado',
-                onSelected: (newSt) => _leadsService.updateStatus(item.id, newSt),
+                onSelected: (newSt) =>
+                    _leadsService.updateStatus(item.id, newSt),
                 itemBuilder: (ctx) => _statuses
                     .where((s) => s != 'Todos')
                     .map(
@@ -921,11 +1030,16 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                     )
                     .toList(),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: statusColor.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -933,7 +1047,10 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                       Container(
                         width: 6,
                         height: 6,
-                        decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle),
+                        decoration: BoxDecoration(
+                          color: statusColor,
+                          shape: BoxShape.circle,
+                        ),
                       ),
                       const SizedBox(width: 5),
                       Text(
@@ -970,21 +1087,32 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     minimumSize: const Size(0, 32),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
                     elevation: 0,
                   ),
                   onPressed: () => _promoteLeadToOpportunity(item),
                   icon: const Icon(Icons.rocket_launch, size: 13),
                   label: Text(
                     'Promover a Oportunidad',
-                    style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w700),
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 )
               else
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF10B981).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
@@ -992,7 +1120,11 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.check_circle, size: 13, color: Color(0xFF10B981)),
+                      const Icon(
+                        Icons.check_circle,
+                        size: 13,
+                        color: Color(0xFF10B981),
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         'En Pipeline',
@@ -1021,7 +1153,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF111C30) : Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
@@ -1034,14 +1168,78 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
             dataRowMaxHeight: 56,
             columnSpacing: 22,
             columns: [
-              DataColumn(label: Text('EMPRESA / NEGOCIO', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 11))),
-              DataColumn(label: Text('RUBRO', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 11))),
-              DataColumn(label: Text('TEMPERATURA', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 11))),
-              DataColumn(label: Text('ASESOR', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 11))),
-              DataColumn(label: Text('CONTACTO / TELÉFONO', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 11))),
-              DataColumn(label: Text('VALOR EST.', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 11))),
-              DataColumn(label: Text('ESTADO', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 11))),
-              DataColumn(label: Text('ACCIONES', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 11))),
+              DataColumn(
+                label: Text(
+                  'EMPRESA / NEGOCIO',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'RUBRO',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'TEMPERATURA',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'ASESOR',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'CONTACTO / TELÉFONO',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'VALOR EST.',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'ESTADO',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'ACCIONES',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
             ],
             rows: items.map((item) {
               final statusCol = _getStatusColor(item.status);
@@ -1052,43 +1250,89 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(item.company, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12.5)),
-                        Text(item.address, style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFF64748B)), maxLines: 1),
+                        Text(
+                          item.company,
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12.5,
+                          ),
+                        ),
+                        Text(
+                          item.address,
+                          style: GoogleFonts.inter(
+                            fontSize: 10.5,
+                            color: const Color(0xFF64748B),
+                          ),
+                          maxLines: 1,
+                        ),
                       ],
                     ),
                   ),
                   DataCell(
                     Text(
                       item.sector,
-                      style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: _getSectorColor(item.sector)),
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: _getSectorColor(item.sector),
+                      ),
                     ),
                   ),
                   DataCell(_getTemperatureBadge(item.temperature)),
-                  DataCell(Text(item.advisor, style: GoogleFonts.inter(fontSize: 12))),
+                  DataCell(
+                    Text(item.advisor, style: GoogleFonts.inter(fontSize: 12)),
+                  ),
                   DataCell(
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(item.contactPerson, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w500)),
-                        Text(item.phone, style: GoogleFonts.jetBrainsMono(fontSize: 11, color: const Color(0xFF10B981))),
+                        Text(
+                          item.contactPerson,
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          item.phone,
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 11,
+                            color: const Color(0xFF10B981),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   DataCell(
                     Text(
-                      item.estimatedValue > 0 ? 'Bs. ${item.estimatedValue.toStringAsFixed(0)}' : '—',
-                      style: GoogleFonts.jetBrainsMono(fontSize: 11.5, fontWeight: FontWeight.w700),
+                      item.estimatedValue > 0
+                          ? 'Bs. ${item.estimatedValue.toStringAsFixed(0)}'
+                          : '—',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                   DataCell(
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: statusCol.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: Text(item.status, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: statusCol)),
+                      child: Text(
+                        item.status,
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: statusCol,
+                        ),
+                      ),
                     ),
                   ),
                   DataCell(
@@ -1096,18 +1340,30 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.add_task, size: 16, color: Color(0xFF6366F1)),
+                          icon: const Icon(
+                            Icons.add_task,
+                            size: 16,
+                            color: Color(0xFF6366F1),
+                          ),
                           tooltip: 'Agendar Tarea',
                           onPressed: () => _scheduleQuickTask(item),
                         ),
                         if (!item.isPromoted)
                           IconButton(
-                            icon: const Icon(Icons.rocket_launch, size: 16, color: Color(0xFF2563EB)),
+                            icon: const Icon(
+                              Icons.rocket_launch,
+                              size: 16,
+                              color: Color(0xFF2563EB),
+                            ),
                             tooltip: 'Promover a Oportunidad',
                             onPressed: () => _promoteLeadToOpportunity(item),
                           )
                         else
-                          const Icon(Icons.check_circle, size: 16, color: Color(0xFF10B981)),
+                          const Icon(
+                            Icons.check_circle,
+                            size: 16,
+                            color: Color(0xFF10B981),
+                          ),
                       ],
                     ),
                   ),
@@ -1129,15 +1385,25 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       context: context,
       builder: (ctx) {
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
-        final titleCtrl = TextEditingController(text: 'Servicio Integral para ${item.company}');
-        final amountCtrl = TextEditingController(text: item.estimatedValue > 0 ? item.estimatedValue.toStringAsFixed(0) : '6500');
+        final titleCtrl = TextEditingController(
+          text: 'Servicio Integral para ${item.company}',
+        );
+        final amountCtrl = TextEditingController(
+          text: item.estimatedValue > 0
+              ? item.estimatedValue.toStringAsFixed(0)
+              : '6500',
+        );
         String serviceType = item.sector.contains('Clínicas')
             ? 'Limpieza Hospitalaria & Bioseguridad'
-            : (item.sector.contains('Colegios') ? 'Mantenimiento & Jardinería Educativa' : 'Mantenimiento Corporativo');
+            : (item.sector.contains('Colegios')
+                  ? 'Mantenimiento & Jardinería Educativa'
+                  : 'Mantenimiento Corporativo');
 
         return Dialog(
           backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
           insetPadding: const EdgeInsets.all(20),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 580),
@@ -1152,10 +1418,16 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF2563EB).withValues(alpha: 0.12),
+                          color: const Color(
+                            0xFF2563EB,
+                          ).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(Icons.rocket_launch, color: Color(0xFF2563EB), size: 22),
+                        child: const Icon(
+                          Icons.rocket_launch,
+                          color: Color(0xFF2563EB),
+                          size: 22,
+                        ),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -1164,11 +1436,17 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                           children: [
                             Text(
                               'Promover Prospecto al Pipeline',
-                              style: GoogleFonts.inter(fontSize: 17, fontWeight: FontWeight.w800),
+                              style: GoogleFonts.inter(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                             Text(
                               'Convierte este prospecto en una Oportunidad activa en etapa de Calificación.',
-                              style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: const Color(0xFF64748B),
+                              ),
                             ),
                           ],
                         ),
@@ -1181,17 +1459,41 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF16233B) : const Color(0xFFF8FAFC),
+                      color: isDark
+                          ? const Color(0xFF16233B)
+                          : const Color(0xFFF8FAFC),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+                      border: Border.all(
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFE2E8F0),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('CLIENTE POTENCIAL: ${item.company}', style: GoogleFonts.jetBrainsMono(fontSize: 11, fontWeight: FontWeight.w700)),
+                        Text(
+                          'CLIENTE POTENCIAL: ${item.company}',
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text('Contacto: ${item.contactPerson} (${item.phone})', style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF64748B))),
-                        Text('Sede: ${item.address}', style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF64748B))),
+                        Text(
+                          'Contacto: ${item.contactPerson} (${item.phone})',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                        Text(
+                          'Sede: ${item.address}',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -1200,7 +1502,10 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
 
                   TextFormField(
                     controller: titleCtrl,
-                    decoration: const InputDecoration(labelText: 'Título de la Oportunidad *', isDense: true),
+                    decoration: const InputDecoration(
+                      labelText: 'Título de la Oportunidad *',
+                      isDense: true,
+                    ),
                   ),
                   const SizedBox(height: 14),
 
@@ -1222,16 +1527,28 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                         child: DropdownButtonFormField<String>(
                           initialValue: serviceType,
                           isExpanded: true,
-                          decoration: const InputDecoration(labelText: 'Tipo de Servicio', isDense: true),
-                          items: [
-                            'Limpieza Hospitalaria & Bioseguridad',
-                            'Mantenimiento Corporativo',
-                            'Mantenimiento & Jardinería Educativa',
-                            'Seguridad & Vigilancia Física',
-                            'Desinfección & Fumigación Integral',
-                          ]
-                              .map((st) => DropdownMenuItem(value: st, child: Text(st, overflow: TextOverflow.ellipsis)))
-                              .toList(),
+                          decoration: const InputDecoration(
+                            labelText: 'Tipo de Servicio',
+                            isDense: true,
+                          ),
+                          items:
+                              [
+                                    'Limpieza Hospitalaria & Bioseguridad',
+                                    'Mantenimiento Corporativo',
+                                    'Mantenimiento & Jardinería Educativa',
+                                    'Seguridad & Vigilancia Física',
+                                    'Desinfección & Fumigación Integral',
+                                  ]
+                                  .map(
+                                    (st) => DropdownMenuItem(
+                                      value: st,
+                                      child: Text(
+                                        st,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
                           onChanged: (v) {
                             if (v != null) serviceType = v;
                           },
@@ -1254,8 +1571,13 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF2563EB),
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                         onPressed: () {
                           // Marcar como promovido en el servicio
@@ -1270,11 +1592,14 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                               clientName: item.company,
                               contactPerson: item.contactPerson,
                               phone: item.phone,
-                              scheduledAt: DateTime.now().add(const Duration(days: 1)),
+                              scheduledAt: DateTime.now().add(
+                                const Duration(days: 1),
+                              ),
                               scheduledTimeText: '10:00',
                               priority: 'Alta / Urgente',
                               status: 'Pendiente',
-                              callContext: 'Prospecto promovido desde Outbound Maps. Requiere propuesta formal.',
+                              callContext:
+                                  'Prospecto promovido desde Outbound Maps. Requiere propuesta formal.',
                               createdAt: DateTime.now(),
                             ),
                           );
@@ -1285,12 +1610,17 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                               backgroundColor: const Color(0xFF065F46),
                               content: Row(
                                 children: [
-                                  const Icon(Icons.check_circle, color: Colors.white),
+                                  const Icon(
+                                    Icons.check_circle,
+                                    color: Colors.white,
+                                  ),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
                                       '¡Oportunidad "${titleCtrl.text}" creada con éxito en el Pipeline!',
-                                      style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -1317,23 +1647,41 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       context: context,
       builder: (ctx) {
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
-        final noteCtrl = TextEditingController(text: 'Llamar a ${item.contactPerson} para coordinar visita técnica.');
+        final noteCtrl = TextEditingController(
+          text: 'Llamar a ${item.contactPerson} para coordinar visita técnica.',
+        );
         String taskType = CrmTaskType.call;
 
         return AlertDialog(
           backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          title: Text('Agendar Seguimiento en CRM Agenda', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: Text(
+            'Agendar Seguimiento en CRM Agenda',
+            style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Cuenta: ${item.company} (${item.phone})', style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B))),
+              Text(
+                'Cuenta: ${item.company} (${item.phone})',
+                style: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  color: const Color(0xFF64748B),
+                ),
+              ),
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
                 initialValue: taskType,
-                decoration: const InputDecoration(labelText: 'Tipo de Tarea', isDense: true),
-                items: CrmTaskType.all.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
+                decoration: const InputDecoration(
+                  labelText: 'Tipo de Tarea',
+                  isDense: true,
+                ),
+                items: CrmTaskType.all
+                    .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                    .toList(),
                 onChanged: (v) {
                   if (v != null) taskType = v;
                 },
@@ -1342,14 +1690,23 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
               TextField(
                 controller: noteCtrl,
                 maxLines: 2,
-                decoration: const InputDecoration(labelText: 'Contexto de la llamada / cita', isDense: true),
+                decoration: const InputDecoration(
+                  labelText: 'Contexto de la llamada / cita',
+                  isDense: true,
+                ),
               ),
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancelar'),
+            ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6366F1), foregroundColor: Colors.white),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6366F1),
+                foregroundColor: Colors.white,
+              ),
               onPressed: () {
                 _agendaService.addTask(
                   CrmTaskItem(
@@ -1401,8 +1758,13 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
         return Dialog(
           backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 20,
+          ),
           child: SizedBox(
             width: math.min(680.0, MediaQuery.of(ctx).size.width - 40),
             child: SingleChildScrollView(
@@ -1416,10 +1778,16 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                          color: const Color(
+                            0xFF10B981,
+                          ).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(Icons.person_add_alt_1, color: Color(0xFF10B981), size: 22),
+                        child: const Icon(
+                          Icons.person_add_alt_1,
+                          color: Color(0xFF10B981),
+                          size: 22,
+                        ),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -1428,16 +1796,25 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                           children: [
                             Text(
                               'Registrar Nuevo Prospecto',
-                              style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800),
+                              style: GoogleFonts.inter(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                             Text(
                               'Añadí prospectos descubiertos en Google Maps, cartelería o directorios comerciales.',
-                              style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: const Color(0xFF64748B),
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      IconButton(icon: const Icon(Icons.close, size: 20), onPressed: () => Navigator.pop(ctx)),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 20),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -1460,10 +1837,21 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                         child: DropdownButtonFormField<String>(
                           initialValue: sectorVal,
                           isExpanded: true,
-                          decoration: const InputDecoration(labelText: 'Rubro / Industria *', isDense: true),
+                          decoration: const InputDecoration(
+                            labelText: 'Rubro / Industria *',
+                            isDense: true,
+                          ),
                           items: _sectors
                               .where((s) => s != 'Todos')
-                              .map((s) => DropdownMenuItem(value: s, child: Text(s, overflow: TextOverflow.ellipsis)))
+                              .map(
+                                (s) => DropdownMenuItem(
+                                  value: s,
+                                  child: Text(
+                                    s,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              )
                               .toList(),
                           onChanged: (v) {
                             if (v != null) sectorVal = v;
@@ -1475,10 +1863,16 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                         child: DropdownButtonFormField<String>(
                           initialValue: advisorVal,
                           isExpanded: true,
-                          decoration: const InputDecoration(labelText: 'Asesor Asignado *', isDense: true),
+                          decoration: const InputDecoration(
+                            labelText: 'Asesor Asignado *',
+                            isDense: true,
+                          ),
                           items: _advisors
                               .where((a) => a != 'Todos')
-                              .map((a) => DropdownMenuItem(value: a, child: Text(a)))
+                              .map(
+                                (a) =>
+                                    DropdownMenuItem(value: a, child: Text(a)),
+                              )
                               .toList(),
                           onChanged: (v) {
                             if (v != null) advisorVal = v;
@@ -1547,11 +1941,23 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                         child: DropdownButtonFormField<String>(
                           initialValue: tempVal,
                           isExpanded: true,
-                          decoration: const InputDecoration(labelText: 'Temperatura Inicial', isDense: true),
+                          decoration: const InputDecoration(
+                            labelText: 'Temperatura Inicial',
+                            isDense: true,
+                          ),
                           items: const [
-                            DropdownMenuItem(value: 'Caliente', child: Text('🔥 Caliente (Listo)')),
-                            DropdownMenuItem(value: 'Templado', child: Text('⚡ Templado (En evaluación)')),
-                            DropdownMenuItem(value: 'Frío', child: Text('❄️ Frío (Sin contacto)')),
+                            DropdownMenuItem(
+                              value: 'Caliente',
+                              child: Text('🔥 Caliente (Listo)'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Templado',
+                              child: Text('⚡ Templado (En evaluación)'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Frío',
+                              child: Text('❄️ Frío (Sin contacto)'),
+                            ),
                           ],
                           onChanged: (v) {
                             if (v != null) tempVal = v;
@@ -1567,7 +1973,8 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                     maxLines: 2,
                     decoration: const InputDecoration(
                       labelText: 'Notas de Prospección / Observaciones',
-                      hintText: 'Requerimientos preliminares, tamaño del predio, etc...',
+                      hintText:
+                          'Requerimientos preliminares, tamaño del predio, etc...',
                       isDense: true,
                     ),
                   ),
@@ -1585,27 +1992,46 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF10B981),
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                         onPressed: () {
                           if (companyCtrl.text.trim().isNotEmpty) {
-                            final parsedValue = double.tryParse(valueCtrl.text.trim()) ?? 0.0;
+                            final parsedValue =
+                                double.tryParse(valueCtrl.text.trim()) ?? 0.0;
                             _leadsService.addLead(
                               LeadModel(
                                 id: 'PROSP-${DateTime.now().millisecondsSinceEpoch % 10000}',
                                 date: 'Hoy',
                                 advisor: advisorVal,
                                 company: companyCtrl.text.trim(),
-                                companyUrl: urlCtrl.text.trim().isNotEmpty ? urlCtrl.text.trim() : null,
+                                companyUrl: urlCtrl.text.trim().isNotEmpty
+                                    ? urlCtrl.text.trim()
+                                    : null,
                                 sector: sectorVal,
-                                address: addressCtrl.text.trim().isNotEmpty ? addressCtrl.text.trim() : 'Santa Cruz de la Sierra',
-                                phone: phoneCtrl.text.trim().isNotEmpty ? phoneCtrl.text.trim() : 'Sin teléfono',
-                                emailOrWeb: urlCtrl.text.trim().isNotEmpty ? urlCtrl.text.trim() : null,
+                                address: addressCtrl.text.trim().isNotEmpty
+                                    ? addressCtrl.text.trim()
+                                    : 'Santa Cruz de la Sierra',
+                                phone: phoneCtrl.text.trim().isNotEmpty
+                                    ? phoneCtrl.text.trim()
+                                    : 'Sin teléfono',
+                                emailOrWeb: urlCtrl.text.trim().isNotEmpty
+                                    ? urlCtrl.text.trim()
+                                    : null,
                                 status: 'Prospectado',
                                 temperature: tempVal,
-                                contactPerson: contactCtrl.text.trim().isNotEmpty ? contactCtrl.text.trim() : 'Encargado de compras',
-                                notes: notesCtrl.text.trim().isNotEmpty ? notesCtrl.text.trim() : 'Prospecto recién ingresado.',
+                                contactPerson:
+                                    contactCtrl.text.trim().isNotEmpty
+                                    ? contactCtrl.text.trim()
+                                    : 'Encargado de compras',
+                                notes: notesCtrl.text.trim().isNotEmpty
+                                    ? notesCtrl.text.trim()
+                                    : 'Prospecto recién ingresado.',
                                 estimatedValue: parsedValue,
                               ),
                             );
@@ -1614,7 +2040,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 backgroundColor: Color(0xFF065F46),
-                                content: Text('Prospecto guardado exitosamente en el CRM.'),
+                                content: Text(
+                                  'Prospecto guardado exitosamente en el CRM.',
+                                ),
                               ),
                             );
                           }
@@ -1639,21 +2067,33 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
   List<LeadModel> _getFilteredLeads(List<LeadModel> all) {
     return all.where((item) {
       final q = _searchQuery.toLowerCase().trim();
-      final matchesSearch = q.isEmpty ||
+      final matchesSearch =
+          q.isEmpty ||
           item.company.toLowerCase().contains(q) ||
           item.address.toLowerCase().contains(q) ||
           item.phone.contains(q) ||
           item.advisor.toLowerCase().contains(q) ||
           item.contactPerson.toLowerCase().contains(q);
 
-      final matchesSector = _selectedSector == 'Todos' ||
-          item.sector.toLowerCase().contains(_selectedSector.toLowerCase().split(' ')[0]);
+      final matchesSector =
+          _selectedSector == 'Todos' ||
+          item.sector.toLowerCase().contains(
+            _selectedSector.toLowerCase().split(' ')[0],
+          );
 
-      final matchesAdvisor = _selectedAdvisor == 'Todos' || item.advisor == _selectedAdvisor;
-      final matchesStatus = _selectedStatus == 'Todos' || item.status == _selectedStatus;
-      final matchesTemp = _selectedTemperature == 'Todos' || item.temperature == _selectedTemperature;
+      final matchesAdvisor =
+          _selectedAdvisor == 'Todos' || item.advisor == _selectedAdvisor;
+      final matchesStatus =
+          _selectedStatus == 'Todos' || item.status == _selectedStatus;
+      final matchesTemp =
+          _selectedTemperature == 'Todos' ||
+          item.temperature == _selectedTemperature;
 
-      return matchesSearch && matchesSector && matchesAdvisor && matchesStatus && matchesTemp;
+      return matchesSearch &&
+          matchesSector &&
+          matchesAdvisor &&
+          matchesStatus &&
+          matchesTemp;
     }).toList();
   }
 
@@ -1677,7 +2117,8 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
   Color _getSectorColor(String sector) {
     if (sector.contains('Clínicas')) return const Color(0xFF06B6D4);
     if (sector.contains('Corporativo')) return const Color(0xFF3B82F6);
-    if (sector.contains('Colegios') || sector.contains('Educación')) return const Color(0xFF8B5CF6);
+    if (sector.contains('Colegios') || sector.contains('Educación'))
+      return const Color(0xFF8B5CF6);
     if (sector.contains('Banca')) return const Color(0xFF10B981);
     if (sector.contains('Industria')) return const Color(0xFFF59E0B);
     return const Color(0xFF64748B);
@@ -1706,7 +2147,11 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       ),
       child: Text(
         iconText,
-        style: GoogleFonts.inter(fontSize: 10.5, fontWeight: FontWeight.w700, color: col),
+        style: GoogleFonts.inter(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w700,
+          color: col,
+        ),
       ),
     );
   }
@@ -1718,7 +2163,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF111C30) : Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
       ),
       child: Column(
         children: [
@@ -1735,7 +2182,10 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
           const SizedBox(height: 6),
           Text(
             'Probá ajustando la búsqueda o seleccionando "Todos" en rubro o estado.',
-            style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: const Color(0xFF64748B),
+            ),
           ),
         ],
       ),
