@@ -439,7 +439,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       fiscalStartDate: DateTime(2022, 10, 1),
       agreedSalary: 4600.0,
       contractType: 'Indefinido',
-      observations: 'Mantenimiento preventivo y correctivo de chillers y splits industriales.',
+      observations:
+          'Mantenimiento preventivo y correctivo de chillers y splits industriales.',
       status: 'ACTIVO',
       hasCiCopy: true,
       hasUtilityBill: true,
@@ -497,7 +498,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       fiscalStartDate: DateTime(2021, 9, 15),
       agreedSalary: 3900.0,
       contractType: 'Indefinido',
-      observations: 'Manejo de podadoras industriales y diseño de jardines corporativos.',
+      observations:
+          'Manejo de podadoras industriales y diseño de jardines corporativos.',
       status: 'ACTIVO',
       hasCiCopy: true,
       hasUtilityBill: true,
@@ -555,7 +557,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       fiscalStartDate: DateTime(2022, 12, 1),
       agreedSalary: 4700.0,
       contractType: 'Indefinido',
-      observations: 'Revisión de tableros trifásicos, canalizaciones y luminarias LED.',
+      observations:
+          'Revisión de tableros trifásicos, canalizaciones y luminarias LED.',
       status: 'ACTIVO',
       hasCiCopy: true,
       hasUtilityBill: true,
@@ -584,7 +587,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       fiscalStartDate: DateTime(2024, 3, 1),
       agreedSalary: 3500.0,
       contractType: 'Plazo Fijo',
-      observations: 'Capacitada en protocolos de bioseguridad y residuos hospitalarios.',
+      observations:
+          'Capacitada en protocolos de bioseguridad y residuos hospitalarios.',
       status: 'ACTIVO',
       hasCiCopy: true,
       hasUtilityBill: true,
@@ -613,7 +617,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       fiscalStartDate: DateTime(2023, 6, 1),
       agreedSalary: 4800.0,
       contractType: 'Indefinido',
-      observations: 'Certificación de trabajo seguro en alturas y uso de andamios suspendidos.',
+      observations:
+          'Certificación de trabajo seguro en alturas y uso de andamios suspendidos.',
       status: 'ACTIVO',
       hasCiCopy: true,
       hasUtilityBill: true,
@@ -642,7 +647,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       fiscalStartDate: DateTime(2022, 2, 1),
       agreedSalary: 3500.0,
       contractType: 'Indefinido',
-      observations: 'Atención de cafetería corporativa y limpieza de salas de reuniones.',
+      observations:
+          'Atención de cafetería corporativa y limpieza de salas de reuniones.',
       status: 'ACTIVO',
       hasCiCopy: true,
       hasUtilityBill: true,
@@ -671,7 +677,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       fiscalStartDate: DateTime(2023, 4, 15),
       agreedSalary: 4300.0,
       contractType: 'Indefinido',
-      observations: 'Mantenimiento de tuberías, bombas de agua y sistemas de drenaje.',
+      observations:
+          'Mantenimiento de tuberías, bombas de agua y sistemas de drenaje.',
       status: 'ACTIVO',
       hasCiCopy: true,
       hasUtilityBill: true,
@@ -700,7 +707,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       fiscalStartDate: DateTime(2023, 8, 1),
       agreedSalary: 3500.0,
       contractType: 'Indefinido',
-      observations: 'Recolección diferenciada y desinfección de depósitos de residuos.',
+      observations:
+          'Recolección diferenciada y desinfección de depósitos de residuos.',
       status: 'ACTIVO',
       hasCiCopy: true,
       hasUtilityBill: true,
@@ -729,7 +737,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       fiscalStartDate: DateTime(2023, 10, 15),
       agreedSalary: 3600.0,
       contractType: 'Indefinido',
-      observations: 'Operador de desmalezadoras a combustión y motosierras de poda.',
+      observations:
+          'Operador de desmalezadoras a combustión y motosierras de poda.',
       status: 'ACTIVO',
       hasCiCopy: true,
       hasUtilityBill: true,
@@ -758,7 +767,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       fiscalStartDate: DateTime(2022, 3, 1),
       agreedSalary: 4300.0,
       contractType: 'Indefinido',
-      observations: 'Supervisión de fertilización, riego automático y mantenimiento de césped.',
+      observations:
+          'Supervisión de fertilización, riego automático y mantenimiento de césped.',
       status: 'ACTIVO',
       hasCiCopy: true,
       hasUtilityBill: true,
@@ -787,7 +797,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       fiscalStartDate: DateTime(2023, 3, 1),
       agreedSalary: 4100.0,
       contractType: 'Indefinido',
-      observations: 'Pintura electrostática, epóxica para pisos industriales y fachadas.',
+      observations:
+          'Pintura electrostática, epóxica para pisos industriales y fachadas.',
       status: 'ACTIVO',
       hasCiCopy: true,
       hasUtilityBill: true,
@@ -816,7 +827,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       fiscalStartDate: DateTime(2023, 11, 15),
       agreedSalary: 3700.0,
       contractType: 'Indefinido',
-      observations: 'Desinfección de quirófanos y salas de recuperación con amonio cuaternario.',
+      observations:
+          'Desinfección de quirófanos y salas de recuperación con amonio cuaternario.',
       status: 'ACTIVO',
       hasCiCopy: true,
       hasUtilityBill: true,
@@ -845,7 +857,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       fiscalStartDate: DateTime(2022, 7, 15),
       agreedSalary: 4200.0,
       contractType: 'Indefinido',
-      observations: 'Conducción de camioneta institucional para traslado de insumos y equipos.',
+      observations:
+          'Conducción de camioneta institucional para traslado de insumos y equipos.',
       status: 'ACTIVO',
       hasCiCopy: true,
       hasUtilityBill: true,
@@ -1024,7 +1037,9 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                   ),
 
                   const SizedBox(height: 16),
-                  _buildSectionHeader('4. ACCESO A APK DE ASISTENCIA (MARCAJE MÓVIL)'),
+                  _buildSectionHeader(
+                    '4. ACCESO A APK DE ASISTENCIA (MARCAJE MÓVIL)',
+                  ),
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -1156,7 +1171,10 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
             OutlinedButton.icon(
               style: OutlinedButton.styleFrom(
                 visualDensity: VisualDensity.compact,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
               ),
               icon: const Icon(Icons.badge_outlined, size: 15),
               label: const Text('Credenciales APK'),
@@ -1937,11 +1955,14 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                             Expanded(
                               child: DropdownButtonFormField<String>(
                                 key: ValueKey(selectedWorkplace),
-                                initialValue: _companyService.companyNames.contains(selectedWorkplace)
+                                initialValue:
+                                    _companyService.companyNames.contains(
+                                      selectedWorkplace,
+                                    )
                                     ? selectedWorkplace
                                     : (_companyService.companyNames.isNotEmpty
-                                        ? _companyService.companyNames.first
-                                        : null),
+                                          ? _companyService.companyNames.first
+                                          : null),
                                 decoration: const InputDecoration(
                                   labelText: 'Lugar de Trabajo / Empresa *',
                                 ),
@@ -2042,7 +2063,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                     firstDate: DateTime(2020),
                                     lastDate: DateTime(2030),
                                     locale: const Locale('es', 'ES'),
-                                    helpText: 'SELECCIONAR FECHA DE INICIO REAL',
+                                    helpText:
+                                        'SELECCIONAR FECHA DE INICIO REAL',
                                     cancelText: 'Cancelar',
                                     confirmText: 'Aceptar',
                                   );
@@ -2069,7 +2091,8 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                     firstDate: DateTime(2020),
                                     lastDate: DateTime(2030),
                                     locale: const Locale('es', 'ES'),
-                                    helpText: 'SELECCIONAR FECHA DE INICIO FISCAL',
+                                    helpText:
+                                        'SELECCIONAR FECHA DE INICIO FISCAL',
                                     cancelText: 'Cancelar',
                                     confirmText: 'Aceptar',
                                   );
@@ -2091,10 +2114,14 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2563EB).withValues(alpha: 0.08),
+                            color: const Color(
+                              0xFF2563EB,
+                            ).withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: const Color(0xFF2563EB).withValues(alpha: 0.25),
+                              color: const Color(
+                                0xFF2563EB,
+                              ).withValues(alpha: 0.25),
                             ),
                           ),
                           child: Row(
@@ -2102,7 +2129,9 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                               Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                                  color: const Color(
+                                    0xFF2563EB,
+                                  ).withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(
@@ -2254,22 +2283,30 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                       final parts = empName.toLowerCase().split(RegExp(r'\s+'));
                       String genEmail;
                       if (parts.length >= 2) {
-                        final cleanFirst =
-                            parts[0].replaceAll(RegExp(r'[^a-z0-9]'), '');
-                        final cleanLast =
-                            parts[1].replaceAll(RegExp(r'[^a-z0-9]'), '');
+                        final cleanFirst = parts[0].replaceAll(
+                          RegExp(r'[^a-z0-9]'),
+                          '',
+                        );
+                        final cleanLast = parts[1].replaceAll(
+                          RegExp(r'[^a-z0-9]'),
+                          '',
+                        );
                         genEmail =
                             '$cleanFirst.$cleanLast@elitemultiservicios.com';
                       } else if (parts.isNotEmpty) {
-                        final clean =
-                            parts[0].replaceAll(RegExp(r'[^a-z0-9]'), '');
+                        final clean = parts[0].replaceAll(
+                          RegExp(r'[^a-z0-9]'),
+                          '',
+                        );
                         genEmail = '$clean@elitemultiservicios.com';
                       } else {
                         genEmail =
                             '${empCode.toLowerCase()}@elitemultiservicios.com';
                       }
-                      final cleanCode =
-                          empCode.replaceAll(RegExp(r'[^A-Z0-9]'), '');
+                      final cleanCode = empCode.replaceAll(
+                        RegExp(r'[^A-Z0-9]'),
+                        '',
+                      );
                       final genPassword = 'Elite.$cleanCode.2026!';
 
                       final newEmployee = EmployeeItem(
@@ -2338,7 +2375,6 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -2537,7 +2573,10 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                       ),
                       const SizedBox(width: 12),
                       DropdownButton<String>(
-                        value: _companyService.companyNames.contains(_workplaceFilter)
+                        value:
+                            _companyService.companyNames.contains(
+                              _workplaceFilter,
+                            )
                             ? _workplaceFilter
                             : 'TODOS',
                         underline: const SizedBox(),
@@ -2784,10 +2823,11 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: (emp.employeeType == 'ADMINISTRATIVO'
-                                        ? const Color(0xFF8B5CF6)
-                                        : const Color(0xFF06B6D4))
-                                    .withValues(alpha: 0.12),
+                                color:
+                                    (emp.employeeType == 'ADMINISTRATIVO'
+                                            ? const Color(0xFF8B5CF6)
+                                            : const Color(0xFF06B6D4))
+                                        .withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -2814,10 +2854,11 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                             Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                color: (isDark
-                                        ? const Color(0xFF3B82F6)
-                                        : const Color(0xFF2563EB))
-                                    .withValues(alpha: 0.1),
+                                color:
+                                    (isDark
+                                            ? const Color(0xFF3B82F6)
+                                            : const Color(0xFF2563EB))
+                                        .withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Icon(
@@ -3043,9 +3084,13 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                       children: [
                         CircleAvatar(
                           radius: 16,
-                          backgroundColor: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                          backgroundColor: const Color(
+                            0xFF2563EB,
+                          ).withValues(alpha: 0.15),
                           child: Text(
-                            emp.fullName.isNotEmpty ? emp.fullName.substring(0, 1) : '?',
+                            emp.fullName.isNotEmpty
+                                ? emp.fullName.substring(0, 1)
+                                : '?',
                             style: GoogleFonts.inter(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -3063,7 +3108,9 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
-                                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
                                 ),
                               ),
                               Text(
@@ -3084,7 +3131,9 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
               ),
               const SizedBox(height: 12),
               Divider(
-                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                color: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFF1F5F9),
                 height: 1,
               ),
               const SizedBox(height: 12),
@@ -3097,7 +3146,10 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                       children: [
                         Text(
                           'Cargo / Función',
-                          style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B)),
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: const Color(0xFF64748B),
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -3105,7 +3157,9 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                       ],
@@ -3117,7 +3171,10 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                       children: [
                         Text(
                           'Sueldo Pactado',
-                          style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B)),
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: const Color(0xFF64748B),
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -3143,7 +3200,10 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                       children: [
                         Text(
                           'Sucursal de Trabajo',
-                          style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B)),
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: const Color(0xFF64748B),
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -3151,7 +3211,9 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF334155),
                           ),
                         ),
                       ],
@@ -3163,11 +3225,16 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                       children: [
                         Text(
                           'Área / Tipo',
-                          style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B)),
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: const Color(0xFF64748B),
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          emp.employeeType == 'ADMINISTRATIVO' ? 'Oficina' : 'Campo / Operativo',
+                          emp.employeeType == 'ADMINISTRATIVO'
+                              ? 'Oficina'
+                              : 'Campo / Operativo',
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -3186,7 +3253,10 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: emp.attachedDocumentsCount == 6
                           ? const Color(0xFF10B981).withValues(alpha: 0.12)
@@ -3197,7 +3267,9 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          emp.attachedDocumentsCount == 6 ? Icons.verified : Icons.attachment,
+                          emp.attachedDocumentsCount == 6
+                              ? Icons.verified
+                              : Icons.attachment,
                           size: 13,
                           color: emp.attachedDocumentsCount == 6
                               ? const Color(0xFF10B981)
@@ -3220,10 +3292,16 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                   FilledButton.tonalIcon(
                     style: FilledButton.styleFrom(
                       visualDensity: VisualDensity.compact,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                     ),
                     icon: const Icon(Icons.folder_open, size: 14),
-                    label: const Text('Expediente', style: TextStyle(fontSize: 11)),
+                    label: const Text(
+                      'Expediente',
+                      style: TextStyle(fontSize: 11),
+                    ),
                     onPressed: () => _showEmployeeDetailsModal(emp),
                   ),
                 ],
