@@ -771,8 +771,37 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
 
   void _openReassignDialog(BuildContext context, RrhhAssignment a) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    String selectedSchedule = a.scheduleName;
-    String supervisor = a.supervisorName;
+
+    // Construir lista única de horarios disponibles
+    final availableScheduleNames = <String>{};
+    for (final s in _stateService.schedules) {
+      availableScheduleNames.add('${s.name} (${s.formattedTimeRange})');
+    }
+
+    // Resolver initialValue garantizando que exista exactamente en items
+    String initialSchedule;
+    if (availableScheduleNames.contains(a.scheduleName)) {
+      initialSchedule = a.scheduleName;
+    } else {
+      final match = _stateService.schedules.where(
+        (s) => s.name == a.scheduleName || a.scheduleName.startsWith(s.name),
+      );
+      if (match.isNotEmpty) {
+        initialSchedule =
+            '${match.first.name} (${match.first.formattedTimeRange})';
+      } else if (a.scheduleName.isNotEmpty) {
+        availableScheduleNames.add(a.scheduleName);
+        initialSchedule = a.scheduleName;
+      } else if (availableScheduleNames.isNotEmpty) {
+        initialSchedule = availableScheduleNames.first;
+      } else {
+        initialSchedule = 'Administrativo Central (08:30 - 17:30)';
+        availableScheduleNames.add(initialSchedule);
+      }
+    }
+
+    String currentSchedule = initialSchedule;
+    final supervisorCtrl = TextEditingController(text: a.supervisorName);
 
     showDialog(
       context: context,
@@ -802,27 +831,26 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                 ),
                 const SizedBox(height: 14),
                 DropdownButtonFormField<String>(
-                  initialValue: selectedSchedule,
+                  initialValue: currentSchedule,
                   decoration: const InputDecoration(labelText: 'Nuevo Horario'),
-                  items: _stateService.schedules
+                  items: availableScheduleNames
                       .map(
-                        (s) => DropdownMenuItem(
-                          value: s.name,
-                          child: Text(s.name),
+                        (name) => DropdownMenuItem(
+                          value: name,
+                          child: Text(name),
                         ),
                       )
                       .toList(),
                   onChanged: (val) {
-                    if (val != null) setDlgState(() => selectedSchedule = val);
+                    if (val != null) setDlgState(() => currentSchedule = val);
                   },
                 ),
                 const SizedBox(height: 12),
                 TextField(
-                  controller: TextEditingController(text: supervisor),
+                  controller: supervisorCtrl,
                   decoration: const InputDecoration(
                     labelText: 'Supervisor Asignado',
                   ),
-                  onChanged: (val) => supervisor = val,
                 ),
               ],
             ),
@@ -845,8 +873,8 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                   officeArea: a.officeArea,
                   officeRole: a.officeRole,
                   workplaceBranch: a.workplaceBranch,
-                  scheduleName: selectedSchedule,
-                  supervisorName: supervisor,
+                  scheduleName: currentSchedule,
+                  supervisorName: supervisorCtrl.text.trim(),
                 );
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
