@@ -134,6 +134,7 @@ class _RrhhApplicantModalState extends State<RrhhApplicantModal> {
 
             Expanded(
               child: SingleChildScrollView(
+                padding: const EdgeInsets.only(right: 16, top: 4, bottom: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

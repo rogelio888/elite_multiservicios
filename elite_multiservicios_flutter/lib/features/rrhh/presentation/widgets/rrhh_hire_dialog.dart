@@ -43,12 +43,16 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
   late String _selectedFieldSupervisor;
   late String _selectedFieldSchedule;
 
+  // Scroll Controller
+  late final ScrollController _scrollController;
+
   // Contrato
   String _contractType = 'Indefinido';
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     final app = widget.initialApplicant;
     _employeeType = app?.targetType ?? 'CAMPO';
 
@@ -112,6 +116,7 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
     _salaryController.dispose();
     _codeController.dispose();
     _observationsController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -484,7 +489,7 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
       ),
       child: Container(
         constraints: BoxConstraints(
-          maxWidth: 680,
+          maxWidth: 720,
           maxHeight: MediaQuery.of(context).size.height * 0.9,
         ),
         padding: const EdgeInsets.all(24),
@@ -537,439 +542,463 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
               const SizedBox(height: 16),
 
               Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Selector de Modalidad: OFICINA vs CAMPO
-                      Text(
-                        '1. SELECCIONA LA MODALIDAD LABORAL:',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF2563EB),
+                child: Scrollbar(
+                  controller: _scrollController,
+                  thumbVisibility: true,
+                  radius: const Radius.circular(8),
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.only(
+                      right: 18,
+                      top: 4,
+                      bottom: 8,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Selector de Modalidad: OFICINA vs CAMPO
+                        Text(
+                          '1. SELECCIONA LA MODALIDAD LABORAL:',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF2563EB),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildTypeRadio(
-                              title: 'Personal de Oficina',
-                              subtitle:
-                                  'Sede Central (Administración, RRHH, Marketing, Ventas)',
-                              type: 'OFICINA',
-                              icon: Icons.corporate_fare,
-                              isDark: isDark,
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTypeRadio(
+                                title: 'Personal de Oficina',
+                                subtitle:
+                                    'Sede Central (Administración, RRHH, Marketing, Ventas)',
+                                type: 'OFICINA',
+                                icon: Icons.corporate_fare,
+                                isDark: isDark,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildTypeRadio(
-                              title: 'Personal de Campo',
-                              subtitle:
-                                  'Operativo en sedes de clientes (Limpieza, Jardinería, etc.)',
-                              type: 'CAMPO',
-                              icon: Icons.storefront,
-                              isDark: isDark,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildTypeRadio(
+                                title: 'Personal de Campo',
+                                subtitle:
+                                    'Operativo en sedes de clientes (Limpieza, Jardinería, etc.)',
+                                type: 'CAMPO',
+                                icon: Icons.storefront,
+                                isDark: isDark,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
 
-                      // Datos Personales
-                      Text(
-                        '2. DATOS GENERALES DEL TRABAJADOR:',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF2563EB),
+                        // Datos Personales
+                        Text(
+                          '2. DATOS GENERALES DEL TRABAJADOR:',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF2563EB),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: TextFormField(
-                              controller: _fullNameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Nombre Completo *',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (v) => v == null || v.trim().isEmpty
-                                  ? 'Requerido'
-                                  : null,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            flex: 2,
-                            child: TextFormField(
-                              controller: _codeController,
-                              decoration: const InputDecoration(
-                                labelText: 'Código Interno *',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (v) => v == null || v.trim().isEmpty
-                                  ? 'Requerido'
-                                  : null,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _idCardController,
-                              decoration: const InputDecoration(
-                                labelText: 'C.I. / Documento *',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (v) => v == null || v.trim().isEmpty
-                                  ? 'Requerido'
-                                  : null,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _phoneController,
-                              decoration: const InputDecoration(
-                                labelText: 'Teléfono Celular *',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (v) => v == null || v.trim().isEmpty
-                                  ? 'Requerido'
-                                  : null,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _addressController,
-                        decoration: const InputDecoration(
-                          labelText: 'Dirección Domiciliaria *',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (v) =>
-                            v == null || v.trim().isEmpty ? 'Requerido' : null,
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Campos Dinámicos Inteligentes (Oficina vs Campo)
-                      Text(
-                        _employeeType == 'OFICINA'
-                            ? '3. ASIGNACIÓN INTERNA (OFICINA CENTRAL):'
-                            : '3. ASIGNACIÓN OPERATIVA (CLIENTE & SERVICIO EN CAMPO):',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF2563EB),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      if (_employeeType == 'OFICINA') ...[
-                        // Campos de Oficina
-                        DropdownButtonFormField<String>(
-                          initialValue:
-                              _rrhhService.areas.any(
-                                (a) => a.name == _selectedArea,
-                              )
-                              ? _selectedArea
-                              : (_rrhhService.areas.isNotEmpty
-                                    ? _rrhhService.areas.first.name
-                                    : null),
-                          decoration: const InputDecoration(
-                            labelText: 'Área Organizacional *',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: _rrhhService.areas
-                              .map(
-                                (a) => DropdownMenuItem(
-                                  value: a.name,
-                                  child: Text(a.name),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: TextFormField(
+                                controller: _fullNameController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Nombre Completo *',
+                                  border: OutlineInputBorder(),
                                 ),
-                              )
-                              .toList(),
-                          onChanged: (v) => setState(
-                            () => _selectedArea = v ?? _selectedArea,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        DropdownButtonFormField<String>(
-                          initialValue:
-                              _rrhhService.positions
-                                  .where((p) => p.employeeType == 'OFICINA')
-                                  .any((p) => p.title == _selectedPosition)
-                              ? _selectedPosition
-                              : (_rrhhService.positions.any(
-                                      (p) => p.employeeType == 'OFICINA',
-                                    )
-                                    ? _rrhhService.positions
-                                          .firstWhere(
-                                            (p) => p.employeeType == 'OFICINA',
-                                          )
-                                          .title
-                                    : null),
-                          decoration: const InputDecoration(
-                            labelText: 'Cargo Administrativo *',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: _rrhhService.positions
-                              .where((p) => p.employeeType == 'OFICINA')
-                              .map(
-                                (p) => DropdownMenuItem(
-                                  value: p.title,
-                                  child: Text(p.title),
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 2,
+                              child: TextFormField(
+                                controller: _codeController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Código Interno *',
+                                  border: OutlineInputBorder(),
                                 ),
-                              )
-                              .toList(),
-                          onChanged: (v) => setState(
-                            () => _selectedPosition = v ?? _selectedPosition,
-                          ),
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 12),
                         Row(
                           children: [
                             Expanded(
                               child: TextFormField(
-                                initialValue: _selectedSupervisor,
+                                controller: _idCardController,
                                 decoration: const InputDecoration(
-                                  labelText: 'Responsable / Jefe Inmediato *',
+                                  labelText: 'C.I. / Documento *',
                                   border: OutlineInputBorder(),
                                 ),
-                                onChanged: (v) => _selectedSupervisor = v,
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? 'Requerido'
+                                    : null,
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: DropdownButtonFormField<String>(
-                                initialValue: () {
-                                  final valid = _rrhhService.schedules
+                              child: TextFormField(
+                                controller: _phoneController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Teléfono Celular *',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? 'Requerido'
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _addressController,
+                          decoration: const InputDecoration(
+                            labelText: 'Dirección Domiciliaria *',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (v) => v == null || v.trim().isEmpty
+                              ? 'Requerido'
+                              : null,
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Campos Dinámicos Inteligentes (Oficina vs Campo)
+                        Text(
+                          _employeeType == 'OFICINA'
+                              ? '3. ASIGNACIÓN INTERNA (OFICINA CENTRAL):'
+                              : '3. ASIGNACIÓN OPERATIVA (CLIENTE & SERVICIO EN CAMPO):',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF2563EB),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+
+                        if (_employeeType == 'OFICINA') ...[
+                          // Campos de Oficina
+                          DropdownButtonFormField<String>(
+                            initialValue:
+                                _rrhhService.areas.any(
+                                  (a) => a.name == _selectedArea,
+                                )
+                                ? _selectedArea
+                                : (_rrhhService.areas.isNotEmpty
+                                      ? _rrhhService.areas.first.name
+                                      : null),
+                            decoration: const InputDecoration(
+                              labelText: 'Área Organizacional *',
+                              border: OutlineInputBorder(),
+                            ),
+                            items: _rrhhService.areas
+                                .map(
+                                  (a) => DropdownMenuItem(
+                                    value: a.name,
+                                    child: Text(a.name),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (v) => setState(
+                              () => _selectedArea = v ?? _selectedArea,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          DropdownButtonFormField<String>(
+                            initialValue:
+                                _rrhhService.positions
+                                    .where((p) => p.employeeType == 'OFICINA')
+                                    .any((p) => p.title == _selectedPosition)
+                                ? _selectedPosition
+                                : (_rrhhService.positions.any(
+                                        (p) => p.employeeType == 'OFICINA',
+                                      )
+                                      ? _rrhhService.positions
+                                            .firstWhere(
+                                              (p) =>
+                                                  p.employeeType == 'OFICINA',
+                                            )
+                                            .title
+                                      : null),
+                            decoration: const InputDecoration(
+                              labelText: 'Cargo Administrativo *',
+                              border: OutlineInputBorder(),
+                            ),
+                            items: _rrhhService.positions
+                                .where((p) => p.employeeType == 'OFICINA')
+                                .map(
+                                  (p) => DropdownMenuItem(
+                                    value: p.title,
+                                    child: Text(p.title),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (v) => setState(
+                              () => _selectedPosition = v ?? _selectedPosition,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextFormField(
+                                  initialValue: _selectedSupervisor,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Responsable / Jefe Inmediato *',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  onChanged: (v) => _selectedSupervisor = v,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  initialValue: () {
+                                    final valid = _rrhhService.schedules
+                                        .where(
+                                          (s) => s.employeeTypeScope != 'CAMPO',
+                                        )
+                                        .map(
+                                          (s) =>
+                                              '${s.name} (${s.formattedTimeRange})',
+                                        )
+                                        .toList();
+                                    return valid.contains(
+                                          _selectedOfficeSchedule,
+                                        )
+                                        ? _selectedOfficeSchedule
+                                        : (valid.isNotEmpty
+                                              ? valid.first
+                                              : null);
+                                  }(),
+                                  decoration: const InputDecoration(
+                                    labelText: 'Horario *',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  items: _rrhhService.schedules
                                       .where(
                                         (s) => s.employeeTypeScope != 'CAMPO',
                                       )
                                       .map(
-                                        (s) =>
-                                            '${s.name} (${s.formattedTimeRange})',
+                                        (s) => DropdownMenuItem(
+                                          value:
+                                              '${s.name} (${s.formattedTimeRange})',
+                                          child: Text(s.name),
+                                        ),
                                       )
-                                      .toList();
-                                  return valid.contains(_selectedOfficeSchedule)
-                                      ? _selectedOfficeSchedule
-                                      : (valid.isNotEmpty ? valid.first : null);
-                                }(),
-                                decoration: const InputDecoration(
-                                  labelText: 'Horario *',
-                                  border: OutlineInputBorder(),
-                                ),
-                                items: _rrhhService.schedules
-                                    .where(
-                                      (s) => s.employeeTypeScope != 'CAMPO',
-                                    )
-                                    .map(
-                                      (s) => DropdownMenuItem(
-                                        value:
-                                            '${s.name} (${s.formattedTimeRange})',
-                                        child: Text(s.name),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: (v) => setState(
-                                  () => _selectedOfficeSchedule =
-                                      v ?? _selectedOfficeSchedule,
+                                      .toList(),
+                                  onChanged: (v) => setState(
+                                    () => _selectedOfficeSchedule =
+                                        v ?? _selectedOfficeSchedule,
+                                  ),
                                 ),
                               ),
+                            ],
+                          ),
+                        ] else ...[
+                          // Campos de Campo
+                          DropdownButtonFormField<String>(
+                            initialValue:
+                                _rrhhService.clients.any(
+                                  (c) => c.name == _selectedClient,
+                                )
+                                ? _selectedClient
+                                : (_rrhhService.clients.isNotEmpty
+                                      ? _rrhhService.clients.first.name
+                                      : null),
+                            decoration: const InputDecoration(
+                              labelText: 'Empresa Cliente Asignada *',
+                              border: OutlineInputBorder(),
                             ),
-                          ],
-                        ),
-                      ] else ...[
-                        // Campos de Campo
-                        DropdownButtonFormField<String>(
-                          initialValue:
-                              _rrhhService.clients.any(
-                                (c) => c.name == _selectedClient,
-                              )
-                              ? _selectedClient
-                              : (_rrhhService.clients.isNotEmpty
-                                    ? _rrhhService.clients.first.name
-                                    : null),
-                          decoration: const InputDecoration(
-                            labelText: 'Empresa Cliente Asignada *',
-                            border: OutlineInputBorder(),
+                            items: _rrhhService.clients
+                                .map(
+                                  (c) => DropdownMenuItem(
+                                    value: c.name,
+                                    child: Text(c.name),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (v) => setState(
+                              () => _selectedClient = v ?? _selectedClient,
+                            ),
                           ),
-                          items: _rrhhService.clients
-                              .map(
-                                (c) => DropdownMenuItem(
-                                  value: c.name,
-                                  child: Text(c.name),
+                          const SizedBox(height: 12),
+                          DropdownButtonFormField<String>(
+                            initialValue:
+                                _rrhhService.specialties.any(
+                                  (s) => s.name == _selectedService,
+                                )
+                                ? _selectedService
+                                : (_rrhhService.specialties.isNotEmpty
+                                      ? _rrhhService.specialties.first.name
+                                      : null),
+                            decoration: const InputDecoration(
+                              labelText: 'Servicio Contratado / Especialidad *',
+                              border: OutlineInputBorder(),
+                            ),
+                            items: _rrhhService.specialties
+                                .map(
+                                  (s) => DropdownMenuItem(
+                                    value: s.name,
+                                    child: Text(s.name),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (v) => setState(
+                              () => _selectedService = v ?? _selectedService,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextFormField(
+                                  initialValue: _selectedFieldSupervisor,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Supervisor de Cuadrilla *',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  onChanged: (v) =>
+                                      _selectedFieldSupervisor = v,
                                 ),
-                              )
-                              .toList(),
-                          onChanged: (v) => setState(
-                            () => _selectedClient = v ?? _selectedClient,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        DropdownButtonFormField<String>(
-                          initialValue:
-                              _rrhhService.specialties.any(
-                                (s) => s.name == _selectedService,
-                              )
-                              ? _selectedService
-                              : (_rrhhService.specialties.isNotEmpty
-                                    ? _rrhhService.specialties.first.name
-                                    : null),
-                          decoration: const InputDecoration(
-                            labelText: 'Servicio Contratado / Especialidad *',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: _rrhhService.specialties
-                              .map(
-                                (s) => DropdownMenuItem(
-                                  value: s.name,
-                                  child: Text(s.name),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  initialValue: () {
+                                    final valid = _rrhhService.schedules
+                                        .where(
+                                          (s) =>
+                                              s.employeeTypeScope != 'OFICINA',
+                                        )
+                                        .map(
+                                          (s) =>
+                                              '${s.name} (${s.formattedTimeRange})',
+                                        )
+                                        .toList();
+                                    return valid.contains(
+                                          _selectedFieldSchedule,
+                                        )
+                                        ? _selectedFieldSchedule
+                                        : (valid.isNotEmpty
+                                              ? valid.first
+                                              : null);
+                                  }(),
+                                  decoration: const InputDecoration(
+                                    labelText: 'Turno / Horario Operativo *',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  items: _rrhhService.schedules
+                                      .where(
+                                        (s) => s.employeeTypeScope != 'OFICINA',
+                                      )
+                                      .map(
+                                        (s) => DropdownMenuItem(
+                                          value:
+                                              '${s.name} (${s.formattedTimeRange})',
+                                          child: Text(s.name),
+                                        ),
+                                      )
+                                      .toList(),
+                                  onChanged: (v) => setState(
+                                    () => _selectedFieldSchedule =
+                                        v ?? _selectedFieldSchedule,
+                                  ),
                                 ),
-                              )
-                              .toList(),
-                          onChanged: (v) => setState(
-                            () => _selectedService = v ?? _selectedService,
+                              ),
+                            ],
+                          ),
+                        ],
+
+                        const SizedBox(height: 20),
+                        // Sueldo y Tipo de Contrato
+                        Text(
+                          '4. CONDICIONES LABORALES & CONTRATO:',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF2563EB),
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
                         Row(
                           children: [
                             Expanded(
                               child: TextFormField(
-                                initialValue: _selectedFieldSupervisor,
+                                controller: _salaryController,
+                                keyboardType: TextInputType.number,
                                 decoration: const InputDecoration(
-                                  labelText: 'Supervisor de Cuadrilla *',
+                                  labelText: 'Sueldo Pactado (Bs.) *',
                                   border: OutlineInputBorder(),
                                 ),
-                                onChanged: (v) => _selectedFieldSupervisor = v,
+                                validator: (v) =>
+                                    v == null ||
+                                        double.tryParse(v.trim()) == null
+                                    ? 'Ingresa un monto válido'
+                                    : null,
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: DropdownButtonFormField<String>(
-                                initialValue: () {
-                                  final valid = _rrhhService.schedules
-                                      .where(
-                                        (s) => s.employeeTypeScope != 'OFICINA',
-                                      )
-                                      .map(
-                                        (s) =>
-                                            '${s.name} (${s.formattedTimeRange})',
-                                      )
-                                      .toList();
-                                  return valid.contains(_selectedFieldSchedule)
-                                      ? _selectedFieldSchedule
-                                      : (valid.isNotEmpty ? valid.first : null);
-                                }(),
+                                initialValue:
+                                    const [
+                                      'Indefinido',
+                                      'Plazo Fijo',
+                                      'Servicios',
+                                    ].contains(_contractType)
+                                    ? _contractType
+                                    : 'Indefinido',
                                 decoration: const InputDecoration(
-                                  labelText: 'Turno / Horario Operativo *',
+                                  labelText: 'Tipo de Contrato *',
                                   border: OutlineInputBorder(),
                                 ),
-                                items: _rrhhService.schedules
-                                    .where(
-                                      (s) => s.employeeTypeScope != 'OFICINA',
-                                    )
-                                    .map(
-                                      (s) => DropdownMenuItem(
-                                        value:
-                                            '${s.name} (${s.formattedTimeRange})',
-                                        child: Text(s.name),
-                                      ),
-                                    )
-                                    .toList(),
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 'Indefinido',
+                                    child: Text('Indefinido'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Plazo Fijo',
+                                    child: Text('Plazo Fijo'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Servicios',
+                                    child: Text('Servicios'),
+                                  ),
+                                ],
                                 onChanged: (v) => setState(
-                                  () => _selectedFieldSchedule =
-                                      v ?? _selectedFieldSchedule,
+                                  () => _contractType = v ?? _contractType,
                                 ),
                               ),
                             ),
                           ],
                         ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _observationsController,
+                          maxLines: 2,
+                          decoration: const InputDecoration(
+                            labelText: 'Observaciones Iniciales',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
                       ],
-
-                      const SizedBox(height: 20),
-                      // Sueldo y Tipo de Contrato
-                      Text(
-                        '4. CONDICIONES LABORALES & CONTRATO:',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF2563EB),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _salaryController,
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                labelText: 'Sueldo Pactado (Bs.) *',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (v) =>
-                                  v == null || double.tryParse(v.trim()) == null
-                                  ? 'Ingresa un monto válido'
-                                  : null,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              initialValue:
-                                  const [
-                                    'Indefinido',
-                                    'Plazo Fijo',
-                                    'Servicios',
-                                  ].contains(_contractType)
-                                  ? _contractType
-                                  : 'Indefinido',
-                              decoration: const InputDecoration(
-                                labelText: 'Tipo de Contrato *',
-                                border: OutlineInputBorder(),
-                              ),
-                              items: const [
-                                DropdownMenuItem(
-                                  value: 'Indefinido',
-                                  child: Text('Indefinido'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'Plazo Fijo',
-                                  child: Text('Plazo Fijo'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'Servicios',
-                                  child: Text('Servicios'),
-                                ),
-                              ],
-                              onChanged: (v) => setState(
-                                () => _contractType = v ?? _contractType,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _observationsController,
-                        maxLines: 2,
-                        decoration: const InputDecoration(
-                          labelText: 'Observaciones Iniciales',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
