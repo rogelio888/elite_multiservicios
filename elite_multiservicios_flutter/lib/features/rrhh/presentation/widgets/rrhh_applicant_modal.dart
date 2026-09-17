@@ -189,7 +189,15 @@ class _RrhhApplicantModalState extends State<RrhhApplicantModal> {
                     _buildSectionHeader('EVALUACIÓN Y DECISIÓN DE SELECCIÓN:'),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      initialValue: _status,
+                      initialValue:
+                          const [
+                            'NUEVO',
+                            'EN_EVALUACION',
+                            'SELECCIONADO',
+                            'RECHAZADO',
+                          ].contains(_status)
+                          ? _status
+                          : 'NUEVO',
                       decoration: const InputDecoration(
                         labelText: 'Etapa del Postulante',
                         border: OutlineInputBorder(),

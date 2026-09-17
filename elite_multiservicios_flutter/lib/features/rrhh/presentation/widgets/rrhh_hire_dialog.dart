@@ -73,17 +73,34 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
     _selectedArea = _rrhhService.areas.isNotEmpty
         ? _rrhhService.areas.first.name
         : 'Marketing & Comunicación';
-    _selectedPosition = 'Encargada de Marketing Digital & Branding';
+    final officePositions = _rrhhService.positions
+        .where((p) => p.employeeType == 'OFICINA')
+        .toList();
+    _selectedPosition = officePositions.isNotEmpty
+        ? officePositions.first.title
+        : 'Encargada de Marketing Digital & Branding';
     _selectedSupervisor = 'Gerencia General';
-    _selectedOfficeSchedule = 'Administrativo Central (08:30 - 17:30)';
+    final officeSchedules = _rrhhService.schedules
+        .where((s) => s.employeeTypeScope != 'CAMPO')
+        .toList();
+    _selectedOfficeSchedule = officeSchedules.isNotEmpty
+        ? '${officeSchedules.first.name} (${officeSchedules.first.formattedTimeRange})'
+        : 'Administrativo Central (08:30 - 17:30)';
 
     // Valores iniciales para Campo
     _selectedClient = _rrhhService.clients.isNotEmpty
         ? _rrhhService.clients.first.name
         : 'Kolping Bolivia';
-    _selectedService = 'Mantenimiento Preventivo';
+    _selectedService = _rrhhService.specialties.isNotEmpty
+        ? _rrhhService.specialties.first.name
+        : 'Limpieza Integral & Hospitalaria';
     _selectedFieldSupervisor = 'Ricardo Montaño Justiniano';
-    _selectedFieldSchedule = 'Operativo Mañana (07:00 - 15:00)';
+    final fieldSchedules = _rrhhService.schedules
+        .where((s) => s.employeeTypeScope != 'OFICINA')
+        .toList();
+    _selectedFieldSchedule = fieldSchedules.isNotEmpty
+        ? '${fieldSchedules.first.name} (${fieldSchedules.first.formattedTimeRange})'
+        : 'Operativo Mañana (Campo) (07:00 - 15:00)';
   }
 
   @override
@@ -660,7 +677,14 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                       if (_employeeType == 'OFICINA') ...[
                         // Campos de Oficina
                         DropdownButtonFormField<String>(
-                          initialValue: _selectedArea,
+                          initialValue:
+                              _rrhhService.areas.any(
+                                (a) => a.name == _selectedArea,
+                              )
+                              ? _selectedArea
+                              : (_rrhhService.areas.isNotEmpty
+                                    ? _rrhhService.areas.first.name
+                                    : null),
                           decoration: const InputDecoration(
                             labelText: 'Área Organizacional *',
                             border: OutlineInputBorder(),
@@ -679,7 +703,20 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                         ),
                         const SizedBox(height: 12),
                         DropdownButtonFormField<String>(
-                          initialValue: _selectedPosition,
+                          initialValue:
+                              _rrhhService.positions
+                                  .where((p) => p.employeeType == 'OFICINA')
+                                  .any((p) => p.title == _selectedPosition)
+                              ? _selectedPosition
+                              : (_rrhhService.positions.any(
+                                      (p) => p.employeeType == 'OFICINA',
+                                    )
+                                    ? _rrhhService.positions
+                                          .firstWhere(
+                                            (p) => p.employeeType == 'OFICINA',
+                                          )
+                                          .title
+                                    : null),
                           decoration: const InputDecoration(
                             labelText: 'Cargo Administrativo *',
                             border: OutlineInputBorder(),
@@ -713,7 +750,20 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: DropdownButtonFormField<String>(
-                                initialValue: _selectedOfficeSchedule,
+                                initialValue: () {
+                                  final valid = _rrhhService.schedules
+                                      .where(
+                                        (s) => s.employeeTypeScope != 'CAMPO',
+                                      )
+                                      .map(
+                                        (s) =>
+                                            '${s.name} (${s.formattedTimeRange})',
+                                      )
+                                      .toList();
+                                  return valid.contains(_selectedOfficeSchedule)
+                                      ? _selectedOfficeSchedule
+                                      : (valid.isNotEmpty ? valid.first : null);
+                                }(),
                                 decoration: const InputDecoration(
                                   labelText: 'Horario *',
                                   border: OutlineInputBorder(),
@@ -741,7 +791,14 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                       ] else ...[
                         // Campos de Campo
                         DropdownButtonFormField<String>(
-                          initialValue: _selectedClient,
+                          initialValue:
+                              _rrhhService.clients.any(
+                                (c) => c.name == _selectedClient,
+                              )
+                              ? _selectedClient
+                              : (_rrhhService.clients.isNotEmpty
+                                    ? _rrhhService.clients.first.name
+                                    : null),
                           decoration: const InputDecoration(
                             labelText: 'Empresa Cliente Asignada *',
                             border: OutlineInputBorder(),
@@ -760,7 +817,14 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                         ),
                         const SizedBox(height: 12),
                         DropdownButtonFormField<String>(
-                          initialValue: _selectedService,
+                          initialValue:
+                              _rrhhService.specialties.any(
+                                (s) => s.name == _selectedService,
+                              )
+                              ? _selectedService
+                              : (_rrhhService.specialties.isNotEmpty
+                                    ? _rrhhService.specialties.first.name
+                                    : null),
                           decoration: const InputDecoration(
                             labelText: 'Servicio Contratado / Especialidad *',
                             border: OutlineInputBorder(),
@@ -793,7 +857,20 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: DropdownButtonFormField<String>(
-                                initialValue: _selectedFieldSchedule,
+                                initialValue: () {
+                                  final valid = _rrhhService.schedules
+                                      .where(
+                                        (s) => s.employeeTypeScope != 'OFICINA',
+                                      )
+                                      .map(
+                                        (s) =>
+                                            '${s.name} (${s.formattedTimeRange})',
+                                      )
+                                      .toList();
+                                  return valid.contains(_selectedFieldSchedule)
+                                      ? _selectedFieldSchedule
+                                      : (valid.isNotEmpty ? valid.first : null);
+                                }(),
                                 decoration: const InputDecoration(
                                   labelText: 'Turno / Horario Operativo *',
                                   border: OutlineInputBorder(),
@@ -850,7 +927,14 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: DropdownButtonFormField<String>(
-                              initialValue: _contractType,
+                              initialValue:
+                                  const [
+                                    'Indefinido',
+                                    'Plazo Fijo',
+                                    'Servicios',
+                                  ].contains(_contractType)
+                                  ? _contractType
+                                  : 'Indefinido',
                               decoration: const InputDecoration(
                                 labelText: 'Tipo de Contrato *',
                                 border: OutlineInputBorder(),
