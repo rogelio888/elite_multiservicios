@@ -215,7 +215,7 @@ class RrhhEmployeeTypeBadge extends StatelessWidget {
         effectiveType.toUpperCase() == 'OFICINA' ||
         effectiveType.toUpperCase() == 'ADMINISTRATIVO';
     final color = isOffice ? const Color(0xFF8B5CF6) : const Color(0xFF06B6D4);
-    final label = isOffice ? 'Oficina' : 'Campo / Operativo';
+    final label = isOffice ? 'Oficina' : 'Campo';
     final icon = isOffice
         ? Icons.corporate_fare_outlined
         : Icons.storefront_outlined;

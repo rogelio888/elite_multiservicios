@@ -400,6 +400,36 @@ class _RrhhReportsViewState extends State<RrhhReportsView>
     );
   }
 
+  Widget _buildHeaderCell(
+    String text,
+    bool isDark, {
+    Alignment alignment = Alignment.centerLeft,
+  }) {
+    return Container(
+      alignment: alignment,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: Text(
+        text,
+        style: GoogleFonts.inter(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBodyCell(
+    Widget child, {
+    Alignment alignment = Alignment.centerLeft,
+  }) {
+    return Container(
+      alignment: alignment,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      child: child,
+    );
+  }
+
   // 1. Tabla de Nómina Consolidada
   Widget _buildPayrollTable(List dynamicEmployees, bool isDark) {
     if (dynamicEmployees.isEmpty) {
@@ -410,119 +440,189 @@ class _RrhhReportsViewState extends State<RrhhReportsView>
       );
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-          ),
-        ),
+    const columnWidths = {
+      0: FixedColumnWidth(95), // Código
+      1: FlexColumnWidth(2.0), // Colaborador
+      2: FixedColumnWidth(100), // Tipo
+      3: FlexColumnWidth(2.2), // Cargo
+      4: FlexColumnWidth(2.2), // Área / Cliente
+      5: FixedColumnWidth(125), // Salario Base
+      6: FlexColumnWidth(2.3), // Correo APK
+      7: FixedColumnWidth(105), // Estado
+    };
+
+    return Container(
+      margin: const EdgeInsets.all(20),
+      width: double.infinity,
+      decoration: BoxDecoration(
         color: isDark ? const Color(0xFF0F172A) : Colors.white,
-        child: SizedBox(
-          width: double.infinity,
-          child: DataTable(
-            horizontalMargin: 20,
-            columnSpacing: 24,
-            headingRowColor: WidgetStatePropertyAll(
-              isDark ? const Color(0xFF0B1324) : const Color(0xFFF8FAFC),
-            ),
-            columns: [
-              DataColumn(
-                label: Text('Código', style: _headerStyle(isDark)),
-              ),
-              DataColumn(
-                label: Text('Colaborador', style: _headerStyle(isDark)),
-              ),
-              DataColumn(
-                label: Text('Tipo', style: _headerStyle(isDark)),
-              ),
-              DataColumn(
-                label: Text('Cargo', style: _headerStyle(isDark)),
-              ),
-              DataColumn(
-                label: Text('Área / Cliente', style: _headerStyle(isDark)),
-              ),
-              DataColumn(
-                label: Text('Salario Base', style: _headerStyle(isDark)),
-              ),
-              DataColumn(
-                label: Text('Correo APK', style: _headerStyle(isDark)),
-              ),
-              DataColumn(
-                label: Text('Estado', style: _headerStyle(isDark)),
-              ),
-            ],
-            rows: dynamicEmployees.map((e) {
-              return DataRow(
-                cells: [
-                  DataCell(
-                    Text(
-                      e.code,
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF2563EB),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: LayoutBuilder(
+          builder: (context, boxConstraints) {
+            final tableWidth = boxConstraints.maxWidth < 1180
+                ? 1180.0
+                : boxConstraints.maxWidth;
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(
+                width: tableWidth,
+                height: boxConstraints.maxHeight,
+                child: Column(
+                  children: [
+                    // Cabecera fija
+                    Table(
+                      columnWidths: columnWidths,
+                      defaultVerticalAlignment:
+                          TableCellVerticalAlignment.middle,
+                      children: [
+                        TableRow(
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF161F30)
+                                : const Color(0xFFF8FAFC),
+                            border: Border(
+                              bottom: BorderSide(
+                                color: isDark
+                                    ? const Color(0xFF1E293B)
+                                    : const Color(0xFFE2E8F0),
+                              ),
+                            ),
+                          ),
+                          children: [
+                            _buildHeaderCell('Código', isDark),
+                            _buildHeaderCell('Colaborador', isDark),
+                            _buildHeaderCell('Tipo', isDark),
+                            _buildHeaderCell('Cargo', isDark),
+                            _buildHeaderCell('Área / Cliente', isDark),
+                            _buildHeaderCell('Salario Base', isDark),
+                            _buildHeaderCell('Correo APK', isDark),
+                            _buildHeaderCell('Estado', isDark),
+                          ],
+                        ),
+                      ],
+                    ),
+                    // Filas con scroll vertical
+                    Expanded(
+                      child: Scrollbar(
+                        thumbVisibility: true,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Table(
+                            columnWidths: columnWidths,
+                            defaultVerticalAlignment:
+                                TableCellVerticalAlignment.middle,
+                            children: dynamicEmployees.map((e) {
+                              return TableRow(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: isDark
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFE2E8F0),
+                                    ),
+                                  ),
+                                ),
+                                children: [
+                                  // 0: Código
+                                  _buildBodyCell(
+                                    Text(
+                                      e.code,
+                                      style: GoogleFonts.jetBrainsMono(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFF2563EB),
+                                      ),
+                                    ),
+                                  ),
+                                  // 1: Colaborador
+                                  _buildBodyCell(
+                                    Text(
+                                      e.fullName,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF0F172A),
+                                      ),
+                                    ),
+                                  ),
+                                  // 2: Tipo
+                                  _buildBodyCell(
+                                    RrhhEmployeeTypeBadge(type: e.type),
+                                  ),
+                                  // 3: Cargo
+                                  _buildBodyCell(
+                                    Text(
+                                      e.position,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: isDark
+                                            ? const Color(0xFFCBD5E1)
+                                            : const Color(0xFF334155),
+                                      ),
+                                    ),
+                                  ),
+                                  // 4: Área / Cliente
+                                  _buildBodyCell(
+                                    Text(
+                                      e.type == 'OFICINA'
+                                          ? 'Oficina Central (${e.area ?? "General"})'
+                                          : '${e.clientCompanyName ?? "Cliente"} (${e.workplaceBranch ?? "Sede"})',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: isDark
+                                            ? const Color(0xFF94A3B8)
+                                            : const Color(0xFF64748B),
+                                      ),
+                                    ),
+                                  ),
+                                  // 5: Salario Base
+                                  _buildBodyCell(
+                                    Text(
+                                      'Bs. ${e.baseSalary.toStringAsFixed(2)}',
+                                      style: GoogleFonts.jetBrainsMono(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF0F172A),
+                                      ),
+                                    ),
+                                  ),
+                                  // 6: Correo APK
+                                  _buildBodyCell(
+                                    Text(
+                                      e.effectiveCorporateEmail,
+                                      style: GoogleFonts.jetBrainsMono(
+                                        fontSize: 11,
+                                        color: const Color(0xFF64748B),
+                                      ),
+                                    ),
+                                  ),
+                                  // 7: Estado
+                                  _buildBodyCell(
+                                    RrhhStatusChip(status: e.status),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  DataCell(
-                    Text(
-                      e.fullName,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: isDark ? Colors.white : const Color(0xFF0F172A),
-                      ),
-                    ),
-                  ),
-                  DataCell(RrhhEmployeeTypeBadge(type: e.type)),
-                  DataCell(
-                    Text(
-                      e.position,
-                      style: GoogleFonts.inter(fontSize: 12.5),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      e.type == 'OFICINA'
-                          ? 'Oficina Central (${e.area ?? "General"})'
-                          : '${e.clientCompanyName ?? "Cliente"} (${e.workplaceBranch ?? "Sede"})',
-                      style: GoogleFonts.inter(fontSize: 12),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      'Bs. ${e.baseSalary.toStringAsFixed(2)}',
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      e.effectiveCorporateEmail,
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 11,
-                        color: const Color(0xFF64748B),
-                      ),
-                    ),
-                  ),
-                  DataCell(
-                    RrhhStatusChip(
-                      label: e.status,
-                      statusType: e.status == 'ACTIVO'
-                          ? StatusType.success
-                          : StatusType.danger,
-                    ),
-                  ),
-                ],
-              );
-            }).toList(),
-          ),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -531,82 +631,158 @@ class _RrhhReportsViewState extends State<RrhhReportsView>
   // 2. Tabla de Incidencias
   Widget _buildIncidentsTable(bool isDark) {
     final list = _stateService.incidents;
+    if (list.isEmpty) {
+      return const RrhhEmptyState(
+        title: 'No hay incidencias registradas',
+        message: 'No existen registros de faltas o sanciones en el sistema.',
+        icon: Icons.assignment_turned_in_outlined,
+      );
+    }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-          ),
-        ),
+    const columnWidths = {
+      0: FlexColumnWidth(2.0), // Colaborador
+      1: FixedColumnWidth(110), // Tipo
+      2: FixedColumnWidth(110), // Gravedad
+      3: FlexColumnWidth(3.0), // Título / Detalle
+      4: FixedColumnWidth(110), // Fecha
+      5: FlexColumnWidth(1.8), // Reportado Por
+    };
+
+    return Container(
+      margin: const EdgeInsets.all(20),
+      width: double.infinity,
+      decoration: BoxDecoration(
         color: isDark ? const Color(0xFF0F172A) : Colors.white,
-        child: SizedBox(
-          width: double.infinity,
-          child: DataTable(
-            horizontalMargin: 20,
-            columnSpacing: 24,
-            headingRowColor: WidgetStatePropertyAll(
-              isDark ? const Color(0xFF0B1324) : const Color(0xFFF8FAFC),
-            ),
-            columns: [
-              DataColumn(
-                label: Text('Colaborador', style: _headerStyle(isDark)),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: LayoutBuilder(
+          builder: (context, boxConstraints) {
+            final tableWidth = boxConstraints.maxWidth < 1100
+                ? 1100.0
+                : boxConstraints.maxWidth;
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(
+                width: tableWidth,
+                height: boxConstraints.maxHeight,
+                child: Column(
+                  children: [
+                    // Cabecera fija
+                    Table(
+                      columnWidths: columnWidths,
+                      defaultVerticalAlignment:
+                          TableCellVerticalAlignment.middle,
+                      children: [
+                        TableRow(
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF161F30)
+                                : const Color(0xFFF8FAFC),
+                            border: Border(
+                              bottom: BorderSide(
+                                color: isDark
+                                    ? const Color(0xFF1E293B)
+                                    : const Color(0xFFE2E8F0),
+                              ),
+                            ),
+                          ),
+                          children: [
+                            _buildHeaderCell('Colaborador', isDark),
+                            _buildHeaderCell('Tipo', isDark),
+                            _buildHeaderCell('Gravedad', isDark),
+                            _buildHeaderCell('Título / Detalle', isDark),
+                            _buildHeaderCell('Fecha', isDark),
+                            _buildHeaderCell('Reportado Por', isDark),
+                          ],
+                        ),
+                      ],
+                    ),
+                    // Filas con scroll vertical
+                    Expanded(
+                      child: Scrollbar(
+                        thumbVisibility: true,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Table(
+                            columnWidths: columnWidths,
+                            defaultVerticalAlignment:
+                                TableCellVerticalAlignment.middle,
+                            children: list.map((inc) {
+                              return TableRow(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: isDark
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFE2E8F0),
+                                    ),
+                                  ),
+                                ),
+                                children: [
+                                  _buildBodyCell(
+                                    Text(
+                                      inc.employeeName,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF0F172A),
+                                      ),
+                                    ),
+                                  ),
+                                  _buildBodyCell(
+                                    RrhhStatusChip(
+                                      label: inc.type,
+                                      statusType: inc.type == 'FALTA'
+                                          ? StatusType.danger
+                                          : StatusType.warning,
+                                    ),
+                                  ),
+                                  _buildBodyCell(
+                                    Text(
+                                      inc.severity,
+                                      style: GoogleFonts.inter(fontSize: 12),
+                                    ),
+                                  ),
+                                  _buildBodyCell(
+                                    Text(
+                                      '${inc.title}: ${inc.description}',
+                                      style: GoogleFonts.inter(fontSize: 12),
+                                    ),
+                                  ),
+                                  _buildBodyCell(
+                                    Text(
+                                      '${inc.date.day.toString().padLeft(2, "0")}/${inc.date.month.toString().padLeft(2, "0")}/${inc.date.year}',
+                                      style: GoogleFonts.jetBrainsMono(
+                                        fontSize: 11.5,
+                                      ),
+                                    ),
+                                  ),
+                                  _buildBodyCell(
+                                    Text(
+                                      inc.reportedBy,
+                                      style: GoogleFonts.inter(fontSize: 12),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              DataColumn(label: Text('Tipo', style: _headerStyle(isDark))),
-              DataColumn(label: Text('Gravedad', style: _headerStyle(isDark))),
-              DataColumn(
-                label: Text('Título / Detalle', style: _headerStyle(isDark)),
-              ),
-              DataColumn(label: Text('Fecha', style: _headerStyle(isDark))),
-              DataColumn(
-                label: Text('Reportado Por', style: _headerStyle(isDark)),
-              ),
-            ],
-            rows: list.map((inc) {
-              return DataRow(
-                cells: [
-                  DataCell(
-                    Text(
-                      inc.employeeName,
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  DataCell(
-                    RrhhStatusChip(
-                      label: inc.type,
-                      statusType: inc.type == 'FALTA'
-                          ? StatusType.danger
-                          : StatusType.warning,
-                    ),
-                  ),
-                  DataCell(
-                    Text(inc.severity, style: GoogleFonts.inter(fontSize: 12)),
-                  ),
-                  DataCell(
-                    Text(
-                      '${inc.title}: ${inc.description}',
-                      style: GoogleFonts.inter(fontSize: 12),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      '${inc.date.day}/${inc.date.month}/${inc.date.year}',
-                      style: GoogleFonts.inter(fontSize: 12),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      inc.reportedBy,
-                      style: GoogleFonts.inter(fontSize: 12),
-                    ),
-                  ),
-                ],
-              );
-            }).toList(),
-          ),
+            );
+          },
         ),
       ),
     );
@@ -615,101 +791,167 @@ class _RrhhReportsViewState extends State<RrhhReportsView>
   // 3. Tabla de Bajas Históricas
   Widget _buildExitsTable(bool isDark) {
     final list = _stateService.exits;
+    if (list.isEmpty) {
+      return const RrhhEmptyState(
+        title: 'No hay bajas registradas',
+        message: 'No existen desvinculaciones registradas en el historial.',
+        icon: Icons.history_outlined,
+      );
+    }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-          ),
-        ),
+    const columnWidths = {
+      0: FlexColumnWidth(2.0), // Colaborador
+      1: FixedColumnWidth(120), // Fecha de Baja
+      2: FlexColumnWidth(2.0), // Motivo
+      3: FixedColumnWidth(130), // Finiquito Pagado
+      4: FlexColumnWidth(2.5), // Observaciones
+      5: FlexColumnWidth(1.8), // Procesado Por
+    };
+
+    return Container(
+      margin: const EdgeInsets.all(20),
+      width: double.infinity,
+      decoration: BoxDecoration(
         color: isDark ? const Color(0xFF0F172A) : Colors.white,
-        child: SizedBox(
-          width: double.infinity,
-          child: DataTable(
-            horizontalMargin: 20,
-            columnSpacing: 24,
-            headingRowColor: WidgetStatePropertyAll(
-              isDark ? const Color(0xFF0B1324) : const Color(0xFFF8FAFC),
-            ),
-            columns: [
-              DataColumn(
-                label: Text('Colaborador', style: _headerStyle(isDark)),
-              ),
-              DataColumn(
-                label: Text('Fecha de Baja', style: _headerStyle(isDark)),
-              ),
-              DataColumn(
-                label: Text(
-                  'Motivo de Desvinculación',
-                  style: _headerStyle(isDark),
-                ),
-              ),
-              DataColumn(
-                label: Text('Finiquito Pagado', style: _headerStyle(isDark)),
-              ),
-              DataColumn(
-                label: Text('Observaciones', style: _headerStyle(isDark)),
-              ),
-              DataColumn(
-                label: Text('Procesado Por', style: _headerStyle(isDark)),
-              ),
-            ],
-            rows: list.map((e) {
-              return DataRow(
-                cells: [
-                  DataCell(
-                    Text(
-                      e.employeeName,
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      '${e.exitDate.day}/${e.exitDate.month}/${e.exitDate.year}',
-                      style: GoogleFonts.inter(fontSize: 12),
-                    ),
-                  ),
-                  DataCell(
-                    RrhhStatusChip(
-                      label: e.reason,
-                      statusType: StatusType.neutral,
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      'Bs. ${e.severancePay.toStringAsFixed(2)}',
-                      style: GoogleFonts.jetBrainsMono(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      e.exitInterviewNotes,
-                      style: GoogleFonts.inter(fontSize: 12),
-                    ),
-                  ),
-                  DataCell(
-                    Text(e.processedBy, style: GoogleFonts.inter(fontSize: 12)),
-                  ),
-                ],
-              );
-            }).toList(),
-          ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
         ),
       ),
-    );
-  }
-
-  TextStyle _headerStyle(bool isDark) {
-    return GoogleFonts.inter(
-      fontSize: 12,
-      fontWeight: FontWeight.w700,
-      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: LayoutBuilder(
+          builder: (context, boxConstraints) {
+            final tableWidth = boxConstraints.maxWidth < 1100
+                ? 1100.0
+                : boxConstraints.maxWidth;
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(
+                width: tableWidth,
+                height: boxConstraints.maxHeight,
+                child: Column(
+                  children: [
+                    // Cabecera fija
+                    Table(
+                      columnWidths: columnWidths,
+                      defaultVerticalAlignment:
+                          TableCellVerticalAlignment.middle,
+                      children: [
+                        TableRow(
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF161F30)
+                                : const Color(0xFFF8FAFC),
+                            border: Border(
+                              bottom: BorderSide(
+                                color: isDark
+                                    ? const Color(0xFF1E293B)
+                                    : const Color(0xFFE2E8F0),
+                              ),
+                            ),
+                          ),
+                          children: [
+                            _buildHeaderCell('Colaborador', isDark),
+                            _buildHeaderCell('Fecha de Baja', isDark),
+                            _buildHeaderCell(
+                              'Motivo de Desvinculación',
+                              isDark,
+                            ),
+                            _buildHeaderCell('Finiquito Pagado', isDark),
+                            _buildHeaderCell('Observaciones', isDark),
+                            _buildHeaderCell('Procesado Por', isDark),
+                          ],
+                        ),
+                      ],
+                    ),
+                    // Filas con scroll vertical
+                    Expanded(
+                      child: Scrollbar(
+                        thumbVisibility: true,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Table(
+                            columnWidths: columnWidths,
+                            defaultVerticalAlignment:
+                                TableCellVerticalAlignment.middle,
+                            children: list.map((e) {
+                              return TableRow(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: isDark
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFE2E8F0),
+                                    ),
+                                  ),
+                                ),
+                                children: [
+                                  _buildBodyCell(
+                                    Text(
+                                      e.employeeName,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF0F172A),
+                                      ),
+                                    ),
+                                  ),
+                                  _buildBodyCell(
+                                    Text(
+                                      '${e.exitDate.day.toString().padLeft(2, "0")}/${e.exitDate.month.toString().padLeft(2, "0")}/${e.exitDate.year}',
+                                      style: GoogleFonts.jetBrainsMono(
+                                        fontSize: 11.5,
+                                      ),
+                                    ),
+                                  ),
+                                  _buildBodyCell(
+                                    RrhhStatusChip(
+                                      label: e.reason,
+                                      statusType: StatusType.neutral,
+                                    ),
+                                  ),
+                                  _buildBodyCell(
+                                    Text(
+                                      'Bs. ${e.severancePay.toStringAsFixed(2)}',
+                                      style: GoogleFonts.jetBrainsMono(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF0F172A),
+                                      ),
+                                    ),
+                                  ),
+                                  _buildBodyCell(
+                                    Text(
+                                      e.exitInterviewNotes,
+                                      style: GoogleFonts.inter(fontSize: 12),
+                                    ),
+                                  ),
+                                  _buildBodyCell(
+                                    Text(
+                                      e.processedBy,
+                                      style: GoogleFonts.inter(fontSize: 12),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 
