@@ -5,11 +5,12 @@ import '../../crm/presentation/views/crm_activities_view.dart';
 import '../../crm/presentation/views/crm_customers_view.dart';
 import '../../crm/presentation/views/crm_leads_view.dart';
 import '../../crm/presentation/views/crm_pipeline_view.dart';
-import '../../rrhh/presentation/views/rrhh_absences_view.dart';
-import '../../rrhh/presentation/views/rrhh_audit_view.dart';
-import '../../rrhh/presentation/views/rrhh_contracts_view.dart';
-import '../../rrhh/presentation/views/rrhh_employees_view.dart';
-import '../../rrhh/presentation/views/rrhh_history_view.dart';
+import '../../rrhh/presentation/views/rrhh_dashboard_view.dart';
+import '../../rrhh/presentation/views/rrhh_personal_view.dart';
+import '../../rrhh/presentation/views/rrhh_organization_view.dart';
+import '../../rrhh/presentation/views/rrhh_assignments_view.dart';
+import '../../rrhh/presentation/views/rrhh_labor_view.dart';
+import '../../rrhh/presentation/views/rrhh_reports_view.dart';
 import '../services/auth_service.dart';
 import '../services/security_api_service.dart';
 import 'views/security_dashboard_view.dart';
@@ -49,11 +50,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'crm-pipeline',
     'crm-clientes',
     'crm-actividades',
-    'rrhh-colaboradores',
-    'rrhh-contratos',
-    'rrhh-permisos',
-    'rrhh-bajas',
-    'rrhh-bitacora',
+    'rrhh-dashboard',
+    'rrhh-personal',
+    'rrhh-organizacion',
+    'rrhh-asignaciones',
+    'rrhh-laboral',
+    'rrhh-reportes',
   ];
 
   static int _indexFromRouteOrHash(String raw) {
@@ -96,26 +98,43 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 'actividades':
       case 'agenda':
         return 9;
+      case 'rrhh-dashboard':
+      case 'dashboard-rrhh':
+        return 10;
+      case 'rrhh-personal':
       case 'rrhh-colaboradores':
       case 'colaboradores':
       case 'empleados':
+      case 'personal':
       case 'rrhh':
-        return 10;
+        return 11;
+      case 'rrhh-organizacion':
+      case 'organizacion':
+      case 'areas':
+      case 'cargos':
+      case 'especialidades':
+        return 12;
+      case 'rrhh-asignaciones':
+      case 'asignaciones':
+      case 'horarios':
+      case 'turnos':
       case 'rrhh-contratos':
       case 'contratos':
-        return 11;
+        return 13;
+      case 'rrhh-laboral':
       case 'rrhh-permisos':
       case 'permisos':
       case 'vacaciones':
-        return 12;
+      case 'incidencias':
       case 'rrhh-bajas':
       case 'bajas':
-      case 'historial-laboral':
-        return 13;
+        return 14;
+      case 'rrhh-reportes':
+      case 'reportes':
       case 'rrhh-bitacora':
       case 'rrhh-auditoria':
       case 'bitacora-rrhh':
-        return 14;
+        return 15;
       case 'dashboard':
       default:
         return 0;
@@ -161,7 +180,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       _isSecurityExpanded = true;
     } else if (initialIndex >= 6 && initialIndex <= 9) {
       _isCrmExpanded = true;
-    } else if (initialIndex >= 10 && initialIndex <= 14) {
+    } else if (initialIndex >= 10 && initialIndex <= 15) {
       _isRrhhExpanded = true;
     }
 
@@ -177,7 +196,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
             _selectedIndex = newIndex;
             if (newIndex >= 1 && newIndex <= 5) _isSecurityExpanded = true;
             if (newIndex >= 6 && newIndex <= 9) _isCrmExpanded = true;
-            if (newIndex >= 10 && newIndex <= 14) _isRrhhExpanded = true;
+            if (newIndex >= 10 && newIndex <= 15) _isRrhhExpanded = true;
           });
           _loadSidebarMetrics();
         }
@@ -204,6 +223,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
           _isSecurityExpanded = true;
         } else if (index >= 6 && index <= 9) {
           _isCrmExpanded = true;
+        } else if (index >= 10 && index <= 15) {
+          _isRrhhExpanded = true;
         }
       });
       // Sincronizar URL visible en la barra de direcciones del navegador
@@ -314,11 +335,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'CRM: Pipeline Comercial',
     'CRM: Directorio Clientes 360°',
     'CRM: Agenda & Actividades',
-    'RRHH: Colaboradores & Personal',
-    'RRHH: Contratos & Asignaciones',
-    'RRHH: Permisos & Vacaciones',
-    'RRHH: Bajas & Historial Laboral',
-    'RRHH: Bitácora de Auditoría',
+    'RRHH: Dashboard Ejecutivo',
+    'RRHH: Personal & Expedientes',
+    'RRHH: Organización & Estructura',
+    'RRHH: Asignaciones & Horarios',
+    'RRHH: Gestión Laboral & Novedades',
+    'RRHH: Centro de Reportes & Métricas',
   ];
 
   Widget _buildNavItem({
@@ -535,43 +557,50 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
 
     final isAnySecurityActive = _selectedIndex >= 1 && _selectedIndex <= 5;
     final isAnyCrmActive = _selectedIndex >= 6 && _selectedIndex <= 9;
-    final isAnyRrhhActive = _selectedIndex >= 10 && _selectedIndex <= 14;
+    final isAnyRrhhActive = _selectedIndex >= 10 && _selectedIndex <= 15;
 
     final rrhhItems = [
       (
-        icon: Icons.people_alt_outlined,
-        selectedIcon: Icons.people_alt,
-        label: 'Colaboradores',
+        icon: Icons.dashboard_outlined,
+        selectedIcon: Icons.dashboard,
+        label: 'Dashboard RRHH',
         badge: null,
         index: 10,
       ),
       (
-        icon: Icons.description_outlined,
-        selectedIcon: Icons.description,
-        label: 'Contratos & Cargos',
+        icon: Icons.badge_outlined,
+        selectedIcon: Icons.badge,
+        label: 'Personal & Expedientes',
         badge: null,
         index: 11,
       ),
       (
-        icon: Icons.event_note_outlined,
-        selectedIcon: Icons.event_note,
-        label: 'Permisos & Vacaciones',
+        icon: Icons.account_tree_outlined,
+        selectedIcon: Icons.account_tree,
+        label: 'Organización',
         badge: null,
         index: 12,
       ),
       (
-        icon: Icons.history_edu_outlined,
-        selectedIcon: Icons.history_edu,
-        label: 'Bajas & Historial',
+        icon: Icons.work_history_outlined,
+        selectedIcon: Icons.work_history,
+        label: 'Asignaciones & Turnos',
         badge: null,
         index: 13,
       ),
       (
-        icon: Icons.receipt_long_outlined,
-        selectedIcon: Icons.receipt_long,
-        label: 'Bitácora RRHH',
+        icon: Icons.fact_check_outlined,
+        selectedIcon: Icons.fact_check,
+        label: 'Gestión Laboral',
         badge: null,
         index: 14,
+      ),
+      (
+        icon: Icons.analytics_outlined,
+        selectedIcon: Icons.analytics,
+        label: 'Centro de Reportes',
+        badge: null,
+        index: 15,
       ),
     ];
 
@@ -610,19 +639,22 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         currentView = const CrmActivitiesView();
         break;
       case 10:
-        currentView = const RrhhEmployeesView();
+        currentView = const RrhhDashboardView();
         break;
       case 11:
-        currentView = const RrhhContractsView();
+        currentView = const RrhhPersonalView();
         break;
       case 12:
-        currentView = const RrhhAbsencesView();
+        currentView = const RrhhOrganizationView();
         break;
       case 13:
-        currentView = const RrhhHistoryView();
+        currentView = const RrhhAssignmentsView();
         break;
       case 14:
-        currentView = const RrhhAuditView();
+        currentView = const RrhhLaborView();
+        break;
+      case 15:
+        currentView = const RrhhReportsView();
         break;
       default:
         currentView = const Center(child: Text('Vista no encontrada'));

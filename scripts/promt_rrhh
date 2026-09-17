@@ -1,621 +1,1216 @@
-IMPORTANTE SOBRE MI NIVEL Y CÓMO QUIERO QUE ME GUÍES:
+# RECONSTRUCCIÓN COMPLETA DEL MÓDULO DE RECURSOS HUMANOS — FRONTEND
 
-Es la primera vez que desarrollo un módulo de Recursos Humanos y todavía no sé con exactitud qué debe contener un módulo de RRHH profesional.
+Necesito que reconstruyas completamente el módulo de **Recursos Humanos (RRHH)** que actualmente existe dentro del proyecto.
 
-Por lo tanto, NO quiero que solamente conviertas literalmente mis requisitos en tablas, endpoints y pantallas.
+Lee todas estas instrucciones antes de comenzar a modificar código.
 
-Quiero que también actúes como:
+Actualmente ya existe una versión del módulo de RRHH, pero presenta problemas de organización, estructura, flujo de trabajo, distribución de funcionalidades y experiencia de usuario.
 
-- Analista de sistemas.
-- Analista funcional de Recursos Humanos.
-- Arquitecto de software.
-- Tutor de Flutter + Serverpod.
+Por este motivo, **NO debes asumir que la estructura actual del módulo es correcta y NO debes limitarte a corregir pequeños detalles sobre lo existente.**
 
-Quiero que me GUÍES durante el desarrollo.
+Tienes autorización para **reorganizar, modificar y reconstruir completamente el módulo de Recursos Humanos**, siempre respetando las tecnologías, arquitectura general, componentes reutilizables y convenciones establecidas en el proyecto.
 
-Cada vez que analices una necesidad de la empresa, explícame:
+La nueva estructura funcional descrita en este documento será la fuente principal de verdad para reconstruir RRHH.
 
-1. Qué problema existe actualmente.
-2. Cómo debería solucionarse mediante el sistema.
-3. Qué funcionalidad debería tener RRHH para solucionarlo.
-4. Qué información debería almacenarse.
-5. Qué pantalla sería necesaria.
-6. Qué modelo de Serverpod podría necesitarse.
-7. Qué endpoint podría necesitarse.
-8. Por qué esa solución sería conveniente.
-9. Si existe una alternativa mejor, indícala.
-10. Si necesito consultar algo nuevamente con la encargada de RRHH, indícame exactamente qué pregunta debo hacerle.
+---
 
-No asumas que yo ya sé cómo funciona un sistema de Recursos Humanos.
+# 1. RESTRICCIÓN TÉCNICA MUY IMPORTANTE: SOLO FRONTEND
 
-Si digo algo que técnicamente no sería recomendable, NO lo implementes simplemente porque yo lo dije. Explícame el problema y recomiéndame una mejor solución respetando la forma de trabajo de Elite Multiservicios.
+Actualmente seguimos trabajando **EXCLUSIVAMENTE EN EL FRONTEND**.
 
-=========================================
-OBJETIVO REAL DEL NUEVO SISTEMA
-=========================================
+Por ahora:
 
-Es muy importante comprender que NO queremos simplemente digitalizar las actuales planillas Excel.
+**NO implementar backend.**
 
-Actualmente Elite Multiservicios tiene muchos procesos manuales y todavía trabaja bajo una modalidad donde los trabajadores no cuentan con todos los beneficios laborales que posteriormente se quieren implementar.
+**NO crear ni modificar:**
 
-El nuevo sistema debe servir también para acompañar la TRANSICIÓN de la empresa hacia una gestión formal de trabajadores con beneficios laborales y mayor control administrativo.
+* APIs.
+* Endpoints.
+* Controladores backend.
+* Servicios backend reales.
+* Base de datos.
+* Tablas.
+* Migraciones.
+* Modelos ORM.
+* Repositorios backend.
+* Autenticación backend.
+* Lógica de servidor.
+* Consultas SQL.
+* Integraciones reales con servicios externos.
+* WebSockets.
+* Persistencia real de información.
 
-Por lo tanto, quiero diseñar RRHH pensando tanto en:
+No avances hacia el backend aunque consideres que alguna funcionalidad lo necesita.
 
-ESTADO ACTUAL:
-- Excel.
-- Documentación física.
-- Procesos manuales.
-- Prestación de servicios.
-- Poco control centralizado.
-- Permisos manejados informalmente.
-- Sin control sistematizado de vacaciones.
-- Sin manejo formal de varios beneficios.
-- Asistencia parcialmente informal.
+El objetivo actual es construir una **versión frontend funcional y navegable del módulo de RRHH**, suficientemente completa para visualizar y validar todo su funcionamiento antes de desarrollar la persistencia real.
 
-COMO EN EL ESTADO FUTURO:
-- Información centralizada.
-- Expediente digital del trabajador.
-- Beneficios laborales.
-- Vacaciones.
-- Permisos.
-- Bonos cuando correspondan.
-- Historial laboral.
-- Mayor control de documentación.
-- Control de altas y bajas.
-- Integración con asistencia.
-- Integración con contabilidad.
-- Mayor trazabilidad.
-- Control de usuarios y responsabilidades.
-- Crecimiento de la cantidad de trabajadores.
-
-El sistema debe poder evolucionar sin tener que rehacer completamente el módulo de RRHH.
-
-=========================================
-IMPORTANTE: LEGISLACIÓN LABORAL
-=========================================
-
-La empresa quiere pasar a manejar beneficios laborales conforme corresponda legalmente.
-
-Por eso quiero que identifiques qué funciones debería contemplar un módulo de RRHH preparado para esa transición.
-
-SIN EMBARGO:
-
-No inventes leyes, porcentajes, cantidades de días, beneficios, descuentos o fórmulas.
-
-Cuando una funcionalidad dependa de legislación laboral boliviana, indícame:
-
-"REQUIERE VALIDACIÓN LEGAL/CONTABLE".
-
-Quiero que el sistema sea configurable siempre que sea posible.
-
-Por ejemplo, evitar programar directamente:
-
-"X permiso siempre tiene X días".
-
-Sería preferible tener configuraciones como:
-
-TipoPermiso
-- nombre
-- remunerado
-- generaDescuento
-- requiereDocumento
-- cantidadDiasPermitidos
-- requiereAprobacion
-- activo
-
-De esa manera las reglas pueden modificarse posteriormente sin cambiar el código.
-
-=========================================
-CICLO DE VIDA DEL TRABAJADOR
-=========================================
-
-Quiero que el módulo esté diseñado considerando TODO el ciclo de vida de un trabajador:
-
-CANDIDATO / POSTULANTE
-        ↓
-PROCESO DE CONTRATACIÓN
-        ↓
-REGISTRO DEL EMPLEADO
-        ↓
-DOCUMENTACIÓN
-        ↓
-ASIGNACIÓN LABORAL
-        ↓
-EMPLEADO ACTIVO
-        ↓
-CAMBIOS DURANTE SU VIDA LABORAL
-        ↓
-PERMISOS / VACACIONES / BENEFICIOS
-        ↓
-CAMBIOS DE CARGO / EMPRESA / SUCURSAL
-        ↓
-BAJA O RETIRO
-        ↓
-EMPLEADO INACTIVO
-        ↓
-HISTORIAL CONSERVADO
-
-Analiza cuáles de estas etapas realmente corresponden al alcance actual de nuestro proyecto y cuáles deberían dejarse preparadas para una futura versión.
-
-No agregues procesos innecesarios solamente porque otros sistemas de RRHH los tienen.
-
-=========================================
-REGLA CRÍTICA: NO ELIMINAR EMPLEADOS
-=========================================
-
-Cuando un trabajador deja Elite Multiservicios, NO debe eliminarse de la base de datos.
-
-Debe cambiar su estado.
+Cuando una funcionalidad futura dependa del backend, debes preparar correctamente la interfaz y el flujo frontend, pero **simular temporalmente el comportamiento mediante datos mock/locales**.
 
 Por ejemplo:
 
-ACTIVO
-INACTIVO
-RETIRADO
+* empleados ficticios;
+* postulantes;
+* clientes;
+* servicios;
+* contratos;
+* horarios;
+* asignaciones;
+* permisos;
+* vacaciones;
+* incidencias;
+* reportes simulados.
 
-Analiza si estos estados son suficientes o recomienda una estructura mejor.
+Los mocks deben permitir probar realmente las pantallas, filtros, formularios, tablas, estados y navegación.
 
-Cuando un empleado ya no trabaja:
+No llenar el código de soluciones improvisadas que posteriormente dificulten conectar el backend.
 
-- No debe aparecer normalmente en la lista de empleados activos.
-- Debe poder encontrarse mediante filtros o historial.
-- Su información personal debe conservarse.
-- Su historial laboral debe conservarse.
-- Sus antiguas asignaciones deben conservarse.
-- Sus documentos deben conservarse según corresponda.
-- Sus permisos y vacaciones históricos deben conservarse.
-- Debe conocerse cuándo ingresó.
-- Debe conocerse cuándo salió.
-- Debe conocerse el motivo de su retiro/baja.
-- Debe conocerse quién registró la baja.
+El frontend debe quedar preparado conceptualmente para que posteriormente pueda conectarse a datos reales.
 
-Si posteriormente el trabajador vuelve a ser contratado, analiza cuál sería la mejor solución.
+---
 
-NO quiero crear necesariamente un empleado completamente nuevo perdiendo su historia anterior.
+# 2. PRIMERO ANALIZA EL PROYECTO EXISTENTE
 
-Explícame cómo debería manejarse una RECONTRATACIÓN.
+NO empieces inmediatamente creando archivos.
 
-=========================================
-INTEGRACIÓN CON ASISTENCIA
-=========================================
+Primero revisa:
 
-Otro integrante desarrollará un módulo de asistencia mucho más completo y riguroso.
+1. La estructura general del proyecto.
+2. Las tecnologías actualmente utilizadas.
+3. El sistema de rutas.
+4. El layout principal.
+5. El menú/sidebar.
+6. Los componentes reutilizables.
+7. Los estilos y sistema de diseño.
+8. El módulo actual de RRHH.
+9. Las pantallas existentes de RRHH.
+10. Los componentes existentes.
+11. Los datos mock existentes.
+12. La navegación existente.
+13. Las dependencias que RRHH tenga con otros módulos.
+14. Las convenciones utilizadas para carpetas, componentes y nombres.
+15. Qué partes del RRHH actual pueden reutilizarse.
 
-Por eso NO quiero duplicar asistencia dentro de RRHH.
+No cambies tecnologías ni introduzcas librerías innecesarias si el proyecto ya tiene soluciones equivalentes.
 
-El módulo de asistencia será responsable de controlar aspectos como:
+---
 
-- marcaciones,
-- entradas,
-- salidas,
-- faltas,
-- atrasos,
-- horas trabajadas,
-- incidencias relacionadas con asistencia,
-- y otros controles que determine el equipo.
+# 3. NO CONSERVAR UNA ESTRUCTURA INCORRECTA SOLO PORQUE YA EXISTE
 
-RRHH debe poder CONSULTAR o RECIBIR la información que necesite de asistencia.
+La versión actual de RRHH puede utilizarse como referencia para identificar funcionalidades existentes, pero **NO define cómo debe funcionar la nueva versión**.
 
-Quiero que me expliques claramente:
+Puedes:
 
-ASISTENCIA ES RESPONSABLE DE: ...
-RRHH ES RESPONSABLE DE: ...
-INFORMACIÓN QUE ASISTENCIA ENVÍA A RRHH: ...
+* reorganizar pantallas;
+* modificar componentes;
+* eliminar componentes redundantes;
+* crear nuevos componentes;
+* dividir componentes demasiado grandes;
+* combinar funcionalidades relacionadas;
+* cambiar navegación interna;
+* reorganizar formularios;
+* cambiar nombres de secciones;
+* modificar tablas;
+* cambiar cards;
+* crear pestañas;
+* utilizar modales;
+* utilizar drawers;
+* reorganizar filtros;
+* mejorar estados vacíos;
+* mejorar acciones;
+* mejorar jerarquía visual;
+* reemplazar flujos incorrectos;
+* reutilizar código que realmente sea útil.
 
-No quiero tener dos módulos registrando la misma información y generando inconsistencias.
+Si una funcionalidad actual está correctamente implementada y encaja con el nuevo flujo, reutilízala.
 
-=========================================
-NO QUIERO UN SISTEMA SOBRECARGADO
-=========================================
+Si una funcionalidad está mal estructurada, duplicada o contradice estos requerimientos, **reorganízala o reemplázala**.
 
-Aunque quiero que el sistema sea profesional, recuerda que Elite Multiservicios todavía es una empresa pequeña/en crecimiento.
+No quiero un simple rediseño visual del módulo existente.
 
-Actualmente
------------------------------------------------------------------------
-========================================
-5. ESTRUCTURA REAL DEL PERSONAL DE
-ELITE MULTISERVICIOS
-========================================
+Quiero una **reconstrucción funcional, estructural y visual del frontend de RRHH**.
 
-Es MUY IMPORTANTE comprender cómo está organizada la empresa antes
-de diseñar el módulo de Recursos Humanos.
+---
 
-Elite Multiservicios tiene DOS GRANDES ÁREAS DE PERSONAL:
+# 4. CONTEXTO DE LA EMPRESA
 
-1. ÁREA ADMINISTRATIVA / OFICINA
-2. ÁREA OPERATIVA / CAMPO
+El sistema pertenece a una empresa mediana de multiservicios.
 
-Estas dos áreas trabajan de manera diferente y el sistema debe
-contemplar esas diferencias.
+La empresa posee personal que trabaja principalmente bajo dos modalidades:
 
-----------------------------------------
-A. ÁREA ADMINISTRATIVA / OFICINA
-----------------------------------------
+### PERSONAL DE OFICINA
 
-Son los trabajadores que realizan sus funciones directamente para
-la administración de Elite Multiservicios.
+Son trabajadores que realizan sus funciones dentro de la empresa.
 
-Actualmente son aproximadamente 6 personas.
+Ejemplos de áreas:
 
-Aquí se encuentran puestos/áreas como, por ejemplo:
+* Gerencia.
+* Recursos Humanos.
+* Marketing.
+* Ventas.
+* Prospección.
+* Administración.
 
-- Gerencia.
-- Recursos Humanos.
-- Marketing.
-- Administración.
-- Otras funciones internas de oficina.
+Ejemplos de actividades:
 
-Estos trabajadores pertenecen directamente a la estructura interna
-de Elite Multiservicios.
+* ventas;
+* búsqueda de clientes;
+* recopilación de prospectos;
+* marketing;
+* administración;
+* gestión de personal.
 
-NO están normalmente asignados a una empresa cliente para prestar
-un servicio operativo.
-
-Ejemplo conceptual:
-
-ELITE MULTISERVICIOS
-│
-└── ÁREA ADMINISTRATIVA
-     │
-     ├── Gerencia
-     ├── Recursos Humanos
-     ├── Marketing
-     └── Otros
-           │
-           └── Trabajadores administrativos
-
-Analiza cómo debería representarse correctamente esta estructura
-dentro del sistema.
-
-No asumas que "área", "departamento", "cargo" y "puesto" significan
-exactamente lo mismo.
-
-Explícame qué diferencia existe entre ellos y cuáles realmente
-necesitamos para esta empresa.
-
-----------------------------------------
-B. ÁREA OPERATIVA / CAMPO
-----------------------------------------
-
-El segundo gran grupo corresponde al PERSONAL OPERATIVO o PERSONAL
-DE CAMPO.
-
-Estos trabajadores pertenecen a Elite Multiservicios, pero realizan
-su trabajo físicamente en las empresas clientes que contratan los
-servicios de Elite Multiservicios.
-
-Entre los servicios que pueden realizar se encuentran, por ejemplo:
-
-- Seguridad / guardias.
-- Limpieza.
-- Jardinería.
-- Otros servicios que Elite Multiservicios pueda ofrecer.
-
-IMPORTANTE:
-
-La empresa cliente NO es el empleador del trabajador.
-
-El trabajador pertenece a Elite Multiservicios y Elite Multiservicios
-lo ASIGNA a una empresa cliente para prestar determinado servicio.
-
-Por lo tanto, necesito que el modelo de datos represente correctamente
-esta relación y no confunda:
-
-EMPLEADOR
-con
-EMPRESA CLIENTE.
-
-----------------------------------------
-6. EMPRESAS CLIENTES
-----------------------------------------
-
-Actualmente Elite Multiservicios presta servicios a diferentes
-empresas clientes.
-
-Entre las mencionadas actualmente están:
-
-- Kolping.
-- Kinesis.
-- Segomeit.
-- Acegal.
-- Ventura Mall.
-- Alianza Bravsa.
-
-El personal operativo se distribuye entre estas empresas dependiendo
-del servicio contratado.
-
-Ejemplo conceptual:
-
-ELITE MULTISERVICIOS
-│
-└── PERSONAL OPERATIVO
-     │
-     ├── KOLPING
-     │    ├── trabajadores
-     │    └── sucursales
-     │
-     ├── KINESIS
-     │    └── trabajadores
-     │
-     ├── SEGOMEIT
-     │    └── trabajadores
-     │
-     ├── ACEGAL
-     │    └── trabajadores
-     │
-     ├── VENTURA MALL
-     │    └── trabajadores
-     │
-     └── ALIANZA BRAVSA
-          └── trabajadores
-
-Actualmente RRHH organiza gran parte de esta información mediante
-planillas Excel según la empresa cliente donde se encuentra asignado
-cada trabajador.
+### PERSONAL DE CAMPO
 
-----------------------------------------
-7. SUCURSALES DE LAS EMPRESAS CLIENTES
-----------------------------------------
+Son trabajadores operativos que pueden ser enviados a instalaciones de empresas clientes para prestar determinados servicios.
 
-Una empresa cliente puede tener UNA O VARIAS SUCURSALES.
+Ejemplos:
 
-Por ejemplo:
+* jardinería;
+* limpieza;
+* mantenimiento;
+* reparaciones;
+* seguridad;
+* otros trabajos operativos.
 
-KOLPING
-│
-├── CENTRAL
-│    └── aproximadamente 8 trabajadores
-│
-├── 15 DE DICIEMBRE
-│    └── aproximadamente 2 trabajadores
-│
-└── LOS CHACOS
-     └── aproximadamente 2 trabajadores
+Un trabajador de campo pertenece laboralmente a nuestra empresa, pero puede encontrarse asignado temporalmente a un cliente determinado.
 
-Por lo tanto, el sistema debe permitir administrar:
+Por lo tanto, el sistema debe distinguir correctamente:
 
-EMPRESA CLIENTE
-      ↓
-SUCURSALES
-      ↓
-SERVICIO PRESTADO
-      ↓
-TRABAJADORES ASIGNADOS
+**Trabajador → Tipo de trabajador → Área/Cargo → Especialidad → Asignación**
 
-Pero NO asumas todavía que necesariamente esas cuatro cosas deben
-convertirse directamente en cuatro tablas.
+No confundir estos conceptos.
 
-Analiza la necesidad y explícame cuál sería la estructura correcta.
+---
 
-----------------------------------------
-8. SERVICIOS PRESTADOS
-----------------------------------------
+# 5. CONCEPTOS IMPORTANTES
 
-Elite Multiservicios puede prestar diferentes tipos de servicios a
-sus empresas clientes.
+Debes diferenciar:
 
-Por ejemplo:
+### Área
 
-- Seguridad.
-- Limpieza.
-- Jardinería.
-- Otros.
+Departamento organizacional al que pertenece.
 
-Una empresa cliente podría contratar uno o varios servicios.
+Ejemplos:
 
-Además, diferentes trabajadores pueden estar asignados dependiendo
-del servicio requerido.
+Marketing, Ventas, RRHH, Prospección, Operaciones.
 
-Ejemplo conceptual:
+### Cargo
 
-KOLPING
-│
-└── CENTRAL
-     │
-     ├── SERVICIO DE SEGURIDAD
-     │      ├── Guardia 1
-     │      └── Guardia 2
-     │
-     └── SERVICIO DE LIMPIEZA
-            ├── Trabajador 1
-            ├── Trabajador 2
-            └── Trabajador 3
+Puesto que ocupa.
 
-Este ejemplo es solamente conceptual.
+Ejemplos:
 
-Quiero que analices si realmente necesitamos entidades como:
+Ejecutivo de ventas, Encargado de RRHH, Jardinero, Guardia.
 
-- EmpresaCliente
-- Sucursal
-- TipoServicio
-- ServicioContratado
-- AsignacionEmpleado
+### Especialidad
 
-o si existe una estructura mejor.
+Principalmente utilizada para personal operativo.
 
-Explícame qué problema resuelve cada entidad antes de recomendar
-crearla.
+Ejemplos:
 
-----------------------------------------
-9. ASIGNACIONES DEL PERSONAL OPERATIVO
-----------------------------------------
+Jardinería, Limpieza, Seguridad, Mantenimiento.
 
-NO quiero almacenar simplemente dentro del empleado:
+### Tipo/Lugar de trabajo
 
-empresa = "Kolping"
-sucursal = "Central"
-servicio = "Limpieza"
+Indica principalmente:
 
-porque un trabajador puede cambiar con el tiempo.
+**Oficina** o **Campo**.
 
-Por ejemplo:
+### Asignación
 
-Juan comienza trabajando como personal de limpieza en:
+Indica dónde y para quién está prestando actualmente sus funciones.
 
-Kolping → Central.
+Especialmente importante para trabajadores de campo.
 
-Posteriormente puede pasar a:
+---
 
-Kolping → 15 de Diciembre.
+# 6. ESTRUCTURA PRINCIPAL DEL MÓDULO
 
-Y posteriormente podría ser trasladado a:
+NO quiero un acordeón/sidebar de RRHH excesivamente largo.
 
-Ventura Mall.
+La navegación principal debe quedar reducida a:
 
-El sistema debe conservar TODO ese historial.
+1. **Dashboard**
+2. **Personal**
+3. **Organización**
+4. **Asignaciones y Horarios**
+5. **Gestión Laboral**
+6. **Reportes**
+
+Las funcionalidades secundarias deben manejarse internamente mediante:
+
+* pestañas;
+* filtros;
+* tablas;
+* cards;
+* modales;
+* drawers;
+* formularios;
+* menús contextuales;
+* acciones internas.
+
+Evita crear una opción del sidebar para cada pequeña funcionalidad.
+
+---
+
+# 7. DASHBOARD
+
+El Dashboard debe funcionar como centro de información para la encargada de RRHH.
+
+Debe permitir visualizar rápidamente información como:
+
+* total de trabajadores;
+* trabajadores activos;
+* trabajadores inactivos;
+* personal de oficina;
+* personal de campo;
+* nuevos ingresos;
+* trabajadores sin asignación;
+* contratos próximos a vencer;
+* documentos pendientes;
+* permisos pendientes;
+* vacaciones pendientes;
+* asignaciones próximas a finalizar;
+* incidencias recientes.
+
+También puede mostrar información relevante proveniente conceptualmente del módulo de Asistencia mediante mocks, sin implementar todavía ninguna integración backend.
+
+Debe priorizar información útil y accionable.
+
+No llenar el Dashboard de gráficos simplemente por decoración.
+
+---
+
+# 8. PERSONAL
+
+Será el núcleo principal de RRHH.
+
+Debe centralizar:
+
+* postulantes;
+* trabajadores activos;
+* trabajadores inactivos;
+* expediente;
+* información laboral;
+* documentos;
+* contratos;
+* historial.
+
+La pantalla principal puede manejar:
+
+**Todos | Activos | Inactivos | Postulantes**
+
+Debe existir:
+
+* búsqueda;
+* filtros;
+* estado;
+* tipo Oficina/Campo;
+* área;
+* cargo;
+* acciones rápidas.
+
+---
+
+# 9. REGISTRO DE POSTULANTES
+
+Una persona que llega buscando trabajo **NO debe convertirse inmediatamente en empleado**.
+
+Primero puede registrarse como postulante.
+
+Datos iniciales:
+
+* nombres;
+* apellidos;
+* CI;
+* teléfono;
+* correo;
+* dirección;
+* fecha de nacimiento;
+* contacto de emergencia;
+* formación;
+* experiencia;
+* habilidades;
+* especialidad;
+* referencias;
+* CV;
+* documentación disponible.
+
+Flujo conceptual:
+
+**Postulante → Evaluación/Entrevista → Seleccionado o Rechazado**
+
+Si es seleccionado:
+
+**Seleccionado → Contratar → Crear expediente laboral**
+
+---
+
+# 10. EXPEDIENTE DEL TRABAJADOR
+
+Al abrir un trabajador debe existir una vista centralizada.
+
+Puede utilizar pestañas como:
+
+**Datos personales | Información laboral | Documentos | Contrato | Historial**
+
+Debe mostrar claramente:
+
+* fotografía;
+* nombre;
+* código;
+* cargo;
+* área;
+* Oficina/Campo;
+* estado;
+* información de contacto.
+
+---
+
+# 11. INFORMACIÓN LABORAL
+
+Debe permitir representar:
+
+* código del empleado;
+* fecha de ingreso;
+* área;
+* cargo;
+* tipo Oficina/Campo;
+* especialidad;
+* tipo de contrato;
+* estado laboral;
+* información salarial administrada por RRHH;
+* responsable;
+* supervisor cuando corresponda.
+
+---
+
+# 12. ORGANIZACIÓN
+
+Debe centralizar catálogos administrativos.
+
+Internamente:
+
+**Áreas | Cargos | Especialidades**
+
+Ejemplo:
+
+Área: Operaciones
+Cargo: Jardinero
+Especialidad: Jardinería
+Tipo: Campo
+
+Otro ejemplo:
+
+Área: Ventas
+Cargo: Ejecutivo de ventas
+Tipo: Oficina
+
+La interfaz debe permitir visualizar cómo se relacionan estos conceptos sin mezclarlos.
+
+---
+
+# 13. ASIGNACIONES Y HORARIOS
+
+Esta es una de las secciones más importantes.
+
+Debe agrupar:
+
+**Asignaciones | Horarios | Calendario**
+
+RRHH **SÍ es responsable de definir horarios y asignaciones**.
+
+---
+
+# 14. ASIGNACIÓN DE PERSONAL DE OFICINA
+
+Para personal de oficina debe poder establecerse:
+
+* trabajador;
+* área;
+* cargo;
+* responsable/jefe;
+* horario;
+* fecha de vigencia.
+
+Ejemplo:
+
+Trabajador: María López
+Tipo: Oficina
+Área: Ventas
+Cargo: Ejecutiva de ventas
+Horario: 08:00–17:00
+Responsable: Juan Pérez
+
+---
+
+# 15. ASIGNACIÓN DE PERSONAL DE CAMPO
+
+El personal de campo necesita información adicional.
+
+Registrar:
+
+* trabajador;
+* cargo;
+* especialidad;
+* cliente;
+* servicio;
+* sede/lugar;
+* supervisor;
+* horario/turno;
+* fecha de inicio;
+* fecha de finalización;
+* estado de asignación.
+
+Ejemplo:
+
+Trabajador: Carlos Mendoza
+Tipo: Campo
+Cargo: Jardinero
+Especialidad: Jardinería
+Cliente: Empresa ABC
+Servicio: Jardinería
+Lugar: Sucursal Equipetrol
+Horario: 07:00–15:00
+Supervisor: Pedro López
+Inicio: 17/09/2026
+Finalización: 17/12/2026
+Estado: Activa
+
+---
+
+# 16. CLIENTES CON MÚLTIPLES SERVICIOS
+
+Una empresa cliente puede contratar varios servicios simultáneamente.
+
+Ejemplo:
+
+Empresa ABC
+
+* Jardinería
+* Limpieza
+* Seguridad
+
+Cada servicio puede tener diferentes trabajadores asignados.
+
+Por lo tanto, **NO asumir una relación Cliente = Un solo servicio**.
 
 Conceptualmente:
 
-JUAN
-│
-├── Asignación #1
-│    ├── Empresa: Kolping
-│    ├── Sucursal: Central
-│    ├── Servicio: Limpieza
-│    ├── Fecha inicio
-│    └── Fecha fin
-│
-├── Asignación #2
-│    ├── Empresa: Kolping
-│    ├── Sucursal: 15 de Diciembre
-│    ├── Servicio: Limpieza
-│    ├── Fecha inicio
-│    └── Fecha fin
-│
-└── Asignación actual
-     ├── Empresa: Ventura Mall
-     ├── Servicio correspondiente
-     ├── Fecha inicio
-     └── ACTIVA
+**Cliente → Servicios contratados → Asignaciones → Trabajadores**
 
-Quiero que determines cómo manejar correctamente este historial en
-Serverpod.
+La interfaz debe representar correctamente esta relación.
 
-----------------------------------------
-10. DIFERENCIA ENTRE PERSONAL
-ADMINISTRATIVO Y OPERATIVO
-----------------------------------------
+---
 
-El sistema debe poder diferenciar fácilmente:
+# 17. HISTORIAL DE ASIGNACIONES
 
-PERSONAL ADMINISTRATIVO
+Las asignaciones anteriores NO deben sobrescribirse.
 
-de
+Ejemplo:
 
-PERSONAL OPERATIVO.
+Carlos Mendoza:
 
-Pero no quiero crear dos tablas completamente separadas de empleados
-si eso provoca duplicación innecesaria.
+01/09/2026 → Empresa ABC → Jardinería → Finalizada
 
-Analiza cuál sería el diseño correcto.
+01/12/2026 → Empresa XYZ → Mantenimiento → Activa
 
-Por ejemplo, analiza si debería existir:
+Debe poder consultarse el historial.
 
-Empleado
-   │
-   ├── Tipo/Área: ADMINISTRATIVO
-   │
-   └── Tipo/Área: OPERATIVO
+Por ahora utiliza mocks para representar esta información.
 
-y posteriormente manejar las características particulares mediante
-otras entidades.
+---
 
-NO asumas que este ejemplo es necesariamente la solución correcta.
+# 18. HORARIOS
 
-Recomiéndame la mejor estructura.
+RRHH administra los horarios que corresponden a cada trabajador.
 
-También quiero poder filtrar fácilmente desde Flutter:
+Debe poder manejar conceptualmente:
 
-TODOS LOS EMPLEADOS ACTIVOS
+* horario;
+* días laborales;
+* hora de entrada;
+* hora de salida;
+* turnos cuando corresponda;
+* vigencia;
+* observaciones.
 
-ADMINISTRATIVOS
+La interfaz debe facilitar la asignación y modificación de horarios.
 
-OPERATIVOS
+Cuando exista un cambio, considerar el historial en lugar de destruir información relevante anterior.
 
-y dentro de OPERATIVOS:
+---
 
-POR EMPRESA CLIENTE
+# 19. DELIMITACIÓN ABSOLUTA CON ASISTENCIA
 
-POR SUCURSAL
+Existe otro módulo independiente encargado del **CONTROL DE ASISTENCIA**.
 
-POR SERVICIO
+NO desarrollar control de asistencia dentro de RRHH.
 
-POR CARGO/PUESTO
+RRHH únicamente:
 
-----------------------------------------
-11. DIFERENCIAS DE FUNCIONAMIENTO
-----------------------------------------
+* define horarios;
+* define turnos;
+* asigna trabajadores;
+* administra información laboral;
+* recibe o consulta información resultante de Asistencia;
+* utiliza esos resultados para procesos administrativos.
 
-Ten en cuenta que existen procesos diferentes según el tipo de
-trabajador.
+El módulo de Asistencia se encarga de:
 
-Por ejemplo:
+* entradas;
+* salidas;
+* marcaciones;
+* procesamiento de asistencia;
+* lógica de control diario.
 
-PERSONAL ADMINISTRATIVO:
+Ejemplo:
 
-- Trabaja principalmente en las instalaciones/oficinas de Elite
-  Multiservicios.
-- Utiliza actualmente un marcador para asistencia.
-- Una falta no necesariamente requiere reemplazo inmediato.
+RRHH establece:
 
-PERSONAL OPERATIVO:
+**Carlos trabaja 07:00–15:00.**
 
-- Trabaja en instalaciones de empresas clientes.
-- Puede prestar servicios de seguridad, limpieza, jardinería, etc.
-- Actualmente su asistencia se controla de otra manera.
-- Si falta un trabajador operativo, muchas veces Elite Multiservicios
-  debe enviar un reemplazo porque debe cumplir el servicio contratado
-  con la empresa cliente.
-- Determinados puestos pueden requerir documentación adicional.
-- Por ejemplo, seguridad puede requerir antecedentes penales.
+Asistencia posteriormente determina:
 
-Quiero que identifiques qué diferencias realmente afectan al módulo
-de RRHH y cuáles pertenecen al módulo de Asistencia.
+**Carlos asistió / faltó / llegó tarde**, según su propia lógica.
 
-NO dupliques funcionalidades entre ambos módulos.
+RRHH puede recibir:
 
-----------------------------------------
-12. QUIERO QUE ME AYUDES A DESCUBRIR
-CASOS QUE NO HE CONSIDERADO
-----------------------------------------
+**Carlos Mendoza — Falta reportada — 17/09/2026**
 
-Como es mi primera vez desarrollando RRHH, quiero que analices esta
-estructura empresarial y detectes situaciones que probablemente
-necesitamos contemplar y que yo todavía no haya considerado.
+y decidir administrativamente:
 
-Por ejemplo:
+* justificar;
+* registrar observación;
+* solicitar respaldo;
+* generar incidencia.
 
-¿Qué sucede si un trabajador operativo cambia temporalmente de
-sucursal?
+Pero RRHH **NO realiza el control de marcaciones**.
 
-¿Qué sucede si cubre a otro trabajador solamente durante un día?
+Actualmente esta relación también debe ser únicamente frontend/mock.
 
-¿Qué sucede si cambia definitivamente de empresa cliente?
+NO crear APIs para comunicar ambos módulos todavía.
 
-¿Qué sucede si cambia de servicio, por ejemplo de limpieza a
-jardinería?
+---
 
-¿Qué sucede si una empresa cliente deja de contratar un servicio?
+# 20. GESTIÓN LABORAL
 
-¿Qué sucede con los trabajadores que estaban asignados allí?
+Agrupar internamente:
 
-¿Qué sucede si una nueva empresa cliente contrata los servicios de
-Elite Multiservicios?
+**Permisos | Vacaciones | Incidencias | Movimientos | Desvinculaciones**
 
-¿Qué sucede si una empresa cliente abre una nueva sucursal?
+No crear cinco nuevas opciones principales en el sidebar.
 
-¿Qué sucede si un trabajador operativo queda temporalmente sin
-asignación?
+---
 
-¿Qué sucede si una persona tiene más de una asignación?
+# 21. PERMISOS
 
-NO inventes las respuestas.
+Representar:
 
-Para cada situación:
+* trabajador;
+* tipo de permiso;
+* fecha;
+* período;
+* motivo;
+* documento;
+* observación;
+* estado.
 
-1. Dime cuál sería la solución que normalmente recomendarías.
-2. Dime cómo afectaría al diseño del sistema.
-3. Indica si necesitamos preguntárselo a RRHH.
-4. Si necesitamos confirmación, dame la pregunta exacta que debería
-5. hacer en mi siguiente entrevista.
+Estados:
+
+**Pendiente → Aprobado / Rechazado**
+
+---
+
+# 22. VACACIONES
+
+Representar:
+
+* trabajador;
+* fecha de inicio;
+* fecha final;
+* cantidad de días;
+* estado;
+* observaciones.
+
+Preparar una interfaz clara para revisar y procesar solicitudes.
+
+---
+
+# 23. INCIDENCIAS
+
+Registrar administrativamente situaciones como:
+
+* faltas injustificadas;
+* atrasos reiterados;
+* abandono del puesto;
+* incumplimientos;
+* memorándums;
+* llamadas de atención;
+* reconocimientos;
+* observaciones.
+
+Las faltas o atrasos pueden conceptualmente provenir del módulo de Asistencia.
+
+Actualmente simular esa información mediante mocks.
+
+---
+
+# 24. MOVIMIENTOS DEL TRABAJADOR
+
+Registrar cambios laborales importantes:
+
+* cambio de área;
+* cambio de cargo;
+* cambio de horario;
+* cambio de cliente;
+* cambio de servicio;
+* cambio salarial;
+* ascenso;
+* transferencia.
+
+NO sobrescribir información histórica importante.
+
+Debe existir trazabilidad.
+
+---
+
+# 25. DESVINCULACIÓN
+
+Cuando un trabajador deja la empresa:
+
+**NO ELIMINAR SU REGISTRO.**
+
+Cambiar:
+
+**ACTIVO → INACTIVO**
+
+Registrar:
+
+* fecha de salida;
+* motivo;
+* observaciones;
+* responsable;
+* documentación correspondiente.
+
+El expediente debe permanecer disponible.
+
+Esto es importante porque posteriormente RRHH puede necesitar consultar el historial del antiguo trabajador o proporcionar referencias laborales.
+
+---
+
+# 26. HISTORIAL LABORAL
+
+El trabajador debe poseer una línea histórica coherente.
+
+Ejemplo:
+
+17/09/2026 — Contratación
+17/09/2026 — Asignación como Jardinero
+18/09/2026 — Asignación Empresa ABC
+04/10/2026 — Permiso aprobado
+30/11/2026 — Finalización asignación ABC
+01/12/2026 — Nueva asignación Empresa XYZ
+15/01/2027 — Cambio de horario
+20/08/2027 — Desvinculación
+
+Por ahora estos eventos serán simulados mediante datos frontend.
+
+---
+
+# 27. REPORTES
+
+Centralizar reportes en una sola sección.
+
+Debe permitir visualizar reportes como:
+
+* personal activo;
+* personal inactivo;
+* personal por área;
+* personal de oficina;
+* personal de campo;
+* personal por cliente;
+* personal por servicio;
+* contratos;
+* permisos;
+* vacaciones;
+* incidencias;
+* altas;
+* bajas;
+* historial laboral.
+
+Agregar filtros útiles:
+
+* rango de fechas;
+* área;
+* cargo;
+* tipo Oficina/Campo;
+* estado;
+* cliente;
+* servicio.
+
+Actualmente los reportes deben trabajar únicamente con información mock/frontend.
+
+---
+
+# 28. FLUJO GENERAL OBLIGATORIO
+
+La interfaz debe representar coherentemente este proceso:
+
+**POSTULANTE**
+
+↓
+
+Registro inicial
+
+↓
+
+Entrevista / Evaluación
+
+↓
+
+Seleccionado
+
+↓
+
+Recopilación de documentación
+
+↓
+
+Contratación
+
+↓
+
+Creación de expediente laboral
+
+↓
+
+Área + Cargo
+
+↓
+
+**¿OFICINA O CAMPO?**
+
+### OFICINA
+
+Área
+→ Cargo
+→ Responsable
+→ Horario
+
+### CAMPO
+
+Área/Operaciones
+→ Cargo
+→ Especialidad
+→ Cliente
+→ Servicio
+→ Lugar/Sede
+→ Supervisor
+→ Horario/Turno
+→ Período de asignación
+
+Después:
+
+**EMPLEADO ACTIVO**
+
+↓
+
+Gestión laboral
+
+↓
+
+Asignaciones / Cambios / Permisos / Vacaciones / Incidencias
+
+↓
+
+Información recibida de Asistencia cuando corresponda
+
+↓
+
+Continuidad laboral o Desvinculación
+
+↓
+
+**EMPLEADO INACTIVO**
+
+↓
+
+Conservación completa del historial.
+
+---
+
+# 29. DISEÑO Y EXPERIENCIA DE USUARIO
+
+No quiero que el resultado parezca un dashboard genérico generado automáticamente.
+
+Debe sentirse como un **sistema empresarial real de Recursos Humanos**.
+
+Prioriza:
+
+* jerarquía visual clara;
+* navegación sencilla;
+* densidad de información equilibrada;
+* consistencia;
+* formularios organizados;
+* tablas legibles;
+* estados visualmente identificables;
+* acciones claras;
+* filtros útiles;
+* feedback visual;
+* confirmaciones para acciones importantes;
+* estados vacíos bien diseñados;
+* responsive design cuando corresponda.
+
+Evita:
+
+* exceso de cards;
+* exceso de colores;
+* gradientes innecesarios;
+* botones gigantes;
+* demasiados íconos;
+* tablas saturadas;
+* formularios interminables en una sola pantalla;
+* modales innecesariamente grandes;
+* repetir información;
+* crear una página independiente para cada pequeña acción.
+
+Utiliza progresive disclosure: mostrar información adicional únicamente cuando sea necesaria.
+
+Ejemplo:
+
+Si selecciona:
+
+**Tipo = Oficina**
+
+no mostrar campos correspondientes a cliente/servicio.
+
+Si selecciona:
+
+**Tipo = Campo**
+
+mostrar:
+
+Cliente → Servicio → Lugar → Supervisor → Turno.
+
+---
+
+# 30. FORMULARIOS INTELIGENTES
+
+Los formularios deben reaccionar según el contexto.
+
+Ejemplo durante contratación:
+
+**Tipo de trabajador**
+
+○ Oficina
+○ Campo
+
+Si selecciona Oficina:
+
+Mostrar:
+
+* área;
+* cargo;
+* responsable;
+* horario.
+
+Si selecciona Campo:
+
+Mostrar:
+
+* área;
+* cargo;
+* especialidad;
+* cliente;
+* servicio;
+* sede/lugar;
+* supervisor;
+* horario/turno;
+* inicio/finalización.
+
+No mostrar campos que no correspondan.
+
+---
+
+# 31. DATOS MOCK
+
+Como actualmente NO existe implementación backend para este trabajo, utiliza mocks suficientemente realistas para validar el módulo.
+
+Incluye ejemplos variados:
+
+* trabajadores activos;
+* trabajadores inactivos;
+* postulantes;
+* personal de oficina;
+* personal de campo;
+* diferentes áreas;
+* diferentes cargos;
+* clientes con uno y varios servicios;
+* asignaciones activas;
+* asignaciones finalizadas;
+* contratos;
+* permisos;
+* vacaciones;
+* incidencias;
+* diferentes horarios.
+
+No utilices únicamente "John Doe", "Lorem Ipsum" o datos genéricos repetitivos.
+
+Los mocks deben permitir probar situaciones reales del flujo.
+
+---
+
+# 32. COMPONENTIZACIÓN
+
+Evita componentes monolíticos.
+
+Cuando tenga sentido, separa componentes reutilizables para:
+
+* tablas;
+* filtros;
+* badges de estado;
+* información de empleado;
+* formularios;
+* selector de trabajador;
+* selector de área/cargo;
+* horarios;
+* asignaciones;
+* historial;
+* confirmaciones;
+* estados vacíos.
+
+Pero tampoco sobrecomponentices innecesariamente.
+
+Respeta las convenciones existentes del proyecto.
+
+---
+
+# 33. ESTADOS QUE DEBEN CONTEMPLARSE
+
+La interfaz debe contemplar como mínimo:
+
+### Trabajador
+
+* Activo
+* Inactivo
+
+### Postulante
+
+* Nuevo
+* En evaluación
+* Seleccionado
+* Rechazado
+
+### Asignación
+
+* Programada
+* Activa
+* Finalizada
+* Cancelada
+
+### Solicitudes
+
+* Pendiente
+* Aprobada
+* Rechazada
+
+### Contratos
+
+Representar visualmente estados relevantes como vigente o próximo a vencer cuando corresponda.
+
+Mantén consistencia en los badges y estados.
+
+---
+
+# 34. BITÁCORA
+
+Si la versión frontend actual ya contempla una bitácora, consérvala y reorganízala correctamente dentro del nuevo flujo.
+
+Debe representar acciones relevantes como:
+
+* creación de trabajador;
+* modificación de información;
+* cambio de cargo;
+* cambio de horario;
+* nueva asignación;
+* finalización de asignación;
+* aprobación/rechazo;
+* desvinculación.
+
+Actualmente debe funcionar con información simulada.
+
+No implementar todavía persistencia backend para la bitácora.
+
+---
+
+# 35. CREDENCIALES DEL TRABAJADOR
+
+Si la versión actual ya contempla la generación de correo/cuenta temporal para que el trabajador posteriormente pueda ingresar a la aplicación correspondiente, no eliminar esta funcionalidad.
+
+Reubícala correctamente dentro del flujo de contratación/alta del trabajador.
+
+Conceptualmente:
+
+**Postulante seleccionado → Contratación → Alta como empleado → Generación de credenciales temporales**
+
+Mostrar al usuario de RRHH la información correspondiente mediante frontend/mock.
+
+NO implementar todavía autenticación backend real.
+
+NO implementar creación real de usuarios en servidor.
+
+La interfaz simplemente debe quedar preparada para esta funcionalidad futura.
+
+---
+
+# 36. NO ROMPER OTROS MÓDULOS
+
+La autorización para modificar completamente aplica al **módulo de Recursos Humanos**.
+
+No reconstruyas arbitrariamente:
+
+* Asistencia;
+* Contabilidad;
+* otros módulos del sistema.
+
+Si RRHH actualmente comparte componentes globales, layouts o navegación, analiza las dependencias antes de modificarlos.
+
+Los cambios globales deben realizarse únicamente cuando sean estrictamente necesarios para integrar correctamente la nueva interfaz.
+
+---
+
+# 37. PREPARAR EL FRONTEND PARA EL FUTURO BACKEND, PERO NO CREARLO
+
+Aunque actualmente trabajamos solo en frontend, organiza el código de manera que posteriormente sea posible conectar:
+
+* empleados;
+* postulantes;
+* contratos;
+* clientes;
+* servicios;
+* horarios;
+* asignaciones;
+* permisos;
+* vacaciones;
+* incidencias;
+* reportes.
+
+No acoples innecesariamente toda la interfaz directamente a arrays gigantes dentro de los componentes.
+
+Separa adecuadamente:
+
+**presentación → estado frontend → mocks**
+
+para facilitar la futura sustitución de mocks por servicios/API.
+
+Pero nuevamente:
+
+**NO IMPLEMENTAR LA API AHORA.**
+
+---
+
+# 38. ORDEN DE TRABAJO
+
+Trabaja de manera progresiva.
+
+### FASE 1 — Inspección
+
+Analiza el módulo actual y su estructura.
+
+### FASE 2 — Reorganización
+
+Define cómo mapear lo existente hacia:
+
+Dashboard
+Personal
+Organización
+Asignaciones y Horarios
+Gestión Laboral
+Reportes.
+
+### FASE 3 — Base frontend
+
+Reorganiza rutas, navegación y estructura de componentes de RRHH.
+
+### FASE 4 — Personal
+
+Implementa listado, filtros, postulantes y expediente.
+
+### FASE 5 — Organización
+
+Áreas, cargos y especialidades.
+
+### FASE 6 — Asignaciones y horarios
+
+Implementa los flujos diferenciados Oficina/Campo.
+
+### FASE 7 — Gestión laboral
+
+Permisos, vacaciones, incidencias, movimientos y desvinculación.
+
+### FASE 8 — Dashboard
+
+Conecta visualmente los datos mock generados en las secciones anteriores.
+
+### FASE 9 — Reportes
+
+Construye las interfaces y filtros correspondientes.
+
+### FASE 10 — Revisión
+
+Verifica navegación, consistencia, responsive, estados, formularios y ausencia de funcionalidades duplicadas.
+
+---
+
+# 39. ANTES DE CONSIDERAR TERMINADA LA RECONSTRUCCIÓN
+
+Comprueba obligatoriamente:
+
+* ¿El sidebar de RRHH tiene únicamente las secciones principales necesarias?
+* ¿Personal centraliza correctamente el expediente?
+* ¿Se diferencia Postulante de Empleado?
+* ¿Se diferencia Oficina de Campo?
+* ¿Área, cargo, especialidad y asignación son conceptos independientes?
+* ¿Un cliente puede tener múltiples servicios?
+* ¿Un trabajador puede tener historial de asignaciones?
+* ¿Los horarios se administran desde RRHH?
+* ¿RRHH no implementa el control de asistencia?
+* ¿Gestión Laboral agrupa permisos, vacaciones, incidencias, movimientos y desvinculaciones?
+* ¿Un trabajador desvinculado permanece en el historial?
+* ¿Existe trazabilidad de cambios?
+* ¿Los formularios cambian según Oficina/Campo?
+* ¿Los mocks permiten recorrer el flujo completo?
+* ¿Se conservaron funcionalidades útiles del módulo anterior?
+* ¿Se eliminaron o reorganizaron las redundancias?
+* ¿La interfaz mantiene coherencia con el resto del proyecto?
+* ¿No se modificaron innecesariamente otros módulos?
+* ¿No se creó backend?
+* ¿No se creó base de datos?
+* ¿No se crearon endpoints?
+* ¿No se implementó autenticación real?
+* ¿Todo el trabajo realizado corresponde al frontend?
+
+---
+
+# 40. REGLA FINAL
+
+La prioridad actual es conseguir una **versión frontend completa, coherente, navegable y funcional del módulo de Recursos Humanos**.
+
+No quiero que adaptes estos requerimientos alrededor de una estructura anterior incorrecta.
+
+Quiero que analices lo existente, rescates aquello que sea útil y **reconstruyas correctamente RRHH alrededor del nuevo flujo empresarial definido aquí**.
+
+Tienes libertad para modificar completamente el módulo de RRHH cuando sea necesario.
+
+Sin embargo, recuerda durante TODO el proceso:
+
+> **ESTAMOS TRABAJANDO ÚNICAMENTE EN FRONTEND. NO IMPLEMENTES BACKEND, BASE DE DATOS, API NI PERSISTENCIA REAL TODAVÍA.**
+
+Si alguna función necesita backend para funcionar realmente, construye únicamente su experiencia frontend utilizando mocks y deja la arquitectura preparada para conectarla posteriormente.
+
+El resultado debe permitir recorrer visualmente el ciclo completo:
+
+**Postulante → Selección → Contratación → Empleado → Oficina/Campo → Horario → Asignación → Gestión laboral → Cambios → Desvinculación → Historial.**
+
+No des por finalizado el trabajo simplemente porque las pantallas existan. Revisa que el flujo completo tenga sentido desde la perspectiva de la encargada de Recursos Humanos y que cada acción tenga una ubicación lógica dentro del módulo.
