@@ -41,6 +41,41 @@ class CustomerBranch {
   }
 }
 
+/// Partida o Ítem individual dentro del presupuesto / cotización de un Contrato.
+class ContractBudgetItem {
+  final String id;
+  final String description;
+  final double quantity;
+  final String unit; // 'Mes', 'Puesto', 'Global', 'Horas', 'm²', 'Unidad', 'Visita'
+  final double unitPrice;
+
+  const ContractBudgetItem({
+    required this.id,
+    required this.description,
+    required this.quantity,
+    required this.unit,
+    required this.unitPrice,
+  });
+
+  double get subtotal => quantity * unitPrice;
+
+  ContractBudgetItem copyWith({
+    String? id,
+    String? description,
+    double? quantity,
+    String? unit,
+    double? unitPrice,
+  }) {
+    return ContractBudgetItem(
+      id: id ?? this.id,
+      description: description ?? this.description,
+      quantity: quantity ?? this.quantity,
+      unit: unit ?? this.unit,
+      unitPrice: unitPrice ?? this.unitPrice,
+    );
+  }
+}
+
 /// Modelo de Contrato u Orden de Trabajo para Clientes 360°.
 /// Abarca modalidades: Recurrente Mensual, Proyecto Único / Obra, Servicio por Evento, Híbrido.
 class CustomerContract {
@@ -62,6 +97,16 @@ class CustomerContract {
   final String startDate;
   final String? endDate;
   final String? notes;
+  final String? branchId;
+  final String? branchName;
+  final String
+  originType; // 'Venta Nueva', 'Recontratación', 'Renovación', 'Adicional'
+  final String? actualEndDate;
+  final String? completionNotes;
+  final int? satisfactionRating; // 1 a 5 estrellas
+  final String? completedBy;
+  final List<ContractBudgetItem> budgetItems;
+  final String? serviceScope; // Especificación técnica detallada del alcance
 
   const CustomerContract({
     required this.id,
@@ -78,6 +123,15 @@ class CustomerContract {
     required this.startDate,
     this.endDate,
     this.notes,
+    this.branchId,
+    this.branchName,
+    this.originType = 'Venta Nueva',
+    this.actualEndDate,
+    this.completionNotes,
+    this.satisfactionRating,
+    this.completedBy,
+    this.budgetItems = const [],
+    this.serviceScope,
   });
 
   CustomerContract copyWith({
@@ -95,6 +149,15 @@ class CustomerContract {
     String? startDate,
     String? endDate,
     String? notes,
+    String? branchId,
+    String? branchName,
+    String? originType,
+    String? actualEndDate,
+    String? completionNotes,
+    int? satisfactionRating,
+    String? completedBy,
+    List<ContractBudgetItem>? budgetItems,
+    String? serviceScope,
   }) {
     return CustomerContract(
       id: id ?? this.id,
@@ -112,6 +175,15 @@ class CustomerContract {
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       notes: notes ?? this.notes,
+      branchId: branchId ?? this.branchId,
+      branchName: branchName ?? this.branchName,
+      originType: originType ?? this.originType,
+      actualEndDate: actualEndDate ?? this.actualEndDate,
+      completionNotes: completionNotes ?? this.completionNotes,
+      satisfactionRating: satisfactionRating ?? this.satisfactionRating,
+      completedBy: completedBy ?? this.completedBy,
+      budgetItems: budgetItems ?? this.budgetItems,
+      serviceScope: serviceScope ?? this.serviceScope,
     );
   }
 }
@@ -196,6 +268,30 @@ class CustomerItem {
     return contracts.first.contractType;
   }
 
+  /// Etapa de fidelización y ciclo de vida de la cuenta.
+  String get lifecycleStage {
+    if (contracts.isEmpty) return 'Listo para Recontratar';
+    final activeContracts = contracts
+        .where((c) => c.status == 'Vigente' || c.status == 'En Ejecución')
+        .toList();
+
+    if (activeContracts.isEmpty) {
+      return 'Listo para Recontratar';
+    }
+
+    // Si tiene contratos recurrentes con nota de vencimiento próximo o en ejecución final
+    final hasExpiring = activeContracts.any((c) {
+      final text = '${c.executionTime} ${c.notes ?? ''} ${c.endDate ?? ''}'
+          .toLowerCase();
+      return text.contains('vence') ||
+          text.contains('renovación') ||
+          text.contains('próximo');
+    });
+
+    if (hasExpiring) return 'Por Vencer';
+    return 'En Servicio Activo';
+  }
+
   CustomerItem copyWith({
     String? id,
     String? legalName,
@@ -271,6 +367,25 @@ class CrmCustomersService extends ChangeNotifier {
   int get totalB2C =>
       _customers.where((c) => c.segment == 'Residencial B2C').length;
 
+  CustomerItem? getCustomerById(String id) {
+    try {
+      return _customers.firstWhere((c) => c.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  List<CustomerItem> searchCustomers(String query) {
+    if (query.trim().isEmpty) return List.unmodifiable(_customers);
+    final q = query.toLowerCase();
+    return _customers.where((c) {
+      return c.legalName.toLowerCase().contains(q) ||
+          c.tradeName.toLowerCase().contains(q) ||
+          c.taxId.contains(q) ||
+          c.contactPerson.toLowerCase().contains(q);
+    }).toList();
+  }
+
   void addCustomer(CustomerItem customer) {
     _customers.insert(0, customer);
     notifyListeners();
@@ -310,6 +425,87 @@ class CrmCustomersService extends ChangeNotifier {
       );
       notifyListeners();
     }
+  }
+
+  /// Conclusión formal de obra, servicio o proyecto.
+  void completeContract(
+    String customerId,
+    String contractId, {
+    required String completionDate,
+    String? notes,
+    int rating = 5,
+    String completedBy = 'Carlos V.',
+  }) {
+    final cIdx = _customers.indexWhere((c) => c.id == customerId);
+    if (cIdx == -1) return;
+    final customer = _customers[cIdx];
+    final updatedContracts = customer.contracts.map((ctr) {
+      if (ctr.id == contractId) {
+        return ctr.copyWith(
+          status: 'Completado',
+          actualEndDate: completionDate,
+          completionNotes: notes,
+          satisfactionRating: rating,
+          completedBy: completedBy,
+        );
+      }
+      return ctr;
+    }).toList();
+
+    _customers[cIdx] = customer.copyWith(contracts: updatedContracts);
+    notifyListeners();
+  }
+
+  /// Renovación directa de un contrato recurrente (+6 / +12 meses).
+  void renewContract(
+    String customerId,
+    String contractId, {
+    required int additionalMonths,
+    double? adjustedMonthlyAmount,
+    String? notes,
+  }) {
+    final cIdx = _customers.indexWhere((c) => c.id == customerId);
+    if (cIdx == -1) return;
+    final customer = _customers[cIdx];
+    final updatedContracts = customer.contracts.map((ctr) {
+      if (ctr.id == contractId) {
+        final newExecution = 'Renovado +$additionalMonths meses';
+        final newMonthly = adjustedMonthlyAmount ?? ctr.recurringMonthlyAmount;
+        return ctr.copyWith(
+          status: 'Vigente',
+          executionTime: newExecution,
+          recurringMonthlyAmount: newMonthly,
+          originType: 'Renovación',
+          notes:
+              notes ??
+              'Contrato renovado por $additionalMonths meses adicionales.',
+        );
+      }
+      return ctr;
+    }).toList();
+
+    _customers[cIdx] = customer.copyWith(contracts: updatedContracts);
+    notifyListeners();
+  }
+
+  /// Cambio de estado puntual de un contrato (Pausar / Reactivar).
+  void updateContractStatus(
+    String customerId,
+    String contractId,
+    String newStatus,
+  ) {
+    final cIdx = _customers.indexWhere((c) => c.id == customerId);
+    if (cIdx == -1) return;
+    final customer = _customers[cIdx];
+    final updatedContracts = customer.contracts.map((ctr) {
+      if (ctr.id == contractId) {
+        return ctr.copyWith(status: newStatus);
+      }
+      return ctr;
+    }).toList();
+
+    _customers[cIdx] = customer.copyWith(contracts: updatedContracts);
+    notifyListeners();
   }
 
   bool isOpportunityPromoted(String opportunityId) {
@@ -367,6 +563,9 @@ class CrmCustomersService extends ChangeNotifier {
             executionTime: 'Contrato 12 meses',
             status: 'Vigente',
             startDate: '15 Ene 2025',
+            branchId: 'BR-001',
+            branchName: 'Torre Central',
+            originType: 'Venta Nueva',
           ),
           CustomerContract(
             id: 'CTR-002',
@@ -380,6 +579,13 @@ class CrmCustomersService extends ChangeNotifier {
             advancePercentage: 50,
             status: 'Completado',
             startDate: '10 Feb 2025',
+            actualEndDate: '18 Feb 2025',
+            satisfactionRating: 5,
+            completionNotes:
+                'Recepción conforme de obra sin observaciones por Ing. Supervisor.',
+            branchId: 'BR-002',
+            branchName: 'Parqueo Subterráneo y Anexo',
+            originType: 'Recontratación',
           ),
         ],
       ),
@@ -417,6 +623,9 @@ class CrmCustomersService extends ChangeNotifier {
             executionTime: 'Contrato 12 meses renovable',
             status: 'Vigente',
             startDate: '01 Mar 2025',
+            branchId: 'BR-003',
+            branchName: 'Pórtico Principal y Garita',
+            originType: 'Venta Nueva',
           ),
         ],
       ),
@@ -468,6 +677,9 @@ class CrmCustomersService extends ChangeNotifier {
             executionTime: 'Contrato 24 meses',
             status: 'Vigente',
             startDate: '10 Nov 2024',
+            branchId: 'BR-004',
+            branchName: 'Oficina Central',
+            originType: 'Venta Nueva',
           ),
           CustomerContract(
             id: 'CTR-005',
@@ -481,6 +693,9 @@ class CrmCustomersService extends ChangeNotifier {
             advancePercentage: 30,
             status: 'En Ejecución',
             startDate: '12 Sep 2026',
+            branchId: 'BR-004',
+            branchName: 'Oficina Central',
+            originType: 'Adicional',
           ),
         ],
       ),
@@ -518,6 +733,9 @@ class CrmCustomersService extends ChangeNotifier {
             executionTime: '10 meses escolares',
             status: 'En Pausa',
             startDate: '01 Feb 2025',
+            branchId: 'BR-007',
+            branchName: 'Campus Central',
+            originType: 'Venta Nueva',
           ),
         ],
       ),
@@ -556,6 +774,9 @@ class CrmCustomersService extends ChangeNotifier {
             advancePercentage: 50,
             status: 'En Ejecución',
             startDate: '18 Sep 2026',
+            branchId: 'BR-008',
+            branchName: 'Predio Ferial - Pabellón Internacional',
+            originType: 'Venta Nueva',
           ),
         ],
       ),
@@ -595,6 +816,9 @@ class CrmCustomersService extends ChangeNotifier {
             advancePercentage: 50,
             status: 'Vigente',
             startDate: '05 May 2025',
+            branchId: 'BR-009',
+            branchName: 'Sede Principal',
+            originType: 'Venta Nueva',
           ),
         ],
       ),

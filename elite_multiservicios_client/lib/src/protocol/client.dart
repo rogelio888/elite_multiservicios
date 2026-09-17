@@ -19,29 +19,33 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
 import 'package:elite_multiservicios_client/src/protocol/greetings/greeting.dart'
     as _i5;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_lead.dart'
     as _i6;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log_page_response.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_lead_metrics_response.dart'
     as _i7;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_challenge_response.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log.dart'
     as _i8;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_verify_response.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log_page_response.dart'
     as _i9;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_role.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_challenge_response.dart'
     as _i10;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_permission.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_verify_response.dart'
     as _i11;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_role.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_role.dart'
     as _i12;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/role_permission.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_permission.dart'
     as _i13;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_session.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_role.dart'
     as _i14;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/server_metrics_response.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/role_permission.dart'
     as _i15;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_user.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_session.dart'
     as _i16;
-import 'protocol.dart' as _i17;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/server_metrics_response.dart'
+    as _i17;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_user.dart'
+    as _i18;
+import 'protocol.dart' as _i19;
 
 /// Endpoint de autenticación mediante correo y contraseña.
 /// Extiende [EmailIdpBaseEndpoint] para incorporar auditoría de login fallido
@@ -273,6 +277,116 @@ class EndpointGreeting extends _i2.EndpointRef {
       );
 }
 
+/// Endpoint RPC para la gestión integral de Prospectos (CRM Leads) en frío y Maps.
+/// {@category Endpoint}
+class EndpointCrmLeads extends _i2.EndpointRef {
+  EndpointCrmLeads(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'crmLeads';
+
+  /// Lista los prospectos con filtros opcionales de búsqueda, rubro, estado y temperatura.
+  _i3.Future<List<_i6.CrmLead>> listLeads({
+    required int limit,
+    required int offset,
+    String? search,
+    String? sector,
+    String? status,
+    String? temperature,
+    String? advisor,
+  }) => caller.callServerEndpoint<List<_i6.CrmLead>>(
+    'crmLeads',
+    'listLeads',
+    {
+      'limit': limit,
+      'offset': offset,
+      'search': search,
+      'sector': sector,
+      'status': status,
+      'temperature': temperature,
+      'advisor': advisor,
+    },
+  );
+
+  /// Obtiene el detalle de un prospecto por su ID.
+  _i3.Future<_i6.CrmLead?> getLead(int id) =>
+      caller.callServerEndpoint<_i6.CrmLead?>(
+        'crmLeads',
+        'getLead',
+        {'id': id},
+      );
+
+  /// Registra un nuevo prospecto comercial en el sistema.
+  _i3.Future<_i6.CrmLead> createLead(_i6.CrmLead lead) =>
+      caller.callServerEndpoint<_i6.CrmLead>(
+        'crmLeads',
+        'createLead',
+        {'lead': lead},
+      );
+
+  /// Actualiza los datos generales de un prospecto.
+  _i3.Future<_i6.CrmLead> updateLead(_i6.CrmLead lead) =>
+      caller.callServerEndpoint<_i6.CrmLead>(
+        'crmLeads',
+        'updateLead',
+        {'lead': lead},
+      );
+
+  /// Actualiza el estado comercial de un prospecto en el embudo inicial.
+  _i3.Future<_i6.CrmLead?> updateStatus(
+    int id,
+    String status,
+  ) => caller.callServerEndpoint<_i6.CrmLead?>(
+    'crmLeads',
+    'updateStatus',
+    {
+      'id': id,
+      'status': status,
+    },
+  );
+
+  /// Actualiza la temperatura comercial (Frío, Templado, Caliente).
+  _i3.Future<_i6.CrmLead?> updateTemperature(
+    int id,
+    String temperature,
+  ) => caller.callServerEndpoint<_i6.CrmLead?>(
+    'crmLeads',
+    'updateTemperature',
+    {
+      'id': id,
+      'temperature': temperature,
+    },
+  );
+
+  /// Marca el prospecto como promovido formalmente a una Oportunidad en el Pipeline.
+  _i3.Future<_i6.CrmLead?> markPromoted(
+    int id,
+    int? opportunityId,
+  ) => caller.callServerEndpoint<_i6.CrmLead?>(
+    'crmLeads',
+    'markPromoted',
+    {
+      'id': id,
+      'opportunityId': opportunityId,
+    },
+  );
+
+  /// Elimina lógicamente (Soft Delete) un prospecto.
+  _i3.Future<bool> deleteLead(int id) => caller.callServerEndpoint<bool>(
+    'crmLeads',
+    'deleteLead',
+    {'id': id},
+  );
+
+  /// Consulta el consolidado de métricas de prospección en tiempo real.
+  _i3.Future<_i7.CrmLeadMetricsResponse> getMetrics() =>
+      caller.callServerEndpoint<_i7.CrmLeadMetricsResponse>(
+        'crmLeads',
+        'getMetrics',
+        {},
+      );
+}
+
 /// Endpoint RPC para consulta de la bitácora de eventos y auditoría del sistema.
 /// {@category Endpoint}
 class EndpointAudit extends _i2.EndpointRef {
@@ -282,12 +396,12 @@ class EndpointAudit extends _i2.EndpointRef {
   String get name => 'audit';
 
   /// Lista los registros de bitácora paginados con filtros opcionales. Requiere audit.view.
-  _i3.Future<List<_i6.AuditLog>> listLogs({
+  _i3.Future<List<_i8.AuditLog>> listLogs({
     required int limit,
     required int offset,
     int? userId,
     String? action,
-  }) => caller.callServerEndpoint<List<_i6.AuditLog>>(
+  }) => caller.callServerEndpoint<List<_i8.AuditLog>>(
     'audit',
     'listLogs',
     {
@@ -299,7 +413,7 @@ class EndpointAudit extends _i2.EndpointRef {
   );
 
   /// Lista los registros de auditoría de forma paginada con filtros avanzados. Requiere audit.view.
-  _i3.Future<_i7.AuditLogPageResponse> listLogsPaged({
+  _i3.Future<_i9.AuditLogPageResponse> listLogsPaged({
     required int page,
     required int pageSize,
     String? action,
@@ -308,7 +422,7 @@ class EndpointAudit extends _i2.EndpointRef {
     DateTime? fromDate,
     DateTime? toDate,
     String? search,
-  }) => caller.callServerEndpoint<_i7.AuditLogPageResponse>(
+  }) => caller.callServerEndpoint<_i9.AuditLogPageResponse>(
     'audit',
     'listLogsPaged',
     {
@@ -335,10 +449,10 @@ class EndpointMfa extends _i2.EndpointRef {
   /// Verifica si el usuario autenticado requiere MFA.
   /// Si sí, genera un challenge, envía el email y devuelve el challengeId.
   /// Si no, devuelve null.
-  _i3.Future<_i8.MfaChallengeResponse?> checkRequired({
+  _i3.Future<_i10.MfaChallengeResponse?> checkRequired({
     required bool rememberMe,
     String? trustedDeviceToken,
-  }) => caller.callServerEndpoint<_i8.MfaChallengeResponse?>(
+  }) => caller.callServerEndpoint<_i10.MfaChallengeResponse?>(
     'mfa',
     'checkRequired',
     {
@@ -352,11 +466,11 @@ class EndpointMfa extends _i2.EndpointRef {
   /// - Si rememberMe, crea un TrustedDevice y devuelve el token.
   /// - Devuelve true si OK.
   /// Si es incorrecto, incrementa attempts y devuelve error.
-  _i3.Future<_i9.MfaVerifyResponse> verifyMfa({
+  _i3.Future<_i11.MfaVerifyResponse> verifyMfa({
     required String challengeId,
     required String code,
     required bool rememberMe,
-  }) => caller.callServerEndpoint<_i9.MfaVerifyResponse>(
+  }) => caller.callServerEndpoint<_i11.MfaVerifyResponse>(
     'mfa',
     'verifyMfa',
     {
@@ -385,26 +499,26 @@ class EndpointRbac extends _i2.EndpointRef {
   String get name => 'rbac';
 
   /// Lista los roles registrados en el sistema. Requiere roles.view.
-  _i3.Future<List<_i10.AppRole>> listRoles() =>
-      caller.callServerEndpoint<List<_i10.AppRole>>(
+  _i3.Future<List<_i12.AppRole>> listRoles() =>
+      caller.callServerEndpoint<List<_i12.AppRole>>(
         'rbac',
         'listRoles',
         {},
       );
 
   /// Lista el catálogo de permisos granulares. Requiere permissions.view.
-  _i3.Future<List<_i11.AppPermission>> listPermissions() =>
-      caller.callServerEndpoint<List<_i11.AppPermission>>(
+  _i3.Future<List<_i13.AppPermission>> listPermissions() =>
+      caller.callServerEndpoint<List<_i13.AppPermission>>(
         'rbac',
         'listPermissions',
         {},
       );
 
   /// Asigna un rol a un usuario. Requiere roles.manage.
-  _i3.Future<_i12.UserRole> assignRoleToUser({
+  _i3.Future<_i14.UserRole> assignRoleToUser({
     required int userId,
     required int roleId,
-  }) => caller.callServerEndpoint<_i12.UserRole>(
+  }) => caller.callServerEndpoint<_i14.UserRole>(
     'rbac',
     'assignRoleToUser',
     {
@@ -427,10 +541,10 @@ class EndpointRbac extends _i2.EndpointRef {
   );
 
   /// Asigna un permiso granular a un rol. Requiere permissions.assign.
-  _i3.Future<_i13.RolePermission> assignPermissionToRole({
+  _i3.Future<_i15.RolePermission> assignPermissionToRole({
     required int roleId,
     required int permissionId,
-  }) => caller.callServerEndpoint<_i13.RolePermission>(
+  }) => caller.callServerEndpoint<_i15.RolePermission>(
     'rbac',
     'assignPermissionToRole',
     {
@@ -474,8 +588,8 @@ class EndpointSessionManagement extends _i2.EndpointRef {
   );
 
   /// Lista las sesiones activas asociadas a un usuario. Requiere sessions.view.
-  _i3.Future<List<_i14.UserSession>> listUserSessions(int userId) =>
-      caller.callServerEndpoint<List<_i14.UserSession>>(
+  _i3.Future<List<_i16.UserSession>> listUserSessions(int userId) =>
+      caller.callServerEndpoint<List<_i16.UserSession>>(
         'sessionManagement',
         'listUserSessions',
         {'userId': userId},
@@ -515,8 +629,8 @@ class EndpointSystemMetrics extends _i2.EndpointRef {
   String get name => 'systemMetrics';
 
   /// Retorna las métricas del sistema en tiempo real. Requiere permiso `audit.view`.
-  _i3.Future<_i15.ServerMetricsResponse> getMetrics() =>
-      caller.callServerEndpoint<_i15.ServerMetricsResponse>(
+  _i3.Future<_i17.ServerMetricsResponse> getMetrics() =>
+      caller.callServerEndpoint<_i17.ServerMetricsResponse>(
         'systemMetrics',
         'getMetrics',
         {},
@@ -533,11 +647,11 @@ class EndpointUser extends _i2.EndpointRef {
   String get name => 'user';
 
   /// Lista usuarios paginados. Requiere permiso users.view.
-  _i3.Future<List<_i16.AppUser>> listUsers({
+  _i3.Future<List<_i18.AppUser>> listUsers({
     required int limit,
     required int offset,
     required bool includeDeleted,
-  }) => caller.callServerEndpoint<List<_i16.AppUser>>(
+  }) => caller.callServerEndpoint<List<_i18.AppUser>>(
     'user',
     'listUsers',
     {
@@ -548,19 +662,19 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Obtiene el detalle de un usuario por ID. Requiere permiso users.view.
-  _i3.Future<_i16.AppUser?> getUser(int id) =>
-      caller.callServerEndpoint<_i16.AppUser?>(
+  _i3.Future<_i18.AppUser?> getUser(int id) =>
+      caller.callServerEndpoint<_i18.AppUser?>(
         'user',
         'getUser',
         {'id': id},
       );
 
   /// Crea un nuevo usuario empresarial y le asocia sus roles iniciales. Requiere users.create.
-  _i3.Future<_i16.AppUser> createUser({
+  _i3.Future<_i18.AppUser> createUser({
     required String email,
     required String fullName,
     required List<int> roleIds,
-  }) => caller.callServerEndpoint<_i16.AppUser>(
+  }) => caller.callServerEndpoint<_i18.AppUser>(
     'user',
     'createUser',
     {
@@ -571,10 +685,10 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Actualiza información de un usuario. Requiere users.update.
-  _i3.Future<_i16.AppUser?> updateUser({
+  _i3.Future<_i18.AppUser?> updateUser({
     required int id,
     required String fullName,
-  }) => caller.callServerEndpoint<_i16.AppUser?>(
+  }) => caller.callServerEndpoint<_i18.AppUser?>(
     'user',
     'updateUser',
     {
@@ -604,8 +718,8 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Retorna el AppUser asociado a la sesión autenticada actual.
-  _i3.Future<_i16.AppUser> getCurrentUser() =>
-      caller.callServerEndpoint<_i16.AppUser>(
+  _i3.Future<_i18.AppUser> getCurrentUser() =>
+      caller.callServerEndpoint<_i18.AppUser>(
         'user',
         'getCurrentUser',
         {},
@@ -656,7 +770,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i17.Protocol(),
+         _i19.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -668,6 +782,7 @@ class Client extends _i2.ServerpodClientShared {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
     greeting = EndpointGreeting(this);
+    crmLeads = EndpointCrmLeads(this);
     audit = EndpointAudit(this);
     mfa = EndpointMfa(this);
     rbac = EndpointRbac(this);
@@ -682,6 +797,8 @@ class Client extends _i2.ServerpodClientShared {
   late final EndpointJwtRefresh jwtRefresh;
 
   late final EndpointGreeting greeting;
+
+  late final EndpointCrmLeads crmLeads;
 
   late final EndpointAudit audit;
 
@@ -702,6 +819,7 @@ class Client extends _i2.ServerpodClientShared {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
     'greeting': greeting,
+    'crmLeads': crmLeads,
     'audit': audit,
     'mfa': mfa,
     'rbac': rbac,

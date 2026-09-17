@@ -36,3 +36,6 @@ Thumbs.db
 
 # User temporary prompt files
 prompt*.md
+
+# Antigravity IDE
+.gemini/

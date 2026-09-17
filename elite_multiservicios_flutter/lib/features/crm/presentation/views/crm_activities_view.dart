@@ -96,6 +96,10 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
         return const Color(0xFFF59E0B); // Ámbar cobros
       case CrmTaskType.meeting:
         return const Color(0xFF06B6D4); // Cian reuniones
+      case CrmTaskType.postSale:
+        return const Color(0xFF10B981); // Esmeralda postventa
+      case CrmTaskType.renewal:
+        return const Color(0xFF6366F1); // Índigo renovación
       default:
         return const Color(0xFF64748B);
     }
@@ -115,6 +119,10 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
         return Icons.payments_outlined;
       case CrmTaskType.meeting:
         return Icons.groups_outlined;
+      case CrmTaskType.postSale:
+        return Icons.verified_outlined;
+      case CrmTaskType.renewal:
+        return Icons.autorenew_outlined;
       default:
         return Icons.event_note_outlined;
     }

@@ -252,5 +252,131 @@ void main() {
         expect(stored.monthlyBilling, equals(14500.0));
       },
     );
+
+    test(
+      'completeContract registers formal conclusion with ratings, notes and updates lifecycle',
+      () {
+        final customer = service.customers.firstWhere(
+          (c) => c.contracts.any((ctr) => ctr.status == 'Vigente'),
+        );
+        final activeContract = customer.contracts.firstWhere(
+          (ctr) => ctr.status == 'Vigente',
+        );
+
+        service.completeContract(
+          customer.id,
+          activeContract.id,
+          completionDate: '15 Oct 2026',
+          notes: 'Trabajo concluido a conformidad con acta de entrega firmada.',
+          rating: 5,
+          completedBy: 'Ing. Operaciones',
+        );
+
+        final updated = service.getCustomerById(customer.id);
+        expect(updated, isNotNull);
+        final completedContract = updated!.contracts.firstWhere(
+          (ctr) => ctr.id == activeContract.id,
+        );
+        expect(completedContract.status, equals('Completado'));
+        expect(completedContract.actualEndDate, equals('15 Oct 2026'));
+        expect(
+          completedContract.completionNotes,
+          contains('acta de entrega firmada'),
+        );
+        expect(completedContract.satisfactionRating, equals(5));
+        expect(completedContract.completedBy, equals('Ing. Operaciones'));
+      },
+    );
+
+    test(
+      'renewContract extends duration, logs renewal origin and updates monthly billing',
+      () {
+        final customer = service.customers.first;
+        final targetContract = customer.contracts.first;
+
+        service.renewContract(
+          customer.id,
+          targetContract.id,
+          additionalMonths: 12,
+          adjustedMonthlyAmount: targetContract.recurringMonthlyAmount + 500.0,
+          notes: 'Renovación anual aprobada con incremento IPC.',
+        );
+
+        final updatedCustomer = service.getCustomerById(customer.id);
+        final renewed = updatedCustomer!.contracts.firstWhere(
+          (c) => c.id == targetContract.id,
+        );
+        expect(renewed.originType, equals('Renovación'));
+        expect(renewed.executionTime, contains('Renovado +12 meses'));
+        expect(renewed.status, equals('Vigente'));
+        expect(
+          renewed.recurringMonthlyAmount,
+          equals(targetContract.recurringMonthlyAmount + 500.0),
+        );
+      },
+    );
+
+    test(
+      'recontracting existing customer attaches contract without duplicating customer entry',
+      () {
+        final existing = service.customers.first;
+        final initialContractsCount = existing.contracts.length;
+        final initialCustomersCount = service.customers.length;
+
+        final recontract = CustomerContract(
+          id: 'CTR-RECONTRACT-EXPRESS',
+          title: 'Nuevo Servicio Mantenimiento Preventivo HVAC',
+          contractType: 'Recurrente Mensual',
+          serviceCategory: 'Mantenimiento Técnico',
+          branchId: existing.branches.isNotEmpty
+              ? existing.branches.first.id
+              : null,
+          branchName: existing.branches.isNotEmpty
+              ? existing.branches.first.name
+              : null,
+          originType: 'Recontratación',
+          totalAmount: 12000.0,
+          recurringMonthlyAmount: 1000.0,
+          oneTimeAmount: 0.0,
+          paymentTerms: 'Facturación mensual a 30 días',
+          executionTime: '12 meses',
+          advancePercentage: 0,
+          status: 'Vigente',
+          startDate: '01 Nov 2026',
+          notes: 'Recontratación directa sin pasar por el embudo desde cero.',
+        );
+
+        service.addContractToCustomer(existing.id, recontract);
+
+        // Verify no customer duplicate was created
+        expect(service.customers.length, equals(initialCustomersCount));
+
+        // Verify contract was appended to existing account
+        final updated = service.getCustomerById(existing.id);
+        expect(updated!.contracts.length, equals(initialContractsCount + 1));
+        expect(
+          updated.contracts.any((c) => c.id == 'CTR-RECONTRACT-EXPRESS'),
+          isTrue,
+        );
+        expect(
+          updated.activeServices.contains('Mantenimiento Técnico'),
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'searchCustomers finds matches by tradeName, legalName or contactPerson',
+      () {
+        final results = service.searchCustomers('Palmas');
+        expect(results.isNotEmpty, isTrue);
+        expect(results.any((c) => c.tradeName.contains('Palmas')), isTrue);
+
+        final emptyResults = service.searchCustomers(
+          'EmpresaInexistenteXYZ123',
+        );
+        expect(emptyResults.isEmpty, isTrue);
+      },
+    );
   });
 }
