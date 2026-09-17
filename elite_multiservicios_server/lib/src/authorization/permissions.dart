@@ -26,6 +26,13 @@ abstract class AppPermissions {
   // --- Operaciones de Mantenimiento ---
   static const String systemMaintenance = 'system.maintenance';
 
+  // --- Módulo CRM: Prospectos (Leads) ---
+  static const String crmLeadsView = 'leads.view';
+  static const String crmLeadsCreate = 'leads.create';
+  static const String crmLeadsUpdate = 'leads.update';
+  static const String crmLeadsDelete = 'leads.delete';
+  static const String crmLeadsPromote = 'leads.promote';
+
   /// Catálogo de todos los permisos registrados en el sistema.
   static const List<String> all = [
     usersView,
@@ -43,5 +50,10 @@ abstract class AppPermissions {
     sessionsRevoke,
     serverMetricsView,
     systemMaintenance,
+    crmLeadsView,
+    crmLeadsCreate,
+    crmLeadsUpdate,
+    crmLeadsDelete,
+    crmLeadsPromote,
   ];
 }

@@ -1,0 +1,17 @@
+### Respuesta de métricas agregadas del submódulo de prospectos.
+class: CrmLeadMetricsResponse
+fields:
+  ### Total de prospectos activos.
+  totalCount: int
+  ### Total de prospectos contactados.
+  contactedCount: int
+  ### Total de prospectos en espera de respuesta.
+  waitingCount: int
+  ### Total de prospectos calificados o con interés confirmado.
+  qualifiedCount: int
+  ### Total de prospectos con temperatura caliente.
+  hotCount: int
+  ### Tasa de conversión comercial porcentual (0.0 - 100.0).
+  conversionRate: double
+  ### Valor económico potencial total de la cartera en Bs.
+  totalPipelinePotential: double
