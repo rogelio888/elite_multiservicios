@@ -2360,16 +2360,27 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
   ];
 
   static String _canonicalCategory(String? raw) {
-    if (raw == null || raw.trim().isEmpty) return 'Limpieza Integral';
+    if (raw == null || raw.trim().isEmpty) {
+      return 'Limpieza Integral';
+    }
     final lower = raw.toLowerCase().trim();
-    if (lower.contains('limpi')) return 'Limpieza Integral';
-    if (lower.contains('segur')) return 'Seguridad Física';
-    if (lower.contains('manten')) return 'Mantenimiento';
+    if (lower.contains('limpi')) {
+      return 'Limpieza Integral';
+    }
+    if (lower.contains('segur')) {
+      return 'Seguridad Física';
+    }
+    if (lower.contains('manten')) {
+      return 'Mantenimiento';
+    }
     if (lower.contains('soft') ||
         lower.contains('tecno') ||
-        lower.contains('sist'))
+        lower.contains('sist')) {
       return 'Software / Tecnología';
-    if (lower.contains('jardin')) return 'Jardinería';
+    }
+    if (lower.contains('jardin')) {
+      return 'Jardinería';
+    }
     return 'Limpieza Integral';
   }
 
@@ -3093,10 +3104,11 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                                       )
                                                       .toList(),
                                             onChanged: (v) {
-                                              if (v != null)
+                                              if (v != null) {
                                                 setDialogState(
                                                   () => selectedBranchId = v,
                                                 );
+                                              }
                                             },
                                           ),
                                           const SizedBox(height: 16),
@@ -3248,10 +3260,11 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                                     ),
                                                   ],
                                                   onChanged: (v) {
-                                                    if (v != null)
+                                                    if (v != null) {
                                                       setDialogState(
                                                         () => advancePct = v,
                                                       );
+                                                    }
                                                   },
                                                 ),
                                               ),
@@ -3791,7 +3804,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                                                 ),
                                                               ],
                                                               onChanged: (v) {
-                                                                if (v != null)
+                                                                if (v != null) {
                                                                   setDialogState(
                                                                     () => budgetItems[idx] =
                                                                         item.copyWith(
@@ -3799,6 +3812,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                                                               v,
                                                                         ),
                                                                   );
+                                                                }
                                                               },
                                                             ),
                                                           ),

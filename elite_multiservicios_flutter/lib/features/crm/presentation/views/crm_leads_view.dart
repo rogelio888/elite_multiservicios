@@ -2115,12 +2115,21 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
   }
 
   Color _getSectorColor(String sector) {
-    if (sector.contains('Clínicas')) return const Color(0xFF06B6D4);
-    if (sector.contains('Corporativo')) return const Color(0xFF3B82F6);
-    if (sector.contains('Colegios') || sector.contains('Educación'))
+    if (sector.contains('Clínicas')) {
+      return const Color(0xFF06B6D4);
+    }
+    if (sector.contains('Corporativo')) {
+      return const Color(0xFF3B82F6);
+    }
+    if (sector.contains('Colegios') || sector.contains('Educación')) {
       return const Color(0xFF8B5CF6);
-    if (sector.contains('Banca')) return const Color(0xFF10B981);
-    if (sector.contains('Industria')) return const Color(0xFFF59E0B);
+    }
+    if (sector.contains('Banca')) {
+      return const Color(0xFF10B981);
+    }
+    if (sector.contains('Industria')) {
+      return const Color(0xFFF59E0B);
+    }
     return const Color(0xFF64748B);
   }
 
