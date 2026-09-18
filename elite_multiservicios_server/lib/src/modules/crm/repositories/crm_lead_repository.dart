@@ -210,7 +210,7 @@ class CrmLeadDataService {
         contactPerson: 'Lic. Maria Eugenia (Recepción)',
         notes:
             'Llamada inicial realizada. Recepción consultará con administración el martes para fijar reunión.',
-        estimatedValue: 6800.0,
+        estimatedValue: 0.0,
         isPromoted: false,
         isDeleted: false,
         createdAt: now.subtract(const Duration(days: 30)),
@@ -230,7 +230,7 @@ class CrmLeadDataService {
         contactPerson: 'Dr. Alejandro Peña',
         notes:
             'Se envió portafolio institucional de limpieza técnica y desinfección hospitalaria con protocolos biocidas.',
-        estimatedValue: 7400.0,
+        estimatedValue: 0.0,
         isPromoted: false,
         isDeleted: false,
         createdAt: now.subtract(const Duration(days: 29)),
@@ -250,7 +250,7 @@ class CrmLeadDataService {
         contactPerson: 'Ing. Sandra Hurtado (Gerente Operaciones)',
         notes:
             'Solicitaron cotización formal para 2 operarios de limpieza hospitalaria turno matutino y seguridad perimetral.',
-        estimatedValue: 9200.0,
+        estimatedValue: 0.0,
         isPromoted: false,
         isDeleted: false,
         createdAt: now.subtract(const Duration(days: 29)),
@@ -271,7 +271,7 @@ class CrmLeadDataService {
         contactPerson: 'Administración General',
         notes:
             'Ficha capturada de Google Maps. Pendiente primera llamada de prospección en frío.',
-        estimatedValue: 5500.0,
+        estimatedValue: 0.0,
         isPromoted: false,
         isDeleted: false,
         createdAt: now.subtract(const Duration(days: 29)),
@@ -291,7 +291,7 @@ class CrmLeadDataService {
         contactPerson: 'Dra. Paola Suarez',
         notes:
             'Interesados puntualmente en limpieza profunda de vidrios exteriores en altura y pulido de pisos.',
-        estimatedValue: 4800.0,
+        estimatedValue: 0.0,
         isPromoted: false,
         isDeleted: false,
         createdAt: now.subtract(const Duration(days: 29)),
@@ -312,7 +312,7 @@ class CrmLeadDataService {
         contactPerson: 'Lic. Fernando Prado',
         notes:
             'Mensaje de WhatsApp enviado directamente al gerente comercial con catálogo de mantenimiento corporativo.',
-        estimatedValue: 3900.0,
+        estimatedValue: 0.0,
         isPromoted: false,
         isDeleted: false,
         createdAt: now.subtract(const Duration(days: 29)),
@@ -332,7 +332,7 @@ class CrmLeadDataService {
         contactPerson: 'Recepción Central',
         notes:
             'Oficina comercial dentro de complejo de departamentos y corporativos.',
-        estimatedValue: 2800.0,
+        estimatedValue: 0.0,
         isPromoted: false,
         isDeleted: false,
         createdAt: now.subtract(const Duration(days: 29)),
@@ -352,7 +352,7 @@ class CrmLeadDataService {
         contactPerson: 'Ing. Rodrigo Justiniano',
         notes:
             'Empresa tecnológica con servidores en sitio. Se coordinará visita para evaluar control de acceso y limpieza técnica.',
-        estimatedValue: 6200.0,
+        estimatedValue: 0.0,
         isPromoted: false,
         isDeleted: false,
         createdAt: now.subtract(const Duration(days: 29)),
@@ -372,7 +372,7 @@ class CrmLeadDataService {
         contactPerson: 'Arq. Mario Valverde (Facility Manager)',
         notes:
             'Visita técnica urgente solicitada para mantenimiento preventivo integral y personal de mantenimiento fijo.',
-        estimatedValue: 14500.0,
+        estimatedValue: 0.0,
         isPromoted: false,
         isDeleted: false,
         createdAt: now.subtract(const Duration(days: 29)),
@@ -392,7 +392,7 @@ class CrmLeadDataService {
         contactPerson: 'Administración',
         notes:
             'Edificio corporativo con necesidad aparente de jardinería y mantenimiento de fachada.',
-        estimatedValue: 3500.0,
+        estimatedValue: 0.0,
         isPromoted: false,
         isDeleted: false,
         createdAt: now.subtract(const Duration(days: 23)),
@@ -412,7 +412,7 @@ class CrmLeadDataService {
         contactPerson: 'Prof. Roberto Cuellar (Administrador)',
         notes:
             'Requieren corte de césped mecanizado quincenal, limpieza de canchas deportivas y portería.',
-        estimatedValue: 8900.0,
+        estimatedValue: 0.0,
         isPromoted: false,
         isDeleted: false,
         createdAt: now.subtract(const Duration(days: 22)),
@@ -432,7 +432,7 @@ class CrmLeadDataService {
         contactPerson: 'Lic. Claudia Montero',
         notes:
             'Reunión acordada con el comité de compras para presentar propuesta de limpieza y suministros de papel.',
-        estimatedValue: 5800.0,
+        estimatedValue: 0.0,
         isPromoted: false,
         isDeleted: false,
         createdAt: now.subtract(const Duration(days: 21)),

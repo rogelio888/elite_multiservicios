@@ -1,12 +1,17 @@
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:flutter/foundation.dart';
+import '../../../main.dart' show client;
 
-/// Modelo enterprise para la prospección comercial (Outbound / Maps / Directorios).
+/// Modelo de vista para la prospección comercial (Outbound / Maps / Directorios).
+/// Vinculado directamente a la entidad CrmLead de PostgreSQL vía Serverpod.
 class LeadModel {
   final String id;
+  final int? rawId;
+  final String? code;
   final String date; // Fecha de prospección
-  final String advisor; // Asesor responsable
+  final String advisor; // Asesor comercial responsable
   final String company; // Nombre comercial de la empresa o edificio
-  final String? companyUrl; // Enlace web o Maps asociado
+  final String? companyUrl; // Enlace web o Google Maps asociado
   final String sector; // Rubro / Industria (Clínicas, Colegios, Banca, etc.)
   final String address; // Dirección física / Ubicación
   final String phone; // Teléfono(s) o WhatsApp
@@ -16,11 +21,14 @@ class LeadModel {
   final String temperature; // 'Frío', 'Templado', 'Caliente'
   final String contactPerson; // Nombre del contacto o decisor
   final String? notes; // Historial y notas comerciales
-  final double estimatedValue; // Valor mensual o de obra estimado (opcional)
+  final double estimatedValue; // Valor mensual o de obra estimado
   final bool isPromoted; // Si ya fue promovido al Pipeline comercial
+  final int? promotedOpportunityId;
 
   const LeadModel({
     required this.id,
+    this.rawId,
+    this.code,
     required this.date,
     required this.advisor,
     required this.company,
@@ -35,9 +43,64 @@ class LeadModel {
     this.notes,
     this.estimatedValue = 0.0,
     this.isPromoted = false,
+    this.promotedOpportunityId,
   });
 
+  /// Mapea la entidad real de Serverpod / PostgreSQL al modelo de vista Flutter.
+  factory LeadModel.fromCrmLead(CrmLead lead) {
+    final d = lead.createdAt.toLocal();
+    final formattedDate =
+        '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+    return LeadModel(
+      id: lead.code.isNotEmpty ? lead.code : (lead.id?.toString() ?? ''),
+      rawId: lead.id,
+      code: lead.code,
+      date: formattedDate,
+      advisor: lead.advisor,
+      company: lead.company,
+      companyUrl: lead.companyUrl,
+      sector: lead.sector,
+      address: lead.address,
+      phone: lead.phone,
+      emailOrWeb: lead.emailOrWeb,
+      status: lead.status,
+      temperature: lead.temperature,
+      contactPerson: lead.contactPerson,
+      notes: lead.notes,
+      estimatedValue: lead.estimatedValue,
+      isPromoted: lead.isPromoted,
+      promotedOpportunityId: lead.promotedOpportunityId,
+    );
+  }
+
+  /// Convierte el modelo de vista en la entidad Serializable de Serverpod para persistir.
+  CrmLead toCrmLead() {
+    return CrmLead(
+      id: rawId,
+      code: code ?? (id.startsWith('PROSP') ? id : ''),
+      company: company,
+      companyUrl: companyUrl,
+      sector: sector,
+      advisor: advisor,
+      address: address,
+      phone: phone,
+      emailOrWeb: emailOrWeb,
+      status: status,
+      temperature: temperature,
+      contactPerson: contactPerson,
+      notes: notes,
+      estimatedValue: estimatedValue,
+      isPromoted: isPromoted,
+      promotedOpportunityId: promotedOpportunityId,
+      createdAt: DateTime.now().toUtc(),
+      updatedAt: DateTime.now().toUtc(),
+    );
+  }
+
   LeadModel copyWith({
+    String? id,
+    int? rawId,
+    String? code,
     String? date,
     String? advisor,
     String? company,
@@ -52,9 +115,12 @@ class LeadModel {
     String? notes,
     double? estimatedValue,
     bool? isPromoted,
+    int? promotedOpportunityId,
   }) {
     return LeadModel(
-      id: id,
+      id: id ?? this.id,
+      rawId: rawId ?? this.rawId,
+      code: code ?? this.code,
       date: date ?? this.date,
       advisor: advisor ?? this.advisor,
       company: company ?? this.company,
@@ -69,270 +135,213 @@ class LeadModel {
       notes: notes ?? this.notes,
       estimatedValue: estimatedValue ?? this.estimatedValue,
       isPromoted: isPromoted ?? this.isPromoted,
+      promotedOpportunityId:
+          promotedOpportunityId ?? this.promotedOpportunityId,
     );
   }
 }
 
-/// Servicio Singleton reactivo de Prospectos del CRM.
+/// Servicio Singleton reactivo de Prospectos del CRM conectado al Backend Serverpod.
+/// Cumple con la directiva 'no-mock-policy': Cero datos hardcodeados en el frontend.
 class CrmLeadsService {
   static final CrmLeadsService _instance = CrmLeadsService._internal();
-  factory CrmLeadsService() => _instance;
+  factory CrmLeadsService({Client? customClient}) {
+    if (customClient != null) {
+      _instance._clientOverride = customClient;
+    }
+    return _instance;
+  }
+
+  CrmLeadsService._internal();
+
+  Client? _clientOverride;
+  Client get _activeClient => _clientOverride ?? client;
 
   final ValueNotifier<List<LeadModel>> leadsNotifier =
       ValueNotifier<List<LeadModel>>([]);
+  final ValueNotifier<bool> isLoadingNotifier = ValueNotifier<bool>(false);
+  final ValueNotifier<String?> errorNotifier = ValueNotifier<String?>(null);
 
-  CrmLeadsService._internal() {
-    _initializeSeeds();
-  }
+  CrmLeadMetricsResponse? _metrics;
+  CrmLeadMetricsResponse? get metrics => _metrics;
 
   List<LeadModel> get leads => leadsNotifier.value;
+  bool get isLoading => isLoadingNotifier.value;
+  String? get error => errorNotifier.value;
 
-  void _initializeSeeds() {
-    leadsNotifier.value = [
-      const LeadModel(
-        id: 'PROSP-001',
-        date: '18/08/2026',
-        advisor: 'Rodrigo Acha',
-        company: 'EMBRIOVID',
-        companyUrl: 'https://www.embriovid.com/contactos',
-        sector: 'Clínicas y centros médicos',
-        address: 'Edif. Tacuaral, Av. San Martín #200, Equipetrol',
-        phone: '77042047',
-        emailOrWeb: 'https://www.embriovid.com/contactos',
-        status: 'En Espera de Respuesta',
-        temperature: 'Templado',
-        contactPerson: 'Lic. Maria Eugenia (Recepción)',
-        notes:
-            'Llamada inicial realizada. Recepción consultará con administración el martes para fijar reunión.',
-        estimatedValue: 6800.0,
-      ),
-      const LeadModel(
-        id: 'PROSP-002',
-        date: '19/08/2026',
-        advisor: 'Vanessa Requejo',
-        company: 'INSTITUTO DE SALUD REPRODUCTIVA',
-        companyUrl: 'https://www.facebook.com/institutosalud',
-        sector: 'Clínicas y centros médicos',
-        address: 'Barrio Equipetrol Norte Calle "F" Este Esq. Aviador Pinto',
-        phone: '77042047',
-        emailOrWeb: 'contacto@isr-bolivia.com',
-        status: 'Contactado',
-        temperature: 'Templado',
-        contactPerson: 'Dr. Alejandro Peña',
-        notes:
-            'Se envió portafolio institucional de limpieza técnica y desinfección hospitalaria con protocolos biocidas.',
-        estimatedValue: 7400.0,
-      ),
-      const LeadModel(
-        id: 'PROSP-003',
-        date: '19/08/2026',
-        advisor: 'Vanessa Requejo',
-        company: 'GINOFIV',
-        companyUrl: 'https://ginofiv.com.bo/',
-        sector: 'Clínicas y centros médicos',
-        address: 'Av. Alemana calle Sao No 2450 (entre 2do y 3er anillo)',
-        phone: '79683941',
-        emailOrWeb: 'https://ginofiv.com.bo/',
-        status: 'Interesado (Calificado)',
-        temperature: 'Caliente',
-        contactPerson: 'Ing. Sandra Hurtado (Gerente Operaciones)',
-        notes:
-            'Solicitaron cotización formal para 2 operarios de limpieza hospitalaria turno matutino y seguridad perimetral.',
-        estimatedValue: 9200.0,
-      ),
-      const LeadModel(
-        id: 'PROSP-004',
-        date: '19/08/2026',
-        advisor: 'Rodrigo Acha',
-        company: 'Clínica Roberto Bacarreza',
-        companyUrl: 'https://clinicarobertobacarreza.com/',
-        sector: 'Clínicas y centros médicos',
-        address:
-            'Calle República Dominicana 2068, entre calles Nicaragua y Villalobos',
-        phone: '76787767',
-        emailOrWeb: 'https://clinicarobertobacarreza.com/',
-        status: 'Prospectado',
-        temperature: 'Frío',
-        contactPerson: 'Administración General',
-        notes:
-            'Ficha capturada de Google Maps. Pendiente primera llamada de prospección en frío.',
-        estimatedValue: 5500.0,
-      ),
-      const LeadModel(
-        id: 'PROSP-005',
-        date: '19/08/2026',
-        advisor: 'Vanessa Requejo',
-        company: 'Clínica Santa Lucía',
-        companyUrl: 'https://www.clinicasantalucia.com',
-        sector: 'Clínicas y centros médicos',
-        address: 'Av. Salvador esq. Calle J, Zona Norte',
-        phone: '3453939',
-        emailOrWeb: 'contacto@clinicasantalucia.com',
-        status: 'Contactado',
-        temperature: 'Templado',
-        contactPerson: 'Dra. Paola Suarez',
-        notes:
-            'Interesados puntualmente en limpieza profunda de vidrios exteriores en altura y pulido de pisos.',
-        estimatedValue: 4800.0,
-      ),
-      const LeadModel(
-        id: 'PROSP-006',
-        date: '19/08/2026',
-        advisor: 'Vanessa Requejo',
-        company: 'Universal Tours',
-        companyUrl: 'https://universaltours.com.bo/',
-        sector: 'Corporativo / Oficinas',
-        address:
-            'Calle Dr. Alberto Seleme Antelo No. 35 (Calle-H), Equipetrol Norte',
-        phone: '77360004',
-        emailOrWeb: 'https://universaltours.com.bo/',
-        status: 'En Espera de Respuesta',
-        temperature: 'Templado',
-        contactPerson: 'Lic. Fernando Prado',
-        notes:
-            'Mensaje de WhatsApp enviado directamente al gerente comercial con catálogo de mantenimiento corporativo.',
-        estimatedValue: 3900.0,
-      ),
-      const LeadModel(
-        id: 'PROSP-007',
-        date: '19/08/2026',
-        advisor: 'Rodrigo Acha',
-        company: 'MT Smartravel',
-        companyUrl: 'https://www.facebook.com/MTsmartravel',
-        sector: 'Corporativo / Oficinas',
-        address: 'Edificio YOU Smart Studio, Local 116, Equipetrol Norte',
-        phone: '72191071',
-        emailOrWeb: 'info@mtsmartravel.bo',
-        status: 'Prospectado',
-        temperature: 'Frío',
-        contactPerson: 'Recepción Central',
-        notes:
-            'Oficina comercial dentro de complejo de departamentos y corporativos.',
-        estimatedValue: 2800.0,
-      ),
-      const LeadModel(
-        id: 'PROSP-008',
-        date: '19/08/2026',
-        advisor: 'Rodrigo Acha',
-        company: 'CloudIt Bolivia',
-        companyUrl: 'https://cloud-it.lat/servicios/',
-        sector: 'Corporativo / Oficinas',
-        address: 'Calle Pablo Sanz N. 11, Edificio ITAJU, Planta Baja / Sirari',
-        phone: '69701255',
-        emailOrWeb: 'contacto@cloud-it.lat',
-        status: 'Contactado',
-        temperature: 'Templado',
-        contactPerson: 'Ing. Rodrigo Justiniano',
-        notes:
-            'Empresa tecnológica con servidores en sitio. Se coordinará visita para evaluar control de acceso y limpieza técnica.',
-        estimatedValue: 6200.0,
-      ),
-      const LeadModel(
-        id: 'PROSP-009',
-        date: '19/08/2026',
-        advisor: 'Rodrigo Acha',
-        company: 'TLG Landmark Group',
-        companyUrl: 'https://tlg.bo/contacto/',
-        sector: 'Corporativo / Oficinas',
-        address: 'Edificio You Plaza, PB Of. 01, Equipetrol Norte',
-        phone: '77351000',
-        emailOrWeb: 'https://tlg.bo/contacto/',
-        status: 'Interesado (Calificado)',
-        temperature: 'Caliente',
-        contactPerson: 'Arq. Mario Valverde (Facility Manager)',
-        notes:
-            'Visita técnica urgente solicitada para mantenimiento preventivo integral y personal de mantenimiento fijo.',
-        estimatedValue: 14500.0,
-      ),
-      const LeadModel(
-        id: 'PROSP-010',
-        date: '25/08/2026',
-        advisor: 'Vanessa Requejo',
-        company: 'TELIS S.R.L.',
-        companyUrl: null,
-        sector: 'Corporativo / Oficinas',
-        address: 'C. F Nº 144, Barrio Equipetrol',
-        phone: '33441541',
-        emailOrWeb: 'info@telis.com.bo',
-        status: 'Prospectado',
-        temperature: 'Frío',
-        contactPerson: 'Administración',
-        notes:
-            'Edificio corporativo con necesidad aparente de jardinería y mantenimiento de fachada.',
-        estimatedValue: 3500.0,
-      ),
-      const LeadModel(
-        id: 'PROSP-011',
-        date: '26/08/2026',
-        advisor: 'Sara',
-        company: 'Colegio Saint Peter Campus Norte',
-        companyUrl: 'https://saintpeter.edu.bo',
-        sector: 'Colegios & Educación',
-        address: 'Km 8 Carretera al Norte, Santa Cruz',
-        phone: '78901234',
-        emailOrWeb: 'mantenimiento@saintpeter.edu.bo',
-        status: 'Interesado (Calificado)',
-        temperature: 'Caliente',
-        contactPerson: 'Prof. Roberto Cuellar (Administrador)',
-        notes:
-            'Requieren corte de césped mecanizado quincenal, limpieza de canchas deportivas y portería.',
-        estimatedValue: 8900.0,
-      ),
-      const LeadModel(
-        id: 'PROSP-012',
-        date: '27/08/2026',
-        advisor: 'Juan',
-        company: 'Instituto Técnico Domingo Savio',
-        companyUrl: 'https://domingosavio.edu.bo',
-        sector: 'Colegios & Educación',
-        address: 'Av. Cristo Redentor entre 3er y 4to anillo',
-        phone: '3429988',
-        emailOrWeb: 'administracion@domingosavio.edu.bo',
-        status: 'Contactado',
-        temperature: 'Templado',
-        contactPerson: 'Lic. Claudia Montero',
-        notes:
-            'Reunión acordada con el comité de compras para presentar propuesta de limpieza y suministros de papel.',
-        estimatedValue: 5800.0,
-      ),
-    ];
+  /// Carga la lista de prospectos reales desde PostgreSQL mediante RPC.
+  Future<void> loadLeads({
+    String? search,
+    String? sector,
+    String? status,
+    String? temperature,
+    String? advisor,
+  }) async {
+    isLoadingNotifier.value = true;
+    errorNotifier.value = null;
+
+    try {
+      final remoteLeads = await _activeClient.crmLeads.listLeads(
+        limit: 200,
+        offset: 0,
+        search: search,
+        sector: sector,
+        status: status,
+        temperature: temperature,
+        advisor: advisor,
+      );
+
+      leadsNotifier.value = remoteLeads.map(LeadModel.fromCrmLead).toList();
+
+      try {
+        _metrics = await _activeClient.crmLeads.getMetrics();
+      } catch (e) {
+        debugPrint('[CrmLeadsService] Error al consultar métricas: $e');
+      }
+    } catch (e) {
+      debugPrint('[CrmLeadsService] Error al cargar prospectos reales: $e');
+      errorNotifier.value = e.toString();
+    } finally {
+      isLoadingNotifier.value = false;
+    }
   }
 
-  // --- Operaciones CRUD & Mutaciones ---
-
-  void addLead(LeadModel lead) {
-    leadsNotifier.value = [lead, ...leadsNotifier.value];
+  /// Registra un nuevo prospecto en PostgreSQL.
+  Future<LeadModel?> addLead(LeadModel lead) async {
+    try {
+      final created = await _activeClient.crmLeads.createLead(lead.toCrmLead());
+      final createdModel = LeadModel.fromCrmLead(created);
+      leadsNotifier.value = [createdModel, ...leadsNotifier.value];
+      await loadLeads();
+      return createdModel;
+    } catch (e) {
+      debugPrint('[CrmLeadsService] Error al crear prospecto: $e');
+      errorNotifier.value = e.toString();
+      rethrow;
+    }
   }
 
-  void updateLead(LeadModel updated) {
-    leadsNotifier.value = [
-      for (final l in leadsNotifier.value)
-        if (l.id == updated.id) updated else l,
-    ];
+  /// Actualiza los datos generales de un prospecto en PostgreSQL.
+  Future<void> updateLead(LeadModel updated) async {
+    try {
+      await _activeClient.crmLeads.updateLead(updated.toCrmLead());
+      leadsNotifier.value = [
+        for (final l in leadsNotifier.value)
+          if (l.id == updated.id ||
+              (l.rawId != null && l.rawId == updated.rawId))
+            updated
+          else
+            l,
+      ];
+      await loadLeads();
+    } catch (e) {
+      debugPrint('[CrmLeadsService] Error al actualizar prospecto: $e');
+      errorNotifier.value = e.toString();
+      rethrow;
+    }
   }
 
-  void updateStatus(String leadId, String newStatus) {
+  /// Actualiza el estado comercial en PostgreSQL.
+  Future<void> updateStatus(String leadId, String newStatus) async {
+    final lead = leadsNotifier.value.firstWhere(
+      (l) => l.id == leadId,
+      orElse: () => LeadModel(
+        id: leadId,
+        date: '',
+        advisor: '',
+        company: '',
+        sector: '',
+        address: '',
+        phone: '',
+        status: '',
+      ),
+    );
+    final rawId = lead.rawId ?? int.tryParse(leadId);
+
+    // Actualización optimista local
     leadsNotifier.value = [
       for (final l in leadsNotifier.value)
         if (l.id == leadId) l.copyWith(status: newStatus) else l,
     ];
+
+    if (rawId != null) {
+      try {
+        await _activeClient.crmLeads.updateStatus(rawId, newStatus);
+      } catch (e) {
+        debugPrint('[CrmLeadsService] Error al persistir nuevo estado: $e');
+        await loadLeads();
+      }
+    }
   }
 
-  void updateTemperature(String leadId, String newTemp) {
+  /// Actualiza la temperatura comercial en PostgreSQL.
+  Future<void> updateTemperature(String leadId, String newTemp) async {
+    final lead = leadsNotifier.value.firstWhere(
+      (l) => l.id == leadId,
+      orElse: () => LeadModel(
+        id: leadId,
+        date: '',
+        advisor: '',
+        company: '',
+        sector: '',
+        address: '',
+        phone: '',
+        status: '',
+      ),
+    );
+    final rawId = lead.rawId ?? int.tryParse(leadId);
+
     leadsNotifier.value = [
       for (final l in leadsNotifier.value)
         if (l.id == leadId) l.copyWith(temperature: newTemp) else l,
     ];
+
+    if (rawId != null) {
+      try {
+        await _activeClient.crmLeads.updateTemperature(rawId, newTemp);
+      } catch (e) {
+        debugPrint('[CrmLeadsService] Error al persistir temperatura: $e');
+        await loadLeads();
+      }
+    }
   }
 
-  void updateNotes(String leadId, String newNotes) {
-    leadsNotifier.value = [
-      for (final l in leadsNotifier.value)
-        if (l.id == leadId) l.copyWith(notes: newNotes) else l,
-    ];
+  /// Actualiza las notas comerciales en PostgreSQL.
+  Future<void> updateNotes(String leadId, String newNotes) async {
+    final lead = leadsNotifier.value.firstWhere(
+      (l) => l.id == leadId,
+      orElse: () => LeadModel(
+        id: leadId,
+        date: '',
+        advisor: '',
+        company: '',
+        sector: '',
+        address: '',
+        phone: '',
+        status: '',
+      ),
+    );
+    final updated = lead.copyWith(notes: newNotes);
+    await updateLead(updated);
   }
 
-  void markPromoted(String leadId) {
+  /// Promueve el prospecto a Oportunidad en el Pipeline en PostgreSQL.
+  Future<void> markPromoted(String leadId) async {
+    final lead = leadsNotifier.value.firstWhere(
+      (l) => l.id == leadId,
+      orElse: () => LeadModel(
+        id: leadId,
+        date: '',
+        advisor: '',
+        company: '',
+        sector: '',
+        address: '',
+        phone: '',
+        status: '',
+      ),
+    );
+    final rawId = lead.rawId ?? int.tryParse(leadId);
+
     leadsNotifier.value = [
       for (final l in leadsNotifier.value)
         if (l.id == leadId)
@@ -344,32 +353,81 @@ class CrmLeadsService {
         else
           l,
     ];
+
+    if (rawId != null) {
+      try {
+        await _activeClient.crmLeads.markPromoted(rawId, null);
+      } catch (e) {
+        debugPrint('[CrmLeadsService] Error al promover prospecto: $e');
+        await loadLeads();
+      }
+    }
   }
 
-  void deleteLead(String leadId) {
+  /// Elimina (Soft Delete) el prospecto en PostgreSQL.
+  Future<void> deleteLead(String leadId) async {
+    final lead = leadsNotifier.value.firstWhere(
+      (l) => l.id == leadId,
+      orElse: () => LeadModel(
+        id: leadId,
+        date: '',
+        advisor: '',
+        company: '',
+        sector: '',
+        address: '',
+        phone: '',
+        status: '',
+      ),
+    );
+    final rawId = lead.rawId ?? int.tryParse(leadId);
+
     leadsNotifier.value = leadsNotifier.value
         .where((l) => l.id != leadId)
         .toList();
+
+    if (rawId != null) {
+      try {
+        await _activeClient.crmLeads.deleteLead(rawId);
+      } catch (e) {
+        debugPrint('[CrmLeadsService] Error al eliminar prospecto: $e');
+        await loadLeads();
+      }
+    }
+  }
+
+  /// Método para inicializar prospectos en pruebas unitarias aisladas sin red.
+  @visibleForTesting
+  void setInitialLeadsForTesting(List<LeadModel> testLeads) {
+    leadsNotifier.value = List.from(testLeads);
   }
 
   // --- Métricas Comerciales Calculadas en Tiempo Real ---
 
-  int get totalCount => leads.length;
+  int get totalCount => _metrics?.totalCount ?? leads.length;
 
-  int get contactedCount => leads.where((l) => l.status == 'Contactado').length;
+  int get contactedCount =>
+      _metrics?.contactedCount ??
+      leads.where((l) => l.status == 'Contactado').length;
 
   int get waitingCount =>
+      _metrics?.waitingCount ??
       leads.where((l) => l.status == 'En Espera de Respuesta').length;
 
   int get qualifiedCount =>
+      _metrics?.qualifiedCount ??
       leads.where((l) => l.status == 'Interesado (Calificado)').length;
 
-  int get hotCount => leads.where((l) => l.temperature == 'Caliente').length;
+  int get hotCount =>
+      _metrics?.hotCount ??
+      leads.where((l) => l.temperature == 'Caliente').length;
 
   double get conversionRate =>
-      totalCount > 0 ? (qualifiedCount / totalCount) * 100 : 0.0;
+      _metrics?.conversionRate ??
+      (totalCount > 0 ? (qualifiedCount / totalCount) * 100 : 0.0);
 
-  double get totalPipelinePotential => leads
-      .where((l) => l.status != 'Descartado')
-      .fold<double>(0.0, (acc, l) => acc + l.estimatedValue);
+  double get totalPipelinePotential =>
+      _metrics?.totalPipelinePotential ??
+      leads
+          .where((l) => l.status != 'Descartado')
+          .fold<double>(0.0, (acc, l) => acc + l.estimatedValue);
 }

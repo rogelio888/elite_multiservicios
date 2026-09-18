@@ -22,7 +22,6 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
   String _selectedSector = 'Todos';
   String _selectedAdvisor = 'Todos';
   String _selectedStatus = 'Todos';
-  String _selectedTemperature = 'Todos';
   bool _isTableView =
       false; // Alternar entre Vista Mosaico Enterprise y Vista Hoja de Cálculo
 
@@ -54,6 +53,12 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _leadsService.loadLeads();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -76,7 +81,22 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                 children: [
                   // 1. Cabecera Ejecutiva & Botón de Acción Principal
                   _buildHeader(isDark, isMobile),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
+                  ValueListenableBuilder<bool>(
+                    valueListenable: _leadsService.isLoadingNotifier,
+                    builder: (context, isLoading, _) {
+                      if (!isLoading) return const SizedBox.shrink();
+                      return const Padding(
+                        padding: EdgeInsets.only(bottom: 12),
+                        child: LinearProgressIndicator(
+                          color: Color(0xFF10B981),
+                          backgroundColor: Color(0xFFE2E8F0),
+                          minHeight: 3,
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 8),
 
                   // 2. Tablero de KPIs y Tasa de Conversión Dinámica
                   _buildKpiSection(isDark, isMobile, isTablet),
@@ -191,13 +211,33 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       ),
     );
 
+    final refreshButton = IconButton.outlined(
+      tooltip: 'Sincronizar con PostgreSQL',
+      style: IconButton.styleFrom(
+        foregroundColor: const Color(0xFF10B981),
+        side: BorderSide(
+          color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        padding: const EdgeInsets.all(12),
+      ),
+      onPressed: () => _leadsService.loadLeads(),
+      icon: const Icon(Icons.refresh_rounded, size: 20),
+    );
+
     if (isMobile) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           titleColumn,
           const SizedBox(height: 12),
-          newLeadButton,
+          Row(
+            children: [
+              Expanded(child: newLeadButton),
+              const SizedBox(width: 8),
+              refreshButton,
+            ],
+          ),
         ],
       );
     }
@@ -208,7 +248,14 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       children: [
         Expanded(child: titleColumn),
         const SizedBox(width: 16),
-        newLeadButton,
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            refreshButton,
+            const SizedBox(width: 10),
+            newLeadButton,
+          ],
+        ),
       ],
     );
   }
@@ -223,7 +270,6 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
     final enEspera = _leadsService.waitingCount;
     final calificados = _leadsService.qualifiedCount;
     final convRate = _leadsService.conversionRate;
-    final totalPotential = _leadsService.totalPipelinePotential;
 
     final kpis = [
       _buildKpiCard(
@@ -256,7 +302,7 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
         subtitle: '${convRate.toStringAsFixed(1)}% tasa de éxito',
         icon: Icons.verified,
         accentColor: const Color(0xFF10B981),
-        badgeText: 'Bs. ${totalPotential.toStringAsFixed(0)} pot.',
+        badgeText: '$calificados calificados',
         isDark: isDark,
       ),
     ];
@@ -545,25 +591,6 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       },
     );
 
-    final tempDropdown = DropdownButtonFormField<String>(
-      key: ValueKey('temp_$_selectedTemperature'),
-      initialValue: _selectedTemperature,
-      isExpanded: true,
-      decoration: const InputDecoration(
-        labelText: 'Temperatura',
-        isDense: true,
-      ),
-      items: const [
-        DropdownMenuItem(value: 'Todos', child: Text('Todas')),
-        DropdownMenuItem(value: 'Caliente', child: Text('🔥 Caliente')),
-        DropdownMenuItem(value: 'Templado', child: Text('⚡ Templado')),
-        DropdownMenuItem(value: 'Frío', child: Text('❄️ Frío')),
-      ],
-      onChanged: (val) {
-        if (val != null) setState(() => _selectedTemperature = val);
-      },
-    );
-
     final viewToggle = Container(
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF161F30) : const Color(0xFFF1F5F9),
@@ -620,12 +647,6 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                     Expanded(child: advisorDropdown),
                     const SizedBox(width: 8),
                     Expanded(child: statusDropdown),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(child: tempDropdown),
                     const SizedBox(width: 8),
                     viewToggle,
                   ],
@@ -638,9 +659,7 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                 const SizedBox(width: 12),
                 SizedBox(width: 160, child: advisorDropdown),
                 const SizedBox(width: 12),
-                SizedBox(width: 180, child: statusDropdown),
-                const SizedBox(width: 12),
-                SizedBox(width: 140, child: tempDropdown),
+                SizedBox(width: 200, child: statusDropdown),
                 const SizedBox(width: 12),
                 viewToggle,
               ],
@@ -701,7 +720,6 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
 
   Widget _buildLeadCard(LeadModel item, bool isDark) {
     final statusColor = _getStatusColor(item.status);
-    final tempBadge = _getTemperatureBadge(item.temperature);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -778,7 +796,43 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        tempBadge,
+                        if (item.isPromoted)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 7,
+                              vertical: 2.5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF10B981,
+                              ).withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(
+                                color: const Color(
+                                  0xFF10B981,
+                                ).withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.rocket_launch,
+                                  size: 11,
+                                  color: Color(0xFF10B981),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'En Pipeline',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF10B981),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                       ],
                     ),
                     const SizedBox(height: 3),
@@ -829,47 +883,37 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
 
           const SizedBox(height: 12),
 
-          // Fila 2: Decisor / Contacto Clave & Valor Estimado
+          // Fila 2: Decisor / Contacto
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF16233B) : const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(6),
+              color: isDark
+                  ? const Color(0xFF0F172A).withValues(alpha: 0.6)
+                  : const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.person_outline,
-                      size: 14,
-                      color: Color(0xFF3B82F6),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      item.contactPerson,
-                      style: GoogleFonts.inter(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w500,
-                        color: isDark
-                            ? const Color(0xFFE2E8F0)
-                            : const Color(0xFF334155),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                const Icon(
+                  Icons.person_outline,
+                  size: 14,
+                  color: Color(0xFF3B82F6),
                 ),
-                if (item.estimatedValue > 0)
-                  Text(
-                    'Bs. ${item.estimatedValue.toStringAsFixed(0)}',
-                    style: GoogleFonts.jetBrainsMono(
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    item.contactPerson,
+                    style: GoogleFonts.inter(
                       fontSize: 11.5,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF10B981),
+                      fontWeight: FontWeight.w500,
+                      color: isDark
+                          ? const Color(0xFFE2E8F0)
+                          : const Color(0xFF334155),
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
+                ),
               ],
             ),
           ),
@@ -1002,11 +1046,16 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
           // Fila 6: Barra de Acciones Operativas (Estado, Agenda y Promover a Oportunidad)
           Row(
             children: [
-              // Selector de Estado Rápido
+              // Selector de Estado con accion automática al seleccionar Interesado (Calificado)
               PopupMenuButton<String>(
                 tooltip: 'Cambiar estado',
-                onSelected: (newSt) =>
-                    _leadsService.updateStatus(item.id, newSt),
+                onSelected: (newSt) {
+                  if (newSt == 'Interesado (Calificado)') {
+                    _promoteLeadToOpportunity(item);
+                  } else {
+                    _leadsService.updateStatus(item.id, newSt);
+                  }
+                },
                 itemBuilder: (ctx) => _statuses
                     .where((s) => s != 'Todos')
                     .map(
@@ -1031,8 +1080,8 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                     .toList(),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 9,
-                    vertical: 4,
+                    horizontal: 10,
+                    vertical: 5,
                   ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.12),
@@ -1073,70 +1122,11 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
               // Botón rápido de llamada / agenda
               IconButton(
                 icon: const Icon(Icons.add_task, size: 17),
-                tooltip: 'Agendar llamada en CRM Agenda',
+                tooltip: 'Agendar compromiso / llamada en Agenda CRM',
                 color: const Color(0xFF6366F1),
                 visualDensity: VisualDensity.compact,
                 onPressed: () => _scheduleQuickTask(item),
               ),
-
-              const Spacer(),
-
-              // Botón Promover a Oportunidad
-              if (!item.isPromoted)
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    minimumSize: const Size(0, 32),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    elevation: 0,
-                  ),
-                  onPressed: () => _promoteLeadToOpportunity(item),
-                  icon: const Icon(Icons.rocket_launch, size: 13),
-                  label: Text(
-                    'Promover a Oportunidad',
-                    style: GoogleFonts.inter(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                )
-              else
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.check_circle,
-                        size: 13,
-                        color: Color(0xFF10B981),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'En Pipeline',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF10B981),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
             ],
           ),
         ],
@@ -1215,15 +1205,6 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
               ),
               DataColumn(
                 label: Text(
-                  'VALOR EST.',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 11,
-                  ),
-                ),
-              ),
-              DataColumn(
-                label: Text(
                   'ESTADO',
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.w700,
@@ -1278,7 +1259,6 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                       ),
                     ),
                   ),
-                  DataCell(_getTemperatureBadge(item.temperature)),
                   DataCell(
                     Text(item.advisor, style: GoogleFonts.inter(fontSize: 12)),
                   ),
@@ -1302,17 +1282,6 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      item.estimatedValue > 0
-                          ? 'Bs. ${item.estimatedValue.toStringAsFixed(0)}'
-                          : '—',
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w700,
-                      ),
                     ),
                   ),
                   DataCell(
@@ -1387,11 +1356,6 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
         final titleCtrl = TextEditingController(
           text: 'Servicio Integral para ${item.company}',
-        );
-        final amountCtrl = TextEditingController(
-          text: item.estimatedValue > 0
-              ? item.estimatedValue.toStringAsFixed(0)
-              : '6500',
         );
         String serviceType = item.sector.contains('Clínicas')
             ? 'Limpieza Hospitalaria & Bioseguridad'
@@ -1503,58 +1467,41 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                   TextFormField(
                     controller: titleCtrl,
                     decoration: const InputDecoration(
-                      labelText: 'Título de la Oportunidad *',
+                      labelText: 'Título de la Oportunidad / Negocio *',
+                      hintText: 'Ej: Servicio de Limpieza y Mantenimiento',
                       isDense: true,
                     ),
                   ),
                   const SizedBox(height: 14),
 
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: amountCtrl,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            labelText: 'Monto Estimado *',
-                            prefixText: 'Bs. ',
-                            isDense: true,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: serviceType,
-                          isExpanded: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Tipo de Servicio',
-                            isDense: true,
-                          ),
-                          items:
-                              [
-                                    'Limpieza Hospitalaria & Bioseguridad',
-                                    'Mantenimiento Corporativo',
-                                    'Mantenimiento & Jardinería Educativa',
-                                    'Seguridad & Vigilancia Física',
-                                    'Desinfección & Fumigación Integral',
-                                  ]
-                                  .map(
-                                    (st) => DropdownMenuItem(
-                                      value: st,
-                                      child: Text(
-                                        st,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                          onChanged: (v) {
-                            if (v != null) serviceType = v;
-                          },
-                        ),
-                      ),
-                    ],
+                  DropdownButtonFormField<String>(
+                    initialValue: serviceType,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Tipo de Servicio a Cotizar',
+                      isDense: true,
+                    ),
+                    items:
+                        [
+                              'Limpieza Hospitalaria & Bioseguridad',
+                              'Mantenimiento Corporativo',
+                              'Mantenimiento & Jardinería Educativa',
+                              'Seguridad & Vigilancia Física',
+                              'Desinfección & Fumigación Integral',
+                            ]
+                            .map(
+                              (st) => DropdownMenuItem(
+                                value: st,
+                                child: Text(
+                                  st,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (v) {
+                      if (v != null) serviceType = v;
+                    },
                   ),
 
                   const SizedBox(height: 24),
@@ -1643,98 +1590,349 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
   }
 
   void _scheduleQuickTask(LeadModel item) {
+    DateTime selectedDate = DateTime.now().add(const Duration(days: 1));
+    TimeOfDay selectedTime = const TimeOfDay(hour: 10, minute: 0);
+    String taskType = CrmTaskType.call;
+    String priority = 'Media';
+
+    final titleCtrl = TextEditingController(
+      text: 'Llamar a ${item.contactPerson} (${item.company})',
+    );
+    final contextCtrl = TextEditingController(
+      text:
+          'Coordinar visita técnica y presentación de portafolio de servicios.',
+    );
+
     showDialog(
       context: context,
       builder: (ctx) {
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
-        final noteCtrl = TextEditingController(
-          text: 'Llamar a ${item.contactPerson} para coordinar visita técnica.',
-        );
-        String taskType = CrmTaskType.call;
 
-        return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          title: Text(
-            'Agendar Seguimiento en CRM Agenda',
-            style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Cuenta: ${item.company} (${item.phone})',
-                style: GoogleFonts.inter(
-                  fontSize: 12.5,
-                  color: const Color(0xFF64748B),
-                ),
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            final dateText =
+                '${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year}';
+            final timeText =
+                '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}';
+
+            return Dialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-              const SizedBox(height: 14),
-              DropdownButtonFormField<String>(
-                initialValue: taskType,
-                decoration: const InputDecoration(
-                  labelText: 'Tipo de Tarea',
-                  isDense: true,
-                ),
-                items: CrmTaskType.all
-                    .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-                    .toList(),
-                onChanged: (v) {
-                  if (v != null) taskType = v;
-                },
+              insetPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 24,
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: noteCtrl,
-                maxLines: 2,
-                decoration: const InputDecoration(
-                  labelText: 'Contexto de la llamada / cita',
-                  isDense: true,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6366F1),
-                foregroundColor: Colors.white,
-              ),
-              onPressed: () {
-                _agendaService.addTask(
-                  CrmTaskItem(
-                    id: 'TSK-${DateTime.now().millisecondsSinceEpoch}',
-                    title: 'Seguimiento con ${item.company}',
-                    taskType: taskType,
-                    clientName: item.company,
-                    contactPerson: item.contactPerson,
-                    phone: item.phone,
-                    scheduledAt: DateTime.now().add(const Duration(hours: 4)),
-                    scheduledTimeText: '15:30',
-                    priority: 'Media',
-                    status: 'Pendiente',
-                    callContext: noteCtrl.text.trim(),
-                    createdAt: DateTime.now(),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 520),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Encabezado
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF6366F1,
+                                ).withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.alarm_add_rounded,
+                                color: Color(0xFF6366F1),
+                                size: 22,
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Agendar Seguimiento en CRM Agenda',
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 16.5,
+                                      color: isDark
+                                          ? Colors.white
+                                          : const Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  Text(
+                                    'Cuenta: ${item.company} • Tel: ${item.phone}',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: const Color(0xFF64748B),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Título del compromiso / tarea
+                        TextFormField(
+                          controller: titleCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Título del compromiso / tarea *',
+                            hintText: 'Ej: Llamar para confirmar cita técnica',
+                            prefixIcon: Icon(Icons.title, size: 18),
+                            isDense: true,
+                          ),
+                        ),
+
+                        const SizedBox(height: 14),
+
+                        // Tipo de Acción y Prioridad
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: DropdownButtonFormField<String>(
+                                initialValue: taskType,
+                                isExpanded: true,
+                                decoration: const InputDecoration(
+                                  labelText: 'Tipo de Tarea',
+                                  prefixIcon: Icon(Icons.task_alt, size: 18),
+                                  isDense: true,
+                                ),
+                                items: CrmTaskType.all
+                                    .map(
+                                      (t) => DropdownMenuItem(
+                                        value: t,
+                                        child: Text(
+                                          t,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (v) {
+                                  if (v != null) {
+                                    setDialogState(() => taskType = v);
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 2,
+                              child: DropdownButtonFormField<String>(
+                                initialValue: priority,
+                                decoration: const InputDecoration(
+                                  labelText: 'Prioridad',
+                                  isDense: true,
+                                ),
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 'Alta / Urgente',
+                                    child: Text('🔴 Alta'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Media',
+                                    child: Text('🟡 Media'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Normal',
+                                    child: Text('🟢 Normal'),
+                                  ),
+                                ],
+                                onChanged: (v) {
+                                  if (v != null) {
+                                    setDialogState(() => priority = v);
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 14),
+
+                        // Fecha y Hora Programada
+                        Row(
+                          children: [
+                            // Selector de Fecha
+                            Expanded(
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8),
+                                onTap: () async {
+                                  final picked = await showDatePicker(
+                                    context: context,
+                                    initialDate: selectedDate,
+                                    firstDate: DateTime.now().subtract(
+                                      const Duration(days: 1),
+                                    ),
+                                    lastDate: DateTime.now().add(
+                                      const Duration(days: 365),
+                                    ),
+                                  );
+                                  if (picked != null) {
+                                    setDialogState(() => selectedDate = picked);
+                                  }
+                                },
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    labelText: 'Fecha Programada *',
+                                    prefixIcon: Icon(
+                                      Icons.calendar_today,
+                                      size: 18,
+                                    ),
+                                    isDense: true,
+                                  ),
+                                  child: Text(
+                                    dateText,
+                                    style: GoogleFonts.jetBrainsMono(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(width: 12),
+
+                            // Selector de Hora
+                            Expanded(
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8),
+                                onTap: () async {
+                                  final picked = await showTimePicker(
+                                    context: context,
+                                    initialTime: selectedTime,
+                                  );
+                                  if (picked != null) {
+                                    setDialogState(() => selectedTime = picked);
+                                  }
+                                },
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    labelText: 'Hora Programada *',
+                                    prefixIcon: Icon(
+                                      Icons.access_time,
+                                      size: 18,
+                                    ),
+                                    isDense: true,
+                                  ),
+                                  child: Text(
+                                    timeText,
+                                    style: GoogleFonts.jetBrainsMono(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 14),
+
+                        // Contexto e Instrucciones
+                        TextFormField(
+                          controller: contextCtrl,
+                          maxLines: 3,
+                          decoration: const InputDecoration(
+                            labelText:
+                                'Contexto de la llamada / Instrucción para el Asesor *',
+                            hintText:
+                                'Ej: Llamar a las 16:00 porque el encargado llega a esa hora...',
+                            alignLabelWithHint: true,
+                            isDense: true,
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Botones de acción
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('Cancelar'),
+                            ),
+                            const SizedBox(width: 10),
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF6366F1),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: () {
+                                final finalTitle =
+                                    titleCtrl.text.trim().isNotEmpty
+                                    ? titleCtrl.text.trim()
+                                    : 'Seguimiento con ${item.company}';
+
+                                final scheduledDateTime = DateTime(
+                                  selectedDate.year,
+                                  selectedDate.month,
+                                  selectedDate.day,
+                                  selectedTime.hour,
+                                  selectedTime.minute,
+                                );
+
+                                _agendaService.addTask(
+                                  CrmTaskItem(
+                                    id: 'TSK-${DateTime.now().millisecondsSinceEpoch}',
+                                    title: finalTitle,
+                                    taskType: taskType,
+                                    clientName: item.company,
+                                    contactPerson: item.contactPerson,
+                                    phone: item.phone,
+                                    scheduledAt: scheduledDateTime,
+                                    scheduledTimeText: timeText,
+                                    priority: priority,
+                                    status: 'Pendiente',
+                                    callContext: contextCtrl.text.trim(),
+                                    createdAt: DateTime.now(),
+                                    customerId: item.id,
+                                  ),
+                                );
+
+                                Navigator.pop(ctx);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: const Color(0xFF312E81),
+                                    content: Text(
+                                      'Tarea programada para el $dateText a las $timeText en CRM Agenda.',
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.event_available, size: 18),
+                              label: const Text('Guardar en Agenda'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                );
-                Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    backgroundColor: Color(0xFF312E81),
-                    content: Text('Tarea programada con éxito en CRM Agenda.'),
-                  ),
-                );
-              },
-              child: const Text('Guardar Tarea'),
-            ),
-          ],
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -1747,10 +1945,8 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
     final urlCtrl = TextEditingController();
     final contactCtrl = TextEditingController();
     final notesCtrl = TextEditingController();
-    final valueCtrl = TextEditingController(text: '5000');
     String sectorVal = 'Clínicas y centros médicos';
     String advisorVal = 'Rodrigo Acha';
-    String tempVal = 'Templado';
 
     showDialog(
       context: context,
@@ -1923,48 +2119,14 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                   ),
                   const SizedBox(height: 14),
 
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: urlCtrl,
-                          decoration: const InputDecoration(
-                            labelText: 'Sitio Web / Perfil Maps',
-                            hintText: 'https://...',
-                            prefixIcon: Icon(Icons.link),
-                            isDense: true,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: tempVal,
-                          isExpanded: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Temperatura Inicial',
-                            isDense: true,
-                          ),
-                          items: const [
-                            DropdownMenuItem(
-                              value: 'Caliente',
-                              child: Text('🔥 Caliente (Listo)'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'Templado',
-                              child: Text('⚡ Templado (En evaluación)'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'Frío',
-                              child: Text('❄️ Frío (Sin contacto)'),
-                            ),
-                          ],
-                          onChanged: (v) {
-                            if (v != null) tempVal = v;
-                          },
-                        ),
-                      ),
-                    ],
+                  TextFormField(
+                    controller: urlCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Sitio Web / Perfil Maps',
+                      hintText: 'https://...',
+                      prefixIcon: Icon(Icons.link),
+                      isDense: true,
+                    ),
                   ),
                   const SizedBox(height: 14),
 
@@ -2002,8 +2164,6 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                         ),
                         onPressed: () {
                           if (companyCtrl.text.trim().isNotEmpty) {
-                            final parsedValue =
-                                double.tryParse(valueCtrl.text.trim()) ?? 0.0;
                             _leadsService.addLead(
                               LeadModel(
                                 id: 'PROSP-${DateTime.now().millisecondsSinceEpoch % 10000}',
@@ -2024,7 +2184,7 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                                     ? urlCtrl.text.trim()
                                     : null,
                                 status: 'Prospectado',
-                                temperature: tempVal,
+                                temperature: 'Normal',
                                 contactPerson:
                                     contactCtrl.text.trim().isNotEmpty
                                     ? contactCtrl.text.trim()
@@ -2032,7 +2192,7 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                                 notes: notesCtrl.text.trim().isNotEmpty
                                     ? notesCtrl.text.trim()
                                     : 'Prospecto recién ingresado.',
-                                estimatedValue: parsedValue,
+                                estimatedValue: 0.0,
                               ),
                             );
 
@@ -2085,15 +2245,8 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
           _selectedAdvisor == 'Todos' || item.advisor == _selectedAdvisor;
       final matchesStatus =
           _selectedStatus == 'Todos' || item.status == _selectedStatus;
-      final matchesTemp =
-          _selectedTemperature == 'Todos' ||
-          item.temperature == _selectedTemperature;
 
-      return matchesSearch &&
-          matchesSector &&
-          matchesAdvisor &&
-          matchesStatus &&
-          matchesTemp;
+      return matchesSearch && matchesSector && matchesAdvisor && matchesStatus;
     }).toList();
   }
 
@@ -2131,38 +2284,6 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       return const Color(0xFFF59E0B);
     }
     return const Color(0xFF64748B);
-  }
-
-  Widget _getTemperatureBadge(String temperature) {
-    Color col;
-    String iconText;
-    if (temperature == 'Caliente') {
-      col = const Color(0xFFEF4444);
-      iconText = '🔥 Caliente';
-    } else if (temperature == 'Templado') {
-      col = const Color(0xFFF59E0B);
-      iconText = '⚡ Templado';
-    } else {
-      col = const Color(0xFF3B82F6);
-      iconText = '❄️ Frío';
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-      decoration: BoxDecoration(
-        color: col.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: col.withValues(alpha: 0.25)),
-      ),
-      child: Text(
-        iconText,
-        style: GoogleFonts.inter(
-          fontSize: 10.5,
-          fontWeight: FontWeight.w700,
-          color: col,
-        ),
-      ),
-    );
   }
 
   Widget _buildEmptyState(bool isDark) {
