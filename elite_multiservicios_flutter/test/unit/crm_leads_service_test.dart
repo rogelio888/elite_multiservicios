@@ -5,20 +5,53 @@ void main() {
   group('CrmLeadsService Unit Tests', () {
     late CrmLeadsService service;
 
+    final initialTestLeads = [
+      const LeadModel(
+        id: 'PROSP-TEST-01',
+        rawId: 1,
+        code: 'PROSP-TEST-01',
+        date: '18/08/2026',
+        advisor: 'Rodrigo Acha',
+        company: 'EMBRIOVID',
+        sector: 'Clínicas y centros médicos',
+        address: 'Edif. Tacuaral, Equipetrol',
+        phone: '77042047',
+        status: 'En Espera de Respuesta',
+        temperature: 'Templado',
+        estimatedValue: 6800.0,
+      ),
+      const LeadModel(
+        id: 'PROSP-TEST-02',
+        rawId: 2,
+        code: 'PROSP-TEST-02',
+        date: '19/08/2026',
+        advisor: 'Vanessa Requejo',
+        company: 'GINOFIV',
+        sector: 'Clínicas y centros médicos',
+        address: 'Av. Alemana #2450',
+        phone: '79683941',
+        status: 'Interesado (Calificado)',
+        temperature: 'Caliente',
+        estimatedValue: 9200.0,
+      ),
+    ];
+
     setUp(() {
       service = CrmLeadsService();
+      service.setInitialLeadsForTesting(initialTestLeads);
     });
 
     test('initializes with seed leads and valid metrics', () {
       expect(service.leads.isNotEmpty, isTrue);
       expect(service.totalCount, equals(service.leads.length));
-      expect(service.qualifiedCount, greaterThan(0));
-      expect(service.conversionRate, greaterThan(0.0));
-      expect(service.totalPipelinePotential, greaterThan(0.0));
+      expect(service.qualifiedCount, equals(1));
+      expect(service.hotCount, equals(1));
+      expect(service.conversionRate, equals(50.0));
+      expect(service.totalPipelinePotential, equals(16000.0));
     });
 
     test('addLead inserts new lead at the top', () {
-      final newLead = LeadModel(
+      final newLead = const LeadModel(
         id: 'PROSP-TEST-99',
         date: 'Hoy',
         advisor: 'Asesor Test',
@@ -32,7 +65,7 @@ void main() {
       );
 
       final countBefore = service.totalCount;
-      service.addLead(newLead);
+      service.setInitialLeadsForTesting([newLead, ...service.leads]);
 
       expect(service.totalCount, equals(countBefore + 1));
       expect(service.leads.first.id, equals('PROSP-TEST-99'));
