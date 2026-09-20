@@ -17,6 +17,9 @@ class AuthService extends ChangeNotifier {
   bool _isMfaPending = false;
   bool get isMfaPending => _isMfaPending;
 
+  bool _isSessionMfaVerified = false;
+  bool get isSessionMfaVerified => _isSessionMfaVerified;
+
   bool _isCheckingMfa = false;
   bool get isCheckingMfa => _isCheckingMfa;
 
@@ -25,6 +28,13 @@ class AuthService extends ChangeNotifier {
 
   MfaChallengeResponse? _currentMfaChallenge;
   MfaChallengeResponse? get currentMfaChallenge => _currentMfaChallenge;
+
+  void markSessionMfaVerified() {
+    _isSessionMfaVerified = true;
+    _isMfaPending = false;
+    _currentMfaChallenge = null;
+    notifyListeners();
+  }
 
   void setMfaPending(
     MfaChallengeResponse? challenge, {
@@ -87,6 +97,7 @@ class AuthService extends ChangeNotifier {
   }) async {
     _isCheckingMfa = true;
     _currentRememberMe = rememberMe;
+    _isSessionMfaVerified = false;
     try {
       final authSuccess = await _client.emailIdp.login(
         email: email.trim(),
@@ -189,8 +200,13 @@ class AuthService extends ChangeNotifier {
 
   /// Comprueba si la sesión activa del usuario actual ya está verificada con MFA en PostgreSQL.
   Future<bool> isCurrentSessionMfaVerified() async {
+    if (_isSessionMfaVerified) return true;
     try {
-      return await _client.mfa.isSessionVerified();
+      final verified = await _client.mfa.isSessionVerified();
+      if (verified) {
+        _isSessionMfaVerified = true;
+      }
+      return verified;
     } catch (e) {
       if (kDebugMode) {
         print('[AuthService] Error comprobando sesión MFA: $e');
@@ -203,9 +219,10 @@ class AuthService extends ChangeNotifier {
   /// Si sí, retorna el challenge. Si no, retorna null.
   Future<MfaChallengeResponse?> checkMfaRequired({
     required bool rememberMe,
+    bool notify = true,
   }) async {
     _isCheckingMfa = true;
-    notifyListeners();
+    if (notify) notifyListeners();
     try {
       final trustedToken = await getTrustedDeviceToken();
       final challenge = await _client.mfa.checkRequired(
@@ -213,9 +230,12 @@ class AuthService extends ChangeNotifier {
         trustedDeviceToken: trustedToken,
       );
       if (challenge != null) {
-        setMfaPending(challenge, rememberMe: rememberMe);
+        _currentMfaChallenge = challenge;
+        _isMfaPending = true;
+        _currentRememberMe = rememberMe;
       } else {
-        clearMfaPending();
+        _currentMfaChallenge = null;
+        _isMfaPending = false;
       }
       return challenge;
     } catch (e) {
@@ -225,7 +245,7 @@ class AuthService extends ChangeNotifier {
       return null;
     } finally {
       _isCheckingMfa = false;
-      notifyListeners();
+      if (notify) notifyListeners();
     }
   }
 
@@ -241,6 +261,7 @@ class AuthService extends ChangeNotifier {
       rememberMe: rememberMe,
     );
     if (response.success) {
+      _isSessionMfaVerified = true;
       clearMfaPending();
     }
     // Si el backend devolvió un trustedDeviceToken, guardarlo
@@ -338,6 +359,7 @@ class AuthService extends ChangeNotifier {
   /// 1. Revoca la sesión en base de datos y registra el evento LOGOUT en el servidor.
   /// 2. Purga los tokens JWT locales de almacenamiento seguro mediante client.auth.signOutDevice().
   Future<void> logout({int? activeSessionId}) async {
+    _isSessionMfaVerified = false;
     clearMfaPending();
     try {
       // 1. Intentar revocar en el servidor (best-effort)

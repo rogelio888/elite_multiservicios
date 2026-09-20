@@ -118,8 +118,9 @@ class _MfaVerificationScreenState extends State<MfaVerificationScreen> {
       );
 
       if (mounted && response.success) {
-        widget.onMfaSuccess?.call();
-        if (Navigator.of(context).canPop()) {
+        if (widget.onMfaSuccess != null) {
+          widget.onMfaSuccess!.call();
+        } else if (Navigator.of(context).canPop()) {
           Navigator.of(context).pop(true);
         }
       }
