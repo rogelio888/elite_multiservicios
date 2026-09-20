@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/crm_customers_service.dart';
+import '../../data/crm_pipeline_service.dart';
 
 /// Modelo local de Línea de Cotización para desglose operativo y propuesta comercial.
 class QuoteItem {
@@ -216,7 +217,8 @@ class OpportunityItem {
 
 /// Vista interactiva del Tablero Kanban y Embudo Comercial (Pipeline).
 class CrmPipelineView extends StatefulWidget {
-  const CrmPipelineView({super.key});
+  final void Function(int tabIndex)? onNavigateToTab;
+  const CrmPipelineView({super.key, this.onNavigateToTab});
 
   @override
   State<CrmPipelineView> createState() => _CrmPipelineViewState();
@@ -237,305 +239,29 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
   String _activeMobileStage = 'Calificación';
   bool _isListView = false;
 
-  final List<OpportunityItem> _deals = [
-    const OpportunityItem(
-      id: 'OPP-101',
-      title: 'Seguridad Perimetral 24/7 (3 Puestos)',
-      clientName: 'Condominio Las Palmas Real',
-      contactPerson: 'Lic. Marcelo Justiniano',
-      phone: '77312890',
-      serviceType: 'Seguridad',
-      amount: 14500.0,
-      stage: 'Visita Técnica',
-      probability: 60,
-      owner: 'Carlos V.',
-      closingDate: '30 Sep 2026',
-      notes:
-          'Visita técnica programada para inspeccionar garitas de ingreso y cerco perimétrico.',
-      contractType: 'Recurrente Mensual',
-      executionTime: 'Contrato 12 meses renovable',
-      paymentTerms: 'Facturación mensual contra planilla',
-      advancePercentage: 0,
-      quoteItems: [
-        QuoteItem(
-          id: 'Q-101-1',
-          category: 'Personal',
-          concept: 'Puesto Vigilancia 24/7 (Turnos rotativos 12h, 3 guardias)',
-          unitType: 'Puesto 24/7',
-          quantity: 2,
-          unitPrice: 6800.0,
-        ),
-        QuoteItem(
-          id: 'Q-101-2',
-          category: 'Equipamiento',
-          concept: 'Kit Radios VHF Motorola + Base y baterías de respaldo',
-          unitType: 'Kit',
-          quantity: 1,
-          unitPrice: 500.0,
-        ),
-        QuoteItem(
-          id: 'Q-101-3',
-          category: 'Tecnología',
-          concept: 'Rondín Electrónico RFID con reporte en tiempo real y GPS',
-          unitType: 'Servicio',
-          quantity: 1,
-          unitPrice: 400.0,
-        ),
-      ],
-    ),
-    const OpportunityItem(
-      id: 'OPP-102',
-      title: 'Mantenimiento y Reparación de Grupo Electrógeno y Tanques',
-      clientName: 'Edificio Titanium',
-      contactPerson: 'Ing. Fernando Vaca',
-      phone: '76045122',
-      serviceType: 'Mantenimiento',
-      amount: 9800.0,
-      stage: 'Propuesta',
-      probability: 70,
-      owner: 'Elena R.',
-      closingDate: '25 Sep 2026',
-      notes:
-          'Proyecto por obra cerrada. Requieren 50% anticipo para adquisición de insumos y filtros.',
-      contractType: 'Proyecto Único',
-      executionTime: '7 días hábiles',
-      paymentTerms: '50% Anticipo / 50% Recepción Conforme',
-      advancePercentage: 50,
-      quoteItems: [
-        QuoteItem(
-          id: 'Q-102-1',
-          category: 'Mantenimiento',
-          concept: 'Mantenimiento Preventivo y Calibración Grupo Electrógeno',
-          unitType: 'Global',
-          quantity: 1,
-          unitPrice: 4200.0,
-        ),
-        QuoteItem(
-          id: 'Q-102-2',
-          category: 'Limpieza',
-          concept: 'Lavado y Desinfección Profunda de Tanques de Agua Potable',
-          unitType: 'Tanque',
-          quantity: 2,
-          unitPrice: 1800.0,
-        ),
-        QuoteItem(
-          id: 'Q-102-3',
-          category: 'Materiales',
-          concept: 'Kit Filtros, Aceite Sintético y Repuestos Certificados',
-          unitType: 'Kit',
-          quantity: 1,
-          unitPrice: 2000.0,
-        ),
-      ],
-    ),
-    const OpportunityItem(
-      id: 'OPP-103',
-      title: 'Limpieza Hospitalaria Especializada Integral',
-      clientName: 'Clínica Santa María',
-      contactPerson: 'Dra. Vanessa Saucedo',
-      phone: '78019344',
-      serviceType: 'Limpieza',
-      amount: 18200.0,
-      stage: 'Negociación',
-      probability: 85,
-      owner: 'Carlos V.',
-      closingDate: '20 Sep 2026',
-      notes:
-          'Revisión final de cláusulas contractuales y cronograma de turnos nocturnos.',
-      contractType: 'Recurrente Mensual',
-      executionTime: 'Contrato 12 meses',
-      paymentTerms: 'Facturación mensual a 30 días',
-      advancePercentage: 0,
-      quoteItems: [
-        QuoteItem(
-          id: 'Q-103-1',
-          category: 'Personal',
-          concept:
-              'Operario Limpieza Hospitalaria Especializada (Diurno/Nocturno)',
-          unitType: 'Operario',
-          quantity: 4,
-          unitPrice: 3800.0,
-        ),
-        QuoteItem(
-          id: 'Q-103-2',
-          category: 'Materiales',
-          concept:
-              'Insumos y Químicos Desinfectantes Hospitalarios Certificados',
-          unitType: 'Mes',
-          quantity: 1,
-          unitPrice: 3000.0,
-        ),
-      ],
-    ),
-    const OpportunityItem(
-      id: 'OPP-104',
-      title: 'Instalación CCTV 4K IA + Monitoreo Perimétrico Continuo',
-      clientName: 'TechLogistics Bolivia',
-      contactPerson: 'Ramiro Peinado',
-      phone: '71089233',
-      serviceType: 'Software',
-      amount: 32000.0,
-      stage: 'Calificación',
-      probability: 30,
-      owner: 'Rogelio A.',
-      closingDate: '15 Oct 2026',
-      notes:
-          'Modelo híbrido: Suministro de hardware e instalación inicial (Bs. 27,000) + Abono mensual de soporte y monitoreo (Bs. 5,000/mes).',
-      contractType: 'Híbrido',
-      executionTime: '15 días instalación + Abono mensual',
-      paymentTerms: 'Equipamiento al contado / Monitoreo mensual',
-      advancePercentage: 50,
-      quoteItems: [
-        QuoteItem(
-          id: 'Q-104-1',
-          category: 'Tecnología',
-          concept: 'Cámara IP Dahua 4K IA con Reconocimiento Facial y LPR',
-          unitType: 'Unid.',
-          quantity: 8,
-          unitPrice: 2500.0,
-        ),
-        QuoteItem(
-          id: 'Q-104-2',
-          category: 'Equipamiento',
-          concept:
-              'Servidor NVR 32 Canales + 8TB Almacenamiento Grado Seguridad',
-          unitType: 'Unid.',
-          quantity: 1,
-          unitPrice: 7000.0,
-        ),
-        QuoteItem(
-          id: 'Q-104-3',
-          category: 'Tecnología',
-          concept:
-              'Licencia e Integración Software Control de Accesos y Monitoreo',
-          unitType: 'Global',
-          quantity: 1,
-          unitPrice: 5000.0,
-        ),
-      ],
-    ),
-    const OpportunityItem(
-      id: 'OPP-105',
-      title: 'Paisajismo y Jardinería Corporativa',
-      clientName: 'Colegio Saint Peter',
-      contactPerson: 'Lic. Claudia Montero',
-      phone: '75034119',
-      serviceType: 'Jardinería',
-      amount: 5400.0,
-      stage: 'Ganada',
-      probability: 100,
-      owner: 'Elena R.',
-      closingDate: '10 Sep 2026',
-      notes:
-          'Contrato firmado por 1 año escolar. Primer servicio ejecutado exitosamente.',
-      contractType: 'Recurrente Mensual',
-      executionTime: 'Contrato 1 año',
-      paymentTerms: 'Facturación mensual a 30 días',
-      advancePercentage: 0,
-      quoteItems: [
-        QuoteItem(
-          id: 'Q-105-1',
-          category: 'Personal',
-          concept:
-              'Jardinero Especializado (Poda de formación, césped y cerco)',
-          unitType: 'Operario',
-          quantity: 2,
-          unitPrice: 2200.0,
-        ),
-        QuoteItem(
-          id: 'Q-105-2',
-          category: 'Materiales',
-          concept: 'Control Fitosanitario, Abono Orgánico y Fertilizantes',
-          unitType: 'Servicio',
-          quantity: 1,
-          unitPrice: 1000.0,
-        ),
-      ],
-    ),
-    const OpportunityItem(
-      id: 'OPP-106',
-      title: 'Vigilancia Física & Control de Ronda Perimetral',
-      clientName: 'Parque Industrial Sede Este',
-      contactPerson: 'Lic. Gustavo Aguilera',
-      phone: '72190877',
-      serviceType: 'Seguridad',
-      amount: 22000.0,
-      stage: 'Calificación',
-      probability: 40,
-      owner: 'Carlos V.',
-      closingDate: '05 Oct 2026',
-      notes: 'Solicitaron cotización para 4 guardias con turnos rotativos 12h.',
-      contractType: 'Recurrente Mensual',
-      executionTime: 'Contrato 24 meses',
-      paymentTerms: 'Facturación mensual',
-      advancePercentage: 0,
-      quoteItems: [
-        QuoteItem(
-          id: 'Q-106-1',
-          category: 'Personal',
-          concept: 'Puesto Guardia Seguridad Física 24h (Garitas 1 y 2)',
-          unitType: 'Puesto 24/7',
-          quantity: 3,
-          unitPrice: 6800.0,
-        ),
-        QuoteItem(
-          id: 'Q-106-2',
-          category: 'Personal',
-          concept: 'Patrullaje Preventivo Motorizado Nocturno (2 rondas/noche)',
-          unitType: 'Servicio',
-          quantity: 1,
-          unitPrice: 1600.0,
-        ),
-      ],
-    ),
-    const OpportunityItem(
-      id: 'OPP-107',
-      title: 'Pulido, Sellado y Vitrificado de Pisos de Alto Tráfico',
-      clientName: 'Banco Ganadero S.A.',
-      contactPerson: 'Lic. Paola Mercado',
-      phone: '77890123',
-      serviceType: 'Limpieza',
-      amount: 12500.0,
-      stage: 'Propuesta',
-      probability: 75,
-      owner: 'Elena R.',
-      closingDate: '28 Sep 2026',
-      notes:
-          'Trabajo puntual en fin de semana en sede central. Requiere 30% de anticipo para compra de químicos selladores.',
-      contractType: 'Proyecto Único',
-      executionTime: '5 días hábiles',
-      paymentTerms: '30% Anticipo / 70% Entrega de Obra',
-      advancePercentage: 30,
-      quoteItems: [
-        QuoteItem(
-          id: 'Q-107-1',
-          category: 'Personal',
-          concept: 'Cuadrilla Especializada de Pulido Nocturno (6 operarios)',
-          unitType: 'Servicio',
-          quantity: 1,
-          unitPrice: 6500.0,
-        ),
-        QuoteItem(
-          id: 'Q-107-2',
-          category: 'Materiales',
-          concept:
-              'Químicos Selladores y Cera Polimérica Antideslizante Alto Tráfico',
-          unitType: 'Kit',
-          quantity: 1,
-          unitPrice: 3500.0,
-        ),
-        QuoteItem(
-          id: 'Q-107-3',
-          category: 'Equipamiento',
-          concept:
-              'Alquiler y Traslado Maquinaria Rotativa Industrial de Alta Velocidad',
-          unitType: 'Servicio',
-          quantity: 1,
-          unitPrice: 2500.0,
-        ),
-      ],
-    ),
-  ];
+  final CrmPipelineService _pipelineService = CrmPipelineService();
+
+  @override
+  void initState() {
+    super.initState();
+    _pipelineService.addListener(_onServiceUpdate);
+    _pipelineService.loadDeals();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      CrmCustomersService().loadCustomers();
+    });
+  }
+
+  @override
+  void dispose() {
+    _pipelineService.removeListener(_onServiceUpdate);
+    super.dispose();
+  }
+
+  void _onServiceUpdate() {
+    if (mounted) setState(() {});
+  }
+
+  List<OpportunityItem> get _deals => _pipelineService.deals;
 
   List<OpportunityItem> get _filteredDeals {
     return _deals.where((item) {
@@ -561,19 +287,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
   );
 
   void _moveDeal(OpportunityItem deal, String newStage) {
-    setState(() {
-      final index = _deals.indexWhere((d) => d.id == deal.id);
-      if (index != -1) {
-        int newProb = deal.probability;
-        if (newStage == 'Calificación') newProb = 30;
-        if (newStage == 'Visita Técnica') newProb = 50;
-        if (newStage == 'Propuesta') newProb = 70;
-        if (newStage == 'Negociación') newProb = 85;
-        if (newStage == 'Ganada') newProb = 100;
-
-        _deals[index] = deal.copyWith(stage: newStage, probability: newProb);
-      }
-    });
+    _pipelineService.moveDeal(deal, newStage);
 
     final isJustWon =
         newStage == 'Ganada' &&
@@ -612,6 +326,31 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
   void _requestMoveDeal(OpportunityItem deal, String targetStage) {
     if (deal.stage == targetStage) return;
 
+    if (deal.stage == 'Ganada') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: const Color(0xFF0F172A),
+          content: Row(
+            children: [
+              const Icon(
+                Icons.info_outline,
+                color: Color(0xFFF59E0B),
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Esta oportunidad ya está formalizada en Clientes 360°. Para reabrir negociación o cancelarla, gestioná el contrato en Clientes 360°.',
+                  style: GoogleFonts.inter(fontSize: 12),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      return;
+    }
+
     if (targetStage == 'Visita Técnica') {
       if (deal.siteAddress.trim().isEmpty) {
         _showStageGateInspectionDialog(deal);
@@ -641,6 +380,30 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
   }
 
   void _regressDeal(OpportunityItem deal) {
+    if (deal.stage == 'Ganada') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: const Color(0xFF0F172A),
+          content: Row(
+            children: [
+              const Icon(
+                Icons.info_outline,
+                color: Color(0xFFF59E0B),
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Las oportunidades ganadas no se retroceden desde el Pipeline. Gestioná la renegociación desde su expediente en Clientes 360°.',
+                  style: GoogleFonts.inter(fontSize: 12),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      return;
+    }
     final curIdx = _stages.indexOf(deal.stage);
     if (curIdx > 0) {
       _moveDeal(deal, _stages[curIdx - 1]);
@@ -1432,9 +1195,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                         ],
                       );
 
-                      setState(() {
-                        _deals.add(newDeal);
-                      });
+                      _pipelineService.addDeal(newDeal);
                       Navigator.pop(ctx);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -1900,7 +1661,9 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                             color: Color(0xFF10B981),
                           ),
                           label: Text(
-                            'Editar Cotización',
+                            deal.stage == 'Ganada'
+                                ? 'Ver Cotización de Cierre'
+                                : 'Editar Cotización',
                             style: GoogleFonts.inter(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w600,
@@ -3128,6 +2891,26 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                               orElse: () => null,
                             );
 
+                        final dealBudgetItems = deal.quoteItems
+                            .map(
+                              (q) => ContractBudgetItem(
+                                id: q.id,
+                                description: '${q.category}: ${q.concept}',
+                                quantity: q.quantity,
+                                unit: q.unitType,
+                                unitPrice: q.unitPrice,
+                              ),
+                            )
+                            .toList();
+                        final dealServiceScope = deal.quoteItems.isNotEmpty
+                            ? deal.quoteItems
+                                  .map(
+                                    (q) =>
+                                        '• ${q.concept} (${q.quantity.toStringAsFixed(q.quantity % 1 == 0 ? 0 : 2)} ${q.unitType})',
+                                  )
+                                  .join('\n')
+                            : (deal.notes.isNotEmpty ? deal.notes : null);
+
                         if (existingCustomer != null) {
                           // Cliente 360° existente: vincular contrato sin duplicar cliente
                           final contract = CustomerContract(
@@ -3161,6 +2944,8 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                             status: 'Vigente',
                             startDate: startDateCtrl.text.trim(),
                             notes: wonNotesCtrl.text.trim(),
+                            serviceScope: dealServiceScope,
+                            budgetItems: dealBudgetItems,
                           );
                           customersService.addContractToCustomer(
                             existingCustomer.id,
@@ -3191,6 +2976,8 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                             status: 'Vigente',
                             startDate: startDateCtrl.text.trim(),
                             notes: wonNotesCtrl.text.trim(),
+                            serviceScope: dealServiceScope,
+                            budgetItems: dealBudgetItems,
                           );
 
                           final customer = CustomerItem(
@@ -3239,6 +3026,151 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
     );
   }
 
+  void _showAlreadyPromotedDialog(
+    OpportunityItem deal,
+    CustomerItem? customer,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      builder: (dCtx) {
+        return AlertDialog(
+          backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.verified,
+                  color: Color(0xFF10B981),
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Oportunidad Ya Formalizada',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      ),
+                    ),
+                    Text(
+                      'Ya existe un expediente activo en Clientes 360°.',
+                      style: GoogleFonts.inter(
+                        fontSize: 11.5,
+                        color: const Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          content: SizedBox(
+            width: 460,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'La oportunidad "${deal.id}" (${deal.title}) ya fue promovida a Clientes 360°. Para evitar duplicados de clientes o contratos, no se permite volver a promoverla.',
+                  style: GoogleFonts.inter(fontSize: 12.5, height: 1.4),
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF161F30)
+                        : const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFCBD5E1),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Cliente: ${customer?.tradeName ?? deal.clientName}',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                          color: const Color(0xFF3B82F6),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Razón Social: ${customer?.legalName ?? (deal.legalBusinessName.isNotEmpty ? deal.legalBusinessName : "${deal.clientName} S.R.L.")}',
+                        style: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          color: const Color(0xFF64748B),
+                        ),
+                      ),
+                      Text(
+                        'NIT: ${customer?.taxId ?? (deal.taxId.isNotEmpty ? deal.taxId : "S/N")}',
+                        style: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          color: const Color(0xFF64748B),
+                        ),
+                      ),
+                      if (customer != null &&
+                          customer.contracts.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          'Contrato: ${customer.contracts.first.title} (${customer.contracts.first.status})',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: const Color(0xFF10B981),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dCtx).pop(),
+              child: const Text('Entendido'),
+            ),
+            if (widget.onNavigateToTab != null)
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF10B981),
+                  foregroundColor: Colors.white,
+                ),
+                icon: const Icon(Icons.open_in_new, size: 16),
+                label: const Text('Ir a Clientes 360°'),
+                onPressed: () {
+                  Navigator.of(dCtx).pop();
+                  widget.onNavigateToTab!(8);
+                },
+              ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showPromoteToCustomerDialog(OpportunityItem deal) {
     final formKey = GlobalKey<FormState>();
     final customersService = CrmCustomersService();
@@ -3250,12 +3182,46 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
         .cast<CustomerItem?>()
         .firstWhere(
           (c) =>
+              c?.opportunityId == deal.id ||
               c?.tradeName.trim().toLowerCase() ==
                   deal.clientName.trim().toLowerCase() ||
               c?.legalName.trim().toLowerCase() ==
                   deal.clientName.trim().toLowerCase(),
           orElse: () => null,
         );
+
+    final isAlreadyPromoted =
+        deal.stage == 'Ganada' ||
+        customersService.isOpportunityPromoted(deal.id) ||
+        existingCustomer != null;
+
+    if (isAlreadyPromoted) {
+      if (widget.onNavigateToTab != null) {
+        widget.onNavigateToTab!(8);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: const Color(0xFF0F172A),
+            content: Row(
+              children: [
+                const Icon(Icons.verified, color: Color(0xFF10B981), size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Esta oportunidad ya está formalizada. Redirigiendo a Clientes 360°...',
+                    style: GoogleFonts.inter(fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        return;
+      }
+
+      _showAlreadyPromotedDialog(deal, existingCustomer);
+      return;
+    }
 
     final tradeNameCtrl = TextEditingController(
       text: existingCustomer?.tradeName ?? deal.clientName,
@@ -3730,6 +3696,26 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           isHeadquarters: true,
                         );
 
+                        final dealBudgetItems = deal.quoteItems
+                            .map(
+                              (q) => ContractBudgetItem(
+                                id: q.id,
+                                description: '${q.category}: ${q.concept}',
+                                quantity: q.quantity,
+                                unit: q.unitType,
+                                unitPrice: q.unitPrice,
+                              ),
+                            )
+                            .toList();
+                        final dealServiceScope = deal.quoteItems.isNotEmpty
+                            ? deal.quoteItems
+                                  .map(
+                                    (q) =>
+                                        '• ${q.concept} (${q.quantity.toStringAsFixed(q.quantity % 1 == 0 ? 0 : 2)} ${q.unitType})',
+                                  )
+                                  .join('\n')
+                            : (deal.notes.isNotEmpty ? deal.notes : null);
+
                         final contract = CustomerContract(
                           id: 'CTR-${DateTime.now().millisecondsSinceEpoch % 10000}',
                           title: deal.title,
@@ -3752,6 +3738,8 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           advancePercentage: deal.advancePercentage,
                           status: 'Vigente',
                           startDate: 'Hoy',
+                          serviceScope: dealServiceScope,
+                          budgetItems: dealBudgetItems,
                         );
 
                         final customer = CustomerItem(
@@ -3800,17 +3788,42 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
   void _showQuotationBuilderDialog(
     OpportunityItem deal, {
     String? targetStage,
+    bool? readOnly,
   }) {
+    final bool isReadOnly = readOnly ?? (deal.stage == 'Ganada');
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    String selectedContractType = deal.contractType;
-    String executionTime = deal.executionTime;
-    String paymentTerms = deal.paymentTerms;
+    String selectedContractType = deal.contractType.isNotEmpty
+        ? deal.contractType
+        : 'Proyecto Único';
+    String executionTime = deal.executionTime.isNotEmpty
+        ? deal.executionTime
+        : (selectedContractType == 'Servicio por Evento'
+              ? '3 días (Evento/Feria)'
+              : (selectedContractType == 'Híbrido' ||
+                        selectedContractType == 'Modelo Híbrido'
+                    ? '15 días instalación + Abono mensual'
+                    : (selectedContractType == 'Recurrente Mensual'
+                          ? 'Contrato 12 meses renovable'
+                          : '7 días hábiles')));
+    String paymentTerms = deal.paymentTerms.isNotEmpty
+        ? deal.paymentTerms
+        : (selectedContractType == 'Servicio por Evento'
+              ? '50% Reserva / 50% Inicio del Evento'
+              : (selectedContractType == 'Híbrido' ||
+                        selectedContractType == 'Modelo Híbrido'
+                    ? 'Hardware al contado / Monitoreo mensual'
+                    : (selectedContractType == 'Recurrente Mensual'
+                          ? 'Facturación mensual a 30 días contra planilla'
+                          : '50% Anticipo / 50% Contra Entrega')));
     int advancePct = deal.advancePercentage > 0
         ? deal.advancePercentage
-        : (deal.contractType == 'Proyecto Único' ? 50 : 0);
+        : (selectedContractType == 'Recurrente Mensual' ? 0 : 50);
     List<QuoteItem> localItems = deal.quoteItems
         .map((q) => q.copyWith())
         .toList();
+
+    final executionTimeCtrl = TextEditingController(text: executionTime);
+    final paymentTermsCtrl = TextEditingController(text: paymentTerms);
 
     showDialog(
       context: context,
@@ -3887,7 +3900,45 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                     : const Color(0xFF0F172A),
                               ),
                             ),
-                            if (targetStage != null) ...[
+                            if (isReadOnly) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(
+                                    0xFF10B981,
+                                  ).withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                    color: const Color(
+                                      0xFF10B981,
+                                    ).withValues(alpha: 0.3),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.lock_outline,
+                                      size: 11,
+                                      color: Color(0xFF10B981),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'PRESUPUESTO CERRADO (SOLO LECTURA)',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color(0xFF10B981),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ] else if (targetStage != null) ...[
                               const SizedBox(width: 8),
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -3954,169 +4005,361 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           ),
                         ),
                         const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color(0xFF161F30)
-                                : const Color(0xFFF1F5F9),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
+                        IgnorePointer(
+                          ignoring: isReadOnly,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
                               color: isDark
-                                  ? const Color(0xFF1E293B)
-                                  : const Color(0xFFE2E8F0),
+                                  ? const Color(0xFF161F30)
+                                  : const Color(0xFFF1F5F9),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: isDark
+                                    ? const Color(0xFF1E293B)
+                                    : const Color(0xFFE2E8F0),
+                              ),
                             ),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: _buildContractTypeTab(
-                                  label: 'Proyecto Único',
-                                  icon: Icons.construction_outlined,
-                                  color: const Color(0xFF8B5CF6),
-                                  isSelected:
-                                      selectedContractType == 'Proyecto Único',
-                                  isDark: isDark,
-                                  onTap: () {
-                                    setModalState(() {
-                                      selectedContractType = 'Proyecto Único';
-                                      advancePct = 50;
-                                      executionTime = '7 días hábiles';
-                                      paymentTerms =
-                                          '50% Anticipo / 50% Recepción Conforme';
-                                    });
-                                  },
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: _buildContractTypeTab(
+                                    label: 'Proyecto Único',
+                                    icon: Icons.handyman_outlined,
+                                    color: const Color(0xFFA855F7),
+                                    isSelected:
+                                        selectedContractType ==
+                                        'Proyecto Único',
+                                    isDark: isDark,
+                                    onTap: () {
+                                      setModalState(() {
+                                        selectedContractType = 'Proyecto Único';
+                                        advancePct = 50;
+                                        executionTime = '7 días hábiles';
+                                        paymentTerms =
+                                            '50% Anticipo / 50% Contra Entrega';
+                                        executionTimeCtrl.text = executionTime;
+                                        paymentTermsCtrl.text = paymentTerms;
+                                      });
+                                    },
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: _buildContractTypeTab(
-                                  label: 'Servicio por Evento',
-                                  icon: Icons.festival_outlined,
-                                  color: const Color(0xFFEAB308),
-                                  isSelected:
-                                      selectedContractType ==
-                                      'Servicio por Evento',
-                                  isDark: isDark,
-                                  onTap: () {
-                                    setModalState(() {
-                                      selectedContractType =
-                                          'Servicio por Evento';
-                                      advancePct = 50;
-                                      executionTime = '3 días (Evento/Feria)';
-                                      paymentTerms =
-                                          '50% Reserva / 50% Inicio del Evento';
-                                    });
-                                  },
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: _buildContractTypeTab(
+                                    label: 'Servicio por Evento',
+                                    icon: Icons.festival_outlined,
+                                    color: const Color(0xFFEAB308),
+                                    isSelected:
+                                        selectedContractType ==
+                                        'Servicio por Evento',
+                                    isDark: isDark,
+                                    onTap: () {
+                                      setModalState(() {
+                                        selectedContractType =
+                                            'Servicio por Evento';
+                                        advancePct = 50;
+                                        executionTime = '3 días (Evento/Feria)';
+                                        paymentTerms =
+                                            '50% Reserva / 50% Inicio del Evento';
+                                        executionTimeCtrl.text = executionTime;
+                                        paymentTermsCtrl.text = paymentTerms;
+                                      });
+                                    },
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: _buildContractTypeTab(
-                                  label: 'Recurrente Mensual',
-                                  icon: Icons.autorenew_outlined,
-                                  color: const Color(0xFF10B981),
-                                  isSelected:
-                                      selectedContractType ==
-                                      'Recurrente Mensual',
-                                  isDark: isDark,
-                                  onTap: () {
-                                    setModalState(() {
-                                      selectedContractType =
-                                          'Recurrente Mensual';
-                                      advancePct = 0;
-                                      executionTime =
-                                          'Contrato 12 meses renovable';
-                                      paymentTerms =
-                                          'Facturación mensual a 30 días';
-                                    });
-                                  },
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: _buildContractTypeTab(
+                                    label: 'Recurrente Mensual',
+                                    icon: Icons.autorenew_outlined,
+                                    color: const Color(0xFF10B981),
+                                    isSelected:
+                                        selectedContractType ==
+                                        'Recurrente Mensual',
+                                    isDark: isDark,
+                                    onTap: () {
+                                      setModalState(() {
+                                        selectedContractType =
+                                            'Recurrente Mensual';
+                                        advancePct = 0;
+                                        executionTime =
+                                            'Contrato 12 meses renovable';
+                                        paymentTerms =
+                                            'Facturación mensual a 30 días contra planilla';
+                                        executionTimeCtrl.text = executionTime;
+                                        paymentTermsCtrl.text = paymentTerms;
+                                      });
+                                    },
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: _buildContractTypeTab(
-                                  label: 'Modelo Híbrido',
-                                  icon: Icons.layers_outlined,
-                                  color: const Color(0xFFF59E0B),
-                                  isSelected: selectedContractType == 'Híbrido',
-                                  isDark: isDark,
-                                  onTap: () {
-                                    setModalState(() {
-                                      selectedContractType = 'Híbrido';
-                                      advancePct = 50;
-                                      executionTime =
-                                          '15 días instalación + Abono mensual';
-                                      paymentTerms =
-                                          'Hardware al contado / Monitoreo mensual';
-                                    });
-                                  },
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: _buildContractTypeTab(
+                                    label: 'Modelo Híbrido',
+                                    icon: Icons.layers_outlined,
+                                    color: const Color(0xFFF59E0B),
+                                    isSelected:
+                                        selectedContractType == 'Híbrido' ||
+                                        selectedContractType ==
+                                            'Modelo Híbrido',
+                                    isDark: isDark,
+                                    onTap: () {
+                                      setModalState(() {
+                                        selectedContractType = 'Híbrido';
+                                        advancePct = 50;
+                                        executionTime =
+                                            '15 días instalación + Abono mensual';
+                                        paymentTerms =
+                                            'Hardware al contado / Monitoreo mensual';
+                                        executionTimeCtrl.text = executionTime;
+                                        paymentTermsCtrl.text = paymentTerms;
+                                      });
+                                    },
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
 
                         const SizedBox(height: 12),
 
-                        // 2. Parámetros Comerciales Dinámicos
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color(0xFF161F30)
-                                : const Color(0xFFF8FAFC),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
+                        // 2. Parámetros Comerciales Dinámicos Personalizables
+                        IgnorePointer(
+                          ignoring: isReadOnly,
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
                               color: isDark
-                                  ? const Color(0xFF1E293B)
-                                  : const Color(0xFFE2E8F0),
+                                  ? const Color(0xFF161F30)
+                                  : const Color(0xFFF8FAFC),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: isDark
+                                    ? const Color(0xFF1E293B)
+                                    : const Color(0xFFE2E8F0),
+                              ),
                             ),
-                          ),
-                          child: selectedContractType == 'Proyecto Único'
-                              ? Column(
+                            child: Builder(
+                              builder: (context) {
+                                String timeLabel;
+                                IconData timeIcon;
+                                String timeHint;
+                                List<String> quickTimes;
+                                String advanceLabel;
+                                List<int> quickAdvances;
+                                String advanceTextTitle;
+                                String balanceTextTitle;
+
+                                final isEvento =
+                                    selectedContractType ==
+                                    'Servicio por Evento';
+                                final isHibrido =
+                                    selectedContractType == 'Híbrido' ||
+                                    selectedContractType == 'Modelo Híbrido';
+                                final isRecurrente =
+                                    selectedContractType ==
+                                    'Recurrente Mensual';
+
+                                if (isEvento) {
+                                  timeLabel =
+                                      'DURACIÓN DEL EVENTO / SERVICIO TEMPORAL';
+                                  timeIcon = Icons.festival_outlined;
+                                  timeHint =
+                                      'Ej: 3 días (Evento/Feria), 12 horas, 2 fines de semana...';
+                                  quickTimes = [
+                                    '1 día (Jornada)',
+                                    '2 días',
+                                    '3 días (Feria)',
+                                    '5 días',
+                                    '7 días (Semana)',
+                                    '15 días',
+                                  ];
+                                  advanceLabel = 'ANTICIPO / RESERVA (%)';
+                                  quickAdvances = [20, 30, 50, 70, 100];
+                                  advanceTextTitle = 'Reserva Requerida:';
+                                  balanceTextTitle = 'Saldo Inicio Evento:';
+                                } else if (isHibrido) {
+                                  timeLabel = 'PLAZO INSTALACIÓN & VIGENCIA';
+                                  timeIcon = Icons.layers_outlined;
+                                  timeHint =
+                                      'Ej: 15 días instalación + Abono mensual...';
+                                  quickTimes = [
+                                    '5 días inst. + Abono',
+                                    '10 días inst. + Abono',
+                                    '15 días inst. + Abono',
+                                    '30 días inst. + Abono',
+                                  ];
+                                  advanceLabel =
+                                      'ANTICIPO HARDWARE / EQUIPOS (%)';
+                                  quickAdvances = [30, 50, 70, 100];
+                                  advanceTextTitle = 'Anticipo Equipos:';
+                                  balanceTextTitle = 'Saldo Instalación:';
+                                } else if (isRecurrente) {
+                                  timeLabel =
+                                      'VIGENCIA DEL CONTRATO RECURRENTE';
+                                  timeIcon = Icons.autorenew_outlined;
+                                  timeHint =
+                                      'Ej: Contrato 12 meses renovable...';
+                                  quickTimes = [
+                                    'Contrato 3 meses',
+                                    'Contrato 6 meses',
+                                    'Contrato 12 meses renovable',
+                                    'Contrato 24 meses',
+                                    'Indefinido',
+                                  ];
+                                  advanceLabel = 'DEPÓSITO / GARANTÍA (%)';
+                                  quickAdvances = [0, 50, 100];
+                                  advanceTextTitle = 'Garantía / Anticipo:';
+                                  balanceTextTitle = 'Canon Mensual:';
+                                } else {
+                                  timeLabel = 'PLAZO DE EJECUCIÓN';
+                                  timeIcon = Icons.handyman_outlined;
+                                  timeHint =
+                                      'Ej: 7 días hábiles, 15 días calendario...';
+                                  quickTimes = [
+                                    '3 días hábiles',
+                                    '7 días hábiles',
+                                    '15 días hábiles',
+                                    '30 días calendario',
+                                    '45 días',
+                                  ];
+                                  advanceLabel =
+                                      'ESQUEMA DE COBRO (ANTICIPO %)';
+                                  quickAdvances = [20, 30, 50, 70, 100];
+                                  advanceTextTitle = 'Anticipo Requerido:';
+                                  balanceTextTitle = 'Saldo a la Entrega:';
+                                }
+
+                                return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
+                                        // Columna Izquierda: Plazo / Duración / Vigencia
                                         Expanded(
+                                          flex: 5,
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                'PLAZO DE EJECUCIÓN',
-                                                style: GoogleFonts.inter(
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: const Color(
-                                                    0xFF64748B,
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    timeIcon,
+                                                    size: 13,
+                                                    color: const Color(
+                                                      0xFF64748B,
+                                                    ),
                                                   ),
-                                                ),
+                                                  const SizedBox(width: 5),
+                                                  Text(
+                                                    timeLabel,
+                                                    style: GoogleFonts.inter(
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: const Color(
+                                                        0xFF64748B,
+                                                      ),
+                                                      letterSpacing: 0.3,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                              const SizedBox(height: 4),
-                                              DropdownButtonFormField<String>(
-                                                initialValue:
-                                                    [
-                                                      '3 días hábiles',
-                                                      '7 días hábiles',
-                                                      '15 días hábiles',
-                                                      '30 días calendario',
-                                                    ].contains(executionTime)
-                                                    ? executionTime
-                                                    : '7 días hábiles',
-                                                isDense: true,
+                                              const SizedBox(height: 5),
+                                              Wrap(
+                                                spacing: 5,
+                                                runSpacing: 4,
+                                                children: quickTimes.map((t) {
+                                                  final isSel =
+                                                      executionTime == t;
+                                                  return InkWell(
+                                                    onTap: () {
+                                                      setModalState(() {
+                                                        executionTime = t;
+                                                        executionTimeCtrl.text =
+                                                            t;
+                                                      });
+                                                    },
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          4,
+                                                        ),
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 7,
+                                                            vertical: 4,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color: isSel
+                                                            ? const Color(
+                                                                0xFF10B981,
+                                                              )
+                                                            : (isDark
+                                                                  ? const Color(
+                                                                      0xFF1E293B,
+                                                                    )
+                                                                  : const Color(
+                                                                      0xFFE2E8F0,
+                                                                    )),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              4,
+                                                            ),
+                                                      ),
+                                                      child: Text(
+                                                        t,
+                                                        style: GoogleFonts.inter(
+                                                          fontSize: 10.5,
+                                                          fontWeight: isSel
+                                                              ? FontWeight.w700
+                                                              : FontWeight.w500,
+                                                          color: isSel
+                                                              ? Colors.white
+                                                              : (isDark
+                                                                    ? const Color(
+                                                                        0xFFCBD5E1,
+                                                                      )
+                                                                    : const Color(
+                                                                        0xFF475569,
+                                                                      )),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                              ),
+                                              const SizedBox(height: 6),
+                                              TextFormField(
+                                                controller: executionTimeCtrl,
                                                 style: GoogleFonts.inter(
                                                   fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
                                                   color: isDark
                                                       ? Colors.white
                                                       : const Color(0xFF0F172A),
                                                 ),
                                                 decoration: InputDecoration(
+                                                  isDense: true,
+                                                  hintText: timeHint,
+                                                  prefixIcon: const Icon(
+                                                    Icons.edit_outlined,
+                                                    size: 14,
+                                                    color: Color(0xFF64748B),
+                                                  ),
+                                                  prefixIconConstraints:
+                                                      const BoxConstraints(
+                                                        minWidth: 26,
+                                                      ),
                                                   contentPadding:
                                                       const EdgeInsets.symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 8,
+                                                        horizontal: 8,
+                                                        vertical: 7,
                                                       ),
                                                   border: OutlineInputBorder(
                                                     borderRadius:
@@ -4125,314 +4368,316 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                                         ),
                                                   ),
                                                 ),
-                                                items:
-                                                    [
-                                                          '3 días hábiles',
-                                                          '7 días hábiles',
-                                                          '15 días hábiles',
-                                                          '30 días calendario',
-                                                        ]
-                                                        .map(
-                                                          (e) =>
-                                                              DropdownMenuItem(
-                                                                value: e,
-                                                                child: Text(e),
-                                                              ),
-                                                        )
-                                                        .toList(),
                                                 onChanged: (val) {
-                                                  if (val != null) {
-                                                    setModalState(
-                                                      () => executionTime = val,
-                                                    );
-                                                  }
+                                                  executionTime = val;
                                                 },
                                               ),
                                             ],
                                           ),
                                         ),
                                         const SizedBox(width: 14),
+                                        // Columna Derecha: Esquema de Anticipo % y desglose
                                         Expanded(
+                                          flex: 5,
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                'ESQUEMA DE COBRO (ANTICIPO %)',
-                                                style: GoogleFonts.inter(
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: const Color(
-                                                    0xFF64748B,
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 6),
                                               Row(
-                                                children: [30, 50, 70, 100].map((
+                                                children: [
+                                                  const Icon(
+                                                    Icons
+                                                        .monetization_on_outlined,
+                                                    size: 13,
+                                                    color: Color(0xFF64748B),
+                                                  ),
+                                                  const SizedBox(width: 5),
+                                                  Text(
+                                                    advanceLabel,
+                                                    style: GoogleFonts.inter(
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: const Color(
+                                                        0xFF64748B,
+                                                      ),
+                                                      letterSpacing: 0.3,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 5),
+                                              Wrap(
+                                                spacing: 5,
+                                                runSpacing: 4,
+                                                children: quickAdvances.map((
                                                   pct,
                                                 ) {
                                                   final isSel =
                                                       advancePct == pct;
-                                                  return Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                          right: 6,
-                                                        ),
-                                                    child: InkWell(
-                                                      onTap: () {
-                                                        setModalState(() {
-                                                          advancePct = pct;
+                                                  return InkWell(
+                                                    onTap: () {
+                                                      setModalState(() {
+                                                        advancePct = pct;
+                                                        if (isEvento) {
+                                                          paymentTerms =
+                                                              pct == 100
+                                                              ? '100% Reserva anticipada'
+                                                              : '$pct% Reserva / ${100 - pct}% Inicio del Evento';
+                                                        } else if (isHibrido) {
+                                                          paymentTerms =
+                                                              pct == 100
+                                                              ? 'Hardware 100% al contado / Monitoreo mensual'
+                                                              : '$pct% Anticipo Equipos / ${100 - pct}% Contra Entrega + Abono mensual';
+                                                        } else if (isRecurrente) {
+                                                          paymentTerms =
+                                                              pct == 100
+                                                              ? '1 mes de garantía + facturación mensual a 30 días'
+                                                              : 'Facturación mensual a 30 días calendario contra planilla';
+                                                        } else {
                                                           paymentTerms =
                                                               pct == 100
                                                               ? '100% al Contado'
                                                               : '$pct% Anticipo / ${100 - pct}% Contra Entrega';
-                                                        });
-                                                      },
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            4,
+                                                        }
+                                                        paymentTermsCtrl.text =
+                                                            paymentTerms;
+                                                      });
+                                                    },
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          4,
+                                                        ),
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 8,
+                                                            vertical: 4,
                                                           ),
-                                                      child: Container(
-                                                        padding:
-                                                            const EdgeInsets.symmetric(
-                                                              horizontal: 8,
-                                                              vertical: 5,
+                                                      decoration: BoxDecoration(
+                                                        color: isSel
+                                                            ? const Color(
+                                                                0xFF6366F1,
+                                                              )
+                                                            : (isDark
+                                                                  ? const Color(
+                                                                      0xFF1E293B,
+                                                                    )
+                                                                  : const Color(
+                                                                      0xFFE2E8F0,
+                                                                    )),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              4,
                                                             ),
-                                                        decoration: BoxDecoration(
+                                                      ),
+                                                      child: Text(
+                                                        '$pct%',
+                                                        style: GoogleFonts.inter(
+                                                          fontSize: 10.5,
+                                                          fontWeight: isSel
+                                                              ? FontWeight.w700
+                                                              : FontWeight.w500,
                                                           color: isSel
-                                                              ? const Color(
-                                                                  0xFF8B5CF6,
-                                                                )
+                                                              ? Colors.white
                                                               : (isDark
                                                                     ? const Color(
-                                                                        0xFF1E293B,
+                                                                        0xFFCBD5E1,
                                                                       )
                                                                     : const Color(
-                                                                        0xFFE2E8F0,
+                                                                        0xFF475569,
                                                                       )),
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                4,
-                                                              ),
-                                                        ),
-                                                        child: Text(
-                                                          '$pct%',
-                                                          style: GoogleFonts.inter(
-                                                            fontSize: 11,
-                                                            fontWeight:
-                                                                FontWeight.w700,
-                                                            color: isSel
-                                                                ? Colors.white
-                                                                : const Color(
-                                                                    0xFF64748B,
-                                                                  ),
-                                                          ),
                                                         ),
                                                       ),
                                                     ),
                                                   );
                                                 }).toList(),
                                               ),
+                                              const SizedBox(height: 6),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 8,
+                                                            vertical: 4,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            const Color(
+                                                              0xFF3B82F6,
+                                                            ).withValues(
+                                                              alpha: 0.1,
+                                                            ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              4,
+                                                            ),
+                                                      ),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            advanceTextTitle,
+                                                            style: GoogleFonts.inter(
+                                                              fontSize: 9.5,
+                                                              color:
+                                                                  const Color(
+                                                                    0xFF2563EB,
+                                                                  ),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            'Bs. ${advanceAmount.toStringAsFixed(2)} ($advancePct%)',
+                                                            style: GoogleFonts.jetBrainsMono(
+                                                              fontSize: 11,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              color:
+                                                                  const Color(
+                                                                    0xFF2563EB,
+                                                                  ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  Expanded(
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 8,
+                                                            vertical: 4,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            const Color(
+                                                              0xFF10B981,
+                                                            ).withValues(
+                                                              alpha: 0.1,
+                                                            ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              4,
+                                                            ),
+                                                      ),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            balanceTextTitle,
+                                                            style: GoogleFonts.inter(
+                                                              fontSize: 9.5,
+                                                              color:
+                                                                  const Color(
+                                                                    0xFF10B981,
+                                                                  ),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            isRecurrente
+                                                                ? 'Bs. ${currentTotal.toStringAsFixed(2)} / mes'
+                                                                : 'Bs. ${balanceAmount.toStringAsFixed(2)} (${100 - advancePct}%)',
+                                                            style: GoogleFonts.jetBrainsMono(
+                                                              fontSize: 11,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              color:
+                                                                  const Color(
+                                                                    0xFF10B981,
+                                                                  ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ],
                                           ),
                                         ),
                                       ],
                                     ),
+                                    const SizedBox(height: 10),
+                                    const Divider(height: 1),
                                     const SizedBox(height: 8),
-                                    Wrap(
-                                      spacing: 8,
-                                      runSpacing: 6,
+                                    // Fila 2: Condiciones y términos comerciales editables
+                                    Row(
                                       children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 3,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: const Color(
-                                              0xFF3B82F6,
-                                            ).withValues(alpha: 0.12),
-                                            borderRadius: BorderRadius.circular(
-                                              4,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            'Anticipo Requerido ($advancePct%): Bs. ${advanceAmount.toStringAsFixed(2)}',
-                                            style: GoogleFonts.inter(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w700,
-                                              color: const Color(0xFF3B82F6),
-                                            ),
-                                          ),
+                                        const Icon(
+                                          Icons.handshake_outlined,
+                                          size: 13,
+                                          color: Color(0xFF64748B),
                                         ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 3,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: const Color(
-                                              0xFF10B981,
-                                            ).withValues(alpha: 0.12),
-                                            borderRadius: BorderRadius.circular(
-                                              4,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            'Saldo a la Entrega: Bs. ${balanceAmount.toStringAsFixed(2)}',
-                                            style: GoogleFonts.inter(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w700,
-                                              color: const Color(0xFF10B981),
-                                            ),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          'CONDICIONES & TÉRMINOS DE PAGO (EDITABLE)',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w700,
+                                            color: const Color(0xFF64748B),
+                                            letterSpacing: 0.3,
                                           ),
                                         ),
                                       ],
                                     ),
+                                    const SizedBox(height: 4),
+                                    TextFormField(
+                                      controller: paymentTermsCtrl,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF0F172A),
+                                      ),
+                                      decoration: InputDecoration(
+                                        isDense: true,
+                                        hintText:
+                                            'Escribe o ajusta las condiciones acordadas con el cliente...',
+                                        prefixIcon: const Icon(
+                                          Icons.edit_note,
+                                          size: 16,
+                                          color: Color(0xFF64748B),
+                                        ),
+                                        prefixIconConstraints:
+                                            const BoxConstraints(minWidth: 26),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 7,
+                                            ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
+                                        ),
+                                      ),
+                                      onChanged: (val) {
+                                        paymentTerms = val;
+                                      },
+                                    ),
                                   ],
-                                )
-                              : (selectedContractType == 'Recurrente Mensual'
-                                    ? Row(
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'VIGENCIA DEL CONTRATO',
-                                                  style: GoogleFonts.inter(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: const Color(
-                                                      0xFF64748B,
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                DropdownButtonFormField<String>(
-                                                  initialValue:
-                                                      [
-                                                        '6 meses',
-                                                        'Contrato 12 meses renovable',
-                                                        'Contrato 24 meses',
-                                                      ].contains(executionTime)
-                                                      ? executionTime
-                                                      : 'Contrato 12 meses renovable',
-                                                  isDense: true,
-                                                  style: GoogleFonts.inter(
-                                                    fontSize: 12,
-                                                    color: isDark
-                                                        ? Colors.white
-                                                        : const Color(
-                                                            0xFF0F172A,
-                                                          ),
-                                                  ),
-                                                  decoration: InputDecoration(
-                                                    contentPadding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 10,
-                                                          vertical: 8,
-                                                        ),
-                                                    border: OutlineInputBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            6,
-                                                          ),
-                                                    ),
-                                                  ),
-                                                  items:
-                                                      [
-                                                            '6 meses',
-                                                            'Contrato 12 meses renovable',
-                                                            'Contrato 24 meses',
-                                                          ]
-                                                          .map(
-                                                            (e) =>
-                                                                DropdownMenuItem(
-                                                                  value: e,
-                                                                  child: Text(
-                                                                    e,
-                                                                  ),
-                                                                ),
-                                                          )
-                                                          .toList(),
-                                                  onChanged: (val) {
-                                                    if (val != null) {
-                                                      setModalState(
-                                                        () =>
-                                                            executionTime = val,
-                                                      );
-                                                    }
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(width: 14),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'CONDICIÓN DE FACTURACIÓN',
-                                                  style: GoogleFonts.inter(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: const Color(
-                                                      0xFF64748B,
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Container(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 8,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    color: const Color(
-                                                      0xFF10B981,
-                                                    ).withValues(alpha: 0.12),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          6,
-                                                        ),
-                                                  ),
-                                                  child: Text(
-                                                    'Facturación mensual a 30 días calendario contra planilla',
-                                                    style: GoogleFonts.inter(
-                                                      fontSize: 11.5,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: const Color(
-                                                        0xFF047857,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              'Esquema Híbrido: Incluye partida inicial de equipamiento/obra + servicio recurrente mensual de monitoreo y soporte.',
-                                              style: GoogleFonts.inter(
-                                                fontSize: 12,
-                                                color: const Color(0xFF64748B),
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      )),
+                                );
+                              },
+                            ),
+                          ),
                         ),
 
                         const SizedBox(height: 14),
@@ -4450,35 +4695,36 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                 letterSpacing: 0.4,
                               ),
                             ),
-                            ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF3B82F6),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
+                            if (!isReadOnly)
+                              ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF3B82F6),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  elevation: 0,
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(6),
+                                icon: const Icon(Icons.add, size: 16),
+                                label: Text(
+                                  'Añadir Partida / Catálogo',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
-                                elevation: 0,
+                                onPressed: () {
+                                  _showAddCatalogItemDialog(dialogContext, (
+                                    newItem,
+                                  ) {
+                                    addItem(newItem);
+                                  });
+                                },
                               ),
-                              icon: const Icon(Icons.add, size: 16),
-                              label: Text(
-                                'Añadir Partida / Catálogo',
-                                style: GoogleFonts.inter(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              onPressed: () {
-                                _showAddCatalogItemDialog(dialogContext, (
-                                  newItem,
-                                ) {
-                                  addItem(newItem);
-                                });
-                              },
-                            ),
                           ],
                         ),
 
@@ -4736,50 +4982,74 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                               // Concepto
                                               SizedBox(
                                                 width: 215,
-                                                child: TextFormField(
-                                                  initialValue: item.concept,
-                                                  style: GoogleFonts.inter(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: isDark
-                                                        ? Colors.white
-                                                        : const Color(
-                                                            0xFF0F172A,
+                                                child: isReadOnly
+                                                    ? Padding(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              vertical: 6,
+                                                            ),
+                                                        child: Text(
+                                                          item.concept,
+                                                          style: GoogleFonts.inter(
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color: isDark
+                                                                ? Colors.white
+                                                                : const Color(
+                                                                    0xFF0F172A,
+                                                                  ),
                                                           ),
-                                                  ),
-                                                  decoration: InputDecoration(
-                                                    isDense: true,
-                                                    contentPadding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 6,
-                                                          vertical: 4,
                                                         ),
-                                                    border: OutlineInputBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            4,
-                                                          ),
-                                                      borderSide: BorderSide(
-                                                        color: isDark
-                                                            ? const Color(
-                                                                0xFF334155,
-                                                              )
-                                                            : const Color(
-                                                                0xFFCBD5E1,
+                                                      )
+                                                    : TextFormField(
+                                                        initialValue:
+                                                            item.concept,
+                                                        style: GoogleFonts.inter(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color: isDark
+                                                              ? Colors.white
+                                                              : const Color(
+                                                                  0xFF0F172A,
+                                                                ),
+                                                        ),
+                                                        decoration: InputDecoration(
+                                                          isDense: true,
+                                                          contentPadding:
+                                                              const EdgeInsets.symmetric(
+                                                                horizontal: 6,
+                                                                vertical: 4,
                                                               ),
+                                                          border: OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  4,
+                                                                ),
+                                                            borderSide: BorderSide(
+                                                              color: isDark
+                                                                  ? const Color(
+                                                                      0xFF334155,
+                                                                    )
+                                                                  : const Color(
+                                                                      0xFFCBD5E1,
+                                                                    ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        onChanged: (val) {
+                                                          localItems[idx] = item
+                                                              .copyWith(
+                                                                concept:
+                                                                    val
+                                                                        .trim()
+                                                                        .isEmpty
+                                                                    ? 'Servicio'
+                                                                    : val,
+                                                              );
+                                                        },
                                                       ),
-                                                    ),
-                                                  ),
-                                                  onChanged: (val) {
-                                                    localItems[idx] = item
-                                                        .copyWith(
-                                                          concept:
-                                                              val.trim().isEmpty
-                                                              ? 'Servicio'
-                                                              : val,
-                                                        );
-                                                  },
-                                                ),
                                               ),
                                               const SizedBox(width: 8),
                                               // Unidad
@@ -4824,144 +5094,196 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                               // Cantidad
                                               SizedBox(
                                                 width: 90,
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    InkWell(
-                                                      onTap: () =>
-                                                          updateQuantity(
-                                                            idx,
-                                                            -1,
+                                                child: isReadOnly
+                                                    ? Center(
+                                                        child: Text(
+                                                          item.quantity % 1 == 0
+                                                              ? item.quantity
+                                                                    .toInt()
+                                                                    .toString()
+                                                              : item.quantity
+                                                                    .toString(),
+                                                          style: GoogleFonts.jetBrainsMono(
+                                                            fontSize: 11.5,
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                            color: isDark
+                                                                ? Colors.white
+                                                                : const Color(
+                                                                    0xFF0F172A,
+                                                                  ),
                                                           ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            3,
-                                                          ),
-                                                      child: Container(
-                                                        padding:
-                                                            const EdgeInsets.all(
-                                                              2,
-                                                            ),
-                                                        decoration: BoxDecoration(
-                                                          color: isDark
-                                                              ? const Color(
-                                                                  0xFF1E293B,
-                                                                )
-                                                              : const Color(
-                                                                  0xFFE2E8F0,
+                                                        ),
+                                                      )
+                                                    : Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          InkWell(
+                                                            onTap: () =>
+                                                                updateQuantity(
+                                                                  idx,
+                                                                  -1,
                                                                 ),
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                3,
-                                                              ),
-                                                        ),
-                                                        child: const Icon(
-                                                          Icons.remove,
-                                                          size: 12,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.symmetric(
-                                                            horizontal: 6,
-                                                          ),
-                                                      child: Text(
-                                                        item.quantity % 1 == 0
-                                                            ? item.quantity
-                                                                  .toInt()
-                                                                  .toString()
-                                                            : item.quantity
-                                                                  .toString(),
-                                                        style:
-                                                            GoogleFonts.jetBrainsMono(
-                                                              fontSize: 11.5,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700,
-                                                            ),
-                                                      ),
-                                                    ),
-                                                    InkWell(
-                                                      onTap: () =>
-                                                          updateQuantity(
-                                                            idx,
-                                                            1,
-                                                          ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            3,
-                                                          ),
-                                                      child: Container(
-                                                        padding:
-                                                            const EdgeInsets.all(
-                                                              2,
-                                                            ),
-                                                        decoration: BoxDecoration(
-                                                          color: isDark
-                                                              ? const Color(
-                                                                  0xFF1E293B,
-                                                                )
-                                                              : const Color(
-                                                                  0xFFE2E8F0,
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  3,
                                                                 ),
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                3,
+                                                            child: Container(
+                                                              padding:
+                                                                  const EdgeInsets.all(
+                                                                    2,
+                                                                  ),
+                                                              decoration: BoxDecoration(
+                                                                color: isDark
+                                                                    ? const Color(
+                                                                        0xFF1E293B,
+                                                                      )
+                                                                    : const Color(
+                                                                        0xFFE2E8F0,
+                                                                      ),
+                                                                borderRadius:
+                                                                    BorderRadius.circular(
+                                                                      3,
+                                                                    ),
                                                               ),
-                                                        ),
-                                                        child: const Icon(
-                                                          Icons.add,
-                                                          size: 12,
-                                                        ),
+                                                              child: const Icon(
+                                                                Icons.remove,
+                                                                size: 12,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets.symmetric(
+                                                                  horizontal: 6,
+                                                                ),
+                                                            child: Text(
+                                                              item.quantity %
+                                                                          1 ==
+                                                                      0
+                                                                  ? item.quantity
+                                                                        .toInt()
+                                                                        .toString()
+                                                                  : item.quantity
+                                                                        .toString(),
+                                                              style: GoogleFonts.jetBrainsMono(
+                                                                fontSize: 11.5,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          InkWell(
+                                                            onTap: () =>
+                                                                updateQuantity(
+                                                                  idx,
+                                                                  1,
+                                                                ),
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  3,
+                                                                ),
+                                                            child: Container(
+                                                              padding:
+                                                                  const EdgeInsets.all(
+                                                                    2,
+                                                                  ),
+                                                              decoration: BoxDecoration(
+                                                                color: isDark
+                                                                    ? const Color(
+                                                                        0xFF1E293B,
+                                                                      )
+                                                                    : const Color(
+                                                                        0xFFE2E8F0,
+                                                                      ),
+                                                                borderRadius:
+                                                                    BorderRadius.circular(
+                                                                      3,
+                                                                    ),
+                                                              ),
+                                                              child: const Icon(
+                                                                Icons.add,
+                                                                size: 12,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
                                               ),
                                               const SizedBox(width: 8),
                                               // P. Unitario
                                               SizedBox(
                                                 width: 90,
-                                                child: TextFormField(
-                                                  initialValue: item.unitPrice
-                                                      .toStringAsFixed(0),
-                                                  keyboardType:
-                                                      TextInputType.number,
-                                                  textAlign: TextAlign.right,
-                                                  style:
-                                                      GoogleFonts.jetBrainsMono(
-                                                        fontSize: 11.5,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                  decoration: InputDecoration(
-                                                    isDense: true,
-                                                    contentPadding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 6,
-                                                          vertical: 4,
-                                                        ),
-                                                    border: OutlineInputBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            4,
+                                                child: isReadOnly
+                                                    ? Padding(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              vertical: 6,
+                                                            ),
+                                                        child: Text(
+                                                          'Bs. ${item.unitPrice.toStringAsFixed(2)}',
+                                                          textAlign:
+                                                              TextAlign.right,
+                                                          style: GoogleFonts.jetBrainsMono(
+                                                            fontSize: 11.5,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color: isDark
+                                                                ? Colors.white
+                                                                : const Color(
+                                                                    0xFF0F172A,
+                                                                  ),
                                                           ),
-                                                    ),
-                                                  ),
-                                                  onChanged: (val) {
-                                                    final parsed =
-                                                        double.tryParse(val) ??
-                                                        0.0;
-                                                    setModalState(() {
-                                                      localItems[idx] = item
-                                                          .copyWith(
-                                                            unitPrice: parsed,
-                                                          );
-                                                    });
-                                                  },
-                                                ),
+                                                        ),
+                                                      )
+                                                    : TextFormField(
+                                                        initialValue: item
+                                                            .unitPrice
+                                                            .toStringAsFixed(0),
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .number,
+                                                        textAlign:
+                                                            TextAlign.right,
+                                                        style:
+                                                            GoogleFonts.jetBrainsMono(
+                                                              fontSize: 11.5,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                            ),
+                                                        decoration: InputDecoration(
+                                                          isDense: true,
+                                                          contentPadding:
+                                                              const EdgeInsets.symmetric(
+                                                                horizontal: 6,
+                                                                vertical: 4,
+                                                              ),
+                                                          border: OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  4,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                        onChanged: (val) {
+                                                          final parsed =
+                                                              double.tryParse(
+                                                                val,
+                                                              ) ??
+                                                              0.0;
+                                                          setModalState(() {
+                                                            localItems[idx] =
+                                                                item.copyWith(
+                                                                  unitPrice:
+                                                                      parsed,
+                                                                );
+                                                          });
+                                                        },
+                                                      ),
                                               ),
                                               const SizedBox(width: 12),
                                               // Subtotal
@@ -4983,22 +5305,23 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                               ),
                                               const SizedBox(width: 8),
                                               // Delete
-                                              SizedBox(
-                                                width: 28,
-                                                child: IconButton(
-                                                  padding: EdgeInsets.zero,
-                                                  constraints:
-                                                      const BoxConstraints(),
-                                                  icon: const Icon(
-                                                    Icons.delete_outline,
-                                                    size: 16,
-                                                    color: Color(0xFFEF4444),
+                                              if (!isReadOnly)
+                                                SizedBox(
+                                                  width: 28,
+                                                  child: IconButton(
+                                                    padding: EdgeInsets.zero,
+                                                    constraints:
+                                                        const BoxConstraints(),
+                                                    icon: const Icon(
+                                                      Icons.delete_outline,
+                                                      size: 16,
+                                                      color: Color(0xFFEF4444),
+                                                    ),
+                                                    tooltip: 'Eliminar partida',
+                                                    onPressed: () =>
+                                                        removeItem(idx),
                                                   ),
-                                                  tooltip: 'Eliminar partida',
-                                                  onPressed: () =>
-                                                      removeItem(idx),
                                                 ),
-                                              ),
                                             ],
                                           ),
                                         );
@@ -5082,7 +5405,10 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                             : (selectedContractType ==
                                                       'Recurrente Mensual'
                                                   ? 'CANON MENSUAL RECURRENTE'
-                                                  : 'PRESUPUESTO COMBINADO'),
+                                                  : (selectedContractType ==
+                                                            'Servicio por Evento'
+                                                        ? 'TOTAL SERVICIO POR EVENTO'
+                                                        : 'PRESUPUESTO COMBINADO (HARDWARE + SERVICIO)')),
                                         style: GoogleFonts.inter(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w800,
@@ -5090,12 +5416,12 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                         ),
                                       ),
                                       Text(
-                                        selectedContractType == 'Proyecto Único'
-                                            ? 'Anticipo ($advancePct%): Bs. ${advanceAmount.toStringAsFixed(2)} | Saldo Entrega: Bs. ${balanceAmount.toStringAsFixed(2)}'
-                                            : (selectedContractType ==
-                                                      'Recurrente Mensual'
-                                                  ? 'Proyección anual (12 meses): Bs. ${(currentTotal * 12).toStringAsFixed(2)}'
-                                                  : 'Equipamiento inicial + abono de servicio mensual'),
+                                        selectedContractType ==
+                                                'Recurrente Mensual'
+                                            ? 'Proyección anual (12 meses): Bs. ${(currentTotal * 12).toStringAsFixed(2)}'
+                                            : (advancePct > 0
+                                                  ? 'Anticipo / Reserva ($advancePct%): Bs. ${advanceAmount.toStringAsFixed(2)} | Saldo: Bs. ${balanceAmount.toStringAsFixed(2)}'
+                                                  : 'Pago 100% contra entrega / recepción conforme'),
                                         style: GoogleFonts.inter(
                                           fontSize: 11,
                                           color: const Color(0xFF64748B),
@@ -5131,7 +5457,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
                   child: Text(
-                    'Cancelar',
+                    isReadOnly ? 'Cerrar' : 'Cancelar',
                     style: GoogleFonts.inter(
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF64748B),
@@ -5163,77 +5489,201 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                     ),
                   ),
                   onPressed: () {
+                    final currentExecution =
+                        executionTimeCtrl.text.trim().isNotEmpty
+                        ? executionTimeCtrl.text.trim()
+                        : executionTime;
+                    final currentPaymentTerms =
+                        paymentTermsCtrl.text.trim().isNotEmpty
+                        ? paymentTermsCtrl.text.trim()
+                        : paymentTerms;
+
                     final previewDeal = deal.copyWith(
                       contractType: selectedContractType,
-                      executionTime: executionTime,
-                      paymentTerms: paymentTerms,
+                      executionTime: currentExecution,
+                      paymentTerms: currentPaymentTerms,
                       advancePercentage: advancePct,
                       quoteItems: localItems,
                       amount: currentTotal,
                     );
-                    Navigator.pop(ctx);
-                    _showProposalPreviewDialog(previewDeal);
+                    _showProposalPreviewDialog(
+                      previewDeal,
+                      onSaveAndAdvance: isReadOnly
+                          ? null
+                          : () async {
+                              final idx = _deals.indexWhere(
+                                (d) => d.id == deal.id,
+                              );
+                              OpportunityItem? updatedDeal;
+                              if (idx != -1) {
+                                int newProb = deal.probability;
+                                if (targetStage != null) {
+                                  if (targetStage == 'Calificación') {
+                                    newProb = 20;
+                                  }
+                                  if (targetStage == 'Visita Técnica') {
+                                    newProb = 40;
+                                  }
+                                  if (targetStage == 'Propuesta') {
+                                    newProb = 60;
+                                  }
+                                  if (targetStage == 'Negociación') {
+                                    newProb = 80;
+                                  }
+                                  if (targetStage == 'Ganada') {
+                                    newProb = 100;
+                                  }
+                                }
+
+                                final currentExecution =
+                                    executionTimeCtrl.text.trim().isNotEmpty
+                                    ? executionTimeCtrl.text.trim()
+                                    : executionTime;
+                                final currentPaymentTerms =
+                                    paymentTermsCtrl.text.trim().isNotEmpty
+                                    ? paymentTermsCtrl.text.trim()
+                                    : paymentTerms;
+
+                                updatedDeal = deal.copyWith(
+                                  contractType: selectedContractType,
+                                  executionTime: currentExecution,
+                                  paymentTerms: currentPaymentTerms,
+                                  advancePercentage: advancePct,
+                                  quoteItems: localItems,
+                                  amount: currentTotal,
+                                  stage: targetStage ?? deal.stage,
+                                  probability: targetStage != null
+                                      ? newProb
+                                      : deal.probability,
+                                );
+                                await _pipelineService.updateDeal(updatedDeal);
+                              }
+                              if (ctx.mounted) Navigator.pop(ctx);
+                              if (targetStage != null && updatedDeal != null) {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor: const Color(0xFF065F46),
+                                      content: Text(
+                                        'Cotización aprobada. La oportunidad "${updatedDeal.title}" avanzó a la etapa "$targetStage".',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                    );
                   },
                 ),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF10B981),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                if (!isReadOnly)
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF10B981),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
+                    icon: Icon(
+                      targetStage != null
+                          ? Icons.arrow_forward
+                          : Icons.check_circle_outline,
+                      size: 18,
                     ),
-                  ),
-                  icon: Icon(
-                    targetStage != null
-                        ? Icons.arrow_forward
-                        : Icons.check_circle_outline,
-                    size: 18,
-                  ),
-                  label: Text(
-                    targetStage != null
-                        ? 'Guardar Cotización & Avanzar a Propuesta'
-                        : 'Guardar Cotización',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
+                    label: Text(
+                      targetStage != null
+                          ? 'Guardar Cotización & Avanzar a Propuesta'
+                          : 'Guardar Cotización',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                      ),
                     ),
+                    onPressed: () async {
+                      final currentExecution =
+                          executionTimeCtrl.text.trim().isNotEmpty
+                          ? executionTimeCtrl.text.trim()
+                          : executionTime;
+                      final currentPaymentTerms =
+                          paymentTermsCtrl.text.trim().isNotEmpty
+                          ? paymentTermsCtrl.text.trim()
+                          : paymentTerms;
+
+                      final idx = _deals.indexWhere((d) => d.id == deal.id);
+                      OpportunityItem? updatedDeal;
+                      if (idx != -1) {
+                        int newProb = deal.probability;
+                        if (targetStage != null) {
+                          if (targetStage == 'Calificación') newProb = 20;
+                          if (targetStage == 'Visita Técnica') newProb = 40;
+                          if (targetStage == 'Propuesta') newProb = 60;
+                          if (targetStage == 'Negociación') newProb = 80;
+                          if (targetStage == 'Ganada') newProb = 100;
+                        }
+
+                        updatedDeal = deal.copyWith(
+                          contractType: selectedContractType,
+                          executionTime: currentExecution,
+                          paymentTerms: currentPaymentTerms,
+                          advancePercentage: advancePct,
+                          quoteItems: localItems,
+                          amount: currentTotal,
+                          stage: targetStage ?? deal.stage,
+                          probability: targetStage != null
+                              ? newProb
+                              : deal.probability,
+                        );
+                        await _pipelineService.updateDeal(updatedDeal);
+                      }
+                      if (ctx.mounted) Navigator.pop(ctx);
+                      if (targetStage != null && updatedDeal != null) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: const Color(0xFF0F172A),
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              content: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.sync_alt,
+                                    color: Color(0xFF10B981),
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      '${updatedDeal.id} movida a etapa "$targetStage" con presupuesto de Bs. ${currentTotal.toStringAsFixed(2)}',
+                                      style: GoogleFonts.inter(fontSize: 12.5),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+                      } else {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: const Color(0xFF065F46),
+                              behavior: SnackBarBehavior.floating,
+                              content: Text(
+                                'Cotización ($selectedContractType) de "${deal.title}" actualizada: Bs. ${currentTotal.toStringAsFixed(2)}',
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                    },
                   ),
-                  onPressed: () {
-                    final idx = _deals.indexWhere((d) => d.id == deal.id);
-                    OpportunityItem? updatedDeal;
-                    if (idx != -1) {
-                      updatedDeal = deal.copyWith(
-                        contractType: selectedContractType,
-                        executionTime: executionTime,
-                        paymentTerms: paymentTerms,
-                        advancePercentage: advancePct,
-                        quoteItems: localItems,
-                        amount: currentTotal,
-                      );
-                      setState(() {
-                        _deals[idx] = updatedDeal!;
-                      });
-                    }
-                    Navigator.pop(ctx);
-                    if (targetStage != null && updatedDeal != null) {
-                      _moveDeal(updatedDeal, targetStage);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: const Color(0xFF065F46),
-                          behavior: SnackBarBehavior.floating,
-                          content: Text(
-                            'Cotización ($selectedContractType) de "${deal.title}" actualizada: Bs. ${currentTotal.toStringAsFixed(2)}',
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                ),
               ],
             );
           },
@@ -5655,7 +6105,10 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
     );
   }
 
-  void _showProposalPreviewDialog(OpportunityItem deal) {
+  void _showProposalPreviewDialog(
+    OpportunityItem deal, {
+    Future<void> Function()? onSaveAndAdvance,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final subtotal = deal.amount * 0.87;
     final iva = deal.amount * 0.13;
@@ -6219,7 +6672,6 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                 ),
               ),
               onPressed: () {
-                Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     backgroundColor: const Color(0xFF1E3A8A),
@@ -6230,11 +6682,45 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                 );
               },
             ),
-            TextButton(
+            if (onSaveAndAdvance != null)
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF10B981),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 9,
+                  ),
+                ),
+                icon: const Icon(Icons.check_circle_outline, size: 16),
+                label: Text(
+                  'Guardar & Avanzar a Propuesta',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                onPressed: () async {
+                  Navigator.pop(ctx);
+                  await onSaveAndAdvance();
+                },
+              ),
+            TextButton.icon(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(
-                'Cerrar',
-                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              icon: Icon(
+                onSaveAndAdvance != null ? Icons.arrow_back : Icons.close,
+                size: 15,
+                color: const Color(0xFF64748B),
+              ),
+              label: Text(
+                onSaveAndAdvance != null ? 'Volver al Cotizador' : 'Cerrar',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF64748B),
+                ),
               ),
             ),
           ],
@@ -7201,12 +7687,16 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                               color: serviceCol,
                             ),
                             const SizedBox(width: 4),
-                            Text(
-                              deal.serviceType,
-                              style: GoogleFonts.inter(
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.w600,
-                                color: serviceCol,
+                            Flexible(
+                              child: Text(
+                                deal.serviceType,
+                                style: GoogleFonts.inter(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: serviceCol,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                               ),
                             ),
                           ],
@@ -7232,16 +7722,22 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                               color: _getContractTypeColor(deal.contractType),
                             ),
                             const SizedBox(width: 3),
-                            Text(
-                              deal.contractType == 'Recurrente Mensual'
-                                  ? 'Mensual'
-                                  : (deal.contractType == 'Proyecto Único'
-                                        ? 'Obra Única'
-                                        : 'Híbrido'),
-                              style: GoogleFonts.inter(
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.w700,
-                                color: _getContractTypeColor(deal.contractType),
+                            Flexible(
+                              child: Text(
+                                deal.contractType == 'Recurrente Mensual'
+                                    ? 'Mensual'
+                                    : (deal.contractType == 'Proyecto Único'
+                                          ? 'Obra Única'
+                                          : 'Híbrido'),
+                                style: GoogleFonts.inter(
+                                  fontSize: 9.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: _getContractTypeColor(
+                                    deal.contractType,
+                                  ),
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                               ),
                             ),
                           ],
@@ -7259,6 +7755,8 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                   ),
                 ),
                 PopupMenuButton<String>(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                   icon: const Icon(
                     Icons.more_horiz,
                     size: 16,
@@ -7270,77 +7768,113 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                       _showQuotationBuilderDialog(deal);
                     } else if (action == 'proposal') {
                       _showProposalPreviewDialog(deal);
+                    } else if (action == 'customer360') {
+                      if (widget.onNavigateToTab != null) {
+                        widget.onNavigateToTab!(8);
+                      } else {
+                        _showPromoteToCustomerDialog(deal);
+                      }
                     } else if (action.startsWith('move:')) {
                       final targetStage = action.replaceFirst('move:', '');
                       _requestMoveDeal(deal, targetStage);
                     }
                   },
                   itemBuilder: (ctx) => [
-                    PopupMenuItem(
-                      value: 'quote',
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.calculate_outlined,
-                            size: 16,
-                            color: Color(0xFF10B981),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Editar Cotización',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                    if (deal.stage == 'Ganada')
+                      PopupMenuItem(
+                        value: 'customer360',
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.badge_outlined,
+                              size: 16,
+                              color: Color(0xFF10B981),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'proposal',
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.description_outlined,
-                            size: 16,
-                            color: Color(0xFF3B82F6),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Ver Propuesta Formal',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                            const SizedBox(width: 8),
+                            Text(
+                              'Ver en Clientes 360°',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF10B981),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const PopupMenuDivider(),
-                    ..._stages
-                        .where((s) => s != deal.stage)
-                        .map(
-                          (s) => PopupMenuItem(
-                            value: 'move:$s',
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 7,
-                                  height: 7,
-                                  decoration: BoxDecoration(
-                                    color: _getStageColor(s),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Mover a: $s',
-                                  style: GoogleFonts.inter(fontSize: 12),
-                                ),
-                              ],
-                            ),
-                          ),
+                          ],
                         ),
+                      ),
+                    if (deal.stage == 'Propuesta' ||
+                        deal.stage == 'Negociación' ||
+                        deal.stage == 'Ganada') ...[
+                      PopupMenuItem(
+                        value: 'quote',
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.calculate_outlined,
+                              size: 16,
+                              color: Color(0xFF10B981),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              deal.stage == 'Ganada'
+                                  ? 'Ver Cotización de Cierre'
+                                  : 'Editar Cotización',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'proposal',
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.description_outlined,
+                              size: 16,
+                              color: Color(0xFF3B82F6),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Ver Propuesta Formal',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    if (deal.stage != 'Ganada') ...[
+                      const PopupMenuDivider(),
+                      ..._stages
+                          .where((s) => s != deal.stage)
+                          .map(
+                            (s) => PopupMenuItem(
+                              value: 'move:$s',
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 7,
+                                    height: 7,
+                                    decoration: BoxDecoration(
+                                      color: _getStageColor(s),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Mover a: $s',
+                                    style: GoogleFonts.inter(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                    ],
                   ],
                 ),
               ],
@@ -7424,84 +7958,133 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
 
             // Pie: Monto, Asesor y Botones Rápidos de Etapa
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        Text(
-                          'Bs. ${deal.amount.toStringAsFixed(2)}',
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF10B981),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              'Bs. ${deal.amount.toStringAsFixed(2)}',
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF10B981),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          deal.contractType == 'Recurrente Mensual'
-                              ? '/mes'
-                              : (deal.contractType == 'Híbrido'
-                                    ? '/mes+obra'
-                                    : '(Obra)'),
-                          style: GoogleFonts.inter(
-                            fontSize: 9.5,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF64748B),
+                          const SizedBox(width: 4),
+                          Text(
+                            deal.contractType == 'Recurrente Mensual'
+                                ? '/mes'
+                                : (deal.contractType == 'Híbrido'
+                                      ? '/mes+obra'
+                                      : '(Obra)'),
+                            style: GoogleFonts.inter(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF64748B),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.person_pin,
-                          size: 11,
-                          color: Color(0xFF64748B),
-                        ),
-                        const SizedBox(width: 3),
-                        Text(
-                          deal.owner,
-                          style: GoogleFonts.inter(
-                            fontSize: 10.5,
-                            color: const Color(0xFF64748B),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.person_pin,
+                            size: 11,
+                            color: Color(0xFF64748B),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(width: 3),
+                          Expanded(
+                            child: Text(
+                              deal.owner,
+                              style: GoogleFonts.inter(
+                                fontSize: 10.5,
+                                color: const Color(0xFF64748B),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 4),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.calculate_outlined, size: 16),
-                      tooltip: 'Armar / Editar Cotización',
-                      visualDensity: VisualDensity.compact,
-                      color: const Color(0xFF10B981),
-                      onPressed: () => _showQuotationBuilderDialog(deal),
-                    ),
-                    if (curStageIdx > 0)
+                    if (deal.stage == 'Propuesta' ||
+                        deal.stage == 'Negociación' ||
+                        deal.stage == 'Ganada')
                       IconButton(
-                        icon: const Icon(Icons.arrow_back, size: 14),
-                        tooltip: 'Retroceder etapa',
+                        icon: const Icon(Icons.calculate_outlined, size: 16),
+                        tooltip: deal.stage == 'Ganada'
+                            ? 'Ver Cotización de Cierre'
+                            : 'Armar / Editar Cotización',
                         visualDensity: VisualDensity.compact,
-                        color: const Color(0xFF64748B),
-                        onPressed: () => _regressDeal(deal),
+                        constraints: const BoxConstraints(
+                          minWidth: 28,
+                          minHeight: 28,
+                        ),
+                        padding: const EdgeInsets.all(4),
+                        color: const Color(0xFF10B981),
+                        onPressed: () => _showQuotationBuilderDialog(deal),
                       ),
-                    if (curStageIdx < _stages.length - 1)
+                    if (deal.stage == 'Ganada')
                       IconButton(
-                        icon: const Icon(Icons.arrow_forward, size: 14),
-                        tooltip: 'Avanzar a ${_stages[curStageIdx + 1]}',
+                        icon: const Icon(Icons.badge_outlined, size: 16),
+                        tooltip: 'Venta formalizada: Ver en Clientes 360°',
                         visualDensity: VisualDensity.compact,
-                        color: const Color(0xFF3B82F6),
-                        onPressed: () => _advanceDeal(deal),
-                      ),
+                        constraints: const BoxConstraints(
+                          minWidth: 28,
+                          minHeight: 28,
+                        ),
+                        padding: const EdgeInsets.all(4),
+                        color: const Color(0xFF10B981),
+                        onPressed: () {
+                          if (widget.onNavigateToTab != null) {
+                            widget.onNavigateToTab!(8);
+                          } else {
+                            _showPromoteToCustomerDialog(deal);
+                          }
+                        },
+                      )
+                    else ...[
+                      if (curStageIdx > 0)
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back, size: 14),
+                          tooltip: 'Retroceder etapa',
+                          visualDensity: VisualDensity.compact,
+                          constraints: const BoxConstraints(
+                            minWidth: 26,
+                            minHeight: 28,
+                          ),
+                          padding: const EdgeInsets.all(4),
+                          color: const Color(0xFF64748B),
+                          onPressed: () => _regressDeal(deal),
+                        ),
+                      if (curStageIdx < _stages.length - 1)
+                        IconButton(
+                          icon: const Icon(Icons.arrow_forward, size: 14),
+                          tooltip: 'Avanzar a ${_stages[curStageIdx + 1]}',
+                          visualDensity: VisualDensity.compact,
+                          constraints: const BoxConstraints(
+                            minWidth: 26,
+                            minHeight: 28,
+                          ),
+                          padding: const EdgeInsets.all(4),
+                          color: const Color(0xFF3B82F6),
+                          onPressed: () => _advanceDeal(deal),
+                        ),
+                    ],
                   ],
                 ),
               ],

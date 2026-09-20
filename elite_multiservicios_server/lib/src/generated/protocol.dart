@@ -1446,7 +1446,6 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
-          columnDefault: '\'Calificación\'::text',
         ),
         _i2.ColumnDefinition(
           name: 'probability',
@@ -1492,7 +1491,6 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
-          columnDefault: '\'Facturación mensual a 30 días\'::text',
         ),
         _i2.ColumnDefinition(
           name: 'advancePercentage',

@@ -82,7 +82,10 @@ class CrmAgendaEndpoint extends Endpoint {
     int id, {
     String? notes,
   }) async {
-    await RbacGuard.requirePermission(session, AppPermissions.crmAgendaComplete);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.crmAgendaComplete,
+    );
     final repo = CrmAgendaDataService(session);
     return await repo.completeTask(id, notes: notes);
   }

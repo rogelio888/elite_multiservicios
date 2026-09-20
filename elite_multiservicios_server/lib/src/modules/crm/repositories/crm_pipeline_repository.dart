@@ -114,7 +114,30 @@ class CrmPipelineDataService {
     CrmOpportunity opp, {
     List<CrmQuoteItem>? quoteItems,
   }) async {
-    final toUpdate = opp.copyWith(updatedAt: DateTime.now().toUtc());
+    double finalAmount = opp.amount;
+    if (quoteItems != null && quoteItems.isNotEmpty) {
+      final itemsTotal = quoteItems.fold<double>(
+        0.0,
+        (acc, item) => acc + (item.quantity * item.unitPrice),
+      );
+      if (itemsTotal > 0) {
+        finalAmount = itemsTotal;
+      }
+    } else if (finalAmount <= 0 && opp.id != null) {
+      final existingItems = await getQuoteItems(opp.id!);
+      final itemsTotal = existingItems.fold<double>(
+        0.0,
+        (acc, item) => acc + (item.quantity * item.unitPrice),
+      );
+      if (itemsTotal > 0) {
+        finalAmount = itemsTotal;
+      }
+    }
+
+    final toUpdate = opp.copyWith(
+      amount: finalAmount,
+      updatedAt: DateTime.now().toUtc(),
+    );
     final updatedOpp = await CrmOpportunity.db.updateRow(session, toUpdate);
 
     if (quoteItems != null) {
@@ -166,9 +189,24 @@ class CrmPipelineDataService {
         break;
     }
 
+    double finalAmount = existing.amount;
+    if (finalAmount <= 0) {
+      final items = await getQuoteItems(id);
+      if (items.isNotEmpty) {
+        final itemsTotal = items.fold<double>(
+          0.0,
+          (acc, item) => acc + (item.quantity * item.unitPrice),
+        );
+        if (itemsTotal > 0) {
+          finalAmount = itemsTotal;
+        }
+      }
+    }
+
     final updated = existing.copyWith(
       stage: newStage,
       probability: newProb,
+      amount: finalAmount,
       updatedAt: DateTime.now().toUtc(),
     );
 
@@ -177,7 +215,9 @@ class CrmPipelineDataService {
 
   /// Traspaso formal y transaccional de una Oportunidad Ganada a Clientes 360°.
   /// Crea o vincula Cliente, Sede Operativa y Contrato/Presupuesto sin duplicar registros.
-  Future<CrmCustomerDetailResponse?> promoteToCustomer(int opportunityId) async {
+  Future<CrmCustomerDetailResponse?> promoteToCustomer(
+    int opportunityId,
+  ) async {
     final opp = await getOpportunityById(opportunityId);
     if (opp == null) return null;
 
@@ -221,7 +261,8 @@ class CrmPipelineDataService {
               : 'contacto@${opp.clientName.toLowerCase().replaceAll(RegExp(r'\s+'), '')}.bo',
           opportunityId: opp.id,
           startDate: now,
-          notes: 'Cliente incorporado automáticamente desde Pipeline Ganada (${opp.title}).',
+          notes:
+              'Cliente incorporado automáticamente desde Pipeline Ganada (${opp.title}).',
           isDeleted: false,
           createdAt: now,
           updatedAt: now,
@@ -277,7 +318,8 @@ class CrmPipelineDataService {
         .toList();
 
     final isRecurring = opp.contractType.contains('Recurrente');
-    final isProject = opp.contractType.contains('Proyecto') ||
+    final isProject =
+        opp.contractType.contains('Proyecto') ||
         opp.contractType.contains('Evento');
 
     final contract = await customerService.addContract(
@@ -378,14 +420,18 @@ class CrmPipelineDataService {
     );
 
     final totalOpps = activeOpps.length;
-    final qualificationCount =
-        activeOpps.where((o) => o.stage == 'Calificación').length;
-    final technicalVisitCount =
-        activeOpps.where((o) => o.stage == 'Visita Técnica').length;
-    final proposalCount =
-        activeOpps.where((o) => o.stage == 'Propuesta').length;
-    final negotiationCount =
-        activeOpps.where((o) => o.stage == 'Negociación').length;
+    final qualificationCount = activeOpps
+        .where((o) => o.stage == 'Calificación')
+        .length;
+    final technicalVisitCount = activeOpps
+        .where((o) => o.stage == 'Visita Técnica')
+        .length;
+    final proposalCount = activeOpps
+        .where((o) => o.stage == 'Propuesta')
+        .length;
+    final negotiationCount = activeOpps
+        .where((o) => o.stage == 'Negociación')
+        .length;
     final wonCount = activeOpps.where((o) => o.stage == 'Ganada').length;
 
     final totalValue = activeOpps.fold<double>(
@@ -411,119 +457,5 @@ class CrmPipelineDataService {
       wonCount: wonCount,
       winRate: winRate,
     );
-  }
-
-  /// Puebla la base de datos PostgreSQL con oportunidades iniciales si la tabla está vacía.
-  Future<void> seedInitialOpportunitiesIfEmpty() async {
-    final count = await CrmOpportunity.db.count(
-      session,
-      where: (t) => t.isDeleted.equals(false),
-    );
-    if (count > 0) return;
-
-    final now = DateTime.now().toUtc();
-
-    final seeds = [
-      CrmOpportunity(
-        code: 'OPP-001',
-        title: 'Seguridad Integral y Cámaras - Parque Industrial Manzana 4',
-        clientName: 'Industrias Químicas del Oriente S.R.L.',
-        contactPerson: 'Ing. Fernando Vaca',
-        phone: '+591 763-12345',
-        serviceType: 'Seguridad Física',
-        amount: 84000.0,
-        stage: 'Propuesta',
-        probability: 60,
-        owner: 'Rodrigo Acha',
-        closingDate: '30/10/2026',
-        notes: 'Propuesta enviada con 4 puestos 24/7 y garita de acceso pesado.',
-        contractType: 'Recurrente Mensual',
-        executionTime: 'Contrato 12 meses',
-        paymentTerms: 'Facturación mensual a 30 días',
-        advancePercentage: 0,
-        contactRole: 'Gerente de Operaciones',
-        businessSegment: 'Corporativo B2B',
-        siteName: 'Planta Industrial Km 9',
-        siteAddress: 'Parque Industrial PI Cruz, Manzana 4 Lote 12',
-        siteCity: 'Santa Cruz',
-        siteContactName: 'Ing. Fernando Vaca',
-        siteContactPhone: '+591 763-12345',
-        siteAccessRequirements: 'EPP completo y cédula de identidad',
-        isSiteHeadquarters: true,
-        legalBusinessName: 'Industrias Químicas del Oriente S.R.L.',
-        taxId: '1023495811',
-        billingEmail: 'finanzas@iqo.com.bo',
-        isDeleted: false,
-        createdAt: now.subtract(const Duration(days: 14)),
-        updatedAt: now.subtract(const Duration(days: 14)),
-      ),
-      CrmOpportunity(
-        code: 'OPP-002',
-        title: 'Servicio Recurrente de Limpieza y Desinfección de Quirófanos',
-        clientName: 'Clínica San Gabriel del Sur',
-        contactPerson: 'Dra. Patricia Arze',
-        phone: '+591 710-88992',
-        serviceType: 'Limpieza Integral',
-        amount: 36000.0,
-        stage: 'Negociación',
-        probability: 80,
-        owner: 'Carlos V.',
-        closingDate: '15/10/2026',
-        notes: 'En revisión de minuta de contrato con asesoría legal externa.',
-        contractType: 'Recurrente Mensual',
-        executionTime: 'Contrato 12 meses renovable',
-        paymentTerms: 'Facturación quincenal a 15 días',
-        advancePercentage: 0,
-        contactRole: 'Directora Médica',
-        businessSegment: 'Corporativo B2B',
-        siteName: 'Edificio Central Clínico',
-        siteAddress: 'Av. Busch #780, entre 2do y 3er Anillo',
-        siteCity: 'Santa Cruz',
-        siteContactName: 'Lic. Miriam Paz',
-        siteContactPhone: '+591 710-88993',
-        siteAccessRequirements: 'Protocolo de bioseguridad grado hospitalario',
-        isSiteHeadquarters: true,
-        legalBusinessName: 'Servicios Médicos San Gabriel S.A.',
-        taxId: '3049182744',
-        billingEmail: 'administracion@sangabriel.bo',
-        isDeleted: false,
-        createdAt: now.subtract(const Duration(days: 20)),
-        updatedAt: now.subtract(const Duration(days: 20)),
-      ),
-      CrmOpportunity(
-        code: 'OPP-003',
-        title: 'Mantenimiento Preventivo de Generadores y Subestación Eléctrica',
-        clientName: 'Condominio Smart Studio Equipetrol',
-        contactPerson: 'Arq. Marcelo Justiniano',
-        phone: '+591 770-44551',
-        serviceType: 'Mantenimiento',
-        amount: 14500.0,
-        stage: 'Visita Técnica',
-        probability: 40,
-        owner: 'Carlos V.',
-        closingDate: '25/10/2026',
-        notes: 'Inspección técnica programada para verificación de tableros y carga.',
-        contractType: 'Proyecto Único',
-        executionTime: '5 días hábiles',
-        paymentTerms: '50% Anticipo / 50% Entrega Conforme',
-        advancePercentage: 50,
-        contactRole: 'Presidente Directorio',
-        businessSegment: 'Residencial B2C',
-        siteName: 'Torre Smart Studio',
-        siteAddress: 'Calle Guembe #45, Barrio Sirari',
-        siteCity: 'Santa Cruz',
-        siteContactName: 'Sr. Wilson Portales',
-        siteContactPhone: '+591 770-44552',
-        siteAccessRequirements: 'Coordinación con conserjería central',
-        isSiteHeadquarters: true,
-        isDeleted: false,
-        createdAt: now.subtract(const Duration(days: 5)),
-        updatedAt: now.subtract(const Duration(days: 5)),
-      ),
-    ];
-
-    for (final seed in seeds) {
-      await CrmOpportunity.db.insertRow(session, seed);
-    }
   }
 }

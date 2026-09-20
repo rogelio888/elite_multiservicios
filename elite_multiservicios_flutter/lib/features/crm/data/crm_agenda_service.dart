@@ -1,4 +1,6 @@
-import 'package:flutter/foundation.dart';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
+import 'package:flutter/widgets.dart';
+import '../../../main.dart' show client;
 
 /// Tipos de compromisos y tareas comerciales en el CRM.
 class CrmTaskType {
@@ -64,10 +66,26 @@ class CrmTaskItem {
 
   bool get isCompleted => status == 'Completada';
 
+  DateTime get fullScheduledDateTime {
+    if (scheduledTimeText.contains(':')) {
+      final parts = scheduledTimeText.split(':');
+      final h = int.tryParse(parts[0]) ?? scheduledAt.hour;
+      final m = int.tryParse(parts[1]) ?? scheduledAt.minute;
+      return DateTime(
+        scheduledAt.year,
+        scheduledAt.month,
+        scheduledAt.day,
+        h,
+        m,
+      );
+    }
+    return scheduledAt;
+  }
+
   bool get isOverdue {
     if (isCompleted) return false;
     final now = DateTime.now();
-    return scheduledAt.isBefore(DateTime(now.year, now.month, now.day));
+    return fullScheduledDateTime.isBefore(now);
   }
 
   bool isSameDay(DateTime date) {
@@ -78,6 +96,28 @@ class CrmTaskItem {
 
   bool get isToday {
     return isSameDay(DateTime.now());
+  }
+
+  CrmTask toCrmTask() {
+    final rawId = int.tryParse(id.replaceAll(RegExp(r'[^0-9]'), ''));
+    return CrmTask(
+      id: rawId != null && rawId > 0 ? rawId : null,
+      code: id.startsWith('TSK') ? id : '',
+      title: title,
+      taskType: taskType,
+      clientName: clientName,
+      contactPerson: contactPerson,
+      phone: phone,
+      scheduledAt: scheduledAt.toUtc(),
+      scheduledTimeText: scheduledTimeText,
+      priority: priority,
+      status: status,
+      callContext: callContext,
+      notes: notes,
+      isDeleted: false,
+      createdAt: createdAt.toUtc(),
+      updatedAt: DateTime.now().toUtc(),
+    );
   }
 
   CrmTaskItem copyWith({
@@ -117,18 +157,64 @@ class CrmTaskItem {
   }
 }
 
-/// Servicio reactivo singleton para la gestión de la Agenda Comercial y Recordatorios.
+/// Servicio reactivo singleton para la gestión de la Agenda Comercial y Recordatorios
+/// conectado directamente a los endpoints RPC de Serverpod y PostgreSQL.
 class CrmAgendaService extends ChangeNotifier {
   static final CrmAgendaService _instance = CrmAgendaService._internal();
-  factory CrmAgendaService() => _instance;
-
-  CrmAgendaService._internal() {
-    _initDefaultTasks();
+  factory CrmAgendaService({Client? customClient}) {
+    if (customClient != null) {
+      _instance._clientOverride = customClient;
+    }
+    return _instance;
   }
 
+  CrmAgendaService._internal();
+
+  Client? _clientOverride;
+  Client get _activeClient => _clientOverride ?? client;
+
   final List<CrmTaskItem> _tasks = [];
+  bool _isLoading = false;
+  String? _error;
 
   List<CrmTaskItem> get tasks => List.unmodifiable(_tasks);
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+
+  /// Carga la lista de compromisos reales desde PostgreSQL vía Serverpod RPC.
+  Future<void> loadTasks({
+    DateTime? date,
+    String? status,
+    String? taskType,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_isLoading) {
+        notifyListeners();
+      }
+    });
+
+    try {
+      final remoteTasks = await _activeClient.crmAgenda.listTasks(
+        limit: 200,
+        offset: 0,
+        status: status,
+        taskType: taskType,
+      );
+
+      _tasks.clear();
+      for (final t in remoteTasks) {
+        _tasks.add(_fromCrmTask(t));
+      }
+    } catch (e) {
+      debugPrint('[CrmAgendaService] Error al cargar tareas: $e');
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   int get totalTasks => _tasks.length;
 
@@ -185,9 +271,37 @@ class CrmAgendaService extends ChangeNotifier {
     return getTasksForDate(now);
   }
 
-  void addTask(CrmTaskItem task) {
+  Future<void> addTask(CrmTaskItem task) async {
     _tasks.insert(0, task);
     notifyListeners();
+
+    try {
+      await _activeClient.crmAgenda.createTask(task.toCrmTask());
+      await loadTasks();
+    } catch (e) {
+      debugPrint('[CrmAgendaService] Error al crear tarea en backend: $e');
+    }
+  }
+
+  static CrmTaskItem _fromCrmTask(CrmTask t) {
+    return CrmTaskItem(
+      id: t.code.isNotEmpty ? t.code : (t.id?.toString() ?? ''),
+      title: t.title,
+      taskType: t.taskType,
+      clientName: t.clientName,
+      contactPerson: t.contactPerson,
+      phone: t.phone,
+      scheduledAt: t.scheduledAt.toLocal(),
+      scheduledTimeText: t.scheduledTimeText,
+      priority: t.priority,
+      status: t.status,
+      callContext: t.callContext ?? '',
+      notes: t.notes,
+      createdAt: t.createdAt.toLocal(),
+      relatedOpportunityId: t.opportunityId?.toString(),
+      customerId: t.customerId?.toString(),
+      relatedContractId: t.contractId?.toString(),
+    );
   }
 
   /// Programa automáticamente una tarea de control de calidad a 72h tras concluir un trabajo.
@@ -255,40 +369,110 @@ class CrmAgendaService extends ChangeNotifier {
     addTask(task);
   }
 
-  void toggleTaskCompleted(String taskId) {
+  Future<void> toggleTaskCompleted(String taskId) async {
     final idx = _tasks.indexWhere((t) => t.id == taskId);
     if (idx != -1) {
       final current = _tasks[idx];
       final newStatus = current.isCompleted ? 'Pendiente' : 'Completada';
-      _tasks[idx] = current.copyWith(status: newStatus);
+      final updated = current.copyWith(status: newStatus);
+      _tasks[idx] = updated;
       notifyListeners();
+
+      final rawId = int.tryParse(taskId.replaceAll(RegExp(r'[^0-9]'), ''));
+      if (rawId != null && rawId > 0) {
+        try {
+          if (newStatus == 'Completada') {
+            await _activeClient.crmAgenda.completeTask(rawId);
+          } else {
+            await _activeClient.crmAgenda.updateTask(updated.toCrmTask());
+          }
+        } catch (e) {
+          debugPrint(
+            '[CrmAgendaService] Error al persistir estado completado en PostgreSQL: $e',
+          );
+        }
+      }
     }
   }
+
+  List<CrmTaskItem> get urgentOrTodayPendingTasks {
+    final now = DateTime.now();
+    return _tasks.where((t) {
+      if (t.isCompleted) return false;
+      return t.isOverdue || t.isSameDay(now);
+    }).toList()..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
+  }
+
+  int get activeAlertsCount => urgentOrTodayPendingTasks.length;
 
   void postponeTask(String taskId, Duration duration, {String? reason}) {
     final idx = _tasks.indexWhere((t) => t.id == taskId);
     if (idx != -1) {
       final current = _tasks[idx];
-      final newDate = current.scheduledAt.add(duration);
+      final now = DateTime.now();
+      // Si la hora ya pasó, posponer a partir de ahora, sino desde la hora programada
+      final base = current.scheduledAt.isBefore(now)
+          ? now
+          : current.scheduledAt;
+      final newDate = base.add(duration);
+      rescheduleTask(taskId, newDate, reason: reason);
+    }
+  }
+
+  void rescheduleTask(String taskId, DateTime newDateTime, {String? reason}) {
+    final idx = _tasks.indexWhere((t) => t.id == taskId);
+    if (idx != -1) {
+      final current = _tasks[idx];
       final updatedNotes = reason != null && reason.isNotEmpty
           ? '${current.notes ?? ""}\n[Pospuesta]: $reason'.trim()
           : current.notes;
 
+      final timeText =
+          '${newDateTime.hour.toString().padLeft(2, '0')}:${newDateTime.minute.toString().padLeft(2, '0')}';
+
       _tasks[idx] = current.copyWith(
-        scheduledAt: newDate,
+        scheduledAt: newDateTime,
+        scheduledTimeText: timeText,
         status: 'Pospuesta',
         notes: updatedNotes,
       );
       notifyListeners();
+
+      // Persistir cambio en PostgreSQL
+      final rawId = int.tryParse(taskId.replaceAll(RegExp(r'[^0-9]'), ''));
+      if (rawId != null && rawId > 0) {
+        () async {
+          try {
+            await _activeClient.crmAgenda.updateTask(_tasks[idx].toCrmTask());
+          } catch (e) {
+            debugPrint(
+              '[CrmAgendaService] Error al reprogramar tarea en PostgreSQL: $e',
+            );
+          }
+        }();
+      }
     }
   }
 
-  void deleteTask(String taskId) {
+  Future<void> deleteTask(String taskId) async {
+    final rawId = int.tryParse(taskId.replaceAll(RegExp(r'[^0-9]'), ''));
     _tasks.removeWhere((t) => t.id == taskId);
     notifyListeners();
+
+    if (rawId != null && rawId > 0) {
+      try {
+        await _activeClient.crmAgenda.deleteTask(rawId);
+      } catch (e) {
+        debugPrint(
+          '[CrmAgendaService] Error al eliminar tarea en PostgreSQL: $e',
+        );
+      }
+    }
   }
 
-  void _initDefaultTasks() {
+  @visibleForTesting
+  void initDefaultTasksForTesting() {
+    _tasks.clear();
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final tomorrow = today.add(const Duration(days: 1));
@@ -374,8 +558,7 @@ class CrmAgendaService extends ChangeNotifier {
         scheduledAt: yesterday,
         scheduledTimeText: '14:00',
         priority: 'Media',
-        status:
-            'Pendiente', // Vencida intencionalmente para mostrar alerta visual
+        status: 'Pendiente',
         callContext:
             'Llenaron formulario en la web solicitando cotización de limpieza de vidrios en altura.',
         notes: 'No contestó en el primer intento. Reintentar hoy.',

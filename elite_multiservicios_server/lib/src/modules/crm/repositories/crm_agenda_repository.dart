@@ -228,8 +228,9 @@ class CrmAgendaDataService {
   }) async {
     final now = DateTime.now().toUtc();
     final reminderDate = expiryDate.subtract(const Duration(days: 30));
-    final effectiveDate =
-        reminderDate.isBefore(now) ? now.add(const Duration(days: 1)) : reminderDate;
+    final effectiveDate = reminderDate.isBefore(now)
+        ? now.add(const Duration(days: 1))
+        : reminderDate;
 
     return await createTask(
       CrmTask(
@@ -262,17 +263,19 @@ class CrmAgendaDataService {
     );
 
     final totalTasks = allTasks.length;
-    final pendingCount =
-        allTasks.where((t) => t.status != 'Completada').length;
-    final completedCount =
-        allTasks.where((t) => t.status == 'Completada').length;
+    final pendingCount = allTasks.where((t) => t.status != 'Completada').length;
+    final completedCount = allTasks
+        .where((t) => t.status == 'Completada')
+        .length;
 
     final now = DateTime.now().toUtc();
     final todayStart = DateTime.utc(now.year, now.month, now.day);
     final todayEnd = DateTime.utc(now.year, now.month, now.day, 23, 59, 59);
 
     final todayTasksCount = allTasks.where((t) {
-      return t.scheduledAt.isAfter(todayStart.subtract(const Duration(seconds: 1))) &&
+      return t.scheduledAt.isAfter(
+            todayStart.subtract(const Duration(seconds: 1)),
+          ) &&
           t.scheduledAt.isBefore(todayEnd.add(const Duration(seconds: 1))) &&
           t.status != 'Completada';
     }).length;
@@ -281,12 +284,18 @@ class CrmAgendaDataService {
       return t.scheduledAt.isBefore(todayStart) && t.status != 'Completada';
     }).length;
 
-    final startOfWeek = todayStart.subtract(Duration(days: todayStart.weekday - 1));
-    final endOfWeek = startOfWeek.add(const Duration(days: 6, hours: 23, minutes: 59, seconds: 59));
+    final startOfWeek = todayStart.subtract(
+      Duration(days: todayStart.weekday - 1),
+    );
+    final endOfWeek = startOfWeek.add(
+      const Duration(days: 6, hours: 23, minutes: 59, seconds: 59),
+    );
 
     final thisWeekTasksCount = allTasks.where((t) {
       return !t.status.contains('Completada') &&
-          t.scheduledAt.isAfter(startOfWeek.subtract(const Duration(seconds: 1))) &&
+          t.scheduledAt.isAfter(
+            startOfWeek.subtract(const Duration(seconds: 1)),
+          ) &&
           t.scheduledAt.isBefore(endOfWeek);
     }).length;
 
@@ -298,74 +307,5 @@ class CrmAgendaDataService {
       overdueTasksCount: overdueTasksCount,
       thisWeekTasksCount: thisWeekTasksCount,
     );
-  }
-
-  /// Puebla la base de datos PostgreSQL con tareas iniciales si la tabla está vacía.
-  Future<void> seedInitialTasksIfEmpty() async {
-    final count = await CrmTask.db.count(
-      session,
-      where: (t) => t.isDeleted.equals(false),
-    );
-    if (count > 0) return;
-
-    final now = DateTime.now().toUtc();
-
-    final seeds = [
-      CrmTask(
-        code: 'TSK-001',
-        title: 'Llamada de seguimiento a cotización de limpieza',
-        taskType: 'Llamada de Seguimiento',
-        clientName: 'Industrias Químicas del Oriente S.R.L.',
-        contactPerson: 'Ing. Fernando Vaca',
-        phone: '+591 763-12345',
-        scheduledAt: now,
-        scheduledTimeText: '10:00',
-        priority: 'Alta / Urgente',
-        status: 'Pendiente',
-        callContext:
-            'El encargado llega a las 10, llamar a esa hora para revisar la propuesta de 4 puestos de seguridad.',
-        isDeleted: false,
-        createdAt: now.subtract(const Duration(days: 1)),
-        updatedAt: now.subtract(const Duration(days: 1)),
-      ),
-      CrmTask(
-        code: 'TSK-002',
-        title: 'Visita técnica de relevamiento y cubicación',
-        taskType: 'Visita Técnica',
-        clientName: 'Condominio Smart Studio Equipetrol',
-        contactPerson: 'Arq. Marcelo Justiniano',
-        phone: '+591 770-44551',
-        scheduledAt: now,
-        scheduledTimeText: '15:30',
-        priority: 'Media',
-        status: 'Pendiente',
-        callContext:
-            'Inspección en sitio para mantenimiento de generadores y subestación eléctrica.',
-        isDeleted: false,
-        createdAt: now.subtract(const Duration(days: 2)),
-        updatedAt: now.subtract(const Duration(days: 2)),
-      ),
-      CrmTask(
-        code: 'TSK-003',
-        title: 'Seguimiento a minuta legal y datos de facturación',
-        taskType: 'Reunión Presencial / Virtual',
-        clientName: 'Clínica San Gabriel del Sur',
-        contactPerson: 'Dra. Patricia Arze',
-        phone: '+591 710-88992',
-        scheduledAt: now.add(const Duration(days: 1)),
-        scheduledTimeText: '11:00',
-        priority: 'Alta / Urgente',
-        status: 'Pendiente',
-        callContext:
-            'Revisión final de observaciones a las cláusulas de bioseguridad del contrato de limpieza.',
-        isDeleted: false,
-        createdAt: now.subtract(const Duration(days: 3)),
-        updatedAt: now.subtract(const Duration(days: 3)),
-      ),
-    ];
-
-    for (final seed in seeds) {
-      await CrmTask.db.insertRow(session, seed);
-    }
   }
 }

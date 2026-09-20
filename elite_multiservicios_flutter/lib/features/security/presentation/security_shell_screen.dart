@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/navigation/web_url_sync.dart';
+import '../../crm/data/crm_agenda_service.dart';
 import '../../crm/presentation/views/crm_activities_view.dart';
 import '../../crm/presentation/views/crm_customers_view.dart';
 import '../../crm/presentation/views/crm_leads_view.dart';
@@ -204,6 +205,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     });
 
     _loadSidebarMetrics();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        CrmAgendaService().loadTasks();
+      }
+    });
   }
 
   Future<void> _loadSidebarMetrics() async {
@@ -630,7 +636,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         currentView = const CrmLeadsView();
         break;
       case 7:
-        currentView = const CrmPipelineView();
+        currentView = CrmPipelineView(
+          onNavigateToTab: _onTabSelected,
+        );
         break;
       case 8:
         currentView = const CrmCustomersView();
@@ -817,35 +825,255 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                     onPressed: widget.onToggleTheme,
                   ),
 
-                  // Notification Bell
-                  IconButton(
-                    icon: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Icon(
-                          Icons.notifications_none_outlined,
-                          color: isDark
-                              ? const Color(0xFF94A3B8)
-                              : const Color(0xFF64748B),
-                          size: 18,
-                        ),
-                        Positioned(
-                          top: 1,
-                          right: 1,
-                          child: Container(
-                            width: 5,
-                            height: 5,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF3B82F6),
-                              shape: BoxShape.circle,
-                            ),
+                  // Notification Bell Reactivo con CRM Agenda
+                  ListenableBuilder(
+                    listenable: CrmAgendaService(),
+                    builder: (context, _) {
+                      final agendaService = CrmAgendaService();
+                      final pendingTasks =
+                          agendaService.urgentOrTodayPendingTasks;
+                      final count = pendingTasks.length;
+                      final hasOverdue = pendingTasks.any((t) => t.isOverdue);
+                      final alertColor = hasOverdue
+                          ? const Color(0xFFEF4444)
+                          : const Color(0xFFF59E0B);
+
+                      return PopupMenuButton<String>(
+                        tooltip: count > 0
+                            ? '$count compromisos pendientes para hoy'
+                            : 'Sin notificaciones pendientes',
+                        offset: const Offset(0, 42),
+                        position: PopupMenuPosition.under,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFE2E8F0),
                           ),
                         ),
-                      ],
-                    ),
-                    tooltip: 'Notificaciones',
-                    visualDensity: VisualDensity.compact,
-                    onPressed: () {},
+                        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+                        itemBuilder: (ctx) {
+                          if (pendingTasks.isEmpty) {
+                            return [
+                              PopupMenuItem<String>(
+                                enabled: false,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                    horizontal: 8,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.check_circle_outline,
+                                        size: 18,
+                                        color: Color(0xFF10B981),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        'No tienes tareas pendientes hoy',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ];
+                          }
+
+                          return [
+                            PopupMenuItem<String>(
+                              enabled: false,
+                              child: Container(
+                                padding: const EdgeInsets.only(bottom: 6),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: isDark
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFE2E8F0),
+                                    ),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      hasOverdue
+                                          ? 'ALERTAS Y VENCIDAS'
+                                          : 'COMPROMISOS DE HOY',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 0.5,
+                                        color: alertColor,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: alertColor.withValues(
+                                          alpha: 0.15,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Text(
+                                        '$count activas',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w700,
+                                          color: alertColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            ...pendingTasks.take(5).map((t) {
+                              final isDue = t.isOverdue;
+                              return PopupMenuItem<String>(
+                                value: 'task_${t.id}',
+                                onTap: () {
+                                  _onTabSelected(9);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 4,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(6),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              (isDue
+                                                      ? const Color(0xFFEF4444)
+                                                      : const Color(0xFFF59E0B))
+                                                  .withValues(alpha: 0.15),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          isDue
+                                              ? Icons.alarm
+                                              : Icons.phone_in_talk,
+                                          size: 14,
+                                          color: isDue
+                                              ? const Color(0xFFEF4444)
+                                              : const Color(0xFFF59E0B),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              t.title,
+                                              style: GoogleFonts.inter(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Text(
+                                              '${t.scheduledTimeText} • ${t.clientName} (${t.phone})',
+                                              style: GoogleFonts.inter(
+                                                fontSize: 10.5,
+                                                color: isDue
+                                                    ? const Color(0xFFEF4444)
+                                                    : const Color(0xFF64748B),
+                                                fontWeight: isDue
+                                                    ? FontWeight.w600
+                                                    : FontWeight.normal,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }),
+                            const PopupMenuDivider(),
+                            PopupMenuItem<String>(
+                              value: 'go_to_agenda',
+                              onTap: () {
+                                _onTabSelected(9);
+                              },
+                              child: Center(
+                                child: Text(
+                                  'Ver todas en Agenda & Tareas →',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF3B82F6),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ];
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Icon(
+                                count > 0
+                                    ? Icons.notifications_active
+                                    : Icons.notifications_none_outlined,
+                                color: count > 0
+                                    ? alertColor
+                                    : (isDark
+                                          ? const Color(0xFF94A3B8)
+                                          : const Color(0xFF64748B)),
+                                size: 19,
+                              ),
+                              if (count > 0)
+                                Positioned(
+                                  top: -4,
+                                  right: -6,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                      vertical: 1,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: alertColor,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    constraints: const BoxConstraints(
+                                      minWidth: 14,
+                                      minHeight: 14,
+                                    ),
+                                    child: Text(
+                                      '$count',
+                                      style: GoogleFonts.jetBrainsMono(
+                                        color: Colors.white,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(width: 8),
 

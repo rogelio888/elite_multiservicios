@@ -7,6 +7,7 @@ void main() {
 
     setUp(() {
       service = CrmAgendaService();
+      service.initDefaultTasksForTesting();
     });
 
     test('initializes with realistic commercial tasks and calculates KPIs', () {
@@ -69,7 +70,10 @@ void main() {
     );
 
     test('postponeTask updates scheduledAt and sets status to Pospuesta', () {
-      final task = service.tasks.first;
+      final task = service.tasks.firstWhere(
+        (t) => t.scheduledAt.isAfter(DateTime.now()),
+        orElse: () => service.tasks.first,
+      );
       final originalDate = task.scheduledAt;
 
       service.postponeTask(

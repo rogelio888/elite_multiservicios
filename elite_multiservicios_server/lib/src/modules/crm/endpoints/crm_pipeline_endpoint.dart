@@ -51,7 +51,10 @@ class CrmPipelineEndpoint extends Endpoint {
     CrmOpportunity opp, {
     List<CrmQuoteItem>? quoteItems,
   }) async {
-    await RbacGuard.requirePermission(session, AppPermissions.crmPipelineCreate);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.crmPipelineCreate,
+    );
     final repo = CrmPipelineDataService(session);
     return await repo.createOpportunity(opp, quoteItems: quoteItems);
   }
@@ -62,7 +65,10 @@ class CrmPipelineEndpoint extends Endpoint {
     CrmOpportunity opp, {
     List<CrmQuoteItem>? quoteItems,
   }) async {
-    await RbacGuard.requirePermission(session, AppPermissions.crmPipelineUpdate);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.crmPipelineUpdate,
+    );
     final repo = CrmPipelineDataService(session);
     return await repo.updateOpportunity(opp, quoteItems: quoteItems);
   }
@@ -73,7 +79,10 @@ class CrmPipelineEndpoint extends Endpoint {
     int id,
     String newStage,
   ) async {
-    await RbacGuard.requirePermission(session, AppPermissions.crmPipelineUpdate);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.crmPipelineUpdate,
+    );
     final repo = CrmPipelineDataService(session);
     return await repo.updateStage(id, newStage);
   }
@@ -93,7 +102,10 @@ class CrmPipelineEndpoint extends Endpoint {
 
   /// Elimina lógicamente una oportunidad.
   Future<bool> deleteOpportunity(Session session, int id) async {
-    await RbacGuard.requirePermission(session, AppPermissions.crmPipelineDelete);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.crmPipelineDelete,
+    );
     final repo = CrmPipelineDataService(session);
     return await repo.deleteOpportunity(id);
   }

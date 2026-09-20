@@ -80,6 +80,22 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
     final now = DateTime.now();
     _selectedDate = DateTime(now.year, now.month, now.day);
     _currentMonth = DateTime(now.year, now.month, 1);
+    _agendaService.addListener(_onServiceUpdate);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _agendaService.loadTasks();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _agendaService.removeListener(_onServiceUpdate);
+    super.dispose();
+  }
+
+  void _onServiceUpdate() {
+    if (mounted) setState(() {});
   }
 
   Color _getTaskTypeColor(String type) {
@@ -683,6 +699,8 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                           selectedDay.year,
                           selectedDay.month,
                           selectedDay.day,
+                          int.tryParse(selectedTime.split(':')[0]) ?? 16,
+                          int.tryParse(selectedTime.split(':')[1]) ?? 0,
                         ),
                         scheduledTimeText: selectedTime,
                         priority: selectedPriority,
@@ -739,108 +757,483 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
   void _showPostponeMenu(BuildContext context, CrmTaskItem task) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+        return Material(
+          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          clipBehavior: Clip.antiAlias,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(ctx).size.height * 0.85,
+            ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 20,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.update, color: Color(0xFFF59E0B)),
-                    const SizedBox(width: 8),
+                    Row(
+                      children: [
+                        const Icon(Icons.update, color: Color(0xFFF59E0B)),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Posponer Compromiso',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
                     Text(
-                      'Posponer Compromiso',
+                      'Selecciona cuánto tiempo posponer "${task.title}":',
                       style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                        color: const Color(0xFF64748B),
                       ),
+                    ),
+                    const SizedBox(height: 16),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.flash_on,
+                        color: Color(0xFFEF4444),
+                      ),
+                      title: const Text(
+                        'Posponer +5 Minutos (Llamar enseguida)',
+                      ),
+                      onTap: () {
+                        _agendaService.postponeTask(
+                          task.id,
+                          const Duration(minutes: 5),
+                          reason: 'Llamar en 5 minutos',
+                        );
+                        Navigator.pop(ctx);
+                        setState(() {});
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.timer_outlined,
+                        color: Color(0xFFF59E0B),
+                      ),
+                      title: const Text('Posponer +15 Minutos (En breve)'),
+                      onTap: () {
+                        _agendaService.postponeTask(
+                          task.id,
+                          const Duration(minutes: 15),
+                          reason: 'Llamar en 15 minutos',
+                        );
+                        Navigator.pop(ctx);
+                        setState(() {});
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.schedule,
+                        color: Color(0xFF3B82F6),
+                      ),
+                      title: const Text('Posponer +30 Minutos'),
+                      onTap: () {
+                        _agendaService.postponeTask(
+                          task.id,
+                          const Duration(minutes: 30),
+                          reason: 'Llamar en 30 minutos',
+                        );
+                        Navigator.pop(ctx);
+                        setState(() {});
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.hourglass_top,
+                        color: Color(0xFF6366F1),
+                      ),
+                      title: const Text('Posponer +1 Hora'),
+                      onTap: () {
+                        _agendaService.postponeTask(
+                          task.id,
+                          const Duration(hours: 1),
+                          reason: 'Llamar en 1 hora',
+                        );
+                        Navigator.pop(ctx);
+                        setState(() {});
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.timer_outlined,
+                        color: Color(0xFF3B82F6),
+                      ),
+                      title: const Text('Posponer +2 Horas (Hoy más tarde)'),
+                      onTap: () {
+                        _agendaService.postponeTask(
+                          task.id,
+                          const Duration(hours: 2),
+                          reason: 'Cliente ocupado, pidió llamar en 2 horas',
+                        );
+                        Navigator.pop(ctx);
+                        setState(() {});
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.today_outlined,
+                        color: Color(0xFF10B981),
+                      ),
+                      title: const Text('Posponer para Mañana a la misma hora'),
+                      onTap: () {
+                        _agendaService.postponeTask(
+                          task.id,
+                          const Duration(days: 1),
+                          reason: 'No contestó / Pidió llamar mañana',
+                        );
+                        Navigator.pop(ctx);
+                        setState(() {});
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.date_range_outlined,
+                        color: Color(0xFF8B5CF6),
+                      ),
+                      title: const Text('Posponer +3 Días'),
+                      onTap: () {
+                        _agendaService.postponeTask(
+                          task.id,
+                          const Duration(days: 3),
+                          reason: 'Esperando respuesta de gerencia',
+                        );
+                        Navigator.pop(ctx);
+                        setState(() {});
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.next_plan_outlined,
+                        color: Color(0xFFF59E0B),
+                      ),
+                      title: const Text(
+                        'Posponer para la Próxima Semana (+7 días)',
+                      ),
+                      onTap: () {
+                        _agendaService.postponeTask(
+                          task.id,
+                          const Duration(days: 7),
+                          reason: 'Cliente de viaje o en cierre de mes',
+                        );
+                        Navigator.pop(ctx);
+                        setState(() {});
+                      },
+                    ),
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.edit_calendar_outlined,
+                        color: Color(0xFF10B981),
+                      ),
+                      title: const Text(
+                        'Personalizado (Elegir fecha y hora exacta)',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      subtitle: const Text('Elegir día y hora exacta'),
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _showCustomPostponeDialog(task);
+                      },
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Selecciona cuánto tiempo posponer "${task.title}":',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: const Color(0xFF64748B),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ListTile(
-                  leading: const Icon(
-                    Icons.timer_outlined,
-                    color: Color(0xFF3B82F6),
-                  ),
-                  title: const Text('Posponer +2 Horas (Hoy más tarde)'),
-                  onTap: () {
-                    _agendaService.postponeTask(
-                      task.id,
-                      const Duration(hours: 2),
-                      reason: 'Cliente ocupado, pidió llamar en 2 horas',
-                    );
-                    Navigator.pop(ctx);
-                    setState(() {});
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.today_outlined,
-                    color: Color(0xFF10B981),
-                  ),
-                  title: const Text('Posponer para Mañana a la misma hora'),
-                  onTap: () {
-                    _agendaService.postponeTask(
-                      task.id,
-                      const Duration(days: 1),
-                      reason: 'No contestó / Pidió llamar mañana',
-                    );
-                    Navigator.pop(ctx);
-                    setState(() {});
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.date_range_outlined,
-                    color: Color(0xFF8B5CF6),
-                  ),
-                  title: const Text('Posponer +3 Días'),
-                  onTap: () {
-                    _agendaService.postponeTask(
-                      task.id,
-                      const Duration(days: 3),
-                      reason: 'Esperando respuesta de gerencia',
-                    );
-                    Navigator.pop(ctx);
-                    setState(() {});
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.next_plan_outlined,
-                    color: Color(0xFFF59E0B),
-                  ),
-                  title: const Text(
-                    'Posponer para la Próxima Semana (+7 días)',
-                  ),
-                  onTap: () {
-                    _agendaService.postponeTask(
-                      task.id,
-                      const Duration(days: 7),
-                      reason: 'Cliente de viaje o en cierre de mes',
-                    );
-                    Navigator.pop(ctx);
-                    setState(() {});
-                  },
-                ),
-              ],
+              ),
             ),
           ),
+        );
+      },
+    );
+  }
+
+  void _showCustomPostponeDialog(CrmTaskItem task) async {
+    DateTime selectedDate = task.scheduledAt.isBefore(DateTime.now())
+        ? DateTime.now()
+        : task.scheduledAt;
+    TimeOfDay selectedTime = TimeOfDay.fromDateTime(
+      DateTime.now().add(const Duration(minutes: 5)),
+    );
+    final reasonCtrl = TextEditingController(text: 'Llamar a hora específica');
+
+    await showDialog(
+      context: context,
+      builder: (ctx) {
+        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Dialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              insetPadding: const EdgeInsets.all(20),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF10B981,
+                              ).withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.edit_calendar_outlined,
+                              color: Color(0xFF10B981),
+                              size: 22,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Fecha y Hora Personalizada',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                Text(
+                                  task.title,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+
+                      // Botones rápidos de minutos
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          Text(
+                            'Llamar en:',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          for (final m in [5, 10, 20, 45])
+                            ActionChip(
+                              label: Text('+$m min'),
+                              onPressed: () {
+                                final newDt = DateTime.now().add(
+                                  Duration(minutes: m),
+                                );
+                                setModalState(() {
+                                  selectedDate = newDt;
+                                  selectedTime = TimeOfDay.fromDateTime(newDt);
+                                  reasonCtrl.text = 'Llamar en $m minutos';
+                                });
+                              },
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+
+                      // Selección de Fecha y Hora
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                final d = await showDatePicker(
+                                  context: context,
+                                  initialDate: selectedDate,
+                                  firstDate: DateTime.now().subtract(
+                                    const Duration(days: 1),
+                                  ),
+                                  lastDate: DateTime.now().add(
+                                    const Duration(days: 365),
+                                  ),
+                                );
+                                if (d != null) {
+                                  setModalState(() => selectedDate = d);
+                                }
+                              },
+                              borderRadius: BorderRadius.circular(8),
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: isDark
+                                        ? const Color(0xFF334155)
+                                        : const Color(0xFFCBD5E1),
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.calendar_today,
+                                      size: 16,
+                                      color: Color(0xFF3B82F6),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                final t = await showTimePicker(
+                                  context: context,
+                                  initialTime: selectedTime,
+                                );
+                                if (t != null) {
+                                  setModalState(() => selectedTime = t);
+                                }
+                              },
+                              borderRadius: BorderRadius.circular(8),
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: isDark
+                                        ? const Color(0xFF334155)
+                                        : const Color(0xFFCBD5E1),
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.access_time,
+                                      size: 16,
+                                      color: Color(0xFF10B981),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}',
+                                      style: GoogleFonts.jetBrainsMono(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+
+                      TextFormField(
+                        controller: reasonCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Motivo / Nota de reprogramación',
+                          hintText: 'Ej: Pedir cotización de nuevo número',
+                          isDense: true,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Cancelar'),
+                          ),
+                          const SizedBox(width: 10),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF10B981),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 11,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () {
+                              final combined = DateTime(
+                                selectedDate.year,
+                                selectedDate.month,
+                                selectedDate.day,
+                                selectedTime.hour,
+                                selectedTime.minute,
+                              );
+                              _agendaService.rescheduleTask(
+                                task.id,
+                                combined,
+                                reason: reasonCtrl.text.trim().isNotEmpty
+                                    ? reasonCtrl.text.trim()
+                                    : 'Reprogramada',
+                              );
+                              Navigator.pop(ctx);
+                              setState(() {});
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: const Color(0xFF065F46),
+                                  content: Text(
+                                    'Compromiso pospuesto para las ${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}',
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.check, size: 16),
+                            label: const Text('Guardar Fecha y Hora'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -1821,23 +2214,29 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
             children: [
               const Icon(Icons.business, size: 14, color: Color(0xFF64748B)),
               const SizedBox(width: 4),
-              Text(
-                task.clientName,
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF64748B),
+              Flexible(
+                child: Text(
+                  task.clientName,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF64748B),
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               if (task.contactPerson.isNotEmpty) ...[
                 const SizedBox(width: 8),
                 const Text('•', style: TextStyle(color: Color(0xFF64748B))),
                 const SizedBox(width: 8),
-                Text(
-                  task.contactPerson,
-                  style: GoogleFonts.inter(
-                    fontSize: 11.5,
-                    color: const Color(0xFF64748B),
+                Flexible(
+                  child: Text(
+                    task.contactPerson,
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      color: const Color(0xFF64748B),
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -1888,8 +2287,11 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
           const SizedBox(height: 10),
 
           // Fila 4: Acciones Rápidas (Llamar, WhatsApp, Posponer, Completar)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 8,
             children: [
               Row(
                 children: [

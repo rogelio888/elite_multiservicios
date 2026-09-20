@@ -7,6 +7,7 @@ void main() {
 
     setUp(() {
       service = CrmCustomersService();
+      service.initDefaultCustomersForTesting();
     });
 
     test(

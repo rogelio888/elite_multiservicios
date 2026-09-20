@@ -17,7 +17,7 @@ fields:
   ### Monto total o estimado de la oportunidad en Bs.
   amount: double
   ### Etapa o compuerta comercial en el embudo.
-  stage: String, default='Calificación'
+  stage: String
   ### Probabilidad de cierre comercial porcentual (0 - 100).
   probability: int, default=20
   ### Asesor o responsable de la oportunidad.
@@ -31,7 +31,7 @@ fields:
   ### Tiempo o plazo de ejecución estimado.
   executionTime: String, default='12 meses'
   ### Términos y condiciones de pago.
-  paymentTerms: String, default='Facturación mensual a 30 días'
+  paymentTerms: String
   ### Porcentaje de anticipo pactado (0, 30, 50, 70, 100).
   advancePercentage: int, default=0
 
