@@ -279,6 +279,23 @@ class MfaEndpoint extends Endpoint {
         ),
         columns: (t) => [t.mfaVerified, t.lastActivityAt],
       );
+    } else {
+      final ipAddress = session.request?.remoteInfo;
+      final deviceInfo = session.request?.headers['user-agent']?.firstOrNull;
+      await UserSession.db.insertRow(
+        session,
+        UserSession(
+          userId: appUser.id!,
+          sessionTokenHash: 'mfa-${now.millisecondsSinceEpoch}-${appUser.id}',
+          ipAddress: ipAddress,
+          deviceInfo: deviceInfo,
+          isRevoked: false,
+          mfaVerified: true,
+          createdAt: now,
+          lastActivityAt: now,
+          expiresAt: now.add(const Duration(days: 30)),
+        ),
+      );
     }
 
     // 7. Si rememberMe → registrar TrustedDevice

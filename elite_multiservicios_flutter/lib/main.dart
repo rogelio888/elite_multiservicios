@@ -123,6 +123,7 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
     MfaChallengeResponse? challenge = _authService.currentMfaChallenge;
     challenge ??= await _authService.checkMfaRequired(
       rememberMe: _authService.currentRememberMe,
+      notify: false,
     );
 
     return _UserAuthState(
@@ -138,13 +139,13 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
         authService: _authService,
         isDarkMode: isDark,
         onToggleTheme: _toggleTheme,
+        onLoginSuccess: () => setState(() {}),
       );
     }
     return FutureBuilder<_UserAuthState>(
       future: _resolveAuthState(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting ||
-            _authService.isCheckingMfa) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
@@ -155,6 +156,7 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
             authService: _authService,
             isDarkMode: isDark,
             onToggleTheme: _toggleTheme,
+            onLoginSuccess: () => setState(() {}),
           );
         }
         final authState = snapshot.data!;
@@ -171,7 +173,7 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
               emailHint: challenge.emailHint,
               rememberMe: _authService.currentRememberMe,
               onMfaSuccess: () {
-                _authService.clearMfaPending();
+                _authService.markSessionMfaVerified();
                 setState(() {});
               },
             );

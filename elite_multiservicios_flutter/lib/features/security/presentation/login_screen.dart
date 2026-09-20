@@ -94,7 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = false;
       });
 
-      if (_authService.isMfaPending &&
+      if (widget.onLoginSuccess != null) {
+        widget.onLoginSuccess!.call();
+      } else if (_authService.isMfaPending &&
           _authService.currentMfaChallenge != null) {
         final challenge = _authService.currentMfaChallenge!;
         await Navigator.of(context).push(
@@ -106,13 +108,10 @@ class _LoginScreenState extends State<LoginScreen> {
               rememberMe: _rememberMe,
               onMfaSuccess: () {
                 _authService.clearMfaPending();
-                widget.onLoginSuccess?.call();
               },
             ),
           ),
         );
-      } else {
-        widget.onLoginSuccess?.call();
       }
     } catch (e) {
       if (mounted) {

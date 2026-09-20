@@ -38,22 +38,43 @@ class SessionManagementEndpoint extends Endpoint {
     final ipAddress = session.request?.remoteInfo;
     final deviceInfo = session.request?.headers['user-agent']?.firstOrNull;
 
-    // 4. Insertar fila en user_session
+    // 4. Insertar o actualizar fila en user_session
     final now = DateTime.now().toUtc();
-    final userSession = await UserSession.db.insertRow(
+    final existingSession = await UserSession.db.findFirstRow(
       session,
-      UserSession(
-        userId: appUser.id!,
-        sessionTokenHash: sessionTokenHash,
-        ipAddress: ipAddress,
-        deviceInfo: deviceInfo,
-        isRevoked: false,
-        mfaVerified: mfaVerified ?? false,
-        createdAt: now,
-        lastActivityAt: now,
-        expiresAt: expiresAt.toUtc(),
-      ),
+      where: (t) => t.sessionTokenHash.equals(sessionTokenHash),
     );
+
+    final UserSession userSession;
+    if (existingSession != null) {
+      userSession = await UserSession.db.updateRow(
+        session,
+        existingSession.copyWith(
+          userId: appUser.id!,
+          isRevoked: false,
+          mfaVerified: mfaVerified ?? false,
+          lastActivityAt: now,
+          expiresAt: expiresAt.toUtc(),
+          ipAddress: ipAddress,
+          deviceInfo: deviceInfo,
+        ),
+      );
+    } else {
+      userSession = await UserSession.db.insertRow(
+        session,
+        UserSession(
+          userId: appUser.id!,
+          sessionTokenHash: sessionTokenHash,
+          ipAddress: ipAddress,
+          deviceInfo: deviceInfo,
+          isRevoked: false,
+          mfaVerified: mfaVerified ?? false,
+          createdAt: now,
+          lastActivityAt: now,
+          expiresAt: expiresAt.toUtc(),
+        ),
+      );
+    }
 
     // 5. Registrar evento LOGIN_SUCCESS en audit_log
     await _auditService.logEvent(
