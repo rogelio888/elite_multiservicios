@@ -187,16 +187,46 @@ class AuthService extends ChangeNotifier {
     );
   }
 
+  /// Comprueba si la sesión activa del usuario actual ya está verificada con MFA en PostgreSQL.
+  Future<bool> isCurrentSessionMfaVerified() async {
+    try {
+      return await _client.mfa.isSessionVerified();
+    } catch (e) {
+      if (kDebugMode) {
+        print('[AuthService] Error comprobando sesión MFA: $e');
+      }
+      return false;
+    }
+  }
+
   /// Verifica si el usuario autenticado requiere MFA.
   /// Si sí, retorna el challenge. Si no, retorna null.
   Future<MfaChallengeResponse?> checkMfaRequired({
     required bool rememberMe,
   }) async {
-    final trustedToken = await getTrustedDeviceToken();
-    return await _client.mfa.checkRequired(
-      rememberMe: rememberMe,
-      trustedDeviceToken: trustedToken,
-    );
+    _isCheckingMfa = true;
+    notifyListeners();
+    try {
+      final trustedToken = await getTrustedDeviceToken();
+      final challenge = await _client.mfa.checkRequired(
+        rememberMe: rememberMe,
+        trustedDeviceToken: trustedToken,
+      );
+      if (challenge != null) {
+        setMfaPending(challenge, rememberMe: rememberMe);
+      } else {
+        clearMfaPending();
+      }
+      return challenge;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error verificando MFA: $e');
+      }
+      return null;
+    } finally {
+      _isCheckingMfa = false;
+      notifyListeners();
+    }
   }
 
   /// Verifica el código MFA.
@@ -210,6 +240,9 @@ class AuthService extends ChangeNotifier {
       code: code,
       rememberMe: rememberMe,
     );
+    if (response.success) {
+      clearMfaPending();
+    }
     // Si el backend devolvió un trustedDeviceToken, guardarlo
     if (response.trustedDeviceToken != null) {
       await saveTrustedDeviceToken(response.trustedDeviceToken!);

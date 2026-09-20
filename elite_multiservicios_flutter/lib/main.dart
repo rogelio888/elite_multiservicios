@@ -108,6 +108,30 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
     );
   }
 
+  Future<_UserAuthState> _resolveAuthState() async {
+    final user = await client.user.getCurrentUser();
+    if (!user.mfaEnabled) {
+      return _UserAuthState(user: user, isMfaVerified: true);
+    }
+
+    final isVerified = await _authService.isCurrentSessionMfaVerified();
+    if (isVerified) {
+      return _UserAuthState(user: user, isMfaVerified: true);
+    }
+
+    // La sesión activa NO tiene MFA verificado. Recuperar o emitir challenge.
+    MfaChallengeResponse? challenge = _authService.currentMfaChallenge;
+    challenge ??= await _authService.checkMfaRequired(
+      rememberMe: _authService.currentRememberMe,
+    );
+
+    return _UserAuthState(
+      user: user,
+      isMfaVerified: false,
+      mfaChallenge: challenge,
+    );
+  }
+
   Widget _buildRootWidget(BuildContext context, bool isDark, bool isSignedIn) {
     if (!isSignedIn) {
       return LoginScreen(
@@ -116,8 +140,8 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
         onToggleTheme: _toggleTheme,
       );
     }
-    return FutureBuilder<AppUser>(
-      future: client.user.getCurrentUser(),
+    return FutureBuilder<_UserAuthState>(
+      future: _resolveAuthState(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting ||
             _authService.isCheckingMfa) {
@@ -126,27 +150,32 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
           );
         }
         if (snapshot.hasError || !snapshot.hasData) {
-          return SecurityShellScreen(
+          // Si no se puede validar la sesión, jamás dar acceso: retornar a LoginScreen
+          return LoginScreen(
+            authService: _authService,
             isDarkMode: isDark,
             onToggleTheme: _toggleTheme,
           );
         }
-        final user = snapshot.data!;
+        final authState = snapshot.data!;
+        final user = authState.user;
 
-        // 1. PRIMERO: ¿MFA pendiente?
-        if (_authService.isMfaPending &&
-            _authService.currentMfaChallenge != null) {
-          final challenge = _authService.currentMfaChallenge!;
-          return MfaVerificationScreen(
-            authService: _authService,
-            challengeId: challenge.challengeId,
-            emailHint: challenge.emailHint,
-            rememberMe: _authService.currentRememberMe,
-            onMfaSuccess: () {
-              _authService.clearMfaPending();
-              setState(() {});
-            },
-          );
+        // 1. PRIMERO: Si el usuario requiere MFA y la sesión NO está verificada
+        if (user.mfaEnabled && !authState.isMfaVerified) {
+          final challenge =
+              authState.mfaChallenge ?? _authService.currentMfaChallenge;
+          if (challenge != null) {
+            return MfaVerificationScreen(
+              authService: _authService,
+              challengeId: challenge.challengeId,
+              emailHint: challenge.emailHint,
+              rememberMe: _authService.currentRememberMe,
+              onMfaSuccess: () {
+                _authService.clearMfaPending();
+                setState(() {});
+              },
+            );
+          }
         }
 
         // 2. DESPUÉS: ¿Cambio obligatorio de contraseña?
@@ -165,4 +194,16 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
       },
     );
   }
+}
+
+class _UserAuthState {
+  final AppUser user;
+  final bool isMfaVerified;
+  final MfaChallengeResponse? mfaChallenge;
+
+  const _UserAuthState({
+    required this.user,
+    required this.isMfaVerified,
+    this.mfaChallenge,
+  });
 }

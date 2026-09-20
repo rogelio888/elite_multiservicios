@@ -38,7 +38,18 @@ class MfaEndpoint extends Endpoint {
       return null;
     }
 
-    // 3. Si rememberMe && trustedDeviceToken válido → no requiere
+    // 3. Si la sesión activa ya tiene mfaVerified == true → no requiere
+    final activeSession = await UserSession.db.findFirstRow(
+      session,
+      where: (t) => t.userId.equals(appUser.id!) & t.isRevoked.equals(false),
+      orderBy: (t) => t.createdAt,
+      orderDescending: true,
+    );
+    if (activeSession != null && activeSession.mfaVerified) {
+      return null;
+    }
+
+    // 4. Si rememberMe && trustedDeviceToken válido → no requiere
     if (rememberMe && trustedDeviceToken != null) {
       final trusted = await TrustedDevice.db.findFirstRow(
         session,
@@ -65,11 +76,46 @@ class MfaEndpoint extends Endpoint {
             },
           ),
         );
+
+        if (activeSession != null) {
+          await UserSession.db.updateRow(
+            session,
+            activeSession.copyWith(
+              mfaVerified: true,
+              lastActivityAt: DateTime.now().toUtc(),
+            ),
+            columns: (t) => [t.mfaVerified, t.lastActivityAt],
+          );
+        }
+
         return null; // No requiere MFA
       }
     }
 
-    // 4. Generar código y challenge
+    // 5. Si ya existe un challenge vigente (< 90s), reutilizarlo para evitar saturación de emails
+    final existingChallenge = await MfaChallenge.db.findFirstRow(
+      session,
+      where: (t) =>
+          t.userId.equals(appUser.id!) &
+          t.isUsed.equals(false) &
+          (t.expiresAt > DateTime.now().toUtc()),
+      orderBy: (t) => t.createdAt,
+      orderDescending: true,
+    );
+    if (existingChallenge != null && existingChallenge.attempts < 3) {
+      final age = DateTime.now().toUtc().difference(
+        existingChallenge.createdAt,
+      );
+      if (age.inSeconds < 90) {
+        return MfaChallengeResponse(
+          challengeId: existingChallenge.challengeId,
+          emailHint: _maskEmail(appUser.email),
+          expiresAt: existingChallenge.expiresAt,
+        );
+      }
+    }
+
+    // 6. Generar código y challenge
     final code = _generateSixDigitCode();
     final challengeId = const Uuid().v4();
     final codeHash = sha256.convert(utf8.encode(code)).toString();
@@ -420,5 +466,29 @@ class MfaEndpoint extends Endpoint {
     }
 
     return appUser;
+  }
+
+  /// Comprueba si la sesión activa del usuario actual ya está verificada con MFA en PostgreSQL.
+  Future<bool> isSessionVerified(Session session) async {
+    final authUserIdStr = session.authenticated?.userIdentifier;
+    if (authUserIdStr == null) return false;
+
+    try {
+      final appUser = await _resolveAuthenticatedAppUser(
+        session,
+        authUserIdStr,
+      );
+      if (!appUser.mfaEnabled) return true;
+
+      final activeSession = await UserSession.db.findFirstRow(
+        session,
+        where: (t) => t.userId.equals(appUser.id!) & t.isRevoked.equals(false),
+        orderBy: (t) => t.createdAt,
+        orderDescending: true,
+      );
+      return activeSession?.mfaVerified ?? false;
+    } catch (_) {
+      return false;
+    }
   }
 }
