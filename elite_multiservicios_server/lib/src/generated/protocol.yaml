@@ -68,6 +68,7 @@ mfa:
   - checkRequired:
   - verifyMfa:
   - resendMfaCode:
+  - isSessionVerified:
 rbac:
   - listRoles:
   - listPermissions:

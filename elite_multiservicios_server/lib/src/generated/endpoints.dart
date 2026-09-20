@@ -1710,6 +1710,16 @@ class Endpoints extends _i1.EndpointDispatch {
                 challengeId: params['challengeId'],
               ),
         ),
+        'isSessionVerified': _i1.MethodConnector(
+          name: 'isSessionVerified',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['mfa'] as _i10.MfaEndpoint)
+                  .isSessionVerified(session),
+        ),
       },
     );
     connectors['rbac'] = _i1.EndpointConnector(

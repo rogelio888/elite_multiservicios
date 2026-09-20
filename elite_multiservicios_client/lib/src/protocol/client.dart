@@ -970,6 +970,13 @@ class EndpointMfa extends _i2.EndpointRef {
         'resendMfaCode',
         {'challengeId': challengeId},
       );
+
+  /// Comprueba si la sesión activa del usuario actual ya está verificada con MFA en PostgreSQL.
+  _i3.Future<bool> isSessionVerified() => caller.callServerEndpoint<bool>(
+    'mfa',
+    'isSessionVerified',
+    {},
+  );
 }
 
 /// Endpoint RPC para administración de Roles y Permisos Granulares (RBAC).

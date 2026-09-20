@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../services/auth_service.dart';
 import 'recovery/forgot_password_screen.dart';
+import 'recovery/mfa_verification_screen.dart';
 import 'widgets/auth_branding_panel.dart';
 
 /// Pantalla de inicio de sesión empresarial diseñada según los tokens y estructura
@@ -88,9 +89,29 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      // Login exitoso: AuthService ya procesó checkMfaRequired y seteó el estado.
-      // main.dart se encarga de reaccionar y mostrar MfaVerificationScreen o el Dashboard.
-      if (!_authService.isMfaPending) {
+      // Login exitoso
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (_authService.isMfaPending &&
+          _authService.currentMfaChallenge != null) {
+        final challenge = _authService.currentMfaChallenge!;
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => MfaVerificationScreen(
+              authService: _authService,
+              challengeId: challenge.challengeId,
+              emailHint: challenge.emailHint,
+              rememberMe: _rememberMe,
+              onMfaSuccess: () {
+                _authService.clearMfaPending();
+                widget.onLoginSuccess?.call();
+              },
+            ),
+          ),
+        );
+      } else {
         widget.onLoginSuccess?.call();
       }
     } catch (e) {

@@ -49,7 +49,10 @@ class RbacGuard {
       return userIdentifier;
     }
 
-    // 2. Scopes de sesión de Serverpod
+    // 2. Comprobación OBLIGATORIA de MFA para toda llamada protegida
+    await requireMfaVerified(session);
+
+    // 3. Scopes de sesión de Serverpod
     final scopes = session.authenticated?.scopes ?? {};
     if (scopes.any((s) => s.name == requiredPermission || s.name == 'admin')) {
       return userIdentifier;
