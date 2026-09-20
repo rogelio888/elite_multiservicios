@@ -32,6 +32,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
   void initState() {
     super.initState();
     _service.addListener(_onServiceUpdate);
+    _service.loadCustomers();
   }
 
   @override
@@ -41,7 +42,17 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
   }
 
   void _onServiceUpdate() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        if (_selectedCustomer != null) {
+          _selectedCustomer =
+              _service.getCustomerById(_selectedCustomer!.id) ??
+              _selectedCustomer;
+        }
+        setState(() {});
+      }
+    });
   }
 
   List<CustomerItem> get _filteredCustomers {
@@ -218,11 +229,18 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
           maxChildSize: 0.96,
           minChildSize: 0.5,
           builder: (_, scrollController) {
-            return _buildCustomerDetailContent(
-              customer,
-              isDark,
-              isPane: false,
-              onClose: () => Navigator.of(ctx).pop(),
+            return ListenableBuilder(
+              listenable: _service,
+              builder: (innerCtx, _) {
+                final currentCustomer =
+                    _service.getCustomerById(customer.id) ?? customer;
+                return _buildCustomerDetailContent(
+                  currentCustomer,
+                  isDark,
+                  isPane: false,
+                  onClose: () => Navigator.of(ctx).pop(),
+                );
+              },
             );
           },
         );
@@ -310,8 +328,11 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                             ),
                             const SizedBox(width: 8),
                             _buildLifecycleBadge(customer.lifecycleStage),
-                            const SizedBox(width: 6),
-                            _buildStatusBadge(customer.status),
+                            if (customer.hasActiveContracts ||
+                                customer.status != 'Activo') ...[
+                              const SizedBox(width: 6),
+                              _buildStatusBadge(customer.status),
+                            ],
                             if (onClose != null) ...[
                               const SizedBox(width: 8),
                               IconButton(
@@ -535,23 +556,37 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                               ),
                             ),
                             const SizedBox(height: 2),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.star,
-                                  size: 13,
-                                  color: Color(0xFFF59E0B),
-                                ),
-                                const SizedBox(width: 3),
-                                Text(
-                                  '4.9 / 5.0',
-                                  style: GoogleFonts.jetBrainsMono(
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.w800,
-                                    color: const Color(0xFFF59E0B),
-                                  ),
-                                ),
-                              ],
+                            Builder(
+                              builder: (_) {
+                                final avgRating = customer.averageSatisfaction;
+                                final hasRating = avgRating != null;
+                                return Row(
+                                  children: [
+                                    Icon(
+                                      hasRating
+                                          ? Icons.star
+                                          : Icons.star_outline,
+                                      size: 13,
+                                      color: hasRating
+                                          ? const Color(0xFFF59E0B)
+                                          : const Color(0xFF94A3B8),
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      hasRating
+                                          ? '${avgRating.toStringAsFixed(1)} / 5.0'
+                                          : 'Pendiente',
+                                      style: GoogleFonts.jetBrainsMono(
+                                        fontSize: hasRating ? 13.5 : 11.5,
+                                        fontWeight: FontWeight.w800,
+                                        color: hasRating
+                                            ? const Color(0xFFF59E0B)
+                                            : const Color(0xFF94A3B8),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -618,42 +653,77 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
+                  if (customer.hasActiveContracts)
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        side: BorderSide(
+                          color: customer.status == 'Activo'
+                              ? const Color(0xFFD97706)
+                              : const Color(0xFF10B981),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      side: BorderSide(
+                      onPressed: () => _toggleCustomerStatus(customer),
+                      icon: Icon(
+                        customer.status == 'Activo'
+                            ? Icons.pause_circle_outline
+                            : Icons.play_circle_outline,
+                        size: 16,
                         color: customer.status == 'Activo'
                             ? const Color(0xFFD97706)
                             : const Color(0xFF10B981),
                       ),
-                    ),
-                    onPressed: () => _toggleCustomerStatus(customer),
-                    icon: Icon(
-                      customer.status == 'Activo'
-                          ? Icons.pause_circle_outline
-                          : Icons.play_circle_outline,
-                      size: 16,
-                      color: customer.status == 'Activo'
-                          ? const Color(0xFFD97706)
-                          : const Color(0xFF10B981),
-                    ),
-                    label: Text(
-                      customer.status == 'Activo' ? 'Pausar' : 'Activar',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: customer.status == 'Activo'
-                            ? const Color(0xFFD97706)
-                            : const Color(0xFF10B981),
+                      label: Text(
+                        customer.status == 'Activo' ? 'Pausar' : 'Activar',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: customer.status == 'Activo'
+                              ? const Color(0xFFD97706)
+                              : const Color(0xFF10B981),
+                        ),
+                      ),
+                    )
+                  else
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        side: const BorderSide(
+                          color: Color(0xFF10B981),
+                        ),
+                      ),
+                      onPressed: () => _showAddContractDialog(
+                        customer,
+                        prefilledContract: customer.contracts.isNotEmpty
+                            ? customer.contracts.last
+                            : null,
+                      ),
+                      icon: const Icon(
+                        Icons.replay,
+                        size: 16,
+                        color: Color(0xFF10B981),
+                      ),
+                      label: Text(
+                        'Recontratar',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF10B981),
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -1305,7 +1375,17 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                       ? const Color(0xFF10B981).withValues(alpha: 0.15)
                       : (isActive
                             ? const Color(0xFF3B82F6).withValues(alpha: 0.12)
-                            : const Color(0xFFF59E0B).withValues(alpha: 0.12)),
+                            : (contract.status == 'Cancelado'
+                                  ? const Color(
+                                      0xFFEF4444,
+                                    ).withValues(alpha: 0.15)
+                                  : (contract.status == 'En Renegociación'
+                                        ? const Color(
+                                            0xFF8B5CF6,
+                                          ).withValues(alpha: 0.15)
+                                        : const Color(
+                                            0xFFF59E0B,
+                                          ).withValues(alpha: 0.12)))),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -1317,7 +1397,11 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         ? const Color(0xFF10B981)
                         : (isActive
                               ? const Color(0xFF3B82F6)
-                              : const Color(0xFFF59E0B)),
+                              : (contract.status == 'Cancelado'
+                                    ? const Color(0xFFEF4444)
+                                    : (contract.status == 'En Renegociación'
+                                          ? const Color(0xFF8B5CF6)
+                                          : const Color(0xFFF59E0B)))),
                   ),
                 ),
               ),
@@ -1647,29 +1731,30 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
             spacing: 8,
             runSpacing: 6,
             children: [
-              if (isActive) ...[
-                OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF10B981),
-                    side: const BorderSide(color: Color(0xFF10B981)),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
+              if (isActive || contract.status == 'En Renegociación') ...[
+                if (isActive)
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF10B981),
+                      side: const BorderSide(color: Color(0xFF10B981)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      minimumSize: const Size(0, 32),
                     ),
-                    minimumSize: const Size(0, 32),
-                  ),
-                  onPressed: () =>
-                      _showCompleteContractDialog(customer, contract),
-                  icon: const Icon(Icons.check_circle_outline, size: 14),
-                  label: Text(
-                    'Concluir Trabajo',
-                    style: GoogleFonts.inter(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w600,
+                    onPressed: () =>
+                        _showCompleteContractDialog(customer, contract),
+                    icon: const Icon(Icons.check_circle_outline, size: 14),
+                    label: Text(
+                      'Concluir Trabajo',
+                      style: GoogleFonts.inter(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-                if (isRecurring)
+                if (isRecurring && isActive)
                   OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF6366F1),
@@ -1691,38 +1776,89 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                       ),
                     ),
                   ),
-                OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFD97706),
-                    side: const BorderSide(color: Color(0xFFD97706)),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 6,
-                    ),
-                    minimumSize: const Size(0, 32),
-                  ),
-                  onPressed: () {
-                    _service.updateContractStatus(
-                      customer.id,
-                      contract.id,
-                      'En Pausa',
-                    );
-                    Navigator.of(context).pop();
-                    _showCustomerDetail(
-                      _service.customers.firstWhere((c) => c.id == customer.id),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Contrato puesto en pausa.'),
+                if (isActive)
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFD97706),
+                      side: const BorderSide(color: Color(0xFFD97706)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 6,
                       ),
-                    );
-                  },
-                  icon: const Icon(Icons.pause, size: 14),
-                  label: Text(
-                    'Pausar',
-                    style: GoogleFonts.inter(fontSize: 11.5),
+                      minimumSize: const Size(0, 32),
+                    ),
+                    onPressed: () {
+                      _service.updateContractStatus(
+                        customer.id,
+                        contract.id,
+                        'En Pausa',
+                      );
+                      if (_selectedCustomer?.id == customer.id) {
+                        _selectedCustomer = _service.getCustomerById(
+                          customer.id,
+                        );
+                        setState(() {});
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Contrato puesto en pausa.'),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.pause, size: 14),
+                    label: Text(
+                      'Pausar',
+                      style: GoogleFonts.inter(fontSize: 11.5),
+                    ),
                   ),
-                ),
+                if (contract.status == 'En Pausa' ||
+                    contract.status == 'En Renegociación')
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF3B82F6),
+                      side: const BorderSide(color: Color(0xFF3B82F6)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 6,
+                      ),
+                      minimumSize: const Size(0, 32),
+                    ),
+                    onPressed: () =>
+                        _showReopenNegotiationDialog(customer, contract),
+                    icon: const Icon(Icons.sync_alt, size: 14),
+                    label: Text(
+                      contract.status == 'En Renegociación'
+                          ? 'Actualizar Renegociación'
+                          : 'Reabrir Negociación',
+                      style: GoogleFonts.inter(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                if (contract.status != 'Culminado' &&
+                    contract.status != 'Cancelado')
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFEF4444),
+                      side: const BorderSide(color: Color(0xFFEF4444)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 6,
+                      ),
+                      minimumSize: const Size(0, 32),
+                    ),
+                    onPressed: () =>
+                        _showCancelContractDialog(customer, contract),
+                    icon: const Icon(Icons.cancel_outlined, size: 14),
+                    label: Text(
+                      'Cancelar Contrato',
+                      style: GoogleFonts.inter(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
               ],
               if (isCompleted)
                 ElevatedButton.icon(
@@ -1766,10 +1902,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                       contract.id,
                       'Vigente',
                     );
-                    Navigator.of(context).pop();
-                    _showCustomerDetail(
-                      _service.customers.firstWhere((c) => c.id == customer.id),
-                    );
+                    if (_selectedCustomer?.id == customer.id) {
+                      _selectedCustomer = _service.getCustomerById(customer.id);
+                      setState(() {});
+                    }
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Contrato reactivado exitosamente.'),
@@ -1958,7 +2094,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
   void _toggleCustomerStatus(CustomerItem customer) {
     final nextStatus = customer.status == 'Activo' ? 'En Pausa' : 'Activo';
     _service.updateCustomer(customer.copyWith(status: nextStatus));
-    Navigator.of(context).pop();
+    if (_selectedCustomer?.id == customer.id) {
+      _selectedCustomer = _service.getCustomerById(customer.id);
+      setState(() {});
+    }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -2127,8 +2266,8 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                   ),
                   icon: const Icon(Icons.check, size: 16),
                   label: const Text('Confirmar Conclusión'),
-                  onPressed: () {
-                    _service.completeContract(
+                  onPressed: () async {
+                    await _service.completeContract(
                       customer.id,
                       contract.id,
                       completionDate: dateCtrl.text.trim(),
@@ -2143,11 +2282,12 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                       customerId: customer.id,
                       contractId: contract.id,
                     );
-                    Navigator.of(dCtx).pop();
-                    Navigator.of(context).pop();
-                    _showCustomerDetail(
-                      _service.customers.firstWhere((c) => c.id == customer.id),
-                    );
+                    if (dCtx.mounted) Navigator.of(dCtx).pop();
+                    if (!mounted) return;
+                    if (_selectedCustomer?.id == customer.id) {
+                      _selectedCustomer = _service.getCustomerById(customer.id);
+                      setState(() {});
+                    }
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         backgroundColor: Color(0xFF065F46),
@@ -2299,22 +2439,23 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                   ),
                   icon: const Icon(Icons.autorenew, size: 16),
                   label: const Text('Confirmar Renovación'),
-                  onPressed: () {
+                  onPressed: () async {
                     final parsed =
                         double.tryParse(amountCtrl.text.trim()) ??
                         contract.recurringMonthlyAmount;
-                    _service.renewContract(
+                    await _service.renewContract(
                       customer.id,
                       contract.id,
                       additionalMonths: additionalMonths,
                       adjustedMonthlyAmount: parsed,
                       notes: notesCtrl.text.trim(),
                     );
-                    Navigator.of(dCtx).pop();
-                    Navigator.of(context).pop();
-                    _showCustomerDetail(
-                      _service.customers.firstWhere((c) => c.id == customer.id),
-                    );
+                    if (dCtx.mounted) Navigator.of(dCtx).pop();
+                    if (!mounted) return;
+                    if (_selectedCustomer?.id == customer.id) {
+                      _selectedCustomer = _service.getCustomerById(customer.id);
+                      setState(() {});
+                    }
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         backgroundColor: const Color(0xFF4338CA),
@@ -2323,6 +2464,309 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         ),
                       ),
                     );
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ===========================================================================
+  // MODAL: REABRIR NEGOCIACIÓN EN PIPELINE
+  // ===========================================================================
+  void _showReopenNegotiationDialog(
+    CustomerItem customer,
+    CustomerContract contract,
+  ) {
+    final reasonCtrl = TextEditingController(
+      text: 'Cliente solicitó ajuste de partidas presupuestarias y alcance.',
+    );
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (dCtx) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            final isDark = Theme.of(ctx).brightness == Brightness.dark;
+            return AlertDialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF3B82F6).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.sync_alt,
+                      color: Color(0xFF3B82F6),
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Reabrir Negociación en Pipeline',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                          ),
+                        ),
+                        Text(
+                          'Devuelve la oportunidad al Pipeline para modificar la cotización.',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              content: SizedBox(
+                width: 480,
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        contract.title,
+                        style: GoogleFonts.inter(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF2563EB),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Cliente: ${customer.tradeName} | ID Oportunidad: ${customer.opportunityId ?? "Asociada"}',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: const Color(0xFF64748B),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: reasonCtrl,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                          labelText: 'Motivo / Justificación de Reapertura *',
+                          hintText:
+                              'Indicá la razón por la que se reabre la negociación...',
+                          isDense: true,
+                        ),
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Requerido'
+                            : null,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dCtx).pop(),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3B82F6),
+                    foregroundColor: Colors.white,
+                  ),
+                  icon: const Icon(Icons.sync_alt, size: 16),
+                  label: const Text('Reabrir en Negociación'),
+                  onPressed: () async {
+                    if (formKey.currentState?.validate() ?? false) {
+                      await _service.reopenContractNegotiation(
+                        customer.id,
+                        contract.id,
+                        reason: reasonCtrl.text.trim(),
+                        opportunityId: customer.opportunityId,
+                      );
+                      if (dCtx.mounted) Navigator.of(dCtx).pop();
+                      if (!mounted) return;
+                      if (_selectedCustomer?.id == customer.id) {
+                        _selectedCustomer = _service.getCustomerById(
+                          customer.id,
+                        );
+                        setState(() {});
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Color(0xFF1E3A8A),
+                          content: Text(
+                            'Negociación reabierta. La oportunidad se movió a la etapa "Negociación" en el Pipeline.',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ===========================================================================
+  // MODAL: CANCELAR / RESCINDIR CONTRATO
+  // ===========================================================================
+  void _showCancelContractDialog(
+    CustomerItem customer,
+    CustomerContract contract,
+  ) {
+    final reasonCtrl = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (dCtx) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            final isDark = Theme.of(ctx).brightness == Brightness.dark;
+            return AlertDialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEF4444).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.cancel_outlined,
+                      color: Color(0xFFEF4444),
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Cancelar / Rescindir Contrato',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                          ),
+                        ),
+                        Text(
+                          'Registra formalmente la rescisión o cancelación del servicio.',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              content: SizedBox(
+                width: 480,
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        contract.title,
+                        style: GoogleFonts.inter(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFFEF4444),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Cliente: ${customer.tradeName} | Sede: ${contract.branchName ?? "Matriz"}',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: const Color(0xFF64748B),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: reasonCtrl,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                          labelText: 'Motivo de Rescisión / Cancelación *',
+                          hintText:
+                              'Indicá el motivo formal de la cancelación...',
+                          isDense: true,
+                        ),
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Requerido'
+                            : null,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dCtx).pop(),
+                  child: const Text('Volver'),
+                ),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFEF4444),
+                    foregroundColor: Colors.white,
+                  ),
+                  icon: const Icon(Icons.cancel, size: 16),
+                  label: const Text('Confirmar Cancelación'),
+                  onPressed: () async {
+                    if (formKey.currentState?.validate() ?? false) {
+                      await _service.cancelContract(
+                        customer.id,
+                        contract.id,
+                        reason: reasonCtrl.text.trim(),
+                      );
+                      if (dCtx.mounted) Navigator.of(dCtx).pop();
+                      if (!mounted) return;
+                      if (_selectedCustomer?.id == customer.id) {
+                        _selectedCustomer = _service.getCustomerById(
+                          customer.id,
+                        );
+                        setState(() {});
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Color(0xFF7F1D1D),
+                          content: Text(
+                            'Contrato cancelado / rescindido con éxito.',
+                          ),
+                        ),
+                      );
+                    }
                   },
                 ),
               ],
@@ -4280,10 +4724,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                   );
                   _service.addBranchToCustomer(customer.id, newBranch);
                   Navigator.of(dCtx).pop();
-                  Navigator.of(context).pop();
-                  _showCustomerDetail(
-                    _service.customers.firstWhere((c) => c.id == customer.id),
-                  );
+                  if (_selectedCustomer?.id == customer.id) {
+                    _selectedCustomer = _service.getCustomerById(customer.id);
+                    setState(() {});
+                  }
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -4853,17 +5297,20 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     );
   }
 
-  Widget _buildStatusDot(String status) {
+  Widget _buildStatusDot(
+    String status, {
+    bool hasActiveContracts = true,
+    bool isCompleted = false,
+  }) {
     Color col;
-    switch (status) {
-      case 'Activo':
-        col = const Color(0xFF10B981);
-        break;
-      case 'En Pausa':
-        col = const Color(0xFFF59E0B);
-        break;
-      default:
-        col = const Color(0xFF94A3B8);
+    if (status == 'En Pausa') {
+      col = const Color(0xFFF59E0B);
+    } else if (hasActiveContracts) {
+      col = const Color(0xFF10B981);
+    } else if (isCompleted) {
+      col = const Color(0xFF8B5CF6);
+    } else {
+      col = const Color(0xFF94A3B8);
     }
     return Container(
       width: 7,
@@ -5026,24 +5473,31 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
             children: [
               Row(
                 children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.jetBrainsMono(
-                      fontSize: 9.5,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF64748B),
-                      letterSpacing: 0.4,
+                  Flexible(
+                    child: Text(
+                      title,
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF64748B),
+                        letterSpacing: 0.4,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
                   if (tag != null) ...[
                     const SizedBox(width: 5),
-                    Text(
-                      '• $tag',
-                      style: GoogleFonts.inter(
-                        fontSize: 9.5,
-                        color: const Color(0xFF94A3B8),
+                    Flexible(
+                      child: Text(
+                        '• $tag',
+                        style: GoogleFonts.inter(
+                          fontSize: 9.5,
+                          color: const Color(0xFF94A3B8),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ],
@@ -5557,7 +6011,13 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         ),
                       ),
                       const SizedBox(width: 6),
-                      _buildStatusDot(customer.status),
+                      _buildStatusDot(
+                        customer.status,
+                        hasActiveContracts: customer.hasActiveContracts,
+                        isCompleted: customer.contracts.any(
+                          (c) => c.status == 'Completado',
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 2),
@@ -5677,7 +6137,14 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                   ),
                                 ),
                                 const SizedBox(width: 4),
-                                _buildStatusDot(customer.status),
+                                _buildStatusDot(
+                                  customer.status,
+                                  hasActiveContracts:
+                                      customer.hasActiveContracts,
+                                  isCompleted: customer.contracts.any(
+                                    (c) => c.status == 'Completado',
+                                  ),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 2),

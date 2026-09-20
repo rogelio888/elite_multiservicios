@@ -258,6 +258,14 @@ class CrmLeadsService {
     );
     final rawId = lead.rawId ?? int.tryParse(leadId);
 
+    // Si el prospecto ya fue promovido al Pipeline Comercial, no se puede degradar su estado
+    if (lead.isPromoted) {
+      debugPrint(
+        '[CrmLeadsService] Prospecto $leadId ya promovido al Pipeline; estado protegido contra degradación.',
+      );
+      return;
+    }
+
     // Actualización optimista local
     leadsNotifier.value = [
       for (final l in leadsNotifier.value)
@@ -326,7 +334,7 @@ class CrmLeadsService {
   }
 
   /// Promueve el prospecto a Oportunidad en el Pipeline en PostgreSQL.
-  Future<void> markPromoted(String leadId) async {
+  Future<void> markPromoted(String leadId, {String? opportunityId}) async {
     final lead = leadsNotifier.value.firstWhere(
       (l) => l.id == leadId,
       orElse: () => LeadModel(
@@ -341,6 +349,9 @@ class CrmLeadsService {
       ),
     );
     final rawId = lead.rawId ?? int.tryParse(leadId);
+    final rawOppId = opportunityId != null
+        ? int.tryParse(opportunityId.replaceAll(RegExp(r'[^0-9]'), ''))
+        : null;
 
     leadsNotifier.value = [
       for (final l in leadsNotifier.value)
@@ -356,7 +367,7 @@ class CrmLeadsService {
 
     if (rawId != null) {
       try {
-        await _activeClient.crmLeads.markPromoted(rawId, null);
+        await _activeClient.crmLeads.markPromoted(rawId, rawOppId);
       } catch (e) {
         debugPrint('[CrmLeadsService] Error al promover prospecto: $e');
         await loadLeads();
@@ -403,31 +414,22 @@ class CrmLeadsService {
 
   // --- Métricas Comerciales Calculadas en Tiempo Real ---
 
-  int get totalCount => _metrics?.totalCount ?? leads.length;
+  int get totalCount => leads.length;
 
-  int get contactedCount =>
-      _metrics?.contactedCount ??
-      leads.where((l) => l.status == 'Contactado').length;
+  int get contactedCount => leads.where((l) => l.status == 'Contactado').length;
 
   int get waitingCount =>
-      _metrics?.waitingCount ??
       leads.where((l) => l.status == 'En Espera de Respuesta').length;
 
   int get qualifiedCount =>
-      _metrics?.qualifiedCount ??
       leads.where((l) => l.status == 'Interesado (Calificado)').length;
 
-  int get hotCount =>
-      _metrics?.hotCount ??
-      leads.where((l) => l.temperature == 'Caliente').length;
+  int get hotCount => leads.where((l) => l.temperature == 'Caliente').length;
 
   double get conversionRate =>
-      _metrics?.conversionRate ??
-      (totalCount > 0 ? (qualifiedCount / totalCount) * 100 : 0.0);
+      totalCount > 0 ? (qualifiedCount / totalCount) * 100 : 0.0;
 
-  double get totalPipelinePotential =>
-      _metrics?.totalPipelinePotential ??
-      leads
-          .where((l) => l.status != 'Descartado')
-          .fold<double>(0.0, (acc, l) => acc + l.estimatedValue);
+  double get totalPipelinePotential => leads
+      .where((l) => l.status != 'Descartado')
+      .fold<double>(0.0, (acc, l) => acc + l.estimatedValue);
 }

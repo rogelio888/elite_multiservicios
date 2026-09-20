@@ -1,0 +1,21 @@
+### Partida individual de cotización o presupuesto de un contrato.
+class: CrmContractBudgetItem
+table: crm_contract_budget_item
+fields:
+  ### ID del contrato al que pertenece la partida.
+  contractId: int, relation(parent=crm_customer_contract, onDelete=Cascade)
+  ### Descripción detallada del ítem o servicio.
+  description: String
+  ### Cantidad requerida.
+  quantity: double
+  ### Unidad de medida (Mes, Puesto, Global, Horas, m², Unidad, Visita).
+  unit: String
+  ### Precio unitario en Bs.
+  unitPrice: double
+  ### Eliminación lógica y auditoría temporal.
+  isDeleted: bool, default=false
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  crm_contract_budget_item_contract_idx:
+    fields: contractId

@@ -1,0 +1,11 @@
+### DTO que contiene la ficha completa de un cliente con sus sedes y contratos.
+class: CrmCustomerDetailResponse
+fields:
+  ### Datos generales del cliente.
+  customer: CrmCustomer
+  ### Sedes operativas activas vinculadas.
+  branches: List<CrmCustomerBranch>
+  ### Contratos u órdenes de trabajo asociadas.
+  contracts: List<CrmCustomerContract>
+  ### Partidas presupuestarias asociadas a los contratos.
+  budgetItems: List<CrmContractBudgetItem>

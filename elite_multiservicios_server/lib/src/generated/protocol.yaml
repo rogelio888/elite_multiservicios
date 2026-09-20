@@ -11,6 +11,36 @@ jwtRefresh:
   - refreshAccessToken:
 greeting:
   - hello:
+crmAgenda:
+  - listTasks:
+  - getTask:
+  - getTasksForDate:
+  - getTodayTasks:
+  - getOverdueTasks:
+  - createTask:
+  - updateTask:
+  - completeTask:
+  - postponeTask:
+  - deleteTask:
+  - scheduleQualityCheck:
+  - scheduleRenewal:
+  - getMetrics:
+crmCustomers:
+  - listCustomers:
+  - getCustomerDetail:
+  - getCustomer:
+  - createCustomer:
+  - updateCustomer:
+  - deleteCustomer:
+  - addBranch:
+  - updateBranch:
+  - deleteBranch:
+  - addContract:
+  - updateContract:
+  - completeContract:
+  - renewContract:
+  - updateContractStatus:
+  - getMetrics:
 crmLeads:
   - listLeads:
   - getLead:
@@ -20,6 +50,16 @@ crmLeads:
   - updateTemperature:
   - markPromoted:
   - deleteLead:
+  - getMetrics:
+crmPipeline:
+  - listOpportunities:
+  - getOpportunity:
+  - getQuoteItems:
+  - createOpportunity:
+  - updateOpportunity:
+  - updateStage:
+  - promoteToCustomer:
+  - deleteOpportunity:
   - getMetrics:
 audit:
   - listLogs:

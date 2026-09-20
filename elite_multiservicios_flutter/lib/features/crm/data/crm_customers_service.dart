@@ -1,4 +1,8 @@
+import 'dart:async';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:flutter/foundation.dart';
+import '../../../main.dart' show client;
+import 'crm_pipeline_service.dart';
 
 /// Modelo de Sede Operativa de un Cliente.
 class CustomerBranch {
@@ -81,6 +85,7 @@ class ContractBudgetItem {
 /// Abarca modalidades: Recurrente Mensual, Proyecto Único / Obra, Servicio por Evento, Híbrido.
 class CustomerContract {
   final String id;
+  final int? rawContractId;
   final String title;
   final String
   contractType; // 'Recurrente Mensual', 'Proyecto Único', 'Servicio por Evento', 'Híbrido'
@@ -111,6 +116,7 @@ class CustomerContract {
 
   const CustomerContract({
     required this.id,
+    this.rawContractId,
     required this.title,
     required this.contractType,
     required this.serviceCategory,
@@ -137,6 +143,7 @@ class CustomerContract {
 
   CustomerContract copyWith({
     String? id,
+    int? rawContractId,
     String? title,
     String? contractType,
     String? serviceCategory,
@@ -162,6 +169,7 @@ class CustomerContract {
   }) {
     return CustomerContract(
       id: id ?? this.id,
+      rawContractId: rawContractId ?? this.rawContractId,
       title: title ?? this.title,
       contractType: contractType ?? this.contractType,
       serviceCategory: serviceCategory ?? this.serviceCategory,
@@ -226,6 +234,20 @@ class CustomerItem {
     this.notes,
   });
 
+  /// Indica si el cliente tiene al menos un contrato activo (Vigente o En Ejecución).
+  bool get hasActiveContracts =>
+      contracts.any((c) => c.status == 'Vigente' || c.status == 'En Ejecución');
+
+  /// Calificación promedio de satisfacción de los contratos completados.
+  double? get averageSatisfaction {
+    final rated = contracts
+        .where((c) => c.satisfactionRating != null && c.satisfactionRating! > 0)
+        .map((c) => c.satisfactionRating!)
+        .toList();
+    if (rated.isEmpty) return null;
+    return rated.reduce((a, b) => a + b) / rated.length;
+  }
+
   /// Facturación mensual recurrente sumada de los contratos activos.
   double get monthlyBilling {
     return contracts
@@ -233,9 +255,31 @@ class CustomerItem {
         .fold(0.0, (acc, c) => acc + c.recurringMonthlyAmount);
   }
 
-  /// Facturación total acumulada de proyectos únicos y eventos.
+  /// Facturación total acumulada de proyectos únicos, eventos y obras cerradas.
   double get totalProjectBilling {
-    return contracts.fold(0.0, (acc, c) => acc + c.oneTimeAmount);
+    return contracts.fold(0.0, (acc, c) {
+      if (c.contractType == 'Proyecto Único' ||
+          c.contractType == 'Servicio por Evento' ||
+          c.contractType == 'Híbrido' ||
+          c.status == 'Completado') {
+        final amount = c.oneTimeAmount > 0 ? c.oneTimeAmount : c.totalAmount;
+        return acc + amount;
+      }
+      return acc;
+    });
+  }
+
+  /// Estado operativo visible de la cuenta
+  String get operationalStatus {
+    if (status == 'En Pausa') return 'En Pausa';
+    if (status == 'Inactivo') return 'Inactivo';
+    if (!hasActiveContracts) {
+      if (contracts.any((c) => c.status == 'Completado')) {
+        return 'Concluido';
+      }
+      return 'Sin Contrato';
+    }
+    return 'Activo';
   }
 
   /// Modalidad principal de la cuenta.
@@ -330,18 +374,72 @@ class CustomerItem {
   }
 }
 
-/// Servicio singleton reactivo para gestionar el catálogo centralizado de Clientes 360°.
+/// Servicio singleton reactivo para gestionar el catálogo centralizado de Clientes 360°
+/// conectado directamente a los endpoints RPC de Serverpod y PostgreSQL.
 class CrmCustomersService extends ChangeNotifier {
   static final CrmCustomersService _instance = CrmCustomersService._internal();
-  factory CrmCustomersService() => _instance;
-
-  CrmCustomersService._internal() {
-    _initDefaultCustomers();
+  factory CrmCustomersService({Client? customClient}) {
+    if (customClient != null) {
+      _instance._clientOverride = customClient;
+    }
+    return _instance;
   }
 
+  CrmCustomersService._internal();
+
+  Client? _clientOverride;
+  Client get _activeClient => _clientOverride ?? client;
+
   final List<CustomerItem> _customers = [];
+  bool _isLoading = false;
+  String? _error;
 
   List<CustomerItem> get customers => List.unmodifiable(_customers);
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+
+  /// Carga la lista de clientes reales desde PostgreSQL vía Serverpod RPC.
+  Future<void> loadCustomers({
+    String? search,
+    String? segment,
+    String? status,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    scheduleMicrotask(() => notifyListeners());
+
+    try {
+      final remoteCustomers = await _activeClient.crmCustomers.listCustomers(
+        limit: 200,
+        offset: 0,
+        search: search,
+        segment: segment,
+        status: status,
+      );
+
+      _customers.clear();
+      for (final c in remoteCustomers) {
+        if (c.id != null) {
+          try {
+            final detail = await _activeClient.crmCustomers.getCustomerDetail(
+              c.id!,
+            );
+            if (detail != null) {
+              _customers.add(_fromDetailResponse(detail));
+              continue;
+            }
+          } catch (_) {}
+        }
+        _customers.add(_fromCrmCustomer(c));
+      }
+    } catch (e) {
+      debugPrint('[CrmCustomersService] Error al cargar clientes: $e');
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   double get totalMrr => _customers.fold<double>(
     0.0,
@@ -387,20 +485,95 @@ class CrmCustomersService extends ChangeNotifier {
     }).toList();
   }
 
-  void addCustomer(CustomerItem customer) {
+  Future<void> addCustomer(CustomerItem customer) async {
     _customers.insert(0, customer);
     notifyListeners();
+
+    try {
+      final crmCust = _toCrmCustomer(customer);
+      final created = await _activeClient.crmCustomers.createCustomer(crmCust);
+
+      for (final b in customer.branches) {
+        await _activeClient.crmCustomers.addBranch(
+          CrmCustomerBranch(
+            code: b.id,
+            customerId: created.id!,
+            name: b.name,
+            address: b.address,
+            localContact: b.localContact,
+            localPhone: b.localPhone,
+            isHeadquarters: b.isHeadquarters,
+            notes: b.notes,
+            isDeleted: false,
+            createdAt: DateTime.now().toUtc(),
+            updatedAt: DateTime.now().toUtc(),
+          ),
+        );
+      }
+
+      for (final ctr in customer.contracts) {
+        await _activeClient.crmCustomers.addContract(
+          CrmCustomerContract(
+            code: ctr.id,
+            customerId: created.id!,
+            title: ctr.title,
+            contractType: ctr.contractType,
+            serviceCategory: ctr.serviceCategory,
+            totalAmount: ctr.totalAmount,
+            recurringMonthlyAmount: ctr.recurringMonthlyAmount,
+            oneTimeAmount: ctr.oneTimeAmount,
+            paymentTerms: ctr.paymentTerms,
+            executionTime: ctr.executionTime,
+            advancePercentage: ctr.advancePercentage,
+            status: ctr.status,
+            startDate: DateTime.now().toUtc(),
+            originType: ctr.originType,
+            serviceScope: ctr.serviceScope,
+            notes: ctr.notes,
+            isDeleted: false,
+            createdAt: DateTime.now().toUtc(),
+            updatedAt: DateTime.now().toUtc(),
+          ),
+          budgetItems: ctr.budgetItems
+              .map(
+                (b) => CrmContractBudgetItem(
+                  contractId: 0,
+                  description: b.description,
+                  quantity: b.quantity,
+                  unit: b.unit,
+                  unitPrice: b.unitPrice,
+                  isDeleted: false,
+                  createdAt: DateTime.now().toUtc(),
+                  updatedAt: DateTime.now().toUtc(),
+                ),
+              )
+              .toList(),
+        );
+      }
+      await loadCustomers();
+    } catch (e) {
+      debugPrint('[CrmCustomersService] Error al persistir cliente: $e');
+    }
   }
 
-  void updateCustomer(CustomerItem updated) {
+  Future<void> updateCustomer(CustomerItem updated) async {
     final idx = _customers.indexWhere((c) => c.id == updated.id);
     if (idx != -1) {
       _customers[idx] = updated;
       notifyListeners();
     }
+    try {
+      await _activeClient.crmCustomers.updateCustomer(_toCrmCustomer(updated));
+      await loadCustomers();
+    } catch (e) {
+      debugPrint('[CrmCustomersService] Error al actualizar cliente: $e');
+    }
   }
 
-  void addBranchToCustomer(String customerId, CustomerBranch newBranch) {
+  Future<void> addBranchToCustomer(
+    String customerId,
+    CustomerBranch newBranch,
+  ) async {
     final idx = _customers.indexWhere((c) => c.id == customerId);
     if (idx != -1) {
       final current = _customers[idx];
@@ -409,9 +582,34 @@ class CrmCustomersService extends ChangeNotifier {
       _customers[idx] = current.copyWith(branches: updatedBranches);
       notifyListeners();
     }
+    try {
+      final rawId = int.tryParse(customerId.replaceAll(RegExp(r'[^0-9]'), ''));
+      if (rawId != null && rawId > 0) {
+        await _activeClient.crmCustomers.addBranch(
+          CrmCustomerBranch(
+            code: newBranch.id,
+            customerId: rawId,
+            name: newBranch.name,
+            address: newBranch.address,
+            localContact: newBranch.localContact,
+            localPhone: newBranch.localPhone,
+            isHeadquarters: newBranch.isHeadquarters,
+            notes: newBranch.notes,
+            isDeleted: false,
+            createdAt: DateTime.now().toUtc(),
+            updatedAt: DateTime.now().toUtc(),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('[CrmCustomersService] Error al agregar sede: $e');
+    }
   }
 
-  void addContractToCustomer(String customerId, CustomerContract newContract) {
+  Future<void> addContractToCustomer(
+    String customerId,
+    CustomerContract newContract,
+  ) async {
     final idx = _customers.indexWhere((c) => c.id == customerId);
     if (idx != -1) {
       final current = _customers[idx];
@@ -426,20 +624,80 @@ class CrmCustomersService extends ChangeNotifier {
       );
       notifyListeners();
     }
+    try {
+      final rawId = int.tryParse(customerId.replaceAll(RegExp(r'[^0-9]'), ''));
+      if (rawId != null && rawId > 0) {
+        final savedContract = await _activeClient.crmCustomers.addContract(
+          CrmCustomerContract(
+            code: newContract.id,
+            customerId: rawId,
+            title: newContract.title,
+            contractType: newContract.contractType,
+            serviceCategory: newContract.serviceCategory,
+            totalAmount: newContract.totalAmount,
+            recurringMonthlyAmount: newContract.recurringMonthlyAmount,
+            oneTimeAmount: newContract.oneTimeAmount,
+            paymentTerms: newContract.paymentTerms,
+            executionTime: newContract.executionTime,
+            advancePercentage: newContract.advancePercentage,
+            status: newContract.status,
+            startDate: DateTime.now().toUtc(),
+            originType: newContract.originType,
+            serviceScope: newContract.serviceScope,
+            notes: newContract.notes,
+            isDeleted: false,
+            createdAt: DateTime.now().toUtc(),
+            updatedAt: DateTime.now().toUtc(),
+          ),
+          budgetItems: newContract.budgetItems
+              .map(
+                (b) => CrmContractBudgetItem(
+                  contractId: 0,
+                  description: b.description,
+                  quantity: b.quantity,
+                  unit: b.unit,
+                  unitPrice: b.unitPrice,
+                  isDeleted: false,
+                  createdAt: DateTime.now().toUtc(),
+                  updatedAt: DateTime.now().toUtc(),
+                ),
+              )
+              .toList(),
+        );
+        if (idx != -1) {
+          final current = _customers[idx];
+          final updatedContracts = current.contracts.map((c) {
+            if (c.id == newContract.id) {
+              return c.copyWith(rawContractId: savedContract.id);
+            }
+            return c;
+          }).toList();
+          _customers[idx] = current.copyWith(contracts: updatedContracts);
+        }
+      }
+    } catch (e) {
+      debugPrint('[CrmCustomersService] Error al agregar contrato: $e');
+    }
   }
 
   /// Conclusión formal de obra, servicio o proyecto.
-  void completeContract(
+  Future<void> completeContract(
     String customerId,
     String contractId, {
     required String completionDate,
     String? notes,
     int rating = 5,
     String completedBy = 'Carlos V.',
-  }) {
+  }) async {
     final cIdx = _customers.indexWhere((c) => c.id == customerId);
     if (cIdx == -1) return;
     final customer = _customers[cIdx];
+    final contractIdx = customer.contracts.indexWhere(
+      (c) => c.id == contractId,
+    );
+    if (contractIdx == -1) return;
+    final contract = customer.contracts[contractIdx];
+
     final updatedContracts = customer.contracts.map((ctr) {
       if (ctr.id == contractId) {
         return ctr.copyWith(
@@ -455,19 +713,60 @@ class CrmCustomersService extends ChangeNotifier {
 
     _customers[cIdx] = customer.copyWith(contracts: updatedContracts);
     notifyListeners();
+
+    try {
+      final rawContractId =
+          contract.rawContractId ??
+          int.tryParse(contract.id.replaceAll(RegExp(r'[^0-9]'), ''));
+      if (rawContractId != null && rawContractId > 0) {
+        DateTime actualEnd = DateTime.now().toUtc();
+        try {
+          final parts = completionDate.split('/');
+          if (parts.length == 3) {
+            actualEnd = DateTime.utc(
+              int.parse(parts[2]),
+              int.parse(parts[1]),
+              int.parse(parts[0]),
+            );
+          } else {
+            actualEnd =
+                DateTime.tryParse(completionDate)?.toUtc() ??
+                DateTime.now().toUtc();
+          }
+        } catch (_) {}
+
+        await _activeClient.crmCustomers.completeContract(
+          rawContractId,
+          actualEndDate: actualEnd,
+          completionNotes: notes,
+          satisfactionRating: rating,
+          completedBy: completedBy,
+        );
+      }
+    } catch (e) {
+      debugPrint(
+        '[CrmCustomersService] Error al persistir completeContract: $e',
+      );
+    }
   }
 
   /// Renovación directa de un contrato recurrente (+6 / +12 meses).
-  void renewContract(
+  Future<void> renewContract(
     String customerId,
     String contractId, {
     required int additionalMonths,
     double? adjustedMonthlyAmount,
     String? notes,
-  }) {
+  }) async {
     final cIdx = _customers.indexWhere((c) => c.id == customerId);
     if (cIdx == -1) return;
     final customer = _customers[cIdx];
+    final contractIdx = customer.contracts.indexWhere(
+      (c) => c.id == contractId,
+    );
+    if (contractIdx == -1) return;
+    final contract = customer.contracts[contractIdx];
+
     final updatedContracts = customer.contracts.map((ctr) {
       if (ctr.id == contractId) {
         final newExecution = 'Renovado +$additionalMonths meses';
@@ -487,17 +786,39 @@ class CrmCustomersService extends ChangeNotifier {
 
     _customers[cIdx] = customer.copyWith(contracts: updatedContracts);
     notifyListeners();
+
+    try {
+      final rawContractId =
+          contract.rawContractId ??
+          int.tryParse(contract.id.replaceAll(RegExp(r'[^0-9]'), ''));
+      if (rawContractId != null && rawContractId > 0) {
+        await _activeClient.crmCustomers.renewContract(
+          rawContractId,
+          additionalMonths: additionalMonths,
+          adjustedMonthlyAmount: adjustedMonthlyAmount,
+          notes: notes,
+        );
+      }
+    } catch (e) {
+      debugPrint('[CrmCustomersService] Error al persistir renewContract: $e');
+    }
   }
 
   /// Cambio de estado puntual de un contrato (Pausar / Reactivar).
-  void updateContractStatus(
+  Future<void> updateContractStatus(
     String customerId,
     String contractId,
     String newStatus,
-  ) {
+  ) async {
     final cIdx = _customers.indexWhere((c) => c.id == customerId);
     if (cIdx == -1) return;
     final customer = _customers[cIdx];
+    final contractIdx = customer.contracts.indexWhere(
+      (c) => c.id == contractId,
+    );
+    if (contractIdx == -1) return;
+    final contract = customer.contracts[contractIdx];
+
     final updatedContracts = customer.contracts.map((ctr) {
       if (ctr.id == contractId) {
         return ctr.copyWith(status: newStatus);
@@ -507,6 +828,103 @@ class CrmCustomersService extends ChangeNotifier {
 
     _customers[cIdx] = customer.copyWith(contracts: updatedContracts);
     notifyListeners();
+
+    try {
+      final rawContractId =
+          contract.rawContractId ??
+          int.tryParse(contract.id.replaceAll(RegExp(r'[^0-9]'), ''));
+      if (rawContractId != null && rawContractId > 0) {
+        await _activeClient.crmCustomers.updateContractStatus(
+          rawContractId,
+          newStatus,
+        );
+      }
+    } catch (e) {
+      debugPrint(
+        '[CrmCustomersService] Error al persistir updateContractStatus: $e',
+      );
+    }
+  }
+
+  /// Reabre la negociación de un contrato, actualizando su estado a 'En Renegociación'
+  /// y retornando la oportunidad correspondiente al Pipeline en la etapa 'Negociación'.
+  Future<void> reopenContractNegotiation(
+    String customerId,
+    String contractId, {
+    required String reason,
+    String? opportunityId,
+  }) async {
+    final cIdx = _customers.indexWhere((c) => c.id == customerId);
+    if (cIdx == -1) return;
+    final customer = _customers[cIdx];
+    final updatedContracts = customer.contracts.map((ctr) {
+      if (ctr.id == contractId) {
+        return ctr.copyWith(
+          status: 'En Renegociación',
+          notes: ctr.notes != null && ctr.notes!.isNotEmpty
+              ? '${ctr.notes}\n[Renegociación]: $reason'
+              : '[Renegociación]: $reason',
+        );
+      }
+      return ctr;
+    }).toList();
+
+    _customers[cIdx] = customer.copyWith(contracts: updatedContracts);
+    notifyListeners();
+
+    // Reabrir oportunidad en el Pipeline si existe
+    final targetOppId = opportunityId ?? customer.opportunityId;
+    if (targetOppId != null && targetOppId.isNotEmpty) {
+      await CrmPipelineService().reopenDealToNegotiation(
+        targetOppId,
+        reason: reason,
+      );
+    }
+  }
+
+  /// Cancela o rescinde un contrato formalmente con justificación.
+  Future<void> cancelContract(
+    String customerId,
+    String contractId, {
+    required String reason,
+  }) async {
+    final cIdx = _customers.indexWhere((c) => c.id == customerId);
+    if (cIdx == -1) return;
+    final customer = _customers[cIdx];
+    final contractIdx = customer.contracts.indexWhere(
+      (c) => c.id == contractId,
+    );
+    if (contractIdx == -1) return;
+    final contract = customer.contracts[contractIdx];
+
+    final updatedContracts = customer.contracts.map((ctr) {
+      if (ctr.id == contractId) {
+        return ctr.copyWith(
+          status: 'Cancelado',
+          notes: ctr.notes != null && ctr.notes!.isNotEmpty
+              ? '${ctr.notes}\n[Cancelación]: $reason'
+              : '[Cancelación]: $reason',
+        );
+      }
+      return ctr;
+    }).toList();
+
+    _customers[cIdx] = customer.copyWith(contracts: updatedContracts);
+    notifyListeners();
+
+    try {
+      final rawContractId =
+          contract.rawContractId ??
+          int.tryParse(contract.id.replaceAll(RegExp(r'[^0-9]'), ''));
+      if (rawContractId != null && rawContractId > 0) {
+        await _activeClient.crmCustomers.updateContractStatus(
+          rawContractId,
+          'Cancelado',
+        );
+      }
+    } catch (e) {
+      debugPrint('[CrmCustomersService] Error al persistir cancelContract: $e');
+    }
   }
 
   bool isOpportunityPromoted(String opportunityId) {
@@ -521,7 +939,130 @@ class CrmCustomersService extends ChangeNotifier {
     }
   }
 
-  void _initDefaultCustomers() {
+  static CustomerItem _fromDetailResponse(CrmCustomerDetailResponse detail) {
+    final c = detail.customer;
+    return CustomerItem(
+      id: c.code.isNotEmpty ? c.code : (c.id?.toString() ?? ''),
+      legalName: c.legalName,
+      tradeName: c.tradeName,
+      taxId: c.taxId,
+      segment: c.segment,
+      status: c.status,
+      activeServices: c.activeServices,
+      contactPerson: c.contactPerson,
+      phone: c.phone,
+      email: c.email,
+      opportunityId: c.opportunityId?.toString(),
+      startDate: c.startDate != null
+          ? '${c.startDate!.day.toString().padLeft(2, '0')}/${c.startDate!.month.toString().padLeft(2, '0')}/${c.startDate!.year}'
+          : null,
+      notes: c.notes,
+      branches: detail.branches
+          .map(
+            (b) => CustomerBranch(
+              id: b.code.isNotEmpty ? b.code : (b.id?.toString() ?? ''),
+              name: b.name,
+              address: b.address,
+              localContact: b.localContact,
+              localPhone: b.localPhone,
+              isHeadquarters: b.isHeadquarters,
+              notes: b.notes,
+            ),
+          )
+          .toList(),
+      contracts: detail.contracts
+          .map(
+            (ctr) => CustomerContract(
+              id: ctr.code.isNotEmpty ? ctr.code : (ctr.id?.toString() ?? ''),
+              rawContractId: ctr.id,
+              title: ctr.title,
+              contractType: ctr.contractType,
+              serviceCategory: ctr.serviceCategory,
+              totalAmount: ctr.totalAmount,
+              recurringMonthlyAmount: ctr.recurringMonthlyAmount,
+              oneTimeAmount: ctr.oneTimeAmount,
+              paymentTerms: ctr.paymentTerms,
+              executionTime: ctr.executionTime,
+              advancePercentage: ctr.advancePercentage,
+              status: ctr.status,
+              startDate:
+                  '${ctr.startDate.day.toString().padLeft(2, '0')}/${ctr.startDate.month.toString().padLeft(2, '0')}/${ctr.startDate.year}',
+              notes: ctr.notes,
+              branchId: ctr.branchId?.toString(),
+              originType: ctr.originType,
+              actualEndDate: ctr.actualEndDate?.toString(),
+              completionNotes: ctr.completionNotes,
+              satisfactionRating: ctr.satisfactionRating,
+              completedBy: ctr.completedBy,
+              serviceScope: ctr.serviceScope,
+              budgetItems: detail.budgetItems
+                  .where((b) => b.contractId == ctr.id)
+                  .map(
+                    (b) => ContractBudgetItem(
+                      id: b.id.toString(),
+                      description: b.description,
+                      quantity: b.quantity,
+                      unit: b.unit,
+                      unitPrice: b.unitPrice,
+                    ),
+                  )
+                  .toList(),
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  static CustomerItem _fromCrmCustomer(CrmCustomer c) {
+    return CustomerItem(
+      id: c.code.isNotEmpty ? c.code : (c.id?.toString() ?? ''),
+      legalName: c.legalName,
+      tradeName: c.tradeName,
+      taxId: c.taxId,
+      segment: c.segment,
+      status: c.status,
+      activeServices: c.activeServices,
+      contactPerson: c.contactPerson,
+      phone: c.phone,
+      email: c.email,
+      opportunityId: c.opportunityId?.toString(),
+      startDate: c.startDate != null
+          ? '${c.startDate!.day.toString().padLeft(2, '0')}/${c.startDate!.month.toString().padLeft(2, '0')}/${c.startDate!.year}'
+          : null,
+      notes: c.notes,
+      branches: const [],
+      contracts: const [],
+    );
+  }
+
+  static CrmCustomer _toCrmCustomer(CustomerItem c) {
+    final rawId = int.tryParse(c.id.replaceAll(RegExp(r'[^0-9]'), ''));
+    final now = DateTime.now().toUtc();
+    return CrmCustomer(
+      id: rawId != null && rawId > 0 ? rawId : null,
+      code: c.id.startsWith('CLI') ? c.id : '',
+      legalName: c.legalName,
+      tradeName: c.tradeName,
+      taxId: c.taxId,
+      segment: c.segment,
+      status: c.status,
+      activeServices: c.activeServices,
+      contactPerson: c.contactPerson,
+      phone: c.phone,
+      email: c.email,
+      opportunityId: c.opportunityId != null
+          ? int.tryParse(c.opportunityId!.replaceAll(RegExp(r'[^0-9]'), ''))
+          : null,
+      startDate: now,
+      notes: c.notes,
+      createdAt: now,
+      updatedAt: now,
+    );
+  }
+
+  @visibleForTesting
+  void initDefaultCustomersForTesting() {
+    _customers.clear();
     _customers.addAll([
       const CustomerItem(
         id: 'CLI-001',
@@ -573,31 +1114,27 @@ class CrmCustomersService extends ChangeNotifier {
             title: 'Mantenimiento y Reparación de Grupo Electrógeno y Tanques',
             contractType: 'Proyecto Único',
             serviceCategory: 'Mantenimiento',
-            totalAmount: 9800.0,
-            oneTimeAmount: 9800.0,
-            paymentTerms: '50% Anticipo / 50% Recepción Conforme',
-            executionTime: '7 días hábiles',
+            totalAmount: 18500.0,
+            oneTimeAmount: 18500.0,
+            paymentTerms: '50% Anticipo / 50% Conformidad',
+            executionTime: '15 días calendario',
             advancePercentage: 50,
-            status: 'Completado',
+            status: 'Vigente',
             startDate: '10 Feb 2025',
-            actualEndDate: '18 Feb 2025',
-            satisfactionRating: 5,
-            completionNotes:
-                'Recepción conforme de obra sin observaciones por Ing. Supervisor.',
-            branchId: 'BR-002',
-            branchName: 'Parqueo Subterráneo y Anexo',
-            originType: 'Recontratación',
+            branchId: 'BR-001',
+            branchName: 'Torre Central',
+            originType: 'Adicional',
           ),
         ],
       ),
       const CustomerItem(
         id: 'CLI-002',
         legalName: 'Condominio Residencial Las Palmas Real',
-        tradeName: 'Las Palmas Real',
-        taxId: '3049586712',
+        tradeName: 'Condominio Las Palmas Real',
+        taxId: '3029182736',
         segment: 'Residencial B2C',
         status: 'Activo',
-        activeServices: ['Seguridad Física', 'Jardinería'],
+        activeServices: ['Seguridad Física'],
         contactPerson: 'Ing. Carlos Mendoza',
         phone: '+591 710-23456',
         email: 'administracion@laspalmasreal.com',
@@ -824,5 +1361,6 @@ class CrmCustomersService extends ChangeNotifier {
         ],
       ),
     ]);
+    notifyListeners();
   }
 }

@@ -98,60 +98,71 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: !isSignedIn
-          ? LoginScreen(
-              authService: _authService,
-              isDarkMode: isDark,
-              onToggleTheme: _toggleTheme,
-            )
-          : FutureBuilder<AppUser>(
-              future: client.user.getCurrentUser(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting ||
-                    _authService.isCheckingMfa) {
-                  return const Scaffold(
-                    body: Center(child: CircularProgressIndicator()),
-                  );
-                }
-                if (snapshot.hasError || !snapshot.hasData) {
-                  return SecurityShellScreen(
-                    isDarkMode: isDark,
-                    onToggleTheme: _toggleTheme,
-                  );
-                }
-                final user = snapshot.data!;
+      home: _buildRootWidget(context, isDark, isSignedIn),
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (context) => _buildRootWidget(context, isDark, isSignedIn),
+        );
+      },
+    );
+  }
 
-                // 1. PRIMERO: ¿MFA pendiente?
-                if (_authService.isMfaPending &&
-                    _authService.currentMfaChallenge != null) {
-                  final challenge = _authService.currentMfaChallenge!;
-                  return MfaVerificationScreen(
-                    authService: _authService,
-                    challengeId: challenge.challengeId,
-                    emailHint: challenge.emailHint,
-                    rememberMe: _authService.currentRememberMe,
-                    onMfaSuccess: () {
-                      _authService.clearMfaPending();
-                      setState(() {});
-                    },
-                  );
-                }
+  Widget _buildRootWidget(BuildContext context, bool isDark, bool isSignedIn) {
+    if (!isSignedIn) {
+      return LoginScreen(
+        authService: _authService,
+        isDarkMode: isDark,
+        onToggleTheme: _toggleTheme,
+      );
+    }
+    return FutureBuilder<AppUser>(
+      future: client.user.getCurrentUser(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            _authService.isCheckingMfa) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return SecurityShellScreen(
+            isDarkMode: isDark,
+            onToggleTheme: _toggleTheme,
+          );
+        }
+        final user = snapshot.data!;
 
-                // 2. DESPUÉS: ¿Cambio obligatorio de contraseña?
-                if (user.mustChangePassword) {
-                  return ForcePasswordChangeScreen(
-                    authService: _authService,
-                    onPasswordChanged: () => setState(() {}),
-                  );
-                }
+        // 1. PRIMERO: ¿MFA pendiente?
+        if (_authService.isMfaPending &&
+            _authService.currentMfaChallenge != null) {
+          final challenge = _authService.currentMfaChallenge!;
+          return MfaVerificationScreen(
+            authService: _authService,
+            challengeId: challenge.challengeId,
+            emailHint: challenge.emailHint,
+            rememberMe: _authService.currentRememberMe,
+            onMfaSuccess: () {
+              _authService.clearMfaPending();
+              setState(() {});
+            },
+          );
+        }
 
-                // 3. Dashboard
-                return SecurityShellScreen(
-                  isDarkMode: isDark,
-                  onToggleTheme: _toggleTheme,
-                );
-              },
-            ),
+        // 2. DESPUÉS: ¿Cambio obligatorio de contraseña?
+        if (user.mustChangePassword) {
+          return ForcePasswordChangeScreen(
+            authService: _authService,
+            onPasswordChanged: () => setState(() {}),
+          );
+        }
+
+        // 3. Dashboard
+        return SecurityShellScreen(
+          isDarkMode: isDark,
+          onToggleTheme: _toggleTheme,
+        );
+      },
     );
   }
 }

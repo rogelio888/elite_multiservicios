@@ -4,6 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/crm_leads_service.dart';
 import '../../data/crm_agenda_service.dart';
+import '../../data/crm_pipeline_service.dart';
+import '../views/crm_pipeline_view.dart' show OpportunityItem;
+import '../../../security/services/auth_service.dart';
 
 /// Vista ejecutiva y operativa del submódulo de Prospectos (Outbound / Maps / Directorios).
 /// Diseñada bajo directrices de diseño suizo enterprise, sin datos hardcodeados y con flujo de conversión a Pipeline.
@@ -211,33 +214,13 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       ),
     );
 
-    final refreshButton = IconButton.outlined(
-      tooltip: 'Sincronizar con PostgreSQL',
-      style: IconButton.styleFrom(
-        foregroundColor: const Color(0xFF10B981),
-        side: BorderSide(
-          color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
-        ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: const EdgeInsets.all(12),
-      ),
-      onPressed: () => _leadsService.loadLeads(),
-      icon: const Icon(Icons.refresh_rounded, size: 20),
-    );
-
     if (isMobile) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           titleColumn,
           const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(child: newLeadButton),
-              const SizedBox(width: 8),
-              refreshButton,
-            ],
-          ),
+          newLeadButton,
         ],
       );
     }
@@ -248,14 +231,7 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       children: [
         Expanded(child: titleColumn),
         const SizedBox(width: 16),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            refreshButton,
-            const SizedBox(width: 10),
-            newLeadButton,
-          ],
-        ),
+        newLeadButton,
       ],
     );
   }
@@ -797,40 +773,44 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                           ),
                         ),
                         if (item.isPromoted)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 7,
-                              vertical: 2.5,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(
-                                0xFF10B981,
-                              ).withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(
+                          InkWell(
+                            onTap: () => _promoteLeadToOpportunity(item),
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
                                 color: const Color(
                                   0xFF10B981,
-                                ).withValues(alpha: 0.3),
+                                ).withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: const Color(
+                                    0xFF10B981,
+                                  ).withValues(alpha: 0.3),
+                                ),
                               ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.rocket_launch,
-                                  size: 11,
-                                  color: Color(0xFF10B981),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'En Pipeline',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 10.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF10B981),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.rocket_launch,
+                                    size: 11,
+                                    color: Color(0xFF10B981),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'En Pipeline',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFF10B981),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                       ],
@@ -883,38 +863,50 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
 
           const SizedBox(height: 12),
 
-          // Fila 2: Decisor / Contacto
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? const Color(0xFF0F172A).withValues(alpha: 0.6)
-                  : const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.person_outline,
-                  size: 14,
-                  color: Color(0xFF3B82F6),
+          // Fila 2: Decisor / Contacto (Clickable para editar datos reales del encargado)
+          InkWell(
+            onTap: () => _showContactDetailsUpdateDialog(item),
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? const Color(0xFF0F172A).withValues(alpha: 0.6)
+                    : const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: const Color(0xFFF59E0B).withValues(alpha: 0.3),
                 ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    item.contactPerson,
-                    style: GoogleFonts.inter(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w500,
-                      color: isDark
-                          ? const Color(0xFFE2E8F0)
-                          : const Color(0xFF334155),
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.person_outline,
+                    size: 14,
+                    color: Color(0xFFF59E0B),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      item.contactPerson,
+                      style: GoogleFonts.inter(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
+                        color: isDark
+                            ? const Color(0xFFE2E8F0)
+                            : const Color(0xFF334155),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const Icon(
+                    Icons.edit_outlined,
+                    size: 13,
+                    color: Color(0xFFF59E0B),
+                  ),
+                ],
+              ),
             ),
           ),
 
@@ -983,22 +975,30 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
               const Spacer(),
               if (item.emailOrWeb != null)
                 InkWell(
-                  onTap: () => _copyToClipboard(item.emailOrWeb!, 'Enlace Web'),
+                  onTap: () => _copyToClipboard(
+                    item.emailOrWeb!,
+                    item.emailOrWeb!.contains('@') ? 'Correo' : 'Enlace Web',
+                  ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.link,
+                      Icon(
+                        item.emailOrWeb!.contains('@')
+                            ? Icons.email_outlined
+                            : Icons.link,
                         size: 13,
-                        color: Color(0xFF8B5CF6),
+                        color: const Color(0xFF8B5CF6),
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'Sitio Web',
+                        item.emailOrWeb!.contains('@')
+                            ? item.emailOrWeb!
+                            : 'Sitio Web',
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           color: const Color(0xFF8B5CF6),
                           decoration: TextDecoration.underline,
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
@@ -1046,78 +1046,139 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
           // Fila 6: Barra de Acciones Operativas (Estado, Agenda y Promover a Oportunidad)
           Row(
             children: [
-              // Selector de Estado con accion automática al seleccionar Interesado (Calificado)
-              PopupMenuButton<String>(
-                tooltip: 'Cambiar estado',
-                onSelected: (newSt) {
-                  if (newSt == 'Interesado (Calificado)') {
-                    _promoteLeadToOpportunity(item);
-                  } else {
-                    _leadsService.updateStatus(item.id, newSt);
-                  }
-                },
-                itemBuilder: (ctx) => _statuses
-                    .where((s) => s != 'Todos')
-                    .map(
-                      (s) => PopupMenuItem(
-                        value: s,
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: _getStatusColor(s),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(s, style: GoogleFonts.inter(fontSize: 12)),
-                          ],
-                        ),
+              // Selector de Estado o Badge Bloqueado si ya está en Pipeline
+              if (item.isPromoted)
+                Tooltip(
+                  message:
+                      'Oportunidad activa en Pipeline Comercial. La evolución se gestiona desde Pipeline & Embudo.',
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.3),
                       ),
-                    )
-                    .toList(),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: statusColor.withValues(alpha: 0.3),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.lock_outline,
+                          size: 12,
+                          color: Color(0xFF10B981),
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          'Calificado (En Pipeline)',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF10B981),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: statusColor,
-                          shape: BoxShape.circle,
-                        ),
+                )
+              else
+                PopupMenuButton<String>(
+                  tooltip: item.status == 'Interesado (Calificado)'
+                      ? 'Prospecto calificado (Solo promover a Pipeline o Descartar)'
+                      : 'Cambiar estado',
+                  onSelected: (newSt) {
+                    if (newSt == 'Interesado (Calificado)') {
+                      _promoteLeadToOpportunity(item);
+                    } else if (newSt == 'En Espera de Respuesta') {
+                      _showContactDetailsUpdateDialog(item, newStatus: newSt);
+                    } else {
+                      _leadsService.updateStatus(item.id, newSt);
+                    }
+                  },
+                  itemBuilder: (ctx) {
+                    // Si ya está calificado, no permitir degradar hacia atrás a Prospectado/Contactado/En Espera
+                    final allowedStatuses =
+                        item.status == 'Interesado (Calificado)'
+                        ? ['Interesado (Calificado)', 'Descartado']
+                        : _statuses.where((s) => s != 'Todos').toList();
+                    return allowedStatuses
+                        .map(
+                          (s) => PopupMenuItem(
+                            value: s,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    color: _getStatusColor(s),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(s, style: GoogleFonts.inter(fontSize: 12)),
+                              ],
+                            ),
+                          ),
+                        )
+                        .toList();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: statusColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: statusColor.withValues(alpha: 0.3),
                       ),
-                      const SizedBox(width: 5),
-                      Text(
-                        item.status,
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: statusColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          item.status,
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: statusColor,
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        Icon(
+                          Icons.arrow_drop_down,
+                          size: 14,
                           color: statusColor,
                         ),
-                      ),
-                      const SizedBox(width: 2),
-                      Icon(Icons.arrow_drop_down, size: 14, color: statusColor),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
               const SizedBox(width: 8),
+
+              // Botón rápido para actualizar datos de contacto real
+              IconButton(
+                icon: const Icon(Icons.edit_outlined, size: 17),
+                tooltip: 'Actualizar contacto directo del encargado',
+                color: const Color(0xFFF59E0B),
+                visualDensity: VisualDensity.compact,
+                onPressed: () => _showContactDetailsUpdateDialog(item),
+              ),
 
               // Botón rápido de llamada / agenda
               IconButton(
@@ -1127,6 +1188,28 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                 visualDensity: VisualDensity.compact,
                 onPressed: () => _scheduleQuickTask(item),
               ),
+
+              // Botón rápido para promover al Pipeline Comercial (o indicador si ya está en Pipeline)
+              if (!item.isPromoted)
+                IconButton(
+                  icon: const Icon(Icons.rocket_launch, size: 17),
+                  tooltip: 'Promover al Pipeline Comercial',
+                  color: const Color(0xFF2563EB),
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () => _promoteLeadToOpportunity(item),
+                )
+              else
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 6),
+                  child: Tooltip(
+                    message: 'Ya promovido al Pipeline Comercial',
+                    child: Icon(
+                      Icons.check_circle,
+                      size: 17,
+                      color: Color(0xFF10B981),
+                    ),
+                  ),
+                ),
             ],
           ),
         ],
@@ -1263,51 +1346,188 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                     Text(item.advisor, style: GoogleFonts.inter(fontSize: 12)),
                   ),
                   DataCell(
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.contactPerson,
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                          ),
+                    InkWell(
+                      onTap: () => _showContactDetailsUpdateDialog(item),
+                      borderRadius: BorderRadius.circular(6),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 4,
+                          horizontal: 2,
                         ),
-                        Text(
-                          item.phone,
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 11,
-                            color: const Color(0xFF10B981),
-                          ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  item.contactPerson,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(
+                                  Icons.edit_outlined,
+                                  size: 12,
+                                  color: Color(0xFFF59E0B),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              item.phone,
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 11,
+                                color: const Color(0xFF10B981),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                   DataCell(
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: statusCol.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        item.status,
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: statusCol,
-                        ),
-                      ),
-                    ),
+                    item.isPromoted
+                        ? Tooltip(
+                            message:
+                                'Oportunidad activa en Pipeline Comercial. La evolución se gestiona desde Pipeline & Embudo.',
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF10B981,
+                                ).withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: const Color(
+                                    0xFF10B981,
+                                  ).withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.lock_outline,
+                                    size: 11,
+                                    color: Color(0xFF10B981),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'En Pipeline',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFF10B981),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : PopupMenuButton<String>(
+                            tooltip: item.status == 'Interesado (Calificado)'
+                                ? 'Prospecto calificado (Solo promover a Pipeline o Descartar)'
+                                : 'Cambiar estado',
+                            onSelected: (newSt) {
+                              if (newSt == 'Interesado (Calificado)') {
+                                _promoteLeadToOpportunity(item);
+                              } else if (newSt == 'En Espera de Respuesta') {
+                                _showContactDetailsUpdateDialog(
+                                  item,
+                                  newStatus: newSt,
+                                );
+                              } else {
+                                _leadsService.updateStatus(item.id, newSt);
+                              }
+                            },
+                            itemBuilder: (ctx) {
+                              final allowedStatuses =
+                                  item.status == 'Interesado (Calificado)'
+                                  ? ['Interesado (Calificado)', 'Descartado']
+                                  : _statuses
+                                        .where((s) => s != 'Todos')
+                                        .toList();
+                              return allowedStatuses
+                                  .map(
+                                    (s) => PopupMenuItem(
+                                      value: s,
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 8,
+                                            height: 8,
+                                            decoration: BoxDecoration(
+                                              color: _getStatusColor(s),
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            s,
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                  .toList();
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: statusCol.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: statusCol.withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    item.status,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      color: statusCol,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 2),
+                                  Icon(
+                                    Icons.arrow_drop_down,
+                                    size: 14,
+                                    color: statusCol,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                   ),
                   DataCell(
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.edit_outlined,
+                            size: 16,
+                            color: Color(0xFFF59E0B),
+                          ),
+                          tooltip: 'Actualizar contacto directo',
+                          onPressed: () =>
+                              _showContactDetailsUpdateDialog(item),
+                        ),
                         IconButton(
                           icon: const Icon(
                             Icons.add_task,
@@ -1357,6 +1577,17 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
         final titleCtrl = TextEditingController(
           text: 'Servicio Integral para ${item.company}',
         );
+        final contactCtrl = TextEditingController(
+          text: item.contactPerson == 'Encargado de Compras / Administración'
+              ? ''
+              : item.contactPerson,
+        );
+        final phoneCtrl = TextEditingController(
+          text: item.phone,
+        );
+        final emailCtrl = TextEditingController(
+          text: item.emailOrWeb ?? '',
+        );
         String serviceType = item.sector.contains('Clínicas')
             ? 'Limpieza Hospitalaria & Bioseguridad'
             : (item.sector.contains('Colegios')
@@ -1373,217 +1604,588 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
             constraints: const BoxConstraints(maxWidth: 580),
             child: Padding(
               padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(
-                            0xFF2563EB,
-                          ).withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(
-                          Icons.rocket_launch,
-                          color: Color(0xFF2563EB),
-                          size: 22,
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Promover Prospecto al Pipeline',
-                              style: GoogleFonts.inter(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            Text(
-                              'Convierte este prospecto en una Oportunidad activa en etapa de Calificación.',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: const Color(0xFF64748B),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Resumen de Datos
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0xFF16233B)
-                          : const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : const Color(0xFFE2E8F0),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        Text(
-                          'CLIENTE POTENCIAL: ${item.company}',
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: const Color(
+                              0xFF2563EB,
+                            ).withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.rocket_launch,
+                            color: Color(0xFF2563EB),
+                            size: 22,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Contacto: ${item.contactPerson} (${item.phone})',
-                          style: GoogleFonts.inter(
-                            fontSize: 11.5,
-                            color: const Color(0xFF64748B),
-                          ),
-                        ),
-                        Text(
-                          'Sede: ${item.address}',
-                          style: GoogleFonts.inter(
-                            fontSize: 11.5,
-                            color: const Color(0xFF64748B),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Promover Prospecto al Pipeline',
+                                style: GoogleFonts.inter(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              Text(
+                                'Convierte este prospecto en una Oportunidad activa en etapa de Calificación.',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: const Color(0xFF64748B),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 20),
 
-                  const SizedBox(height: 16),
-
-                  TextFormField(
-                    controller: titleCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Título de la Oportunidad / Negocio *',
-                      hintText: 'Ej: Servicio de Limpieza y Mantenimiento',
-                      isDense: true,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-
-                  DropdownButtonFormField<String>(
-                    initialValue: serviceType,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Tipo de Servicio a Cotizar',
-                      isDense: true,
-                    ),
-                    items:
-                        [
-                              'Limpieza Hospitalaria & Bioseguridad',
-                              'Mantenimiento Corporativo',
-                              'Mantenimiento & Jardinería Educativa',
-                              'Seguridad & Vigilancia Física',
-                              'Desinfección & Fumigación Integral',
-                            ]
-                            .map(
-                              (st) => DropdownMenuItem(
-                                value: st,
-                                child: Text(
-                                  st,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            )
-                            .toList(),
-                    onChanged: (v) {
-                      if (v != null) serviceType = v;
-                    },
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx),
-                        child: const Text('Cancelar'),
+                    // Resumen de Datos
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF16233B)
+                            : const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFE2E8F0),
+                        ),
                       ),
-                      const SizedBox(width: 10),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2563EB),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 18,
-                            vertical: 12,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'EMPRESA / PROSPECTO: ${item.company}',
+                            style: GoogleFonts.jetBrainsMono(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Ubicación / Sede: ${item.address}',
+                            style: GoogleFonts.inter(
+                              fontSize: 11.5,
+                              color: const Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    TextFormField(
+                      controller: titleCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Título de la Oportunidad / Negocio *',
+                        hintText: 'Ej: Servicio de Limpieza y Mantenimiento',
+                        isDense: true,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    DropdownButtonFormField<String>(
+                      initialValue: serviceType,
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Tipo de Servicio a Cotizar',
+                        isDense: true,
+                      ),
+                      items:
+                          [
+                                'Limpieza Hospitalaria & Bioseguridad',
+                                'Mantenimiento Corporativo',
+                                'Mantenimiento & Jardinería Educativa',
+                                'Seguridad & Vigilancia Física',
+                                'Desinfección & Fumigación Integral',
+                              ]
+                              .map(
+                                (st) => DropdownMenuItem(
+                                  value: st,
+                                  child: Text(
+                                    st,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (v) {
+                        if (v != null) serviceType = v;
+                      },
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Campos de contacto real/confirmado
+                    TextFormField(
+                      controller: contactCtrl,
+                      decoration: const InputDecoration(
+                        labelText:
+                            'Nombre del Encargado / Tomador de Decisión *',
+                        hintText:
+                            'Ej: Lic. Roberto Gómez - Gerente Administrativo',
+                        prefixIcon: Icon(Icons.person_outline, size: 18),
+                        isDense: true,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: phoneCtrl,
+                            decoration: const InputDecoration(
+                              labelText: 'Teléfono / WhatsApp Directo *',
+                              hintText: 'Ej: 70012345',
+                              prefixIcon: Icon(Icons.phone_outlined, size: 18),
+                              isDense: true,
+                            ),
                           ),
                         ),
-                        onPressed: () {
-                          // Marcar como promovido en el servicio
-                          _leadsService.markPromoted(item.id);
-
-                          // Agendar automáticamente una tarea de Visita Técnica o Contacto Comercial
-                          _agendaService.addTask(
-                            CrmTaskItem(
-                              id: 'TSK-${DateTime.now().millisecondsSinceEpoch}',
-                              title: 'Reunión de Calificación: ${item.company}',
-                              taskType: CrmTaskType.meeting,
-                              clientName: item.company,
-                              contactPerson: item.contactPerson,
-                              phone: item.phone,
-                              scheduledAt: DateTime.now().add(
-                                const Duration(days: 1),
-                              ),
-                              scheduledTimeText: '10:00',
-                              priority: 'Alta / Urgente',
-                              status: 'Pendiente',
-                              callContext:
-                                  'Prospecto promovido desde Outbound Maps. Requiere propuesta formal.',
-                              createdAt: DateTime.now(),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextFormField(
+                            controller: emailCtrl,
+                            decoration: const InputDecoration(
+                              labelText: 'Correo Electrónico',
+                              hintText: 'Ej: contacto@empresa.com',
+                              prefixIcon: Icon(Icons.email_outlined, size: 18),
+                              isDense: true,
                             ),
-                          );
+                          ),
+                        ),
+                      ],
+                    ),
 
-                          Navigator.pop(ctx);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: const Color(0xFF065F46),
-                              content: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.check_circle,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      '¡Oportunidad "${titleCtrl.text}" creada con éxito en el Pipeline!',
-                                      style: GoogleFonts.inter(
-                                        fontWeight: FontWeight.w600,
+                    const SizedBox(height: 24),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('Cancelar'),
+                        ),
+                        const SizedBox(width: 10),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2563EB),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () async {
+                            final companyName = item.company;
+                            final oppTitle = titleCtrl.text.trim().isNotEmpty
+                                ? titleCtrl.text.trim()
+                                : 'Servicio Integral para $companyName';
+                            final confirmedContact =
+                                contactCtrl.text.trim().isNotEmpty
+                                ? contactCtrl.text.trim()
+                                : item.contactPerson;
+                            final confirmedPhone =
+                                phoneCtrl.text.trim().isNotEmpty
+                                ? phoneCtrl.text.trim()
+                                : item.phone;
+                            final confirmedEmail =
+                                emailCtrl.text.trim().isNotEmpty
+                                ? emailCtrl.text.trim()
+                                : item.emailOrWeb;
+
+                            // 1. Actualizar prospecto en PostgreSQL con los datos reales de contacto
+                            final updatedLead = item.copyWith(
+                              contactPerson: confirmedContact,
+                              phone: confirmedPhone,
+                              emailOrWeb: confirmedEmail,
+                            );
+                            await _leadsService.updateLead(updatedLead);
+
+                            // 2. Registrar Oportunidad en PostgreSQL vía CrmPipelineService
+                            final pipelineService = CrmPipelineService();
+                            final createdOpp = await pipelineService.addDeal(
+                              OpportunityItem(
+                                id: '',
+                                title: oppTitle,
+                                clientName: companyName,
+                                contactPerson: confirmedContact,
+                                phone: confirmedPhone,
+                                serviceType: serviceType,
+                                amount: item.estimatedValue > 0
+                                    ? item.estimatedValue
+                                    : 0.0,
+                                stage: 'Calificación',
+                                probability: 30,
+                                owner: item.advisor,
+                                closingDate: '',
+                                notes: item.notes ?? '',
+                                businessSegment: item.sector,
+                                siteName: companyName,
+                                siteAddress: item.address,
+                                siteContactName: confirmedContact,
+                                siteContactPhone: confirmedPhone,
+                                isSiteHeadquarters: true,
+                              ),
+                            );
+
+                            // 3. Marcar como promovido en el servicio de prospectos vinculando la Oportunidad
+                            await _leadsService.markPromoted(
+                              item.id,
+                              opportunityId: createdOpp?.id,
+                            );
+
+                            // 4. Agendar automáticamente una tarea en Agenda CRM
+                            await _agendaService.addTask(
+                              CrmTaskItem(
+                                id: 'TSK-${DateTime.now().millisecondsSinceEpoch}',
+                                title: 'Reunión de Calificación: $companyName',
+                                taskType: CrmTaskType.meeting,
+                                clientName: companyName,
+                                contactPerson: confirmedContact,
+                                phone: confirmedPhone,
+                                scheduledAt: DateTime.now().add(
+                                  const Duration(days: 1),
+                                ),
+                                scheduledTimeText: '10:00',
+                                priority: 'Alta / Urgente',
+                                status: 'Pendiente',
+                                callContext:
+                                    'Prospecto promovido desde Outbound Maps. Requiere propuesta formal.',
+                                createdAt: DateTime.now(),
+                                relatedOpportunityId: createdOpp?.id,
+                              ),
+                            );
+
+                            if (ctx.mounted) Navigator.pop(ctx);
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: const Color(0xFF065F46),
+                                  content: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.check_circle,
+                                        color: Colors.white,
                                       ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          '¡Oportunidad "$oppTitle" creada con éxito en el Pipeline!',
+                                          style: GoogleFonts.inter(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.check, size: 16),
+                          label: const Text('Confirmar & Promover'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showContactDetailsUpdateDialog(LeadModel item, {String? newStatus}) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+        final contactCtrl = TextEditingController(
+          text: item.contactPerson == 'Encargado de Compras / Administración'
+              ? ''
+              : item.contactPerson,
+        );
+        final phoneCtrl = TextEditingController(text: item.phone);
+        final emailCtrl = TextEditingController(text: item.emailOrWeb ?? '');
+        final notesCtrl = TextEditingController(text: item.notes ?? '');
+        String selectedStatus = newStatus ?? item.status;
+
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Dialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              insetPadding: const EdgeInsets.all(20),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 540),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFFF59E0B,
+                                ).withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.person_pin_outlined,
+                                color: Color(0xFFF59E0B),
+                                size: 22,
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Actualizar Datos de Contacto Directo',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${item.company} • ${item.sector}',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: const Color(0xFF64748B),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          );
-                        },
-                        icon: const Icon(Icons.check, size: 16),
-                        label: const Text('Confirmar & Promover'),
-                      ),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF16233B)
+                                : const Color(0xFFF8FAFC),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFFE2E8F0),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.info_outline,
+                                size: 18,
+                                color: Color(0xFF3B82F6),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Si los datos iniciales de Google Maps no tenían el encargado o el número directo, regístralos aquí para mantener la información real.',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11.5,
+                                    color: isDark
+                                        ? const Color(0xFF94A3B8)
+                                        : const Color(0xFF475569),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Campo: Nombre del Encargado / Tomador de decisión
+                        TextFormField(
+                          controller: contactCtrl,
+                          decoration: const InputDecoration(
+                            labelText:
+                                'Nombre y Cargo del Encargado / Decisor *',
+                            hintText:
+                                'Ej: Lic. Carlos Mendoza - Administrador General',
+                            prefixIcon: Icon(Icons.person_outline, size: 18),
+                            isDense: true,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+
+                        // Campo: Teléfono directo o nuevo número proporcionado
+                        TextFormField(
+                          controller: phoneCtrl,
+                          decoration: const InputDecoration(
+                            labelText:
+                                'Teléfono Directo / WhatsApp Confirmado *',
+                            hintText: 'Ej: +591 70012345 o (3) 3456789',
+                            prefixIcon: Icon(Icons.phone_outlined, size: 18),
+                            isDense: true,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+
+                        // Campo: Correo electrónico directo
+                        TextFormField(
+                          controller: emailCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Correo Electrónico Directo',
+                            hintText: 'Ej: carlos.mendoza@empresa.com',
+                            prefixIcon: Icon(Icons.email_outlined, size: 18),
+                            isDense: true,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+
+                        // Selector de Estado
+                        DropdownButtonFormField<String>(
+                          initialValue: selectedStatus,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Estado Comercial',
+                            isDense: true,
+                            prefixIcon: Icon(Icons.flag_outlined, size: 18),
+                          ),
+                          items: _statuses
+                              .where((s) => s != 'Todos')
+                              .map(
+                                (s) => DropdownMenuItem(
+                                  value: s,
+                                  child: Text(
+                                    s,
+                                    style: GoogleFonts.inter(fontSize: 13),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (v) {
+                            if (v != null) {
+                              setModalState(() => selectedStatus = v);
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 14),
+
+                        // Notas de la llamada / interacción
+                        TextFormField(
+                          controller: notesCtrl,
+                          maxLines: 2,
+                          decoration: const InputDecoration(
+                            labelText: 'Notas de la Llamada / Contacto',
+                            hintText:
+                                'Ej: Se llamó y dieron el celular directo del jefe de compras...',
+                            isDense: true,
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('Cancelar'),
+                            ),
+                            const SizedBox(width: 10),
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFF59E0B),
+                                foregroundColor: Colors.black,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 18,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: () async {
+                                final realContact =
+                                    contactCtrl.text.trim().isNotEmpty
+                                    ? contactCtrl.text.trim()
+                                    : item.contactPerson;
+                                final realPhone =
+                                    phoneCtrl.text.trim().isNotEmpty
+                                    ? phoneCtrl.text.trim()
+                                    : item.phone;
+                                final realEmail =
+                                    emailCtrl.text.trim().isNotEmpty
+                                    ? emailCtrl.text.trim()
+                                    : item.emailOrWeb;
+                                final realNotes =
+                                    notesCtrl.text.trim().isNotEmpty
+                                    ? notesCtrl.text.trim()
+                                    : item.notes;
+
+                                final updatedLead = item.copyWith(
+                                  contactPerson: realContact,
+                                  phone: realPhone,
+                                  emailOrWeb: realEmail,
+                                  notes: realNotes,
+                                  status: selectedStatus,
+                                );
+
+                                final messenger = ScaffoldMessenger.of(context);
+                                await _leadsService.updateLead(updatedLead);
+
+                                if (ctx.mounted) Navigator.pop(ctx);
+                                if (!mounted) return;
+                                messenger.showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: const Color(0xFF065F46),
+                                    content: Text(
+                                      'Datos de contacto y estado actualizados para ${item.company}',
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.save, size: 16),
+                              label: const Text(
+                                'Guardar Datos Reales',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
@@ -1942,11 +2544,13 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
     final companyCtrl = TextEditingController();
     final addressCtrl = TextEditingController();
     final phoneCtrl = TextEditingController();
+    final emailCtrl = TextEditingController();
     final urlCtrl = TextEditingController();
     final contactCtrl = TextEditingController();
     final notesCtrl = TextEditingController();
     String sectorVal = 'Clínicas y centros médicos';
-    String advisorVal = 'Rodrigo Acha';
+    final currentAdvisor = AuthService().currentDisplayName ?? 'Administrador';
+    final advisorVal = currentAdvisor;
 
     showDialog(
       context: context,
@@ -2056,23 +2660,39 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                       ),
                       const SizedBox(width: 14),
                       Expanded(
-                        child: DropdownButtonFormField<String>(
+                        child: TextFormField(
                           initialValue: advisorVal,
-                          isExpanded: true,
-                          decoration: const InputDecoration(
+                          readOnly: true,
+                          enabled: false,
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? Colors.white70
+                                : const Color(0xFF334155),
+                          ),
+                          decoration: InputDecoration(
                             labelText: 'Asesor Asignado *',
                             isDense: true,
+                            prefixIcon: const Icon(
+                              Icons.verified_user_outlined,
+                              size: 18,
+                              color: Color(0xFF10B981),
+                            ),
+                            suffixIcon: const Tooltip(
+                              message:
+                                  'Asignado automáticamente al usuario con sesión activa (Inmutable)',
+                              child: Icon(
+                                Icons.lock_outline,
+                                size: 16,
+                                color: Color(0xFF64748B),
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: isDark
+                                ? const Color(0xFF1E293B).withValues(alpha: 0.5)
+                                : const Color(0xFFF1F5F9),
                           ),
-                          items: _advisors
-                              .where((a) => a != 'Todos')
-                              .map(
-                                (a) =>
-                                    DropdownMenuItem(value: a, child: Text(a)),
-                              )
-                              .toList(),
-                          onChanged: (v) {
-                            if (v != null) advisorVal = v;
-                          },
                         ),
                       ),
                     ],
@@ -2108,23 +2728,42 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                   ),
                   const SizedBox(height: 14),
 
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: emailCtrl,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: const InputDecoration(
+                            labelText: 'Correo Electrónico',
+                            hintText: 'Ej: contacto@empresa.com.bo',
+                            prefixIcon: Icon(Icons.email_outlined),
+                            isDense: true,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: TextFormField(
+                          controller: urlCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Sitio Web / Perfil Maps',
+                            hintText: 'https://...',
+                            prefixIcon: Icon(Icons.link),
+                            isDense: true,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+
                   TextFormField(
                     controller: addressCtrl,
                     decoration: const InputDecoration(
                       labelText: 'Dirección física / Ubicación Maps *',
                       hintText: 'Ej: Av. San Martín #245, Barrio Equipetrol',
                       prefixIcon: Icon(Icons.place),
-                      isDense: true,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-
-                  TextFormField(
-                    controller: urlCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Sitio Web / Perfil Maps',
-                      hintText: 'https://...',
-                      prefixIcon: Icon(Icons.link),
                       isDense: true,
                     ),
                   ),
@@ -2164,15 +2803,15 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                         ),
                         onPressed: () {
                           if (companyCtrl.text.trim().isNotEmpty) {
+                            final emailText = emailCtrl.text.trim();
+                            final urlText = urlCtrl.text.trim();
                             _leadsService.addLead(
                               LeadModel(
                                 id: 'PROSP-${DateTime.now().millisecondsSinceEpoch % 10000}',
                                 date: 'Hoy',
                                 advisor: advisorVal,
                                 company: companyCtrl.text.trim(),
-                                companyUrl: urlCtrl.text.trim().isNotEmpty
-                                    ? urlCtrl.text.trim()
-                                    : null,
+                                companyUrl: urlText.isNotEmpty ? urlText : null,
                                 sector: sectorVal,
                                 address: addressCtrl.text.trim().isNotEmpty
                                     ? addressCtrl.text.trim()
@@ -2180,9 +2819,9 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                                 phone: phoneCtrl.text.trim().isNotEmpty
                                     ? phoneCtrl.text.trim()
                                     : 'Sin teléfono',
-                                emailOrWeb: urlCtrl.text.trim().isNotEmpty
-                                    ? urlCtrl.text.trim()
-                                    : null,
+                                emailOrWeb: emailText.isNotEmpty
+                                    ? emailText
+                                    : (urlText.isNotEmpty ? urlText : null),
                                 status: 'Prospectado',
                                 temperature: 'Normal',
                                 contactPerson:

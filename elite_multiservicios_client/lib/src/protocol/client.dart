@@ -19,33 +19,55 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
 import 'package:elite_multiservicios_client/src/protocol/greetings/greeting.dart'
     as _i5;
-import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_lead.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_task.dart'
     as _i6;
-import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_lead_metrics_response.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_agenda_metrics_response.dart'
     as _i7;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_customer.dart'
     as _i8;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log_page_response.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_customer_detail_response.dart'
     as _i9;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_challenge_response.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_customer_branch.dart'
     as _i10;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_verify_response.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_customer_contract.dart'
     as _i11;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_role.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_contract_budget_item.dart'
     as _i12;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_permission.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_customer_metrics_response.dart'
     as _i13;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_role.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_lead.dart'
     as _i14;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/role_permission.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_lead_metrics_response.dart'
     as _i15;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_session.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_opportunity.dart'
     as _i16;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/server_metrics_response.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_quote_item.dart'
     as _i17;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_user.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/crm/models/crm_pipeline_metrics_response.dart'
     as _i18;
-import 'protocol.dart' as _i19;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log.dart'
+    as _i19;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log_page_response.dart'
+    as _i20;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_challenge_response.dart'
+    as _i21;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_verify_response.dart'
+    as _i22;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_role.dart'
+    as _i23;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_permission.dart'
+    as _i24;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_role.dart'
+    as _i25;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/role_permission.dart'
+    as _i26;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_session.dart'
+    as _i27;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/server_metrics_response.dart'
+    as _i28;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_user.dart'
+    as _i29;
+import 'protocol.dart' as _i30;
 
 /// Endpoint de autenticación mediante correo y contraseña.
 /// Extiende [EmailIdpBaseEndpoint] para incorporar auditoría de login fallido
@@ -277,6 +299,357 @@ class EndpointGreeting extends _i2.EndpointRef {
       );
 }
 
+/// Endpoint RPC para la Agenda Comercial, compromisos y tareas de seguimiento.
+/// {@category Endpoint}
+class EndpointCrmAgenda extends _i2.EndpointRef {
+  EndpointCrmAgenda(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'crmAgenda';
+
+  /// Lista las tareas con filtros opcionales.
+  _i3.Future<List<_i6.CrmTask>> listTasks({
+    required int limit,
+    required int offset,
+    String? search,
+    String? status,
+    String? taskType,
+    String? priority,
+    int? customerId,
+    int? opportunityId,
+    int? leadId,
+  }) => caller.callServerEndpoint<List<_i6.CrmTask>>(
+    'crmAgenda',
+    'listTasks',
+    {
+      'limit': limit,
+      'offset': offset,
+      'search': search,
+      'status': status,
+      'taskType': taskType,
+      'priority': priority,
+      'customerId': customerId,
+      'opportunityId': opportunityId,
+      'leadId': leadId,
+    },
+  );
+
+  /// Obtiene una tarea por su ID.
+  _i3.Future<_i6.CrmTask?> getTask(int id) =>
+      caller.callServerEndpoint<_i6.CrmTask?>(
+        'crmAgenda',
+        'getTask',
+        {'id': id},
+      );
+
+  /// Obtiene las tareas programadas para una fecha específica.
+  _i3.Future<List<_i6.CrmTask>> getTasksForDate(DateTime date) =>
+      caller.callServerEndpoint<List<_i6.CrmTask>>(
+        'crmAgenda',
+        'getTasksForDate',
+        {'date': date},
+      );
+
+  /// Obtiene las tareas correspondientes al día de hoy.
+  _i3.Future<List<_i6.CrmTask>> getTodayTasks() =>
+      caller.callServerEndpoint<List<_i6.CrmTask>>(
+        'crmAgenda',
+        'getTodayTasks',
+        {},
+      );
+
+  /// Obtiene las tareas vencidas.
+  _i3.Future<List<_i6.CrmTask>> getOverdueTasks() =>
+      caller.callServerEndpoint<List<_i6.CrmTask>>(
+        'crmAgenda',
+        'getOverdueTasks',
+        {},
+      );
+
+  /// Crea una nueva tarea en la agenda.
+  _i3.Future<_i6.CrmTask> createTask(_i6.CrmTask task) =>
+      caller.callServerEndpoint<_i6.CrmTask>(
+        'crmAgenda',
+        'createTask',
+        {'task': task},
+      );
+
+  /// Actualiza una tarea existente.
+  _i3.Future<_i6.CrmTask> updateTask(_i6.CrmTask task) =>
+      caller.callServerEndpoint<_i6.CrmTask>(
+        'crmAgenda',
+        'updateTask',
+        {'task': task},
+      );
+
+  /// Marca una tarea como completada.
+  _i3.Future<_i6.CrmTask?> completeTask(
+    int id, {
+    String? notes,
+  }) => caller.callServerEndpoint<_i6.CrmTask?>(
+    'crmAgenda',
+    'completeTask',
+    {
+      'id': id,
+      'notes': notes,
+    },
+  );
+
+  /// Pospone una tarea.
+  _i3.Future<_i6.CrmTask?> postponeTask(
+    int id, {
+    required DateTime newDate,
+    required String newTimeText,
+    String? reason,
+  }) => caller.callServerEndpoint<_i6.CrmTask?>(
+    'crmAgenda',
+    'postponeTask',
+    {
+      'id': id,
+      'newDate': newDate,
+      'newTimeText': newTimeText,
+      'reason': reason,
+    },
+  );
+
+  /// Elimina lógicamente una tarea.
+  _i3.Future<bool> deleteTask(int id) => caller.callServerEndpoint<bool>(
+    'crmAgenda',
+    'deleteTask',
+    {'id': id},
+  );
+
+  /// Programa una tarea de control de calidad tras finalizar obra.
+  _i3.Future<_i6.CrmTask> scheduleQualityCheck({
+    required String clientName,
+    required String contactPerson,
+    required String phone,
+    required String contractTitle,
+    int? customerId,
+    int? contractId,
+  }) => caller.callServerEndpoint<_i6.CrmTask>(
+    'crmAgenda',
+    'scheduleQualityCheck',
+    {
+      'clientName': clientName,
+      'contactPerson': contactPerson,
+      'phone': phone,
+      'contractTitle': contractTitle,
+      'customerId': customerId,
+      'contractId': contractId,
+    },
+  );
+
+  /// Programa una alerta comercial de renovación de contrato.
+  _i3.Future<_i6.CrmTask> scheduleRenewal({
+    required String clientName,
+    required String contactPerson,
+    required String phone,
+    required String contractTitle,
+    required DateTime expiryDate,
+    int? customerId,
+    int? contractId,
+  }) => caller.callServerEndpoint<_i6.CrmTask>(
+    'crmAgenda',
+    'scheduleRenewal',
+    {
+      'clientName': clientName,
+      'contactPerson': contactPerson,
+      'phone': phone,
+      'contractTitle': contractTitle,
+      'expiryDate': expiryDate,
+      'customerId': customerId,
+      'contractId': contractId,
+    },
+  );
+
+  /// Obtiene las métricas agregadas de la agenda.
+  _i3.Future<_i7.CrmAgendaMetricsResponse> getMetrics() =>
+      caller.callServerEndpoint<_i7.CrmAgendaMetricsResponse>(
+        'crmAgenda',
+        'getMetrics',
+        {},
+      );
+}
+
+/// Endpoint RPC para el catálogo maestro de Clientes 360°, Sedes Operativas y Contratos.
+/// {@category Endpoint}
+class EndpointCrmCustomers extends _i2.EndpointRef {
+  EndpointCrmCustomers(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'crmCustomers';
+
+  /// Lista los clientes activos con filtros avanzados.
+  _i3.Future<List<_i8.CrmCustomer>> listCustomers({
+    required int limit,
+    required int offset,
+    String? search,
+    String? segment,
+    String? status,
+  }) => caller.callServerEndpoint<List<_i8.CrmCustomer>>(
+    'crmCustomers',
+    'listCustomers',
+    {
+      'limit': limit,
+      'offset': offset,
+      'search': search,
+      'segment': segment,
+      'status': status,
+    },
+  );
+
+  /// Obtiene la ficha 360° detallada e hidratada de un cliente.
+  _i3.Future<_i9.CrmCustomerDetailResponse?> getCustomerDetail(int id) =>
+      caller.callServerEndpoint<_i9.CrmCustomerDetailResponse?>(
+        'crmCustomers',
+        'getCustomerDetail',
+        {'id': id},
+      );
+
+  /// Obtiene los datos generales de un cliente por su ID.
+  _i3.Future<_i8.CrmCustomer?> getCustomer(int id) =>
+      caller.callServerEndpoint<_i8.CrmCustomer?>(
+        'crmCustomers',
+        'getCustomer',
+        {'id': id},
+      );
+
+  /// Registra un nuevo Cliente 360°.
+  _i3.Future<_i8.CrmCustomer> createCustomer(
+    _i8.CrmCustomer customer, {
+    _i10.CrmCustomerBranch? initialBranch,
+    _i11.CrmCustomerContract? initialContract,
+  }) => caller.callServerEndpoint<_i8.CrmCustomer>(
+    'crmCustomers',
+    'createCustomer',
+    {
+      'customer': customer,
+      'initialBranch': initialBranch,
+      'initialContract': initialContract,
+    },
+  );
+
+  /// Actualiza los datos generales de un cliente.
+  _i3.Future<_i8.CrmCustomer> updateCustomer(_i8.CrmCustomer customer) =>
+      caller.callServerEndpoint<_i8.CrmCustomer>(
+        'crmCustomers',
+        'updateCustomer',
+        {'customer': customer},
+      );
+
+  /// Elimina lógicamente un cliente y sus dependencias.
+  _i3.Future<bool> deleteCustomer(int id) => caller.callServerEndpoint<bool>(
+    'crmCustomers',
+    'deleteCustomer',
+    {'id': id},
+  );
+
+  /// Agrega una sede operativa a un cliente.
+  _i3.Future<_i10.CrmCustomerBranch> addBranch(_i10.CrmCustomerBranch branch) =>
+      caller.callServerEndpoint<_i10.CrmCustomerBranch>(
+        'crmCustomers',
+        'addBranch',
+        {'branch': branch},
+      );
+
+  /// Actualiza una sede operativa existente.
+  _i3.Future<_i10.CrmCustomerBranch> updateBranch(
+    _i10.CrmCustomerBranch branch,
+  ) => caller.callServerEndpoint<_i10.CrmCustomerBranch>(
+    'crmCustomers',
+    'updateBranch',
+    {'branch': branch},
+  );
+
+  /// Elimina lógicamente una sede operativa.
+  _i3.Future<bool> deleteBranch(int branchId) =>
+      caller.callServerEndpoint<bool>(
+        'crmCustomers',
+        'deleteBranch',
+        {'branchId': branchId},
+      );
+
+  /// Registra un contrato con partidas de cotización.
+  _i3.Future<_i11.CrmCustomerContract> addContract(
+    _i11.CrmCustomerContract contract, {
+    List<_i12.CrmContractBudgetItem>? budgetItems,
+  }) => caller.callServerEndpoint<_i11.CrmCustomerContract>(
+    'crmCustomers',
+    'addContract',
+    {
+      'contract': contract,
+      'budgetItems': budgetItems,
+    },
+  );
+
+  /// Actualiza un contrato existente.
+  _i3.Future<_i11.CrmCustomerContract> updateContract(
+    _i11.CrmCustomerContract contract,
+  ) => caller.callServerEndpoint<_i11.CrmCustomerContract>(
+    'crmCustomers',
+    'updateContract',
+    {'contract': contract},
+  );
+
+  /// Conclusión formal de contrato/obra con calificación de satisfacción.
+  _i3.Future<_i11.CrmCustomerContract?> completeContract(
+    int contractId, {
+    required DateTime actualEndDate,
+    String? completionNotes,
+    required int satisfactionRating,
+    String? completedBy,
+  }) => caller.callServerEndpoint<_i11.CrmCustomerContract?>(
+    'crmCustomers',
+    'completeContract',
+    {
+      'contractId': contractId,
+      'actualEndDate': actualEndDate,
+      'completionNotes': completionNotes,
+      'satisfactionRating': satisfactionRating,
+      'completedBy': completedBy,
+    },
+  );
+
+  /// Renovación directa de un contrato recurrente (+6 / +12 meses).
+  _i3.Future<_i11.CrmCustomerContract?> renewContract(
+    int contractId, {
+    required int additionalMonths,
+    double? adjustedMonthlyAmount,
+    String? notes,
+  }) => caller.callServerEndpoint<_i11.CrmCustomerContract?>(
+    'crmCustomers',
+    'renewContract',
+    {
+      'contractId': contractId,
+      'additionalMonths': additionalMonths,
+      'adjustedMonthlyAmount': adjustedMonthlyAmount,
+      'notes': notes,
+    },
+  );
+
+  /// Actualiza el estado puntual de un contrato (Pausar / Reactivar).
+  _i3.Future<_i11.CrmCustomerContract?> updateContractStatus(
+    int contractId,
+    String newStatus,
+  ) => caller.callServerEndpoint<_i11.CrmCustomerContract?>(
+    'crmCustomers',
+    'updateContractStatus',
+    {
+      'contractId': contractId,
+      'newStatus': newStatus,
+    },
+  );
+
+  /// Obtiene el consolidado de métricas en tiempo real.
+  _i3.Future<_i13.CrmCustomerMetricsResponse> getMetrics() =>
+      caller.callServerEndpoint<_i13.CrmCustomerMetricsResponse>(
+        'crmCustomers',
+        'getMetrics',
+        {},
+      );
+}
+
 /// Endpoint RPC para la gestión integral de Prospectos (CRM Leads) en frío y Maps.
 /// {@category Endpoint}
 class EndpointCrmLeads extends _i2.EndpointRef {
@@ -286,7 +659,7 @@ class EndpointCrmLeads extends _i2.EndpointRef {
   String get name => 'crmLeads';
 
   /// Lista los prospectos con filtros opcionales de búsqueda, rubro, estado y temperatura.
-  _i3.Future<List<_i6.CrmLead>> listLeads({
+  _i3.Future<List<_i14.CrmLead>> listLeads({
     required int limit,
     required int offset,
     String? search,
@@ -294,7 +667,7 @@ class EndpointCrmLeads extends _i2.EndpointRef {
     String? status,
     String? temperature,
     String? advisor,
-  }) => caller.callServerEndpoint<List<_i6.CrmLead>>(
+  }) => caller.callServerEndpoint<List<_i14.CrmLead>>(
     'crmLeads',
     'listLeads',
     {
@@ -309,34 +682,34 @@ class EndpointCrmLeads extends _i2.EndpointRef {
   );
 
   /// Obtiene el detalle de un prospecto por su ID.
-  _i3.Future<_i6.CrmLead?> getLead(int id) =>
-      caller.callServerEndpoint<_i6.CrmLead?>(
+  _i3.Future<_i14.CrmLead?> getLead(int id) =>
+      caller.callServerEndpoint<_i14.CrmLead?>(
         'crmLeads',
         'getLead',
         {'id': id},
       );
 
   /// Registra un nuevo prospecto comercial en el sistema.
-  _i3.Future<_i6.CrmLead> createLead(_i6.CrmLead lead) =>
-      caller.callServerEndpoint<_i6.CrmLead>(
+  _i3.Future<_i14.CrmLead> createLead(_i14.CrmLead lead) =>
+      caller.callServerEndpoint<_i14.CrmLead>(
         'crmLeads',
         'createLead',
         {'lead': lead},
       );
 
   /// Actualiza los datos generales de un prospecto.
-  _i3.Future<_i6.CrmLead> updateLead(_i6.CrmLead lead) =>
-      caller.callServerEndpoint<_i6.CrmLead>(
+  _i3.Future<_i14.CrmLead> updateLead(_i14.CrmLead lead) =>
+      caller.callServerEndpoint<_i14.CrmLead>(
         'crmLeads',
         'updateLead',
         {'lead': lead},
       );
 
   /// Actualiza el estado comercial de un prospecto en el embudo inicial.
-  _i3.Future<_i6.CrmLead?> updateStatus(
+  _i3.Future<_i14.CrmLead?> updateStatus(
     int id,
     String status,
-  ) => caller.callServerEndpoint<_i6.CrmLead?>(
+  ) => caller.callServerEndpoint<_i14.CrmLead?>(
     'crmLeads',
     'updateStatus',
     {
@@ -346,10 +719,10 @@ class EndpointCrmLeads extends _i2.EndpointRef {
   );
 
   /// Actualiza la temperatura comercial (Frío, Templado, Caliente).
-  _i3.Future<_i6.CrmLead?> updateTemperature(
+  _i3.Future<_i14.CrmLead?> updateTemperature(
     int id,
     String temperature,
-  ) => caller.callServerEndpoint<_i6.CrmLead?>(
+  ) => caller.callServerEndpoint<_i14.CrmLead?>(
     'crmLeads',
     'updateTemperature',
     {
@@ -359,10 +732,10 @@ class EndpointCrmLeads extends _i2.EndpointRef {
   );
 
   /// Marca el prospecto como promovido formalmente a una Oportunidad en el Pipeline.
-  _i3.Future<_i6.CrmLead?> markPromoted(
+  _i3.Future<_i14.CrmLead?> markPromoted(
     int id,
     int? opportunityId,
-  ) => caller.callServerEndpoint<_i6.CrmLead?>(
+  ) => caller.callServerEndpoint<_i14.CrmLead?>(
     'crmLeads',
     'markPromoted',
     {
@@ -379,9 +752,118 @@ class EndpointCrmLeads extends _i2.EndpointRef {
   );
 
   /// Consulta el consolidado de métricas de prospección en tiempo real.
-  _i3.Future<_i7.CrmLeadMetricsResponse> getMetrics() =>
-      caller.callServerEndpoint<_i7.CrmLeadMetricsResponse>(
+  _i3.Future<_i15.CrmLeadMetricsResponse> getMetrics() =>
+      caller.callServerEndpoint<_i15.CrmLeadMetricsResponse>(
         'crmLeads',
+        'getMetrics',
+        {},
+      );
+}
+
+/// Endpoint RPC para el embudo de ventas, compuertas y Pipeline comercial.
+/// {@category Endpoint}
+class EndpointCrmPipeline extends _i2.EndpointRef {
+  EndpointCrmPipeline(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'crmPipeline';
+
+  /// Lista las oportunidades con filtros opcionales.
+  _i3.Future<List<_i16.CrmOpportunity>> listOpportunities({
+    required int limit,
+    required int offset,
+    String? search,
+    String? stage,
+    String? owner,
+    String? serviceType,
+  }) => caller.callServerEndpoint<List<_i16.CrmOpportunity>>(
+    'crmPipeline',
+    'listOpportunities',
+    {
+      'limit': limit,
+      'offset': offset,
+      'search': search,
+      'stage': stage,
+      'owner': owner,
+      'serviceType': serviceType,
+    },
+  );
+
+  /// Obtiene el detalle de una oportunidad por ID.
+  _i3.Future<_i16.CrmOpportunity?> getOpportunity(int id) =>
+      caller.callServerEndpoint<_i16.CrmOpportunity?>(
+        'crmPipeline',
+        'getOpportunity',
+        {'id': id},
+      );
+
+  /// Obtiene las partidas de cotización asociadas a una oportunidad.
+  _i3.Future<List<_i17.CrmQuoteItem>> getQuoteItems(int opportunityId) =>
+      caller.callServerEndpoint<List<_i17.CrmQuoteItem>>(
+        'crmPipeline',
+        'getQuoteItems',
+        {'opportunityId': opportunityId},
+      );
+
+  /// Crea una nueva oportunidad comercial.
+  _i3.Future<_i16.CrmOpportunity> createOpportunity(
+    _i16.CrmOpportunity opp, {
+    List<_i17.CrmQuoteItem>? quoteItems,
+  }) => caller.callServerEndpoint<_i16.CrmOpportunity>(
+    'crmPipeline',
+    'createOpportunity',
+    {
+      'opp': opp,
+      'quoteItems': quoteItems,
+    },
+  );
+
+  /// Actualiza una oportunidad comercial.
+  _i3.Future<_i16.CrmOpportunity> updateOpportunity(
+    _i16.CrmOpportunity opp, {
+    List<_i17.CrmQuoteItem>? quoteItems,
+  }) => caller.callServerEndpoint<_i16.CrmOpportunity>(
+    'crmPipeline',
+    'updateOpportunity',
+    {
+      'opp': opp,
+      'quoteItems': quoteItems,
+    },
+  );
+
+  /// Actualiza la etapa o compuerta comercial de una oportunidad.
+  _i3.Future<_i16.CrmOpportunity?> updateStage(
+    int id,
+    String newStage,
+  ) => caller.callServerEndpoint<_i16.CrmOpportunity?>(
+    'crmPipeline',
+    'updateStage',
+    {
+      'id': id,
+      'newStage': newStage,
+    },
+  );
+
+  /// Traspaso formal de oportunidad Ganada a Cliente 360°.
+  _i3.Future<_i9.CrmCustomerDetailResponse?> promoteToCustomer(
+    int opportunityId,
+  ) => caller.callServerEndpoint<_i9.CrmCustomerDetailResponse?>(
+    'crmPipeline',
+    'promoteToCustomer',
+    {'opportunityId': opportunityId},
+  );
+
+  /// Elimina lógicamente una oportunidad.
+  _i3.Future<bool> deleteOpportunity(int id) => caller.callServerEndpoint<bool>(
+    'crmPipeline',
+    'deleteOpportunity',
+    {'id': id},
+  );
+
+  /// Obtiene las métricas agregadas del pipeline.
+  _i3.Future<_i18.CrmPipelineMetricsResponse> getMetrics() =>
+      caller.callServerEndpoint<_i18.CrmPipelineMetricsResponse>(
+        'crmPipeline',
         'getMetrics',
         {},
       );
@@ -396,12 +878,12 @@ class EndpointAudit extends _i2.EndpointRef {
   String get name => 'audit';
 
   /// Lista los registros de bitácora paginados con filtros opcionales. Requiere audit.view.
-  _i3.Future<List<_i8.AuditLog>> listLogs({
+  _i3.Future<List<_i19.AuditLog>> listLogs({
     required int limit,
     required int offset,
     int? userId,
     String? action,
-  }) => caller.callServerEndpoint<List<_i8.AuditLog>>(
+  }) => caller.callServerEndpoint<List<_i19.AuditLog>>(
     'audit',
     'listLogs',
     {
@@ -413,7 +895,7 @@ class EndpointAudit extends _i2.EndpointRef {
   );
 
   /// Lista los registros de auditoría de forma paginada con filtros avanzados. Requiere audit.view.
-  _i3.Future<_i9.AuditLogPageResponse> listLogsPaged({
+  _i3.Future<_i20.AuditLogPageResponse> listLogsPaged({
     required int page,
     required int pageSize,
     String? action,
@@ -422,7 +904,7 @@ class EndpointAudit extends _i2.EndpointRef {
     DateTime? fromDate,
     DateTime? toDate,
     String? search,
-  }) => caller.callServerEndpoint<_i9.AuditLogPageResponse>(
+  }) => caller.callServerEndpoint<_i20.AuditLogPageResponse>(
     'audit',
     'listLogsPaged',
     {
@@ -449,10 +931,10 @@ class EndpointMfa extends _i2.EndpointRef {
   /// Verifica si el usuario autenticado requiere MFA.
   /// Si sí, genera un challenge, envía el email y devuelve el challengeId.
   /// Si no, devuelve null.
-  _i3.Future<_i10.MfaChallengeResponse?> checkRequired({
+  _i3.Future<_i21.MfaChallengeResponse?> checkRequired({
     required bool rememberMe,
     String? trustedDeviceToken,
-  }) => caller.callServerEndpoint<_i10.MfaChallengeResponse?>(
+  }) => caller.callServerEndpoint<_i21.MfaChallengeResponse?>(
     'mfa',
     'checkRequired',
     {
@@ -466,11 +948,11 @@ class EndpointMfa extends _i2.EndpointRef {
   /// - Si rememberMe, crea un TrustedDevice y devuelve el token.
   /// - Devuelve true si OK.
   /// Si es incorrecto, incrementa attempts y devuelve error.
-  _i3.Future<_i11.MfaVerifyResponse> verifyMfa({
+  _i3.Future<_i22.MfaVerifyResponse> verifyMfa({
     required String challengeId,
     required String code,
     required bool rememberMe,
-  }) => caller.callServerEndpoint<_i11.MfaVerifyResponse>(
+  }) => caller.callServerEndpoint<_i22.MfaVerifyResponse>(
     'mfa',
     'verifyMfa',
     {
@@ -499,26 +981,26 @@ class EndpointRbac extends _i2.EndpointRef {
   String get name => 'rbac';
 
   /// Lista los roles registrados en el sistema. Requiere roles.view.
-  _i3.Future<List<_i12.AppRole>> listRoles() =>
-      caller.callServerEndpoint<List<_i12.AppRole>>(
+  _i3.Future<List<_i23.AppRole>> listRoles() =>
+      caller.callServerEndpoint<List<_i23.AppRole>>(
         'rbac',
         'listRoles',
         {},
       );
 
   /// Lista el catálogo de permisos granulares. Requiere permissions.view.
-  _i3.Future<List<_i13.AppPermission>> listPermissions() =>
-      caller.callServerEndpoint<List<_i13.AppPermission>>(
+  _i3.Future<List<_i24.AppPermission>> listPermissions() =>
+      caller.callServerEndpoint<List<_i24.AppPermission>>(
         'rbac',
         'listPermissions',
         {},
       );
 
   /// Asigna un rol a un usuario. Requiere roles.manage.
-  _i3.Future<_i14.UserRole> assignRoleToUser({
+  _i3.Future<_i25.UserRole> assignRoleToUser({
     required int userId,
     required int roleId,
-  }) => caller.callServerEndpoint<_i14.UserRole>(
+  }) => caller.callServerEndpoint<_i25.UserRole>(
     'rbac',
     'assignRoleToUser',
     {
@@ -541,10 +1023,10 @@ class EndpointRbac extends _i2.EndpointRef {
   );
 
   /// Asigna un permiso granular a un rol. Requiere permissions.assign.
-  _i3.Future<_i15.RolePermission> assignPermissionToRole({
+  _i3.Future<_i26.RolePermission> assignPermissionToRole({
     required int roleId,
     required int permissionId,
-  }) => caller.callServerEndpoint<_i15.RolePermission>(
+  }) => caller.callServerEndpoint<_i26.RolePermission>(
     'rbac',
     'assignPermissionToRole',
     {
@@ -588,8 +1070,8 @@ class EndpointSessionManagement extends _i2.EndpointRef {
   );
 
   /// Lista las sesiones activas asociadas a un usuario. Requiere sessions.view.
-  _i3.Future<List<_i16.UserSession>> listUserSessions(int userId) =>
-      caller.callServerEndpoint<List<_i16.UserSession>>(
+  _i3.Future<List<_i27.UserSession>> listUserSessions(int userId) =>
+      caller.callServerEndpoint<List<_i27.UserSession>>(
         'sessionManagement',
         'listUserSessions',
         {'userId': userId},
@@ -629,8 +1111,8 @@ class EndpointSystemMetrics extends _i2.EndpointRef {
   String get name => 'systemMetrics';
 
   /// Retorna las métricas del sistema en tiempo real. Requiere permiso `audit.view`.
-  _i3.Future<_i17.ServerMetricsResponse> getMetrics() =>
-      caller.callServerEndpoint<_i17.ServerMetricsResponse>(
+  _i3.Future<_i28.ServerMetricsResponse> getMetrics() =>
+      caller.callServerEndpoint<_i28.ServerMetricsResponse>(
         'systemMetrics',
         'getMetrics',
         {},
@@ -647,11 +1129,11 @@ class EndpointUser extends _i2.EndpointRef {
   String get name => 'user';
 
   /// Lista usuarios paginados. Requiere permiso users.view.
-  _i3.Future<List<_i18.AppUser>> listUsers({
+  _i3.Future<List<_i29.AppUser>> listUsers({
     required int limit,
     required int offset,
     required bool includeDeleted,
-  }) => caller.callServerEndpoint<List<_i18.AppUser>>(
+  }) => caller.callServerEndpoint<List<_i29.AppUser>>(
     'user',
     'listUsers',
     {
@@ -662,19 +1144,19 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Obtiene el detalle de un usuario por ID. Requiere permiso users.view.
-  _i3.Future<_i18.AppUser?> getUser(int id) =>
-      caller.callServerEndpoint<_i18.AppUser?>(
+  _i3.Future<_i29.AppUser?> getUser(int id) =>
+      caller.callServerEndpoint<_i29.AppUser?>(
         'user',
         'getUser',
         {'id': id},
       );
 
   /// Crea un nuevo usuario empresarial y le asocia sus roles iniciales. Requiere users.create.
-  _i3.Future<_i18.AppUser> createUser({
+  _i3.Future<_i29.AppUser> createUser({
     required String email,
     required String fullName,
     required List<int> roleIds,
-  }) => caller.callServerEndpoint<_i18.AppUser>(
+  }) => caller.callServerEndpoint<_i29.AppUser>(
     'user',
     'createUser',
     {
@@ -685,10 +1167,10 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Actualiza información de un usuario. Requiere users.update.
-  _i3.Future<_i18.AppUser?> updateUser({
+  _i3.Future<_i29.AppUser?> updateUser({
     required int id,
     required String fullName,
-  }) => caller.callServerEndpoint<_i18.AppUser?>(
+  }) => caller.callServerEndpoint<_i29.AppUser?>(
     'user',
     'updateUser',
     {
@@ -718,8 +1200,8 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Retorna el AppUser asociado a la sesión autenticada actual.
-  _i3.Future<_i18.AppUser> getCurrentUser() =>
-      caller.callServerEndpoint<_i18.AppUser>(
+  _i3.Future<_i29.AppUser> getCurrentUser() =>
+      caller.callServerEndpoint<_i29.AppUser>(
         'user',
         'getCurrentUser',
         {},
@@ -770,7 +1252,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i19.Protocol(),
+         _i30.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -782,7 +1264,10 @@ class Client extends _i2.ServerpodClientShared {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
     greeting = EndpointGreeting(this);
+    crmAgenda = EndpointCrmAgenda(this);
+    crmCustomers = EndpointCrmCustomers(this);
     crmLeads = EndpointCrmLeads(this);
+    crmPipeline = EndpointCrmPipeline(this);
     audit = EndpointAudit(this);
     mfa = EndpointMfa(this);
     rbac = EndpointRbac(this);
@@ -798,7 +1283,13 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointGreeting greeting;
 
+  late final EndpointCrmAgenda crmAgenda;
+
+  late final EndpointCrmCustomers crmCustomers;
+
   late final EndpointCrmLeads crmLeads;
+
+  late final EndpointCrmPipeline crmPipeline;
 
   late final EndpointAudit audit;
 
@@ -819,7 +1310,10 @@ class Client extends _i2.ServerpodClientShared {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
     'greeting': greeting,
+    'crmAgenda': crmAgenda,
+    'crmCustomers': crmCustomers,
     'crmLeads': crmLeads,
+    'crmPipeline': crmPipeline,
     'audit': audit,
     'mfa': mfa,
     'rbac': rbac,

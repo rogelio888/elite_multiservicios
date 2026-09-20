@@ -1,0 +1,21 @@
+### Métricas agregadas del embudo de ventas y Pipeline comercial.
+class: CrmPipelineMetricsResponse
+fields:
+  ### Total de oportunidades activas en el embudo.
+  totalOpportunities: int
+  ### Valor económico total del pipeline en Bs.
+  totalPipelineValue: double
+  ### Valor económico ponderado por probabilidad de cierre en Bs.
+  weightedValue: double
+  ### Oportunidades en etapa de Calificación.
+  qualificationCount: int
+  ### Oportunidades en etapa de Visita Técnica.
+  technicalVisitCount: int
+  ### Oportunidades en etapa de Propuesta.
+  proposalCount: int
+  ### Oportunidades en etapa de Negociación.
+  negotiationCount: int
+  ### Oportunidades cerradas como Ganadas.
+  wonCount: int
+  ### Tasa de cierre o conversión porcentual (0.0 - 100.0).
+  winRate: double

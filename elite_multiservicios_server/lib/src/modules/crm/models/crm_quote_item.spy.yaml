@@ -1,0 +1,23 @@
+### Partida o línea de cotización dentro de una oportunidad comercial.
+class: CrmQuoteItem
+table: crm_quote_item
+fields:
+  ### ID de la oportunidad a la que pertenece la cotización.
+  opportunityId: int, relation(parent=crm_opportunity, onDelete=Cascade)
+  ### Categoría: Personal, Limpieza, Mantenimiento, Equipamiento, Materiales, Tecnología.
+  category: String
+  ### Concepto descriptivo del servicio o insumo.
+  concept: String
+  ### Tipo de unidad: Puesto 24/7, Puesto 12h, Operario, Global, m², Unid., Servicio, Kit, Tanque.
+  unitType: String
+  ### Cantidad requerida.
+  quantity: double
+  ### Precio unitario en Bs.
+  unitPrice: double
+  ### Eliminación lógica y auditoría temporal.
+  isDeleted: bool, default=false
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  crm_quote_item_opportunity_idx:
+    fields: opportunityId
