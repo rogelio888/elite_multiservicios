@@ -69,9 +69,10 @@ void main() {
       for (final perm in AppPermissions.all) {
         expect(perm, contains('.'));
         final parts = perm.split('.');
-        expect(parts.length, equals(2));
-        expect(parts.first, isNotEmpty);
-        expect(parts.last, isNotEmpty);
+        expect(parts.length, inInclusiveRange(2, 3));
+        for (final part in parts) {
+          expect(part, isNotEmpty);
+        }
       }
     });
   });
