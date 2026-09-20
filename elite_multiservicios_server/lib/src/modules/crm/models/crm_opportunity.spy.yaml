@@ -1,0 +1,81 @@
+### Oportunidad comercial en el embudo del Pipeline (Kanban).
+class: CrmOpportunity
+table: crm_opportunity
+fields:
+  ### Código de seguimiento de la oportunidad (ej. OPP-001).
+  code: String
+  ### Título u objeto comercial de la oportunidad.
+  title: String
+  ### Nombre de la empresa, institución o cliente.
+  clientName: String
+  ### Persona de contacto o decisor.
+  contactPerson: String
+  ### Teléfono corporativo o de contacto.
+  phone: String
+  ### Tipo de servicio principal solicitado.
+  serviceType: String
+  ### Monto total o estimado de la oportunidad en Bs.
+  amount: double
+  ### Etapa o compuerta comercial en el embudo.
+  stage: String, default='Calificación'
+  ### Probabilidad de cierre comercial porcentual (0 - 100).
+  probability: int, default=20
+  ### Asesor o responsable de la oportunidad.
+  owner: String
+  ### Fecha tentativa de cierre (DD/MM/AAAA).
+  closingDate: String
+  ### Notas y observaciones comerciales.
+  notes: String?
+  ### Modalidad de contrato propuesta.
+  contractType: String, default='Recurrente Mensual'
+  ### Tiempo o plazo de ejecución estimado.
+  executionTime: String, default='12 meses'
+  ### Términos y condiciones de pago.
+  paymentTerms: String, default='Facturación mensual a 30 días'
+  ### Porcentaje de anticipo pactado (0, 30, 50, 70, 100).
+  advancePercentage: int, default=0
+
+  ### Compuerta 1: Perfil del Decisor & Segmento
+  contactRole: String, default='Administrador'
+  businessSegment: String, default='Corporativo B2B'
+
+  ### Compuerta 2: Sede Operativa de Inspección (Visita Técnica)
+  siteName: String?
+  siteAddress: String?
+  siteCity: String, default='Santa Cruz'
+  siteContactName: String?
+  siteContactPhone: String?
+  siteAccessRequirements: String?
+  isSiteHeadquarters: bool, default=true
+
+  ### Compuerta 3: Datos Fiscales & Minuta Legal (Negociación)
+  legalBusinessName: String?
+  taxId: String?
+  legalRepresentative: String?
+  billingEmail: String?
+
+  ### Compuerta 4: Cierre Formal & Traspaso (Ganada)
+  serviceStartDate: String?
+  advancePaid: double, default=0.0
+  wonNotes: String?
+
+  ### Enlaces relacionales con otros submódulos
+  leadId: int?
+  customerId: int?
+  branchId: int?
+  branchName: String?
+
+  ### Eliminación lógica y auditoría temporal
+  isDeleted: bool, default=false
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  crm_opportunity_code_idx:
+    fields: code
+    unique: true
+  crm_opportunity_stage_idx:
+    fields: stage
+  crm_opportunity_customer_idx:
+    fields: customerId
+  crm_opportunity_lead_idx:
+    fields: leadId

@@ -1,0 +1,21 @@
+### Métricas consolidadas del módulo de clientes en tiempo real.
+class: CrmCustomerMetricsResponse
+fields:
+  ### Total de clientes en estado Activo.
+  totalActiveCustomers: int
+  ### Facturación mensual recurrente global (MRR) en Bs.
+  totalMrr: double
+  ### Volumen total acumulado de proyectos y eventos en Bs.
+  totalProjectVolume: double
+  ### Total de sedes operativas registradas.
+  totalBranches: int
+  ### Total de contratos registrados.
+  totalContracts: int
+  ### Total de cuentas Corporativo B2B.
+  totalB2b: int
+  ### Total de cuentas Residencial B2C.
+  totalB2c: int
+  ### Contratos próximos a vencer.
+  expiringContractsCount: int
+  ### Contratos listos para recontratar.
+  readyToRenewCount: int

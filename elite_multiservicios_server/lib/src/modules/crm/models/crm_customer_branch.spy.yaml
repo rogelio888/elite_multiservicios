@@ -1,0 +1,30 @@
+### Sede u oficina operativa de un Cliente 360°.
+class: CrmCustomerBranch
+table: crm_customer_branch
+fields:
+  ### Código de seguimiento de la sede (ej. BR-001).
+  code: String
+  ### ID del cliente propietario de la sede.
+  customerId: int, relation(parent=crm_customer, onDelete=Cascade)
+  ### Nombre descriptivo de la sede (ej. Torre Central, Garita Norte).
+  name: String
+  ### Dirección física detallada de la sede.
+  address: String
+  ### Contacto operativo local en la sede.
+  localContact: String
+  ### Teléfono de contacto local.
+  localPhone: String
+  ### Indicador de si es la Sede Principal / Casa Matriz.
+  isHeadquarters: bool, default=false
+  ### Requisitos de acceso y notas operativas.
+  notes: String?
+  ### Eliminación lógica (Soft Delete).
+  isDeleted: bool, default=false
+  ### Fechas de auditoría temporal.
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  crm_customer_branch_customer_idx:
+    fields: customerId
+  crm_customer_branch_code_idx:
+    fields: code

@@ -1,0 +1,45 @@
+### Entidad principal de Cliente 360° para el CRM de Elite Multiservicios.
+class: CrmCustomer
+table: crm_customer
+fields:
+  ### Código comercial único del cliente (ej. CLI-001).
+  code: String
+  ### Razón Social legal registrada ante impuestos.
+  legalName: String
+  ### Nombre Comercial o de fantasía de la empresa o cliente.
+  tradeName: String
+  ### Número de Identificación Tributaria (NIT / RUC / CI).
+  taxId: String
+  ### Segmento comercial: Corporativo B2B, Residencial B2C, Sector Educativo, Sector Público.
+  segment: String
+  ### Estado operativo: Activo, En Pausa, Inactivo.
+  status: String, default='Activo'
+  ### Lista de servicios activos contratados.
+  activeServices: List<String>
+  ### Persona de contacto principal o decisor institucional.
+  contactPerson: String
+  ### Teléfono corporativo o WhatsApp principal.
+  phone: String
+  ### Correo electrónico de facturación o contacto.
+  email: String
+  ### ID de la oportunidad comercial de origen (si proviene del Pipeline).
+  opportunityId: int?
+  ### Fecha de inicio formal de relación comercial.
+  startDate: DateTime?
+  ### Notas y antecedentes generales del cliente.
+  notes: String?
+  ### Eliminación lógica (Soft Delete).
+  isDeleted: bool, default=false
+  ### Fechas de auditoría temporal.
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  crm_customer_code_idx:
+    fields: code
+    unique: true
+  crm_customer_tax_id_idx:
+    fields: taxId
+  crm_customer_status_idx:
+    fields: status
+  crm_customer_segment_idx:
+    fields: segment

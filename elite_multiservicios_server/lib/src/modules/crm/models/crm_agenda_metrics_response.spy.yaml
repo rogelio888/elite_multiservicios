@@ -1,0 +1,15 @@
+### Métricas agregadas de la agenda comercial y compromisos.
+class: CrmAgendaMetricsResponse
+fields:
+  ### Total de tareas registradas.
+  totalTasks: int
+  ### Tareas pendientes activas.
+  pendingTasksCount: int
+  ### Tareas marcadas como completadas.
+  completedTasksCount: int
+  ### Tareas programadas para el día de hoy.
+  todayTasksCount: int
+  ### Tareas vencidas sin completar.
+  overdueTasksCount: int
+  ### Tareas programadas para la semana actual.
+  thisWeekTasksCount: int

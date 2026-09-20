@@ -17,9 +17,6 @@ class CrmLeadDataService {
     String? temperature,
     String? advisor,
   }) async {
-    // Si la tabla está completamente vacía, poblamos las semillas reales
-    await seedInitialLeadsIfEmpty();
-
     return await CrmLead.db.find(
       session,
       where: (t) {
@@ -147,8 +144,6 @@ class CrmLeadDataService {
 
   /// Calcula las métricas agregadas de prospectos en tiempo real.
   Future<CrmLeadMetricsResponse> getMetrics() async {
-    await seedInitialLeadsIfEmpty();
-
     final activeLeads = await CrmLead.db.find(
       session,
       where: (t) => t.isDeleted.equals(false),

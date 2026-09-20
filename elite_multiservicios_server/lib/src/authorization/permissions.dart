@@ -33,6 +33,32 @@ abstract class AppPermissions {
   static const String crmLeadsDelete = 'leads.delete';
   static const String crmLeadsPromote = 'leads.promote';
 
+  // --- Módulo CRM: Pipeline & Oportunidades ---
+  static const String crmPipelineView = 'pipeline.view';
+  static const String crmPipelineCreate = 'pipeline.create';
+  static const String crmPipelineUpdate = 'pipeline.update';
+  static const String crmPipelineDelete = 'pipeline.delete';
+  static const String crmPipelinePromoteToCustomer =
+      'pipeline.promote_customer';
+
+  // --- Módulo CRM: Clientes 360° ---
+  static const String crmCustomersView = 'customers.view';
+  static const String crmCustomersCreate = 'customers.create';
+  static const String crmCustomersUpdate = 'customers.update';
+  static const String crmCustomersDelete = 'customers.delete';
+  static const String crmCustomerBranchesManage = 'customers.branches.manage';
+  static const String crmCustomerContractsManage = 'customers.contracts.manage';
+  static const String crmCustomerContractsComplete =
+      'customers.contracts.complete';
+  static const String crmCustomerContractsRenew = 'customers.contracts.renew';
+
+  // --- Módulo CRM: Agenda & Tareas ---
+  static const String crmAgendaView = 'agenda.view';
+  static const String crmAgendaCreate = 'agenda.create';
+  static const String crmAgendaUpdate = 'agenda.update';
+  static const String crmAgendaDelete = 'agenda.delete';
+  static const String crmAgendaComplete = 'agenda.complete';
+
   /// Catálogo de todos los permisos registrados en el sistema.
   static const List<String> all = [
     usersView,
@@ -55,5 +81,23 @@ abstract class AppPermissions {
     crmLeadsUpdate,
     crmLeadsDelete,
     crmLeadsPromote,
+    crmPipelineView,
+    crmPipelineCreate,
+    crmPipelineUpdate,
+    crmPipelineDelete,
+    crmPipelinePromoteToCustomer,
+    crmCustomersView,
+    crmCustomersCreate,
+    crmCustomersUpdate,
+    crmCustomersDelete,
+    crmCustomerBranchesManage,
+    crmCustomerContractsManage,
+    crmCustomerContractsComplete,
+    crmCustomerContractsRenew,
+    crmAgendaView,
+    crmAgendaCreate,
+    crmAgendaUpdate,
+    crmAgendaDelete,
+    crmAgendaComplete,
   ];
 }

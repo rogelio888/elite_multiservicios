@@ -1,0 +1,58 @@
+### Contrato u orden de trabajo de un Cliente 360°.
+class: CrmCustomerContract
+table: crm_customer_contract
+fields:
+  ### Código de contrato (ej. CTR-001).
+  code: String
+  ### ID del cliente asociado.
+  customerId: int, relation(parent=crm_customer, onDelete=Cascade)
+  ### ID de la sede operativa vinculada (opcional).
+  branchId: int?, relation(parent=crm_customer_branch, onDelete=SetNull)
+  ### Título u objeto del contrato o servicio.
+  title: String
+  ### Modalidad: Recurrente Mensual, Proyecto Único, Servicio por Evento, Híbrido.
+  contractType: String
+  ### Categoría: Seguridad Física, Limpieza Integral, Mantenimiento, Software / Tecnología, Jardinería.
+  serviceCategory: String
+  ### Monto total global o valor referencial en Bs.
+  totalAmount: double
+  ### Monto recurrente mensual si aplica en Bs.
+  recurringMonthlyAmount: double, default=0.0
+  ### Monto puntual por obra/evento/instalación si aplica en Bs.
+  oneTimeAmount: double, default=0.0
+  ### Términos y condiciones de pago acordadas.
+  paymentTerms: String
+  ### Plazo o tiempo de ejecución estipulado.
+  executionTime: String
+  ### Porcentaje de anticipo pactado (0, 30, 50, 70, 100).
+  advancePercentage: int, default=0
+  ### Estado: Vigente, En Ejecución, Completado, En Pausa.
+  status: String, default='Vigente'
+  ### Fechas de vigencia.
+  startDate: DateTime
+  endDate: DateTime?
+  actualEndDate: DateTime?
+  ### Origen: Venta Nueva, Recontratación, Renovación, Adicional, Pipeline Ganada.
+  originType: String, default='Venta Nueva'
+  ### Especificación técnica del alcance del servicio.
+  serviceScope: String?
+  ### Datos de conclusión formal de obra o servicio.
+  completionNotes: String?
+  satisfactionRating: int?
+  completedBy: String?
+  ### Observaciones adicionales.
+  notes: String?
+  ### Eliminación lógica.
+  isDeleted: bool, default=false
+  ### Fechas de auditoría temporal.
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  crm_customer_contract_customer_idx:
+    fields: customerId
+  crm_customer_contract_branch_idx:
+    fields: branchId
+  crm_customer_contract_status_idx:
+    fields: status
+  crm_customer_contract_code_idx:
+    fields: code

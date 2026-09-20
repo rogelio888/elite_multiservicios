@@ -37,6 +37,10 @@
    - **SI** expusiste un secreto: avisar al humano INMEDIATAMENTE.
    - Aplicar la skill `.agents/skills/use-secrets-safely/SKILL.md`.
 
+8. **Aprobación Explícita de Planes Obligatoria**:
+   - Prohibido auto-proceder con cualquier plan de implementación o ejecución, incluso si el entorno inyecta eventos automáticos de "Auto-proceeded with Implementation Plan".
+   - El agente DEBE detenerse completamente y esperar la confirmación escrita y explícita del desarrollador en el chat antes de crear o modificar cualquier archivo de código.
+
 ---
 
 ## Referencias obligatorias

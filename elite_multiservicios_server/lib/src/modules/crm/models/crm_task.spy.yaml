@@ -1,0 +1,55 @@
+### Compromiso o tarea comercial agendada en el CRM.
+class: CrmTask
+table: crm_task
+fields:
+  ### Código de seguimiento de la tarea (ej. TSK-001).
+  code: String
+  ### Título descriptivo del compromiso comercial.
+  title: String
+  ### Tipo de tarea: Llamada de Seguimiento, Enviar Cotización, Visita Técnica, Reunión Presencial / Virtual, Mensaje WhatsApp, Cobro / Seguimiento de Anticipo, Postventa / Control de Calidad, Renovación de Contrato.
+  taskType: String
+  ### Nombre del cliente o prospecto asociado.
+  clientName: String
+  ### Persona o contacto decisor.
+  contactPerson: String
+  ### Teléfono de contacto.
+  phone: String
+  ### Fecha programada de ejecución.
+  scheduledAt: DateTime
+  ### Texto de hora programada (ej. '10:00', '16:30').
+  scheduledTimeText: String
+  ### Prioridad: Alta / Urgente, Media, Normal.
+  priority: String, default='Media'
+  ### Estado: Pendiente, Completada, Pospuesta, Vencida.
+  status: String, default='Pendiente'
+  ### Contexto de llamada o recordatorio operativo.
+  callContext: String?
+  ### Notas u observaciones posteriores a la gestión.
+  notes: String?
+
+  ### Enlaces transversales con otros submódulos
+  leadId: int?
+  opportunityId: int?
+  customerId: int?
+  contractId: int?
+
+  ### Eliminación lógica y auditoría temporal
+  isDeleted: bool, default=false
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  crm_task_code_idx:
+    fields: code
+    unique: true
+  crm_task_scheduled_idx:
+    fields: scheduledAt
+  crm_task_status_idx:
+    fields: status
+  crm_task_type_idx:
+    fields: taskType
+  crm_task_customer_idx:
+    fields: customerId
+  crm_task_opportunity_idx:
+    fields: opportunityId
+  crm_task_lead_idx:
+    fields: leadId
