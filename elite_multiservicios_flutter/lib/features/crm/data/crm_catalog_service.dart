@@ -278,7 +278,9 @@ class CrmCatalogService extends ChangeNotifier {
 
   Future<List<CrmCatalogItemScope>> loadScopesForItem(int catalogItemId) async {
     try {
-      final list = await _activeClient.crmCatalog.listScopesForItem(catalogItemId);
+      final list = await _activeClient.crmCatalog.listScopesForItem(
+        catalogItemId,
+      );
       _scopesByItem[catalogItemId] = list;
       notifyListeners();
       return list;

@@ -18,12 +18,36 @@ class CrmCatalogSeed {
     // 1. SECTORES / RUBROS
     // =========================================================================
     final sectorsData = [
-      {'code': 'SEC-SALUD', 'name': 'Clínicas y centros médicos', 'desc': 'Sector hospitalario, clínicas privadas y laboratorios'},
-      {'code': 'SEC-CORP', 'name': 'Corporativo / Oficinas', 'desc': 'Edificios empresariales y oficinas administrativas'},
-      {'code': 'SEC-EDU', 'name': 'Colegios & Educación', 'desc': 'Unidades educativas, colegios y campus universitarios'},
-      {'code': 'SEC-BANCA', 'name': 'Banca & Finanzas', 'desc': 'Sucursales bancarias y entidades financieras'},
-      {'code': 'SEC-IND', 'name': 'Industria & Bodegas', 'desc': 'Parques industriales, centros logísticos y almacenes'},
-      {'code': 'SEC-COND', 'name': 'Condominios & Edificios Residenciales', 'desc': 'Condominios cerrados y torres de departamentos'},
+      {
+        'code': 'SEC-SALUD',
+        'name': 'Clínicas y centros médicos',
+        'desc': 'Sector hospitalario, clínicas privadas y laboratorios',
+      },
+      {
+        'code': 'SEC-CORP',
+        'name': 'Corporativo / Oficinas',
+        'desc': 'Edificios empresariales y oficinas administrativas',
+      },
+      {
+        'code': 'SEC-EDU',
+        'name': 'Colegios & Educación',
+        'desc': 'Unidades educativas, colegios y campus universitarios',
+      },
+      {
+        'code': 'SEC-BANCA',
+        'name': 'Banca & Finanzas',
+        'desc': 'Sucursales bancarias y entidades financieras',
+      },
+      {
+        'code': 'SEC-IND',
+        'name': 'Industria & Bodegas',
+        'desc': 'Parques industriales, centros logísticos y almacenes',
+      },
+      {
+        'code': 'SEC-COND',
+        'name': 'Condominios & Edificios Residenciales',
+        'desc': 'Condominios cerrados y torres de departamentos',
+      },
     ];
 
     final Map<String, int> sectorIdByCode = {};
@@ -53,13 +77,41 @@ class CrmCatalogSeed {
     // 2. LÍNEAS DE SERVICIO
     // =========================================================================
     final serviceLinesData = [
-      {'code': 'SRV-LIMP-HOSP', 'name': 'Limpieza Hospitalaria & Bioseguridad', 'cat': 'Limpieza'},
-      {'code': 'SRV-MANT-CORP', 'name': 'Mantenimiento Corporativo', 'cat': 'Mantenimiento'},
-      {'code': 'SRV-MANT-JARD', 'name': 'Mantenimiento & Jardinería Educativa', 'cat': 'Mantenimiento'},
-      {'code': 'SRV-SEG-VIG', 'name': 'Seguridad & Vigilancia Física', 'cat': 'Personal'},
-      {'code': 'SRV-DES-FUM', 'name': 'Desinfección & Fumigación Integral', 'cat': 'Limpieza'},
-      {'code': 'SRV-EQ-RAD', 'name': 'Equipamiento de Comunicaciones', 'cat': 'Equipamiento'},
-      {'code': 'SRV-TEC-CAM', 'name': 'CCTV y Seguridad Electrónica', 'cat': 'Tecnología'},
+      {
+        'code': 'SRV-LIMP-HOSP',
+        'name': 'Limpieza Hospitalaria & Bioseguridad',
+        'cat': 'Limpieza',
+      },
+      {
+        'code': 'SRV-MANT-CORP',
+        'name': 'Mantenimiento Corporativo',
+        'cat': 'Mantenimiento',
+      },
+      {
+        'code': 'SRV-MANT-JARD',
+        'name': 'Mantenimiento & Jardinería Educativa',
+        'cat': 'Mantenimiento',
+      },
+      {
+        'code': 'SRV-SEG-VIG',
+        'name': 'Seguridad & Vigilancia Física',
+        'cat': 'Personal',
+      },
+      {
+        'code': 'SRV-DES-FUM',
+        'name': 'Desinfección & Fumigación Integral',
+        'cat': 'Limpieza',
+      },
+      {
+        'code': 'SRV-EQ-RAD',
+        'name': 'Equipamiento de Comunicaciones',
+        'cat': 'Equipamiento',
+      },
+      {
+        'code': 'SRV-TEC-CAM',
+        'name': 'CCTV y Seguridad Electrónica',
+        'cat': 'Tecnología',
+      },
     ];
 
     final Map<String, int> lineIdByCode = {};
@@ -99,7 +151,11 @@ class CrmCatalogSeed {
         'unit': 'Puesto 24/7',
         'price': 6800.0,
         'minQty': 1.0,
-        'meta': jsonEncode({'hoursPerShift': 12, 'daysPerMonth': 26, 'guardsPerPosition': 3}),
+        'meta': jsonEncode({
+          'hoursPerShift': 12,
+          'daysPerMonth': 26,
+          'guardsPerPosition': 3,
+        }),
       },
       {
         'code': 'CAT-VIG-12H',
@@ -110,7 +166,11 @@ class CrmCatalogSeed {
         'unit': 'Puesto 12h',
         'price': 3800.0,
         'minQty': 1.0,
-        'meta': jsonEncode({'hoursPerShift': 12, 'daysPerMonth': 26, 'guardsPerPosition': 1}),
+        'meta': jsonEncode({
+          'hoursPerShift': 12,
+          'daysPerMonth': 26,
+          'guardsPerPosition': 1,
+        }),
       },
       {
         'code': 'CAT-PAT-MOT',
@@ -236,7 +296,8 @@ class CrmCatalogSeed {
       if (existing != null) {
         catalogIdByCode[item['code'] as String] = existing.id!;
       } else {
-        final lineId = lineIdByCode[item['lineCode'] as String] ??
+        final lineId =
+            lineIdByCode[item['lineCode'] as String] ??
             lineIdByCode.values.first;
 
         final inserted = await repo.createCatalogItem(
@@ -274,7 +335,10 @@ class CrmCatalogSeed {
             sectorId: saludSectorId,
             priceOverride: 35.0,
             minQuantityOverride: 80.0,
-            metadataOverride: jsonEncode({'grade': 'Hospitalario', 'sterilization': true}),
+            metadataOverride: jsonEncode({
+              'grade': 'Hospitalario',
+              'sterilization': true,
+            }),
             isActive: true,
             createdAt: DateTime.now().toUtc(),
             updatedAt: DateTime.now().toUtc(),

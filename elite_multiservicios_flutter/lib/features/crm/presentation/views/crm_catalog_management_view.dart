@@ -584,7 +584,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
     final items = _catalogService.catalogItems.where((item) {
       if (_searchQuery.isNotEmpty) {
         final q = _searchQuery.toLowerCase();
-        final match = item.concept.toLowerCase().contains(q) ||
+        final match =
+            item.concept.toLowerCase().contains(q) ||
             item.code.toLowerCase().contains(q) ||
             item.category.toLowerCase().contains(q);
         if (!match) return false;
@@ -633,11 +634,14 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
             isDark: isDark,
             icon: Icons.inventory_2_outlined,
             title: 'No se encontraron partidas',
-            description: 'No hay partidas que coincidan con los filtros de búsqueda.',
+            description:
+                'No hay partidas que coincidan con los filtros de búsqueda.',
           )
         else
           Column(
-            children: items.map((item) => _buildCatalogItemCard(item, isDark)).toList(),
+            children: items
+                .map((item) => _buildCatalogItemCard(item, isDark))
+                .toList(),
           ),
       ],
     );
@@ -655,7 +659,11 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
           color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
           fontSize: 12.5,
         ),
-        prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF64748B)),
+        prefixIcon: const Icon(
+          Icons.search,
+          size: 18,
+          color: Color(0xFF64748B),
+        ),
         filled: true,
         fillColor: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
         isDense: true,
@@ -675,7 +683,10 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Color(0xFF10B981)),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 11,
+        ),
       ),
       onChanged: (val) => setState(() => _searchQuery = val.trim()),
     );
@@ -715,7 +726,10 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Color(0xFF10B981)),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 10,
+        ),
       ),
       items: [
         const DropdownMenuItem<int?>(
@@ -734,7 +748,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
   }
 
   Widget _buildCatalogItemCard(CrmCatalogItem item, bool isDark) {
-    final line = _catalogService.serviceLines.cast<CrmServiceLine?>().firstWhere(
+    final line = _catalogService.serviceLines
+        .cast<CrmServiceLine?>()
+        .firstWhere(
           (l) => l?.id == item.serviceLineId,
           orElse: () => null,
         );
@@ -773,7 +789,10 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF10B981).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(5),
@@ -792,26 +811,38 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                   ),
                   if (line != null)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF161F30) : const Color(0xFFF1F5F9),
+                        color: isDark
+                            ? const Color(0xFF161F30)
+                            : const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(5),
                         border: Border.all(
-                          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1),
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFCBD5E1),
                         ),
                       ),
                       child: Text(
                         line.name,
                         style: GoogleFonts.inter(
                           fontSize: 11,
-                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
                   calcBadge,
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF8B5CF6).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(4),
@@ -872,7 +903,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                     'por ${item.unitType}',
                     style: GoogleFonts.inter(
                       fontSize: 11,
-                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
                     ),
                   ),
                 ],
@@ -893,10 +926,13 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                     tooltip: 'Editar partida',
                     icon: Icon(
                       Icons.edit_outlined,
-                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
                       size: 20,
                     ),
-                    onPressed: () => _showCatalogItemDialog(item: item, isDark: isDark),
+                    onPressed: () =>
+                        _showCatalogItemDialog(item: item, isDark: isDark),
                   ),
                   IconButton(
                     tooltip: 'Eliminar partida',
@@ -1002,7 +1038,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
         isDark: isDark,
         icon: Icons.domain_rounded,
         title: 'No hay rubros industriales',
-        description: 'Crea el primer rubro industrial para asignar tarifas diferenciadas.',
+        description:
+            'Crea el primer rubro industrial para asignar tarifas diferenciadas.',
       );
     }
 
@@ -1059,13 +1096,20 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                           style: GoogleFonts.inter(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                            color: const Color(
+                              0xFF10B981,
+                            ).withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -1079,13 +1123,16 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                         ),
                       ],
                     ),
-                    if (sector.description != null && sector.description!.isNotEmpty) ...[
+                    if (sector.description != null &&
+                        sector.description!.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
                         sector.description!,
                         style: GoogleFonts.inter(
                           fontSize: 12.5,
-                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
                         ),
                       ),
                     ],
@@ -1096,10 +1143,13 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                 tooltip: 'Editar Rubro',
                 icon: Icon(
                   Icons.edit_outlined,
-                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
                   size: 20,
                 ),
-                onPressed: () => _showSectorDialog(sector: sector, isDark: isDark),
+                onPressed: () =>
+                    _showSectorDialog(sector: sector, isDark: isDark),
               ),
               IconButton(
                 tooltip: 'Eliminar Rubro',
@@ -1129,7 +1179,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
         isDark: isDark,
         icon: Icons.account_tree_outlined,
         title: 'No hay líneas de servicio',
-        description: 'Registra una nueva línea operativa para clasificar tus partidas.',
+        description:
+            'Registra una nueva línea operativa para clasificar tus partidas.',
       );
     }
 
@@ -1186,13 +1237,20 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                           style: GoogleFonts.inter(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                            color: const Color(
+                              0xFF10B981,
+                            ).withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -1205,31 +1263,43 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF161F30) : const Color(0xFFF1F5F9),
+                            color: isDark
+                                ? const Color(0xFF161F30)
+                                : const Color(0xFFF1F5F9),
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(
-                              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1),
+                              color: isDark
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFFCBD5E1),
                             ),
                           ),
                           child: Text(
                             line.category,
                             style: GoogleFonts.inter(
                               fontSize: 11,
-                              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                              color: isDark
+                                  ? const Color(0xFF94A3B8)
+                                  : const Color(0xFF64748B),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    if (line.description != null && line.description!.isNotEmpty) ...[
+                    if (line.description != null &&
+                        line.description!.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
                         line.description!,
                         style: GoogleFonts.inter(
                           fontSize: 12.5,
-                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
                         ),
                       ),
                     ],
@@ -1240,10 +1310,13 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                 tooltip: 'Editar Línea',
                 icon: Icon(
                   Icons.edit_outlined,
-                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
                   size: 20,
                 ),
-                onPressed: () => _showServiceLineDialog(line: line, isDark: isDark),
+                onPressed: () =>
+                    _showServiceLineDialog(line: line, isDark: isDark),
               ),
               IconButton(
                 tooltip: 'Eliminar Línea',
@@ -1351,7 +1424,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
       } catch (_) {}
     }
 
-    int? selectedLineId = item?.serviceLineId ??
+    int? selectedLineId =
+        item?.serviceLineId ??
         (_catalogService.serviceLines.isNotEmpty
             ? _catalogService.serviceLines.first.id
             : null);
@@ -1368,11 +1442,15 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(
-                  color: dark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                  color: dark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFE2E8F0),
                 ),
               ),
               title: Text(
-                isEditing ? 'Editar Partida de Catálogo' : 'Nueva Partida de Catálogo',
+                isEditing
+                    ? 'Editar Partida de Catálogo'
+                    : 'Nueva Partida de Catálogo',
                 style: GoogleFonts.inter(
                   fontWeight: FontWeight.w700,
                   fontSize: 17,
@@ -1390,23 +1468,35 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                           controller: codeCtrl,
                           enabled: !isEditing,
                           style: GoogleFonts.inter(
-                            color: dark ? Colors.white : const Color(0xFF0F172A),
+                            color: dark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
-                          decoration: _inputDeco('Código Único (ej. LIMP-01)', dark),
+                          decoration: _inputDeco(
+                            'Código Único (ej. LIMP-01)',
+                            dark,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         DropdownButtonFormField<int?>(
                           isExpanded: true,
                           initialValue: selectedLineId,
-                          dropdownColor: dark ? const Color(0xFF111C30) : Colors.white,
+                          dropdownColor: dark
+                              ? const Color(0xFF111C30)
+                              : Colors.white,
                           style: GoogleFonts.inter(
-                            color: dark ? Colors.white : const Color(0xFF0F172A),
+                            color: dark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                           decoration: _inputDeco('Línea de Servicio', dark),
                           items: _catalogService.serviceLines.map((l) {
                             return DropdownMenuItem<int?>(
                               value: l.id,
-                              child: Text(l.name, overflow: TextOverflow.ellipsis),
+                              child: Text(
+                                l.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             );
                           }).toList(),
                           onChanged: (val) =>
@@ -1420,9 +1510,14 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                                 controller: codeCtrl,
                                 enabled: !isEditing,
                                 style: GoogleFonts.inter(
-                                  color: dark ? Colors.white : const Color(0xFF0F172A),
+                                  color: dark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
                                 ),
-                                decoration: _inputDeco('Código Único (ej. LIMP-01)', dark),
+                                decoration: _inputDeco(
+                                  'Código Único (ej. LIMP-01)',
+                                  dark,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -1430,15 +1525,25 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                               child: DropdownButtonFormField<int?>(
                                 isExpanded: true,
                                 initialValue: selectedLineId,
-                                dropdownColor: dark ? const Color(0xFF111C30) : Colors.white,
+                                dropdownColor: dark
+                                    ? const Color(0xFF111C30)
+                                    : Colors.white,
                                 style: GoogleFonts.inter(
-                                  color: dark ? Colors.white : const Color(0xFF0F172A),
+                                  color: dark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
                                 ),
-                                decoration: _inputDeco('Línea de Servicio', dark),
+                                decoration: _inputDeco(
+                                  'Línea de Servicio',
+                                  dark,
+                                ),
                                 items: _catalogService.serviceLines.map((l) {
                                   return DropdownMenuItem<int?>(
                                     value: l.id,
-                                    child: Text(l.name, overflow: TextOverflow.ellipsis),
+                                    child: Text(
+                                      l.name,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   );
                                 }).toList(),
                                 onChanged: (val) =>
@@ -1461,44 +1566,72 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                         DropdownButtonFormField<String>(
                           isExpanded: true,
                           initialValue: calcType,
-                          dropdownColor: dark ? const Color(0xFF111C30) : Colors.white,
+                          dropdownColor: dark
+                              ? const Color(0xFF111C30)
+                              : Colors.white,
                           style: GoogleFonts.inter(
-                            color: dark ? Colors.white : const Color(0xFF0F172A),
+                            color: dark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                           decoration: _inputDeco('Fórmula / Regla', dark),
                           items: const [
                             DropdownMenuItem(
                               value: 'PER_AREA',
-                              child: Text('Por Área (m²)', overflow: TextOverflow.ellipsis),
+                              child: Text(
+                                'Por Área (m²)',
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             DropdownMenuItem(
                               value: 'PER_POSITION',
-                              child: Text('Por Puesto Operativo', overflow: TextOverflow.ellipsis),
+                              child: Text(
+                                'Por Puesto Operativo',
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             DropdownMenuItem(
                               value: 'PER_HOUR',
-                              child: Text('Por Hora de Trabajo', overflow: TextOverflow.ellipsis),
+                              child: Text(
+                                'Por Hora de Trabajo',
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             DropdownMenuItem(
                               value: 'PER_UNIT',
-                              child: Text('Por Unidad', overflow: TextOverflow.ellipsis),
+                              child: Text(
+                                'Por Unidad',
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             DropdownMenuItem(
                               value: 'FIXED',
-                              child: Text('Tarifa Fija', overflow: TextOverflow.ellipsis),
+                              child: Text(
+                                'Tarifa Fija',
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             DropdownMenuItem(
                               value: 'GLOBAL',
-                              child: Text('Global', overflow: TextOverflow.ellipsis),
+                              child: Text(
+                                'Global',
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ],
                           onChanged: (val) {
                             if (val != null) {
                               setDialogState(() {
                                 calcType = val;
-                                if (val == 'PER_AREA') unitCtrl.text = 'm²';
-                                if (val == 'PER_POSITION') unitCtrl.text = 'puesto';
-                                if (val == 'PER_HOUR') unitCtrl.text = 'hora';
+                                if (val == 'PER_AREA') {
+                                  unitCtrl.text = 'm²';
+                                }
+                                if (val == 'PER_POSITION') {
+                                  unitCtrl.text = 'puesto';
+                                }
+                                if (val == 'PER_HOUR') {
+                                  unitCtrl.text = 'hora';
+                                }
                               });
                             }
                           },
@@ -1507,9 +1640,14 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                         TextField(
                           controller: unitCtrl,
                           style: GoogleFonts.inter(
-                            color: dark ? Colors.white : const Color(0xFF0F172A),
+                            color: dark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
-                          decoration: _inputDeco('Unidad (m², puesto, etc)', dark),
+                          decoration: _inputDeco(
+                            'Unidad (m², puesto, etc)',
+                            dark,
+                          ),
                         ),
                       ] else ...[
                         Row(
@@ -1518,44 +1656,72 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                               child: DropdownButtonFormField<String>(
                                 isExpanded: true,
                                 initialValue: calcType,
-                                dropdownColor: dark ? const Color(0xFF111C30) : Colors.white,
+                                dropdownColor: dark
+                                    ? const Color(0xFF111C30)
+                                    : Colors.white,
                                 style: GoogleFonts.inter(
-                                  color: dark ? Colors.white : const Color(0xFF0F172A),
+                                  color: dark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
                                 ),
                                 decoration: _inputDeco('Fórmula / Regla', dark),
                                 items: const [
                                   DropdownMenuItem(
                                     value: 'PER_AREA',
-                                    child: Text('Por Área (m²)', overflow: TextOverflow.ellipsis),
+                                    child: Text(
+                                      'Por Área (m²)',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                   DropdownMenuItem(
                                     value: 'PER_POSITION',
-                                    child: Text('Por Puesto Operativo', overflow: TextOverflow.ellipsis),
+                                    child: Text(
+                                      'Por Puesto Operativo',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                   DropdownMenuItem(
                                     value: 'PER_HOUR',
-                                    child: Text('Por Hora de Trabajo', overflow: TextOverflow.ellipsis),
+                                    child: Text(
+                                      'Por Hora de Trabajo',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                   DropdownMenuItem(
                                     value: 'PER_UNIT',
-                                    child: Text('Por Unidad', overflow: TextOverflow.ellipsis),
+                                    child: Text(
+                                      'Por Unidad',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                   DropdownMenuItem(
                                     value: 'FIXED',
-                                    child: Text('Tarifa Fija', overflow: TextOverflow.ellipsis),
+                                    child: Text(
+                                      'Tarifa Fija',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                   DropdownMenuItem(
                                     value: 'GLOBAL',
-                                    child: Text('Global', overflow: TextOverflow.ellipsis),
+                                    child: Text(
+                                      'Global',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ],
                                 onChanged: (val) {
                                   if (val != null) {
                                     setDialogState(() {
                                       calcType = val;
-                                      if (val == 'PER_AREA') unitCtrl.text = 'm²';
-                                      if (val == 'PER_POSITION') unitCtrl.text = 'puesto';
-                                      if (val == 'PER_HOUR') unitCtrl.text = 'hora';
+                                      if (val == 'PER_AREA') {
+                                        unitCtrl.text = 'm²';
+                                      }
+                                      if (val == 'PER_POSITION') {
+                                        unitCtrl.text = 'puesto';
+                                      }
+                                      if (val == 'PER_HOUR') {
+                                        unitCtrl.text = 'hora';
+                                      }
                                     });
                                   }
                                 },
@@ -1566,9 +1732,14 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                               child: TextField(
                                 controller: unitCtrl,
                                 style: GoogleFonts.inter(
-                                  color: dark ? Colors.white : const Color(0xFF0F172A),
+                                  color: dark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
                                 ),
-                                decoration: _inputDeco('Unidad (m², puesto, etc)', dark),
+                                decoration: _inputDeco(
+                                  'Unidad (m², puesto, etc)',
+                                  dark,
+                                ),
                               ),
                             ),
                           ],
@@ -1582,7 +1753,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                             decimal: true,
                           ),
                           style: GoogleFonts.inter(
-                            color: dark ? Colors.white : const Color(0xFF0F172A),
+                            color: dark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                           decoration: _inputDeco('Precio Base (Bs.)', dark),
                         ),
@@ -1591,7 +1764,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                           controller: minQtyCtrl,
                           keyboardType: TextInputType.number,
                           style: GoogleFonts.inter(
-                            color: dark ? Colors.white : const Color(0xFF0F172A),
+                            color: dark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                           decoration: _inputDeco('Cantidad Mínima', dark),
                         ),
@@ -1601,13 +1776,19 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                             Expanded(
                               child: TextField(
                                 controller: priceCtrl,
-                                keyboardType: const TextInputType.numberWithOptions(
-                                  decimal: true,
-                                ),
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
                                 style: GoogleFonts.inter(
-                                  color: dark ? Colors.white : const Color(0xFF0F172A),
+                                  color: dark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
                                 ),
-                                decoration: _inputDeco('Precio Base (Bs.)', dark),
+                                decoration: _inputDeco(
+                                  'Precio Base (Bs.)',
+                                  dark,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -1616,7 +1797,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                                 controller: minQtyCtrl,
                                 keyboardType: TextInputType.number,
                                 style: GoogleFonts.inter(
-                                  color: dark ? Colors.white : const Color(0xFF0F172A),
+                                  color: dark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
                                 ),
                                 decoration: _inputDeco('Cantidad Mínima', dark),
                               ),
@@ -1629,10 +1812,14 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: dark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
+                            color: dark
+                                ? const Color(0xFF161F30)
+                                : const Color(0xFFF8FAFC),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                              color: const Color(
+                                0xFF10B981,
+                              ).withValues(alpha: 0.3),
                             ),
                           ),
                           child: Column(
@@ -1652,18 +1839,28 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                                   controller: hoursShiftCtrl,
                                   keyboardType: TextInputType.number,
                                   style: GoogleFonts.inter(
-                                    color: dark ? Colors.white : const Color(0xFF0F172A),
+                                    color: dark
+                                        ? Colors.white
+                                        : const Color(0xFF0F172A),
                                   ),
-                                  decoration: _inputDeco('Horas/Turno (ej. 12)', dark),
+                                  decoration: _inputDeco(
+                                    'Horas/Turno (ej. 12)',
+                                    dark,
+                                  ),
                                 ),
                                 const SizedBox(height: 12),
                                 TextField(
                                   controller: daysMonthCtrl,
                                   keyboardType: TextInputType.number,
                                   style: GoogleFonts.inter(
-                                    color: dark ? Colors.white : const Color(0xFF0F172A),
+                                    color: dark
+                                        ? Colors.white
+                                        : const Color(0xFF0F172A),
                                   ),
-                                  decoration: _inputDeco('Días/Mes (ej. 26)', dark),
+                                  decoration: _inputDeco(
+                                    'Días/Mes (ej. 26)',
+                                    dark,
+                                  ),
                                 ),
                               ] else ...[
                                 Row(
@@ -1673,9 +1870,14 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                                         controller: hoursShiftCtrl,
                                         keyboardType: TextInputType.number,
                                         style: GoogleFonts.inter(
-                                          color: dark ? Colors.white : const Color(0xFF0F172A),
+                                          color: dark
+                                              ? Colors.white
+                                              : const Color(0xFF0F172A),
                                         ),
-                                        decoration: _inputDeco('Horas/Turno (ej. 12)', dark),
+                                        decoration: _inputDeco(
+                                          'Horas/Turno (ej. 12)',
+                                          dark,
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(width: 12),
@@ -1684,9 +1886,14 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                                         controller: daysMonthCtrl,
                                         keyboardType: TextInputType.number,
                                         style: GoogleFonts.inter(
-                                          color: dark ? Colors.white : const Color(0xFF0F172A),
+                                          color: dark
+                                              ? Colors.white
+                                              : const Color(0xFF0F172A),
                                         ),
-                                        decoration: _inputDeco('Días/Mes (ej. 26)', dark),
+                                        decoration: _inputDeco(
+                                          'Días/Mes (ej. 26)',
+                                          dark,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -1706,7 +1913,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                   child: Text(
                     'Cancelar',
                     style: GoogleFonts.inter(
-                      color: dark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                      color: dark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
                     ),
                   ),
                 ),
@@ -1717,10 +1926,14 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                     final price = double.tryParse(priceCtrl.text) ?? 0.0;
                     final minQty = double.tryParse(minQtyCtrl.text) ?? 1.0;
 
-                    if (cleanCode.isEmpty || cleanConcept.isEmpty || price <= 0) {
+                    if (cleanCode.isEmpty ||
+                        cleanConcept.isEmpty ||
+                        price <= 0) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Complete todos los campos requeridos con valores válidos.'),
+                          content: Text(
+                            'Complete todos los campos requeridos con valores válidos.',
+                          ),
                           backgroundColor: Color(0xFFEF4444),
                         ),
                       );
@@ -1731,7 +1944,10 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                     if (calcType == 'PER_POSITION') {
                       final h = int.tryParse(hoursShiftCtrl.text) ?? 12;
                       final d = int.tryParse(daysMonthCtrl.text) ?? 26;
-                      metadata = jsonEncode({'hoursPerShift': h, 'daysPerMonth': d});
+                      metadata = jsonEncode({
+                        'hoursPerShift': h,
+                        'daysPerMonth': d,
+                      });
                     }
 
                     try {
@@ -1811,7 +2027,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(
-                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFE2E8F0),
                 ),
               ),
               title: Column(
@@ -1838,7 +2056,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                     'Precio Base Referencial: Bs. ${item.basePrice.toStringAsFixed(2)} / ${item.unitType}',
                     style: GoogleFonts.inter(
                       fontSize: 11.5,
-                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
                     ),
                   ),
                 ],
@@ -1849,7 +2069,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: _catalogService.sectors.map((sector) {
-                      final existingScope = scopes.cast<CrmCatalogItemScope?>().firstWhere(
+                      final existingScope = scopes
+                          .cast<CrmCatalogItemScope?>()
+                          .firstWhere(
                             (s) => s?.sectorId == sector.id,
                             orElse: () => null,
                           );
@@ -1864,12 +2086,16 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                         margin: const EdgeInsets.only(bottom: 8),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
+                          color: isDark
+                              ? const Color(0xFF161F30)
+                              : const Color(0xFFF8FAFC),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: existingScope != null
                                 ? const Color(0xFF10B981).withValues(alpha: 0.5)
-                                : (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+                                : (isDark
+                                      ? const Color(0xFF1E293B)
+                                      : const Color(0xFFE2E8F0)),
                           ),
                         ),
                         child: Row(
@@ -1884,7 +2110,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                                     style: GoogleFonts.inter(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 13,
-                                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                      color: isDark
+                                          ? Colors.white
+                                          : const Color(0xFF0F172A),
                                     ),
                                   ),
                                   Text(
@@ -1903,25 +2131,33 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                               flex: 2,
                               child: TextField(
                                 controller: priceCtrl,
-                                keyboardType: const TextInputType.numberWithOptions(
-                                  decimal: true,
-                                ),
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
                                 style: GoogleFonts.inter(
-                                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
                                   fontSize: 13,
                                 ),
                                 decoration: InputDecoration(
-                                  hintText: 'Bs. Base (${item.basePrice.toStringAsFixed(2)})',
+                                  hintText:
+                                      'Bs. Base (${item.basePrice.toStringAsFixed(2)})',
                                   hintStyle: GoogleFonts.inter(
                                     color: const Color(0xFF64748B),
                                     fontSize: 12,
                                   ),
                                   filled: true,
-                                  fillColor: isDark ? const Color(0xFF111C30) : Colors.white,
+                                  fillColor: isDark
+                                      ? const Color(0xFF111C30)
+                                      : Colors.white,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(6),
                                     borderSide: BorderSide(
-                                      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1),
+                                      color: isDark
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFCBD5E1),
                                     ),
                                   ),
                                   contentPadding: const EdgeInsets.symmetric(
@@ -1935,7 +2171,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                             ElevatedButton(
                               onPressed: () async {
                                 final text = priceCtrl.text.trim();
-                                final price = text.isEmpty ? null : double.tryParse(text);
+                                final price = text.isEmpty
+                                    ? null
+                                    : double.tryParse(text);
 
                                 final newScope = CrmCatalogItemScope(
                                   id: existingScope?.id,
@@ -1948,9 +2186,11 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                                   isDeleted: false,
                                 );
 
-                                await _catalogService.setCatalogItemScope(newScope);
-                                final reloaded =
-                                    await _catalogService.loadScopesForItem(item.id!);
+                                await _catalogService.setCatalogItemScope(
+                                  newScope,
+                                );
+                                final reloaded = await _catalogService
+                                    .loadScopesForItem(item.id!);
                                 setDialogState(() {
                                   scopes.clear();
                                   scopes.addAll(reloaded);
@@ -1973,7 +2213,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(6),
                                 ),
-                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
                               ),
                               child: const Text('Guardar'),
                             ),
@@ -1990,7 +2232,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                   child: Text(
                     'Cerrar',
                     style: GoogleFonts.inter(
-                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
                     ),
                   ),
                 ),
@@ -2067,7 +2311,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
               child: Text(
                 'Cancelar',
                 style: GoogleFonts.inter(
-                  color: dark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: dark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
                 ),
               ),
             ),
@@ -2164,7 +2410,10 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                   style: GoogleFonts.inter(
                     color: dark ? Colors.white : const Color(0xFF0F172A),
                   ),
-                  decoration: _inputDeco('Código (ej. LIMPIEZA, SEGURIDAD)', dark),
+                  decoration: _inputDeco(
+                    'Código (ej. LIMPIEZA, SEGURIDAD)',
+                    dark,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -2200,7 +2449,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
               child: Text(
                 'Cancelar',
                 style: GoogleFonts.inter(
-                  color: dark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: dark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
                 ),
               ),
             ),
@@ -2291,7 +2542,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
             child: Text(
               'Cancelar',
               style: GoogleFonts.inter(
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ),
@@ -2342,7 +2595,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
             child: Text(
               'Cancelar',
               style: GoogleFonts.inter(
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ),
@@ -2393,7 +2648,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
             child: Text(
               'Cancelar',
               style: GoogleFonts.inter(
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ),

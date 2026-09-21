@@ -461,7 +461,8 @@ class CrmAgendaService extends ChangeNotifier {
 
   Future<void> deleteTask(String taskId) async {
     final item = _tasks.where((t) => t.id == taskId).firstOrNull;
-    final rawId = item?.dbId ?? int.tryParse(taskId.replaceAll(RegExp(r'[^0-9]'), ''));
+    final rawId =
+        item?.dbId ?? int.tryParse(taskId.replaceAll(RegExp(r'[^0-9]'), ''));
     _tasks.removeWhere((t) => t.id == taskId);
     notifyListeners();
 

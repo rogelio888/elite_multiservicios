@@ -1708,7 +1708,8 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                           controller: titleCtrl,
                           decoration: const InputDecoration(
                             labelText: 'Título de la Oportunidad / Negocio *',
-                            hintText: 'Ej: Servicio de Limpieza y Mantenimiento',
+                            hintText:
+                                'Ej: Servicio de Limpieza y Mantenimiento',
                             isDense: true,
                           ),
                         ),
@@ -1766,7 +1767,10 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                                 decoration: const InputDecoration(
                                   labelText: 'Teléfono / WhatsApp Directo *',
                                   hintText: 'Ej: 70012345',
-                                  prefixIcon: Icon(Icons.phone_outlined, size: 18),
+                                  prefixIcon: Icon(
+                                    Icons.phone_outlined,
+                                    size: 18,
+                                  ),
                                   isDense: true,
                                 ),
                               ),
@@ -1778,7 +1782,10 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                                 decoration: const InputDecoration(
                                   labelText: 'Correo Electrónico',
                                   hintText: 'Ej: contacto@empresa.com',
-                                  prefixIcon: Icon(Icons.email_outlined, size: 18),
+                                  prefixIcon: Icon(
+                                    Icons.email_outlined,
+                                    size: 18,
+                                  ),
                                   isDense: true,
                                 ),
                               ),
@@ -1803,15 +1810,17 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                             ),
                             decoration: BoxDecoration(
                               color: isDark
-                                  ? const Color(0xFF1E293B).withValues(alpha: 0.5)
+                                  ? const Color(
+                                      0xFF1E293B,
+                                    ).withValues(alpha: 0.5)
                                   : const Color(0xFFF1F5F9),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 color: scheduleReminder
                                     ? const Color(0xFF2563EB)
                                     : (isDark
-                                        ? const Color(0xFF334155)
-                                        : const Color(0xFFE2E8F0)),
+                                          ? const Color(0xFF334155)
+                                          : const Color(0xFFE2E8F0)),
                               ),
                             ),
                             child: Row(
@@ -1828,7 +1837,8 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                                 const SizedBox(width: 6),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Agendar recordatorio en Agenda CRM (Opcional)',
@@ -1877,7 +1887,8 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                               ),
                               onPressed: () async {
                                 final companyName = item.company;
-                                final oppTitle = titleCtrl.text.trim().isNotEmpty
+                                final oppTitle =
+                                    titleCtrl.text.trim().isNotEmpty
                                     ? titleCtrl.text.trim()
                                     : 'Servicio Integral para $companyName';
                                 final confirmedContact =
@@ -1903,30 +1914,31 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
 
                                 // 2. Registrar Oportunidad en PostgreSQL vía CrmPipelineService
                                 final pipelineService = CrmPipelineService();
-                                final createdOpp = await pipelineService.addDeal(
-                                  OpportunityItem(
-                                    id: '',
-                                    title: oppTitle,
-                                    clientName: companyName,
-                                    contactPerson: confirmedContact,
-                                    phone: confirmedPhone,
-                                    serviceType: serviceType,
-                                    amount: item.estimatedValue > 0
-                                        ? item.estimatedValue
-                                        : 0.0,
-                                    stage: 'Calificación',
-                                    probability: 30,
-                                    owner: item.advisor,
-                                    closingDate: '',
-                                    notes: item.notes ?? '',
-                                    businessSegment: item.sector,
-                                    siteName: companyName,
-                                    siteAddress: item.address,
-                                    siteContactName: confirmedContact,
-                                    siteContactPhone: confirmedPhone,
-                                    isSiteHeadquarters: true,
-                                  ),
-                                );
+                                final createdOpp = await pipelineService
+                                    .addDeal(
+                                      OpportunityItem(
+                                        id: '',
+                                        title: oppTitle,
+                                        clientName: companyName,
+                                        contactPerson: confirmedContact,
+                                        phone: confirmedPhone,
+                                        serviceType: serviceType,
+                                        amount: item.estimatedValue > 0
+                                            ? item.estimatedValue
+                                            : 0.0,
+                                        stage: 'Calificación',
+                                        probability: 30,
+                                        owner: item.advisor,
+                                        closingDate: '',
+                                        notes: item.notes ?? '',
+                                        businessSegment: item.sector,
+                                        siteName: companyName,
+                                        siteAddress: item.address,
+                                        siteContactName: confirmedContact,
+                                        siteContactPhone: confirmedPhone,
+                                        isSiteHeadquarters: true,
+                                      ),
+                                    );
 
                                 // 3. Marcar como promovido en el servicio de prospectos vinculando la Oportunidad
                                 await _leadsService.markPromoted(
@@ -1939,7 +1951,8 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                                   await _agendaService.addTask(
                                     CrmTaskItem(
                                       id: 'TSK-${DateTime.now().millisecondsSinceEpoch}',
-                                      title: 'Reunión de Calificación: $companyName',
+                                      title:
+                                          'Reunión de Calificación: $companyName',
                                       taskType: CrmTaskType.meeting,
                                       clientName: companyName,
                                       contactPerson: confirmedContact,

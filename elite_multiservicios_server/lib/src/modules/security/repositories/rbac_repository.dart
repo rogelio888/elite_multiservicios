@@ -158,7 +158,8 @@ class RbacRepository {
       throw const FormatException('El rol solicitado no existe.');
     }
 
-    final isSuper = existing.isSystemRole || existing.name.toLowerCase() == 'superadmin';
+    final isSuper =
+        existing.isSystemRole || existing.name.toLowerCase() == 'superadmin';
     final cleanName = isSuper ? existing.name : role.name.trim();
 
     final toUpdate = existing.copyWith(
@@ -182,8 +183,14 @@ class RbacRepository {
     }
 
     // 1. Limpiar asignaciones de usuarios y permisos
-    await UserRole.db.deleteWhere(session, where: (t) => t.roleId.equals(roleId));
-    await RolePermission.db.deleteWhere(session, where: (t) => t.roleId.equals(roleId));
+    await UserRole.db.deleteWhere(
+      session,
+      where: (t) => t.roleId.equals(roleId),
+    );
+    await RolePermission.db.deleteWhere(
+      session,
+      where: (t) => t.roleId.equals(roleId),
+    );
 
     // 2. Eliminar rol
     await AppRole.db.deleteRow(session, existing);
@@ -200,13 +207,17 @@ class RbacRepository {
   }
 
   /// Sincroniza atómicamente todos los permisos asignados a un rol.
-  Future<List<int>> syncRolePermissions(int roleId, List<int> permissionIds) async {
+  Future<List<int>> syncRolePermissions(
+    int roleId,
+    List<int> permissionIds,
+  ) async {
     final role = await AppRole.db.findById(session, roleId);
     if (role == null) {
       throw const FormatException('El rol no existe.');
     }
 
-    final isSuper = role.isSystemRole && role.name.toLowerCase() == 'superadmin';
+    final isSuper =
+        role.isSystemRole && role.name.toLowerCase() == 'superadmin';
     List<int> targetIds = permissionIds;
 
     // Si es superadmin, nunca se le pueden revocar permisos
@@ -216,7 +227,10 @@ class RbacRepository {
     }
 
     // Purgar anteriores
-    await RolePermission.db.deleteWhere(session, where: (t) => t.roleId.equals(roleId));
+    await RolePermission.db.deleteWhere(
+      session,
+      where: (t) => t.roleId.equals(roleId),
+    );
 
     // Insertar nuevos
     final now = DateTime.now().toUtc();

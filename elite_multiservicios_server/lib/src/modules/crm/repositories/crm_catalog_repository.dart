@@ -130,7 +130,9 @@ class CrmCatalogRepository {
       where: (t) =>
           t.isDeleted.equals(false) &
           (includeInactive ? Constant.bool(true) : t.isActive.equals(true)) &
-          (category != null ? t.category.equals(category) : Constant.bool(true)),
+          (category != null
+              ? t.category.equals(category)
+              : Constant.bool(true)),
       orderBy: (t) => t.name,
     );
   }
@@ -215,7 +217,9 @@ class CrmCatalogRepository {
       where: (t) =>
           t.isDeleted.equals(false) &
           (activeOnly ? t.isActive.equals(true) : Constant.bool(true)) &
-          (category != null ? t.category.equals(category) : Constant.bool(true)) &
+          (category != null
+              ? t.category.equals(category)
+              : Constant.bool(true)) &
           (serviceLineId != null
               ? t.serviceLineId.equals(serviceLineId)
               : Constant.bool(true)),
@@ -356,7 +360,8 @@ class CrmCatalogRepository {
     final unitChanged = existing.unitType != item.unitType;
     final metaChanged = existing.metadata != item.metadata;
 
-    final newVersion = (priceChanged || calcChanged || unitChanged || metaChanged)
+    final newVersion =
+        (priceChanged || calcChanged || unitChanged || metaChanged)
         ? existing.version + 1
         : existing.version;
 

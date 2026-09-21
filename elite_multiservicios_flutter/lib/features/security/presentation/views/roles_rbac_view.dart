@@ -219,7 +219,8 @@ class _RolesRbacViewState extends State<RolesRbacView> {
 
   void _togglePermission(int permId) {
     if (_selectedRole == null) return;
-    final isSuper = _selectedRole!.isSystemRole &&
+    final isSuper =
+        _selectedRole!.isSystemRole &&
         _selectedRole!.name.toLowerCase() == 'superadmin';
     if (isSuper) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -500,7 +501,10 @@ class _RolesRbacViewState extends State<RolesRbacView> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Eliminar Rol', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Eliminar Rol',
+          style: TextStyle(color: Colors.white),
+        ),
         content: Text(
           '¿Desea eliminar el rol "${role.name}"? Los usuarios y privilegios vinculados serán desasociados.',
           style: const TextStyle(color: Color(0xFF94A3B8)),
@@ -906,7 +910,8 @@ class _RolesRbacViewState extends State<RolesRbacView> {
               ? const Color(0xFF0B1120).withValues(alpha: 0.6)
               : const Color(0xFFF8FAFC));
 
-    final isSuper = role.isSystemRole && role.name.toLowerCase() == 'superadmin';
+    final isSuper =
+        role.isSystemRole && role.name.toLowerCase() == 'superadmin';
     final count = isSuper
         ? _permissions.length
         : (_rolePermissionCounts[role.id] ?? 0);
@@ -1025,9 +1030,12 @@ class _RolesRbacViewState extends State<RolesRbacView> {
                           )
                         else
                           Tooltip(
-                            message: 'Rol del sistema protegido contra eliminación',
+                            message:
+                                'Rol del sistema protegido contra eliminación',
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
                               child: Icon(
                                 Icons.lock_outline,
                                 size: 14,
@@ -1109,7 +1117,8 @@ class _RolesRbacViewState extends State<RolesRbacView> {
         : const Color(0xFFE2E8F0);
     final cardBg = isDark ? const Color(0xFF0F172A) : Colors.white;
     final filtered = _filteredPermissions;
-    final isSuper = _selectedRole != null &&
+    final isSuper =
+        _selectedRole != null &&
         _selectedRole!.isSystemRole &&
         _selectedRole!.name.toLowerCase() == 'superadmin';
 
@@ -1460,10 +1469,12 @@ class _RolesRbacViewState extends State<RolesRbacView> {
     final borderColor = isDark
         ? const Color(0xFF1E293B)
         : const Color(0xFFE2E8F0);
-    final isSuper = _selectedRole != null &&
+    final isSuper =
+        _selectedRole != null &&
         _selectedRole!.isSystemRole &&
         _selectedRole!.name.toLowerCase() == 'superadmin';
-    final isGranted = isSuper ||
+    final isGranted =
+        isSuper ||
         (perm.id != null && _selectedRolePermissionIds.contains(perm.id));
 
     return Material(
@@ -1478,8 +1489,8 @@ class _RolesRbacViewState extends State<RolesRbacView> {
           decoration: BoxDecoration(
             color: isGranted
                 ? (isDark
-                    ? const Color(0xFF10B981).withValues(alpha: 0.05)
-                    : const Color(0xFFECFDF5))
+                      ? const Color(0xFF10B981).withValues(alpha: 0.05)
+                      : const Color(0xFFECFDF5))
                 : (isDark ? const Color(0xFF0B1120) : const Color(0xFFF8FAFC)),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(

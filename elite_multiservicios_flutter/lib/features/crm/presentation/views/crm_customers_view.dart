@@ -2274,8 +2274,8 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                             color: scheduleQualityCheck
                                 ? const Color(0xFF10B981)
                                 : (isDark
-                                    ? const Color(0xFF334155)
-                                    : const Color(0xFFE2E8F0)),
+                                      ? const Color(0xFF334155)
+                                      : const Color(0xFFE2E8F0)),
                           ),
                         ),
                         child: Row(

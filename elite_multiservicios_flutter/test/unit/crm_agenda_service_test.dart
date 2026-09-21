@@ -151,15 +151,18 @@ void main() {
       },
     );
 
-    test('deleteTask removes task from local memory and updates counts', () async {
-      final initialCount = service.totalTasks;
-      final targetTask = service.tasks.first;
-      final targetId = targetTask.id;
+    test(
+      'deleteTask removes task from local memory and updates counts',
+      () async {
+        final initialCount = service.totalTasks;
+        final targetTask = service.tasks.first;
+        final targetId = targetTask.id;
 
-      await service.deleteTask(targetId);
+        await service.deleteTask(targetId);
 
-      expect(service.totalTasks, equals(initialCount - 1));
-      expect(service.tasks.any((t) => t.id == targetId), isFalse);
-    });
+        expect(service.totalTasks, equals(initialCount - 1));
+        expect(service.tasks.any((t) => t.id == targetId), isFalse);
+      },
+    );
   });
 }

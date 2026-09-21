@@ -1245,11 +1245,18 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
       builder: (ctx) => AlertDialog(
         title: Row(
           children: [
-            const Icon(Icons.delete_outline, color: Color(0xFFDC2626), size: 20),
+            const Icon(
+              Icons.delete_outline,
+              color: Color(0xFFDC2626),
+              size: 20,
+            ),
             const SizedBox(width: 8),
             Text(
               '¿Eliminar Tarea?',
-              style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16),
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+              ),
             ),
           ],
         ),
@@ -1274,7 +1281,9 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     backgroundColor: const Color(0xFF991B1B),
-                    content: Text('Tarea "${task.title}" eliminada de la agenda.'),
+                    content: Text(
+                      'Tarea "${task.title}" eliminada de la agenda.',
+                    ),
                   ),
                 );
               }
