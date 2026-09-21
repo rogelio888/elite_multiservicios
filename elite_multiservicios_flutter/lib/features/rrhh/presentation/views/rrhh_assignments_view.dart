@@ -1415,8 +1415,11 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
               ),
             ],
           ),
-          content: SizedBox(
-            width: 520,
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 520,
+              maxHeight: MediaQuery.sizeOf(ctx).height * 0.78,
+            ),
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -1525,6 +1528,7 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                     // Dropdown de Empresa Cliente
                     DropdownButtonFormField<RrhhClientCompany>(
                       initialValue: selectedClient,
+                      isExpanded: true,
                       decoration: const InputDecoration(
                         labelText: 'Empresa Cliente Destino *',
                       ),
@@ -1532,7 +1536,10 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                           .map(
                             (c) => DropdownMenuItem(
                               value: c,
-                              child: Text(c.name),
+                              child: Text(
+                                c.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           )
                           .toList(),
@@ -1552,6 +1559,7 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                         selectedClient!.services.isNotEmpty)
                       DropdownButtonFormField<RrhhClientContractedService>(
                         initialValue: selectedService,
+                        isExpanded: true,
                         decoration: const InputDecoration(
                           labelText: 'Servicio Contratado y Sede *',
                         ),
@@ -1561,6 +1569,7 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                                 value: s,
                                 child: Text(
                                   '${s.serviceName} (${s.branchLocation})',
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             )
@@ -1573,6 +1582,7 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                     // Dropdown de Área de Oficina
                     DropdownButtonFormField<String>(
                       initialValue: selectedArea,
+                      isExpanded: true,
                       decoration: const InputDecoration(
                         labelText: 'Área en Oficina Central *',
                       ),
@@ -1580,7 +1590,10 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                           .map(
                             (ar) => DropdownMenuItem(
                               value: ar.name,
-                              child: Text(ar.name),
+                              child: Text(
+                                ar.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           )
                           .toList(),
@@ -1603,6 +1616,7 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                   // Nuevo Horario
                   DropdownButtonFormField<String>(
                     initialValue: currentSchedule,
+                    isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Horario / Turno Asignado *',
                     ),
@@ -1610,7 +1624,10 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                         .map(
                           (name) => DropdownMenuItem(
                             value: name,
-                            child: Text(name),
+                            child: Text(
+                              name,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         )
                         .toList(),
@@ -1643,12 +1660,19 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
                     initialValue: selectedQuickReason,
+                    isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Causal de Rotación *',
                     ),
                     items: quickReasons
                         .map(
-                          (r) => DropdownMenuItem(value: r, child: Text(r)),
+                          (r) => DropdownMenuItem(
+                            value: r,
+                            child: Text(
+                              r,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         )
                         .toList(),
                     onChanged: (val) {
@@ -1806,6 +1830,7 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                     Expanded(
                       child: DropdownButtonFormField<String>(
                         initialValue: appliesTo,
+                        isExpanded: true,
                         decoration: const InputDecoration(
                           labelText: 'Aplica a',
                         ),
