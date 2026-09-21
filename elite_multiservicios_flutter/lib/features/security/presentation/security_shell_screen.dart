@@ -372,6 +372,30 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     final isSelected = _selectedIndex == index;
     final collapsed = !isDrawer && _isSidebarCollapsed;
 
+    final isCrmItem = (index >= 6 && index <= 9) || index == 16;
+    final isRrhhItem = index >= 10 && index <= 15;
+    final Color activeAccent = isCrmItem
+        ? const Color(0xFF10B981)
+        : (isRrhhItem
+            ? const Color(0xFF8B5CF6)
+            : const Color(0xFF2563EB));
+    final Color activeAccentLight = isCrmItem
+        ? const Color(0xFF34D399)
+        : (isRrhhItem
+            ? const Color(0xFFA78BFA)
+            : const Color(0xFF60A5FA));
+    final Color activeBg = isDark
+        ? (isCrmItem
+            ? const Color(0xFF10B981).withValues(alpha: 0.12)
+            : (isRrhhItem
+                ? const Color(0xFF8B5CF6).withValues(alpha: 0.12)
+                : const Color(0xFF161F30)))
+        : (isCrmItem
+            ? const Color(0xFF10B981).withValues(alpha: 0.08)
+            : (isRrhhItem
+                ? const Color(0xFF8B5CF6).withValues(alpha: 0.08)
+                : const Color(0xFFF1F5F9)));
+
     final content = Material(
       color: Colors.transparent,
       child: InkWell(
@@ -385,14 +409,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
             vertical: isSubItem ? 8 : 10,
           ),
           decoration: BoxDecoration(
-            color: isSelected
-                ? (isDark ? const Color(0xFF161F30) : const Color(0xFFF1F5F9))
-                : Colors.transparent,
+            color: isSelected ? activeBg : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
             border: isSelected
                 ? Border(
                     left: BorderSide(
-                      color: const Color(0xFF2563EB),
+                      color: activeAccent,
                       width: 2.5,
                     ),
                   )
@@ -406,9 +428,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
               Icon(
                 isSelected ? selectedIcon : icon,
                 color: isSelected
-                    ? (isDark
-                          ? const Color(0xFF60A5FA)
-                          : const Color(0xFF2563EB))
+                    ? (isDark ? activeAccentLight : activeAccent)
                     : (isDark
                           ? const Color(0xFF94A3B8)
                           : const Color(0xFF64748B)),
@@ -452,8 +472,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       decoration: BoxDecoration(
                         color: isSelected
                             ? (isDark
-                                  ? const Color(0xFF1E293B)
-                                  : const Color(0xFFE2E8F0))
+                                  ? (isCrmItem
+                                      ? const Color(0xFF064E3B)
+                                      : const Color(0xFF1E293B))
+                                  : (isCrmItem
+                                      ? const Color(0xFFD1FAE5)
+                                      : const Color(0xFFE2E8F0)))
                             : (isDark
                                   ? const Color(0xFF111827)
                                   : const Color(0xFFF1F5F9)),
@@ -466,8 +490,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                           fontWeight: FontWeight.w600,
                           color: isSelected
                               ? (isDark
-                                    ? const Color(0xFF93C5FD)
-                                    : const Color(0xFF1D4ED8))
+                                    ? (isCrmItem
+                                        ? const Color(0xFF6EE7B7)
+                                        : const Color(0xFF93C5FD))
+                                    : (isCrmItem
+                                        ? const Color(0xFF047857)
+                                        : const Color(0xFF1D4ED8)))
                               : (isDark
                                     ? const Color(0xFF64748B)
                                     : const Color(0xFF94A3B8)),

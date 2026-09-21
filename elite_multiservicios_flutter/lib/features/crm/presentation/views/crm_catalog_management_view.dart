@@ -55,7 +55,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                 child: _catalogService.isLoading
                     ? const Center(
                         child: CircularProgressIndicator(
-                          color: Color(0xFF06B6D4),
+                          color: Color(0xFF10B981),
                         ),
                       )
                     : TabBarView(
@@ -100,15 +100,15 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF06B6D4).withValues(alpha: 0.15),
+                      color: const Color(0xFF10B981).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: const Color(0xFF06B6D4).withValues(alpha: 0.3),
+                        color: const Color(0xFF10B981).withValues(alpha: 0.25),
                       ),
                     ),
                     child: const Icon(
                       Icons.menu_book_rounded,
-                      color: Color(0xFF06B6D4),
+                      color: Color(0xFF10B981),
                       size: 24,
                     ),
                   ),
@@ -159,9 +159,12 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                     icon: const Icon(Icons.add_rounded, size: 18),
                     label: Text(_getCreateButtonLabel()),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF06B6D4),
-                      foregroundColor: Colors.black,
+                      backgroundColor: const Color(0xFF10B981),
+                      foregroundColor: Colors.white,
                       elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 10,
@@ -209,9 +212,9 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
       child: TabBar(
         controller: _tabController,
         onTap: (_) => setState(() {}),
-        indicatorColor: const Color(0xFF06B6D4),
+        indicatorColor: const Color(0xFF10B981),
         indicatorWeight: 3,
-        labelColor: const Color(0xFF06B6D4),
+        labelColor: const Color(0xFF10B981),
         unselectedLabelColor: const Color(0xFF94A3B8),
         labelStyle: GoogleFonts.inter(
           fontSize: 14,
@@ -292,7 +295,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Color(0xFF06B6D4)),
+                          borderSide: const BorderSide(color: Color(0xFF10B981)),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14,
@@ -437,7 +440,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                             style: GoogleFonts.robotoMono(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF06B6D4),
+                              color: const Color(0xFF10B981),
                             ),
                           ),
                         ),
@@ -539,7 +542,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                     tooltip: 'Tarifas Diferenciadas por Rubro',
                     icon: const Icon(
                       Icons.tune_rounded,
-                      color: Color(0xFF06B6D4),
+                      color: Color(0xFF10B981),
                       size: 20,
                     ),
                     onPressed: () => _showScopesDialog(item),
@@ -662,7 +665,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                 ),
                 child: const Icon(
                   Icons.domain_rounded,
-                  color: Color(0xFF06B6D4),
+                  color: Color(0xFF10B981),
                   size: 24,
                 ),
               ),
@@ -696,7 +699,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                             style: GoogleFonts.robotoMono(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF06B6D4),
+                              color: const Color(0xFF10B981),
                             ),
                           ),
                         ),
@@ -1188,8 +1191,11 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF06B6D4),
-                    foregroundColor: Colors.black,
+                    backgroundColor: const Color(0xFF10B981),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   child: Text(isEditing ? 'Guardar Cambios' : 'Crear Partida'),
                 ),
@@ -1229,7 +1235,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                     item.concept,
                     style: GoogleFonts.inter(
                       fontSize: 13,
-                      color: const Color(0xFF06B6D4),
+                      color: const Color(0xFF10B981),
                     ),
                   ),
                   Text(
@@ -1266,7 +1272,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: existingScope != null
-                                ? const Color(0xFF06B6D4).withValues(alpha: 0.5)
+                                ? const Color(0xFF10B981).withValues(alpha: 0.5)
                                 : const Color(0xFF334155),
                           ),
                         ),
@@ -1358,8 +1364,11 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF06B6D4),
-                                foregroundColor: Colors.black,
+                                backgroundColor: const Color(0xFF10B981),
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
                                 padding: const EdgeInsets.symmetric(horizontal: 12),
                               ),
                               child: const Text('Guardar'),
@@ -1476,8 +1485,11 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF06B6D4),
-                foregroundColor: Colors.black,
+                backgroundColor: const Color(0xFF10B981),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: Text(isEditing ? 'Guardar' : 'Crear'),
             ),
@@ -1588,8 +1600,11 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF06B6D4),
-                foregroundColor: Colors.black,
+                backgroundColor: const Color(0xFF10B981),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: Text(isEditing ? 'Guardar' : 'Crear'),
             ),
@@ -1702,7 +1717,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Color(0xFF06B6D4)),
+        borderSide: const BorderSide(color: Color(0xFF10B981)),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     );
