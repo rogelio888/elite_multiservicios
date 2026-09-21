@@ -186,7 +186,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     _selectedIndex = initialIndex;
     if (initialIndex >= 1 && initialIndex <= 5) {
       _isSecurityExpanded = true;
-    } else if (initialIndex >= 6 && initialIndex <= 9) {
+    } else if ((initialIndex >= 6 && initialIndex <= 9) || initialIndex == 16) {
       _isCrmExpanded = true;
     } else if (initialIndex >= 10 && initialIndex <= 15) {
       _isRrhhExpanded = true;
@@ -203,7 +203,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
           setState(() {
             _selectedIndex = newIndex;
             if (newIndex >= 1 && newIndex <= 5) _isSecurityExpanded = true;
-            if (newIndex >= 6 && newIndex <= 9) _isCrmExpanded = true;
+            if ((newIndex >= 6 && newIndex <= 9) || newIndex == 16) {
+              _isCrmExpanded = true;
+            }
             if (newIndex >= 10 && newIndex <= 15) _isRrhhExpanded = true;
           });
           _loadSidebarMetrics();
@@ -234,7 +236,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         _selectedIndex = index;
         if (index >= 1 && index <= 5) {
           _isSecurityExpanded = true;
-        } else if (index >= 6 && index <= 9) {
+        } else if ((index >= 6 && index <= 9) || index == 16) {
           _isCrmExpanded = true;
         } else if (index >= 10 && index <= 15) {
           _isRrhhExpanded = true;
@@ -354,6 +356,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'RRHH: Asignaciones & Horarios',
     'RRHH: Gestión Laboral & Novedades',
     'RRHH: Centro de Reportes & Métricas',
+    'CRM: Catálogo & Tarifario',
   ];
 
   Widget _buildNavItem({
@@ -728,9 +731,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                     ],
                     if (!isMobile) ...[
                       Text(
-                        _selectedIndex >= 10
-                            ? 'RRHH'
-                            : (_selectedIndex >= 6 ? 'CRM' : 'Seguridad'),
+                        ((_selectedIndex >= 6 && _selectedIndex <= 9) ||
+                                _selectedIndex == 16)
+                            ? 'CRM'
+                            : (_selectedIndex >= 10 && _selectedIndex <= 15
+                                ? 'RRHH'
+                                : 'Seguridad'),
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           color: isDark
@@ -754,7 +760,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                     ],
                     Flexible(
                       child: Text(
-                        _titles[_selectedIndex],
+                        _selectedIndex >= 0 && _selectedIndex < _titles.length
+                            ? _titles[_selectedIndex]
+                            : 'Elite Multiservicios',
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
