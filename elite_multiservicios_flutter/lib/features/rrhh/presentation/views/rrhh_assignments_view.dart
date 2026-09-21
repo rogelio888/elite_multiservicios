@@ -1519,55 +1519,242 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                   const SizedBox(height: 14),
 
                   if (selectedType == 'CAMPO') ...[
-                    // Selector predictivo de Empresa Cliente
-                    RrhhSearchableSelector<RrhhClientCompany>(
-                      label: 'Empresa Cliente Destino *',
-                      hintText: 'Escribe para buscar empresa...',
-                      prefixIcon: Icons.search,
-                      initialValue: selectedClient,
-                      items: clients,
-                      itemLabel: (c) => c.name,
-                      itemSubtitle: (c) =>
-                          '${c.services.length} servicio(s) activo(s)',
-                      onChanged: (c) {
+                    // Barra de búsqueda sencilla y predictiva (tipo Google) solo para Empresas
+                    RawAutocomplete<RrhhClientCompany>(
+                      initialValue: TextEditingValue(
+                        text: selectedClient?.name ?? '',
+                      ),
+                      displayStringForOption: (c) => c.name,
+                      optionsBuilder: (TextEditingValue textEditingValue) {
+                        if (textEditingValue.text.isEmpty) {
+                          return clients;
+                        }
+                        final q = textEditingValue.text.toLowerCase();
+                        return clients.where(
+                          (c) =>
+                              c.name.toLowerCase().contains(q) ||
+                              c.services.any(
+                                (s) =>
+                                    s.serviceName.toLowerCase().contains(q) ||
+                                    s.branchLocation.toLowerCase().contains(q),
+                              ),
+                        );
+                      },
+                      onSelected: (RrhhClientCompany c) {
                         setDlgState(() {
                           selectedClient = c;
-                          if (c != null && c.services.isNotEmpty) {
+                          if (c.services.isNotEmpty) {
                             selectedService = c.services.first;
                           } else {
                             selectedService = null;
                           }
                         });
                       },
+                      fieldViewBuilder:
+                          (
+                            context,
+                            textEditingController,
+                            focusNode,
+                            onFieldSubmitted,
+                          ) {
+                            return TextField(
+                              controller: textEditingController,
+                              focusNode: focusNode,
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
+                              decoration: InputDecoration(
+                                labelText: 'Empresa Cliente Destino *',
+                                hintText: 'Buscar o escribir empresa...',
+                                prefixIcon: const Icon(
+                                  Icons.search,
+                                  size: 18,
+                                  color: Color(0xFF3B82F6),
+                                ),
+                                suffixIcon:
+                                    textEditingController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.clear, size: 16),
+                                        tooltip: 'Limpiar búsqueda',
+                                        onPressed: () {
+                                          textEditingController.clear();
+                                          setDlgState(() {
+                                            selectedClient = null;
+                                            selectedService = null;
+                                          });
+                                        },
+                                      )
+                                    : null,
+                              ),
+                            );
+                          },
+                      optionsViewBuilder: (context, onSelected, options) {
+                        return Align(
+                          alignment: Alignment.topLeft,
+                          child: Material(
+                            elevation: 8,
+                            borderRadius: BorderRadius.circular(8),
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : Colors.white,
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxHeight: 180,
+                                maxWidth: 470,
+                              ),
+                              child: ListView.separated(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4,
+                                ),
+                                shrinkWrap: true,
+                                itemCount: options.length,
+                                separatorBuilder: (context, index) => Divider(
+                                  height: 1,
+                                  thickness: 0.5,
+                                  color: isDark
+                                      ? const Color(0xFF334155)
+                                      : const Color(0xFFE2E8F0),
+                                ),
+                                itemBuilder: (context, index) {
+                                  final c = options.elementAt(index);
+                                  final isCurr = selectedClient?.id == c.id;
+                                  return InkWell(
+                                    onTap: () => onSelected(c),
+                                    hoverColor: isDark
+                                        ? const Color(0xFF334155)
+                                        : const Color(0xFFF1F5F9),
+                                    child: Container(
+                                      color: isCurr
+                                          ? (isDark
+                                                ? const Color(
+                                                    0xFF3B82F6,
+                                                  ).withValues(alpha: 0.15)
+                                                : const Color(0xFFEFF6FF))
+                                          : Colors.transparent,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                        vertical: 10,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.business,
+                                            size: 17,
+                                            color: Color(0xFF3B82F6),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  c.name,
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 13,
+                                                    fontWeight: isCurr
+                                                        ? FontWeight.w700
+                                                        : FontWeight.w600,
+                                                    color: isDark
+                                                        ? Colors.white
+                                                        : const Color(
+                                                            0xFF0F172A,
+                                                          ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  '${c.services.length} servicio(s) contratado(s)',
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 11,
+                                                    color: const Color(
+                                                      0xFF94A3B8,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          if (isCurr)
+                                            const Icon(
+                                              Icons.check,
+                                              size: 16,
+                                              color: Color(0xFF10B981),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 12),
                     if (selectedClient != null &&
                         selectedClient!.services.isNotEmpty)
-                      RrhhSearchableSelector<RrhhClientContractedService>(
-                        key: ValueKey(
-                          'service_${selectedClient?.id ?? "none"}',
+                      DropdownButtonFormField<RrhhClientContractedService>(
+                        key: ValueKey('service_${selectedClient?.id}'),
+                        initialValue:
+                            selectedClient!.services.contains(
+                              selectedService,
+                            )
+                            ? selectedService
+                            : selectedClient!.services.first,
+                        isExpanded: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Servicio Contratado y Sede *',
+                          prefixIcon: Icon(
+                            Icons.room_service_outlined,
+                            size: 18,
+                          ),
                         ),
-                        label: 'Servicio Contratado y Sede *',
-                        hintText: 'Escribe para buscar servicio o sede...',
-                        prefixIcon: Icons.search,
-                        initialValue: selectedService,
-                        items: selectedClient!.services,
-                        itemLabel: (s) =>
-                            '${s.serviceName} (${s.branchLocation})',
-                        itemSubtitle: (s) => 'Sede: ${s.branchLocation}',
+                        items: selectedClient!.services
+                            .map(
+                              (s) => DropdownMenuItem(
+                                value: s,
+                                child: Text(
+                                  '${s.serviceName} (${s.branchLocation})',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.inter(fontSize: 13),
+                                ),
+                              ),
+                            )
+                            .toList(),
                         onChanged: (s) {
                           setDlgState(() => selectedService = s);
                         },
                       ),
                   ] else ...[
-                    // Selector predictivo de Área de Oficina
-                    RrhhSearchableSelector<String>(
-                      label: 'Área en Oficina Central *',
-                      hintText: 'Escribe para buscar área...',
-                      prefixIcon: Icons.search,
-                      initialValue: selectedArea,
-                      items: areas.map((ar) => ar.name).toList(),
-                      itemLabel: (ar) => ar,
+                    // Dropdown simple y compacto de Área en Oficina Central
+                    DropdownButtonFormField<String>(
+                      initialValue: areas.any((ar) => ar.name == selectedArea)
+                          ? selectedArea
+                          : (areas.isNotEmpty
+                                ? areas.first.name
+                                : 'Operaciones'),
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Área en Oficina Central *',
+                        prefixIcon: Icon(Icons.corporate_fare, size: 18),
+                      ),
+                      items: areas
+                          .map(
+                            (ar) => DropdownMenuItem(
+                              value: ar.name,
+                              child: Text(
+                                ar.name,
+                                style: GoogleFonts.inter(fontSize: 13),
+                              ),
+                            ),
+                          )
+                          .toList(),
                       onChanged: (val) {
                         if (val != null) {
                           setDlgState(() => selectedArea = val);
@@ -1584,14 +1771,30 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                   ],
                   const SizedBox(height: 12),
 
-                  // Nuevo Horario con búsqueda interactiva
-                  RrhhSearchableSelector<String>(
-                    label: 'Horario / Turno Asignado *',
-                    hintText: 'Escribe para buscar turno...',
-                    prefixIcon: Icons.search,
-                    initialValue: currentSchedule,
-                    items: availableScheduleNames.toList(),
-                    itemLabel: (name) => name,
+                  // Horario / Turno: Dropdown nativo y compacto sin sobrecargar
+                  DropdownButtonFormField<String>(
+                    initialValue:
+                        availableScheduleNames.contains(
+                          currentSchedule,
+                        )
+                        ? currentSchedule
+                        : availableScheduleNames.first,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Horario / Turno Asignado *',
+                      prefixIcon: Icon(Icons.access_time, size: 18),
+                    ),
+                    items: availableScheduleNames
+                        .map(
+                          (name) => DropdownMenuItem(
+                            value: name,
+                            child: Text(
+                              name,
+                              style: GoogleFonts.inter(fontSize: 13),
+                            ),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (val) {
                       if (val != null) {
                         setDlgState(() => currentSchedule = val);
@@ -1619,13 +1822,29 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                     ),
                   ),
                   const SizedBox(height: 8),
-                  RrhhSearchableSelector<String>(
-                    label: 'Causal de Rotación *',
-                    hintText: 'Escribe para buscar causal...',
-                    prefixIcon: Icons.search,
-                    initialValue: selectedQuickReason,
-                    items: quickReasons,
-                    itemLabel: (r) => r,
+
+                  // Causal de Rotación: Dropdown simple directo con las 6 opciones fijas
+                  DropdownButtonFormField<String>(
+                    initialValue: quickReasons.contains(selectedQuickReason)
+                        ? selectedQuickReason
+                        : quickReasons.first,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Causal de Rotación *',
+                      prefixIcon: Icon(Icons.info_outline, size: 18),
+                    ),
+                    items: quickReasons
+                        .map(
+                          (r) => DropdownMenuItem(
+                            value: r,
+                            child: Text(
+                              r,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(fontSize: 13),
+                            ),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (val) {
                       if (val != null) {
                         setDlgState(() => selectedQuickReason = val);
