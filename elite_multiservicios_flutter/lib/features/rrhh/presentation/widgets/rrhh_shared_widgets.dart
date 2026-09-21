@@ -178,15 +178,14 @@ class RrhhStatusChip extends StatelessWidget {
     }
 
     return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: fg.withValues(alpha: 0.25), width: 1),
       ),
       child: Text(
         effectiveText,
-        textAlign: TextAlign.center,
         style: GoogleFonts.inter(
           fontSize: 11,
           fontWeight: FontWeight.w600,

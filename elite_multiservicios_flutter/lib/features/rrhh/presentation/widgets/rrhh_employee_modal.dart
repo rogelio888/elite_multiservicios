@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/models/rrhh_employee.dart';
+import '../../data/services/rrhh_state_service.dart';
 import 'rrhh_shared_widgets.dart';
 
 /// Modal para el Expediente Digital 360° del Colaborador (5 pestañas)
@@ -17,11 +18,42 @@ class RrhhEmployeeModal extends StatefulWidget {
 class _RrhhEmployeeModalState extends State<RrhhEmployeeModal>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late RrhhEmployee _emp;
+  bool _isEditingDocs = false;
+
+  late bool _hasCiCopy;
+  late bool _hasUtilityBill;
+  late bool _hasHomeSketch;
+  late bool _hasFelccRecord;
+  late bool _hasPhoto3x4;
+  late bool _hasSusInsurance;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
+    _emp = widget.employee;
+    _initDocState();
+  }
+
+  void _initDocState() {
+    _hasCiCopy = _emp.hasCiCopy;
+    _hasUtilityBill = _emp.hasUtilityBill;
+    _hasHomeSketch = _emp.hasHomeSketch;
+    _hasFelccRecord = _emp.hasFelccRecord;
+    _hasPhoto3x4 = _emp.hasPhoto3x4;
+    _hasSusInsurance = _emp.hasSusInsurance;
+  }
+
+  int get _currentEditingDocsCount {
+    int count = 0;
+    if (_hasCiCopy) count++;
+    if (_hasUtilityBill) count++;
+    if (_hasHomeSketch) count++;
+    if (_hasFelccRecord) count++;
+    if (_hasPhoto3x4) count++;
+    if (_hasSusInsurance) count++;
+    return count;
   }
 
   @override
@@ -33,7 +65,7 @@ class _RrhhEmployeeModalState extends State<RrhhEmployeeModal>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final emp = widget.employee;
+    final emp = _emp;
 
     return Dialog(
       backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
@@ -243,19 +275,24 @@ class _RrhhEmployeeModalState extends State<RrhhEmployeeModal>
   }
 
   Widget _buildDocumentsTab(RrhhEmployee emp, bool isDark) {
+    final docsCount = _isEditingDocs
+        ? _currentEditingDocsCount
+        : emp.attachedDocumentsCount;
+    final isComplete = docsCount == 6;
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: emp.attachedDocumentsCount == 6
+              color: isComplete
                   ? const Color(0xFF10B981).withValues(alpha: 0.1)
                   : const Color(0xFFF59E0B).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color: emp.attachedDocumentsCount == 6
+                color: isComplete
                     ? const Color(0xFF10B981).withValues(alpha: 0.3)
                     : const Color(0xFFF59E0B).withValues(alpha: 0.3),
               ),
@@ -263,59 +300,193 @@ class _RrhhEmployeeModalState extends State<RrhhEmployeeModal>
             child: Row(
               children: [
                 Icon(
-                  emp.attachedDocumentsCount == 6
-                      ? Icons.verified
-                      : Icons.attachment,
-                  color: emp.attachedDocumentsCount == 6
+                  isComplete ? Icons.verified : Icons.attachment,
+                  color: isComplete
                       ? const Color(0xFF10B981)
                       : const Color(0xFFF59E0B),
-                  size: 20,
+                  size: 22,
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    'Expediente Físico: ${emp.attachedDocumentsCount} de 6 documentos presentados.',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Expediente Físico: $docsCount de 6 documentos presentados.',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _isEditingDocs
+                            ? 'Marcá o desmarcá los documentos físicos recepcionados en recepción:'
+                            : (isComplete
+                                  ? 'Documentación completa según normativa laboral boliviana.'
+                                  : 'Pendiente de entrega de documentos por parte del trabajador.'),
+                        style: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (!_isEditingDocs)
+                  FilledButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _initDocState();
+                        _isEditingDocs = true;
+                      });
+                    },
+                    icon: const Icon(Icons.edit_document, size: 15),
+                    label: const Text('Editar Documentos'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF2563EB),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 9,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      textStyle: GoogleFonts.inter(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          if (!_isEditingDocs) ...[
+            _buildDocCheckItem(
+              'Fotocopia de C.I. vigente',
+              emp.hasCiCopy,
+              isDark,
+            ),
+            _buildDocCheckItem(
+              'Fotocopia de Factura Luz o Agua',
+              emp.hasUtilityBill,
+              isDark,
+            ),
+            _buildDocCheckItem(
+              'Croquis de Domicilio firmado',
+              emp.hasHomeSketch,
+              isDark,
+            ),
+            _buildDocCheckItem(
+              'Certificado de Antecedentes FELCC',
+              emp.hasFelccRecord,
+              isDark,
+            ),
+            _buildDocCheckItem(
+              'Fotografía 3x4 fondo rojo',
+              emp.hasPhoto3x4,
+              isDark,
+            ),
+            _buildDocCheckItem(
+              'Seguro Universal de Salud (SUS)',
+              emp.hasSusInsurance,
+              isDark,
+            ),
+          ] else ...[
+            _buildInteractiveDocItem(
+              title: 'Fotocopia de C.I. vigente',
+              subtitle: 'Cédula de identidad legible y vigente',
+              value: _hasCiCopy,
+              isDark: isDark,
+              onChanged: (val) => setState(() => _hasCiCopy = val),
+            ),
+            _buildInteractiveDocItem(
+              title: 'Fotocopia de Factura Luz o Agua',
+              subtitle: 'Comprobante de domicilio reciente (últimos 3 meses)',
+              value: _hasUtilityBill,
+              isDark: isDark,
+              onChanged: (val) => setState(() => _hasUtilityBill = val),
+            ),
+            _buildInteractiveDocItem(
+              title: 'Croquis de Domicilio firmado',
+              subtitle:
+                  'Ubicación clara del domicilio con firma del trabajador',
+              value: _hasHomeSketch,
+              isDark: isDark,
+              onChanged: (val) => setState(() => _hasHomeSketch = val),
+            ),
+            _buildInteractiveDocItem(
+              title: 'Certificado de Antecedentes FELCC',
+              subtitle:
+                  'Certificación policial oficial para operaciones seguras',
+              value: _hasFelccRecord,
+              isDark: isDark,
+              onChanged: (val) => setState(() => _hasFelccRecord = val),
+            ),
+            _buildInteractiveDocItem(
+              title: 'Fotografía 3x4 fondo rojo',
+              subtitle: 'Para credencial física y archivo del expediente',
+              value: _hasPhoto3x4,
+              isDark: isDark,
+              onChanged: (val) => setState(() => _hasPhoto3x4 = val),
+            ),
+            _buildInteractiveDocItem(
+              title: 'Seguro Universal de Salud (SUS)',
+              subtitle: 'Constancia de adscripción al seguro público de salud',
+              value: _hasSusInsurance,
+              isDark: isDark,
+              onChanged: (val) => setState(() => _hasSusInsurance = val),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                OutlinedButton(
+                  onPressed: () {
+                    setState(() {
+                      _initDocState();
+                      _isEditingDocs = false;
+                    });
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text('Cancelar'),
+                ),
+                const SizedBox(width: 12),
+                FilledButton.icon(
+                  onPressed: _saveDocuments,
+                  icon: const Icon(Icons.check, size: 16),
+                  label: const Text('Guardar Documentación'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF10B981),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 10,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 14),
-          _buildDocCheckItem(
-            'Fotocopia de C.I. vigente',
-            emp.hasCiCopy,
-            isDark,
-          ),
-          _buildDocCheckItem(
-            'Fotocopia de Factura Luz o Agua',
-            emp.hasUtilityBill,
-            isDark,
-          ),
-          _buildDocCheckItem(
-            'Croquis de Domicilio firmado',
-            emp.hasHomeSketch,
-            isDark,
-          ),
-          _buildDocCheckItem(
-            'Certificado de Antecedentes FELCC',
-            emp.hasFelccRecord,
-            isDark,
-          ),
-          _buildDocCheckItem(
-            'Fotografía 3x4 fondo rojo',
-            emp.hasPhoto3x4,
-            isDark,
-          ),
-          _buildDocCheckItem(
-            'Seguro Universal de Salud (SUS)',
-            emp.hasSusInsurance,
-            isDark,
-          ),
+          ],
         ],
       ),
     );
@@ -526,6 +697,102 @@ class _RrhhEmployeeModalState extends State<RrhhEmployeeModal>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildInteractiveDocItem({
+    required String title,
+    required String subtitle,
+    required bool value,
+    required bool isDark,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: isDark
+            ? const Color(0xFF1E293B).withValues(alpha: 0.5)
+            : const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: value
+              ? const Color(0xFF10B981).withValues(alpha: 0.35)
+              : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+        ),
+      ),
+      child: CheckboxListTile(
+        value: value,
+        onChanged: (val) => onChanged(val ?? false),
+        activeColor: const Color(0xFF10B981),
+        checkboxShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4),
+        ),
+        title: Text(
+          title,
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: GoogleFonts.inter(
+            fontSize: 11.5,
+            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+          ),
+        ),
+        secondary: Icon(
+          value ? Icons.check_circle : Icons.radio_button_unchecked,
+          color: value ? const Color(0xFF10B981) : Colors.grey,
+          size: 20,
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      ),
+    );
+  }
+
+  void _saveDocuments() {
+    final updatedEmp = _emp.copyWith(
+      hasCiCopy: _hasCiCopy,
+      hasUtilityBill: _hasUtilityBill,
+      hasHomeSketch: _hasHomeSketch,
+      hasFelccRecord: _hasFelccRecord,
+      hasPhoto3x4: _hasPhoto3x4,
+      hasSusInsurance: _hasSusInsurance,
+    );
+
+    final newCount = updatedEmp.attachedDocumentsCount;
+    final newTimeline = List<RrhhTimelineEvent>.from(updatedEmp.timeline);
+    newTimeline.insert(
+      0,
+      RrhhTimelineEvent(
+        id: 'ev-${DateTime.now().millisecondsSinceEpoch}',
+        date: DateTime.now(),
+        title: 'Documentación de Expediente Actualizada',
+        description:
+            'Se recepcionó y validó la entrega de documentos ($newCount de 6 presentados).',
+        category: 'DOCUMENTACION',
+        registeredBy: 'Lic. Laura Mendoza (RRHH)',
+      ),
+    );
+
+    final finalEmp = updatedEmp.copyWith(timeline: newTimeline);
+    RrhhStateService().updateEmployee(finalEmp);
+
+    setState(() {
+      _emp = finalEmp;
+      _isEditingDocs = false;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Documentos de ${_emp.fullName} actualizados ($newCount/6).',
+        ),
+        backgroundColor: const Color(0xFF10B981),
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }

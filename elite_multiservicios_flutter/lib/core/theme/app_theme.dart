@@ -53,6 +53,20 @@ abstract class AppTheme {
           side: const BorderSide(color: lightBorder),
         ),
       ),
+      scrollbarTheme: ScrollbarThemeData(
+        interactive: true,
+        radius: const Radius.circular(8),
+        thickness: const WidgetStatePropertyAll(8),
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.dragged)) {
+            return const Color(0xFF64748B);
+          }
+          if (states.contains(WidgetState.hovered)) {
+            return const Color(0xFF94A3B8);
+          }
+          return const Color(0xFFCBD5E1);
+        }),
+      ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const Color(0xFFF8FAFC),
@@ -174,6 +188,20 @@ abstract class AppTheme {
           fontWeight: FontWeight.w600,
         ),
         iconTheme: IconThemeData(color: darkTextPrimary),
+      ),
+      scrollbarTheme: ScrollbarThemeData(
+        interactive: true,
+        radius: const Radius.circular(8),
+        thickness: const WidgetStatePropertyAll(8),
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.dragged)) {
+            return const Color(0xFF94A3B8);
+          }
+          if (states.contains(WidgetState.hovered)) {
+            return const Color(0xFF64748B);
+          }
+          return const Color(0xFF475569);
+        }),
       ),
     );
   }

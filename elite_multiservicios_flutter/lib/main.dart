@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -88,6 +89,15 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: _themeMode,
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.stylus,
+          PointerDeviceKind.trackpad,
+          PointerDeviceKind.unknown,
+        },
+      ),
       locale: const Locale('es', 'ES'),
       supportedLocales: const [
         Locale('es', 'ES'),

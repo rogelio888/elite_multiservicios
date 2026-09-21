@@ -261,8 +261,14 @@ class _RrhhOrganizationViewState extends State<RrhhOrganizationView>
       );
     }
 
-    return ListView.builder(
+    return GridView.builder(
       padding: const EdgeInsets.all(20),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 460,
+        mainAxisExtent: 185,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
       itemCount: areas.length,
       itemBuilder: (context, index) {
         final area = areas[index];
@@ -273,98 +279,154 @@ class _RrhhOrganizationViewState extends State<RrhhOrganizationView>
             .where((e) => e.area == area.name)
             .length;
 
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0F172A) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
               color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
             ),
           ),
-          color: isDark ? const Color(0xFF0F172A) : Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2563EB).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Text(
-                      area.code,
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF2563EB),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Cabecera: Avatar + Título y Badges
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2563EB).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: const Color(0xFF2563EB).withValues(alpha: 0.25),
+                      ),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.apartment_rounded,
+                        color: Color(0xFF2563EB),
+                        size: 22,
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            area.name,
-                            style: GoogleFonts.inter(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: isDark
-                                  ? Colors.white
-                                  : const Color(0xFF0F172A),
-                            ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          area.name,
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
-                          const SizedBox(width: 8),
-                          RrhhStatusChip(
-                            label: area.type,
-                            statusType: area.type == 'CAMPO'
-                                ? StatusType.success
-                                : (area.type == 'OFICINA'
-                                      ? StatusType.info
-                                      : StatusType.warning),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        area.description,
-                        style: GoogleFonts.inter(
-                          fontSize: 12.5,
-                          color: isDark
-                              ? const Color(0xFF94A3B8)
-                              : const Color(0xFF64748B),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? const Color(
+                                        0xFF2563EB,
+                                      ).withValues(alpha: 0.14)
+                                    : const Color(0xFFEFF6FF),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                  color: isDark
+                                      ? const Color(
+                                          0xFF2563EB,
+                                        ).withValues(alpha: 0.3)
+                                      : const Color(0xFFBFDBFE),
+                                ),
+                              ),
+                              child: Text(
+                                area.code,
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF2563EB),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            RrhhStatusChip(
+                              label: area.type,
+                              statusType: area.type == 'CAMPO'
+                                  ? StatusType.success
+                                  : (area.type == 'OFICINA'
+                                        ? StatusType.info
+                                        : StatusType.warning),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              // Descripción
+              Text(
+                area.description,
+                style: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
+                  height: 1.35,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+
+              // Separador y Métricas inferiores
+              Column(
+                children: [
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFF1F5F9),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildMetricItem(
+                        icon: Icons.work_outline,
+                        value: '$positionsCount',
+                        label: 'Cargos',
+                        color: const Color(0xFF6366F1),
+                        isDark: isDark,
+                      ),
+                      _buildMetricItem(
+                        icon: Icons.people_outline,
+                        value: '$employeesCount',
+                        label: 'Colaboradores',
+                        color: const Color(0xFF10B981),
+                        isDark: isDark,
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(width: 16),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildStatPill(
-                      label: 'Cargos',
-                      value: '$positionsCount',
-                      isDark: isDark,
-                    ),
-                    const SizedBox(width: 10),
-                    _buildStatPill(
-                      label: 'Colaboradores',
-                      value: '$employeesCount',
-                      isDark: isDark,
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
         );
       },
@@ -380,8 +442,14 @@ class _RrhhOrganizationViewState extends State<RrhhOrganizationView>
       );
     }
 
-    return ListView.builder(
+    return GridView.builder(
       padding: const EdgeInsets.all(20),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 460,
+        mainAxisExtent: 220,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
       itemCount: positions.length,
       itemBuilder: (context, index) {
         final pos = positions[index];
@@ -389,90 +457,240 @@ class _RrhhOrganizationViewState extends State<RrhhOrganizationView>
             .where((e) => e.position == pos.title)
             .length;
 
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0F172A) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
               color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
             ),
           ),
-          color: isDark ? const Color(0xFF0F172A) : Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Text(
-                      pos.code,
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF10B981),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Cabecera: Avatar + Cargo y Área
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.25),
+                      ),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.badge_outlined,
+                        color: Color(0xFF10B981),
+                        size: 22,
                       ),
                     ),
                   ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          pos.title,
+                          style: GoogleFonts.inter(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w700,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? const Color(
+                                        0xFF10B981,
+                                      ).withValues(alpha: 0.14)
+                                    : const Color(0xFFECFDF5),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                  color: isDark
+                                      ? const Color(
+                                          0xFF10B981,
+                                        ).withValues(alpha: 0.3)
+                                      : const Color(0xFFA7F3D0),
+                                ),
+                              ),
+                              child: Text(
+                                pos.code,
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF059669),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: RrhhStatusChip(
+                                label: pos.areaName,
+                                statusType: StatusType.info,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (pos.requiresSpecialty)
+                    Tooltip(
+                      message: 'Requiere Especialidad Técnica',
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: const Color(
+                            0xFFF59E0B,
+                          ).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Icon(
+                          Icons.verified,
+                          size: 16,
+                          color: Color(0xFFF59E0B),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+
+              // Fila Media: Rango Salarial & Nivel Jerárquico
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 7,
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? const Color(0xFF0B1324)
+                      : const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFE2E8F0),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.payments_outlined,
+                          size: 15,
+                          color: Color(0xFF10B981),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Bs. ${pos.minSalary.toStringAsFixed(0)} - ${pos.maxSalary.toStringAsFixed(0)}',
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w700,
+                            color: isDark
+                                ? const Color(0xFF34D399)
+                                : const Color(0xFF059669),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFE2E8F0),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        pos.level,
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF475569),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Pie de tarjeta
+              Column(
+                children: [
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFF1F5F9),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
+                          Icon(
+                            Icons.group_outlined,
+                            size: 15,
+                            color: isDark
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFF64748B),
+                          ),
+                          const SizedBox(width: 6),
                           Text(
-                            pos.title,
+                            '$empCount Colaboradores activos',
                             style: GoogleFonts.inter(
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
                               color: isDark
-                                  ? Colors.white
-                                  : const Color(0xFF0F172A),
+                                  ? const Color(0xFFCBD5E1)
+                                  : const Color(0xFF334155),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          RrhhStatusChip(
-                            label: pos.areaName,
-                            statusType: StatusType.info,
-                          ),
-                          if (pos.requiresSpecialty) ...[
-                            const SizedBox(width: 6),
-                            const RrhhStatusChip(
-                              label: 'Requiere Especialidad',
-                              statusType: StatusType.warning,
-                            ),
-                          ],
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Rango Salarial: Bs. ${pos.minSalary.toStringAsFixed(0)} - Bs. ${pos.maxSalary.toStringAsFixed(0)}  •  Nivel: ${pos.level}',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: isDark
-                              ? const Color(0xFF94A3B8)
-                              : const Color(0xFF64748B),
+                      Container(
+                        width: 7,
+                        height: 7,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: empCount > 0
+                              ? const Color(0xFF10B981)
+                              : Colors.grey,
                         ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(width: 16),
-                _buildStatPill(
-                  label: 'Colaboradores',
-                  value: '$empCount',
-                  isDark: isDark,
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
         );
       },
@@ -488,75 +706,156 @@ class _RrhhOrganizationViewState extends State<RrhhOrganizationView>
       );
     }
 
-    return ListView.builder(
+    return GridView.builder(
       padding: const EdgeInsets.all(20),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 460,
+        mainAxisExtent: 185,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
       itemCount: specialties.length,
       itemBuilder: (context, index) {
         final spec = specialties[index];
 
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0F172A) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
               color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
             ),
           ),
-          color: isDark ? const Color(0xFF0F172A) : Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF59E0B).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Text(
-                      spec.code,
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFFF59E0B),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Cabecera: Avatar + Nombre y Badges
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: const Color(0xFFF59E0B).withValues(alpha: 0.25),
+                      ),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.workspace_premium_outlined,
+                        color: Color(0xFFF59E0B),
+                        size: 22,
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            spec.name,
-                            style: GoogleFonts.inter(
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.w600,
-                              color: isDark
-                                  ? Colors.white
-                                  : const Color(0xFF0F172A),
-                            ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          spec.name,
+                          style: GoogleFonts.inter(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w700,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
-                          if (spec.requiresCertification) ...[
-                            const SizedBox(width: 8),
-                            const RrhhStatusChip(
-                              label: 'Certificación Obligatoria',
-                              statusType: StatusType.danger,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? const Color(
+                                        0xFFF59E0B,
+                                      ).withValues(alpha: 0.14)
+                                    : const Color(0xFFFFFBEB),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                  color: isDark
+                                      ? const Color(
+                                          0xFFF59E0B,
+                                        ).withValues(alpha: 0.3)
+                                      : const Color(0xFFFDE68A),
+                                ),
+                              ),
+                              child: Text(
+                                spec.code,
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFFD97706),
+                                ),
+                              ),
                             ),
+                            if (spec.requiresCertification) ...[
+                              const SizedBox(width: 6),
+                              const Flexible(
+                                child: RrhhStatusChip(
+                                  label: 'Certificación Obligatoria',
+                                  statusType: StatusType.danger,
+                                ),
+                              ),
+                            ],
                           ],
-                        ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              // Descripción
+              Text(
+                spec.description,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
+                  height: 1.35,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+
+              // Pie
+              Column(
+                children: [
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFF1F5F9),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.verified_user_outlined,
+                        size: 14,
+                        color: Color(0xFFF59E0B),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(width: 6),
                       Text(
-                        spec.description,
+                        'Requisito de competencia laboral',
                         style: GoogleFonts.inter(
-                          fontSize: 12,
+                          fontSize: 11.5,
                           color: isDark
                               ? const Color(0xFF94A3B8)
                               : const Color(0xFF64748B),
@@ -564,45 +863,57 @@ class _RrhhOrganizationViewState extends State<RrhhOrganizationView>
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
         );
       },
     );
   }
 
-  Widget _buildStatPill({
-    required String label,
+  Widget _buildMetricItem({
+    required IconData icon,
     required String value,
+    required String label,
+    required Color color,
     required bool isDark,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: isDark ? Colors.white : const Color(0xFF0F172A),
-            ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(6),
           ),
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 10,
-              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+          child: Icon(icon, size: 14, color: color),
+        ),
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              value,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+              ),
             ),
-          ),
-        ],
-      ),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 10.5,
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
