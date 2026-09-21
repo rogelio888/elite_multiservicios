@@ -135,6 +135,32 @@ class SecurityApiService {
     return await _client.rbac.getUserEffectivePermissions(userId);
   }
 
+  Future<AppRole> createRole(AppRole role) async {
+    return await _client.rbac.createRole(role);
+  }
+
+  Future<AppRole> updateRole(AppRole role) async {
+    return await _client.rbac.updateRole(role);
+  }
+
+  Future<bool> deleteRole(int roleId) async {
+    return await _client.rbac.deleteRole(roleId);
+  }
+
+  Future<List<int>> getRolePermissions(int roleId) async {
+    return await _client.rbac.getRolePermissions(roleId);
+  }
+
+  Future<List<int>> syncRolePermissions({
+    required int roleId,
+    required List<int> permissionIds,
+  }) async {
+    return await _client.rbac.syncRolePermissions(
+      roleId: roleId,
+      permissionIds: permissionIds,
+    );
+  }
+
   // --- Auditoría ---
   Future<List<AuditLog>> listAuditLogs({
     int limit = 50,

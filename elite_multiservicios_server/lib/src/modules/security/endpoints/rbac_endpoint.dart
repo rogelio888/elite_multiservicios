@@ -125,4 +125,113 @@ class RbacEndpoint extends Endpoint {
     final permissions = await repo.getEffectivePermissionsForUser(userId);
     return permissions.toList()..sort();
   }
+
+  /// Crea un nuevo rol empresarial. Requiere roles.manage.
+  Future<AppRole> createRole(Session session, AppRole role) async {
+    final caller = await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rolesManage,
+    );
+
+    final repo = RbacRepository(session);
+    final created = await repo.createRole(role);
+
+    await _auditService.logEvent(
+      session,
+      AuditEventRecord(
+        action: AuditEventType.roleUpdated,
+        userIdentifier: caller,
+        resource: 'role:#${created.id}',
+        result: AuditResult.success,
+        metadata: {'action': 'createRole', 'name': created.name},
+      ),
+    );
+
+    return created;
+  }
+
+  /// Actualiza un rol existente. Requiere roles.manage.
+  Future<AppRole> updateRole(Session session, AppRole role) async {
+    final caller = await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rolesManage,
+    );
+
+    final repo = RbacRepository(session);
+    final updated = await repo.updateRole(role);
+
+    await _auditService.logEvent(
+      session,
+      AuditEventRecord(
+        action: AuditEventType.roleUpdated,
+        userIdentifier: caller,
+        resource: 'role:#${updated.id}',
+        result: AuditResult.success,
+        metadata: {'action': 'updateRole', 'name': updated.name},
+      ),
+    );
+
+    return updated;
+  }
+
+  /// Elimina un rol empresarial (los de sistema no se pueden eliminar). Requiere roles.manage.
+  Future<bool> deleteRole(Session session, int roleId) async {
+    final caller = await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rolesManage,
+    );
+
+    final repo = RbacRepository(session);
+    final success = await repo.deleteRole(roleId);
+
+    if (success) {
+      await _auditService.logEvent(
+        session,
+        AuditEventRecord(
+          action: AuditEventType.roleUpdated,
+          userIdentifier: caller,
+          resource: 'role:#$roleId',
+          result: AuditResult.success,
+          metadata: {'action': 'deleteRole'},
+        ),
+      );
+    }
+
+    return success;
+  }
+
+  /// Obtiene los IDs de los permisos asignados a un rol. Requiere permissions.view.
+  Future<List<int>> getRolePermissions(Session session, int roleId) async {
+    await RbacGuard.requirePermission(session, AppPermissions.permissionsView);
+    final repo = RbacRepository(session);
+    return await repo.getRolePermissions(roleId);
+  }
+
+  /// Sincroniza en bloque los permisos de un rol (Matriz RBAC). Requiere permissions.assign.
+  Future<List<int>> syncRolePermissions(
+    Session session, {
+    required int roleId,
+    required List<int> permissionIds,
+  }) async {
+    final caller = await RbacGuard.requirePermission(
+      session,
+      AppPermissions.permissionsAssign,
+    );
+
+    final repo = RbacRepository(session);
+    final synced = await repo.syncRolePermissions(roleId, permissionIds);
+
+    await _auditService.logEvent(
+      session,
+      AuditEventRecord(
+        action: AuditEventType.permissionChanged,
+        userIdentifier: caller,
+        resource: 'role:#$roleId',
+        result: AuditResult.success,
+        metadata: {'assignedPermissionsCount': synced.length},
+      ),
+    );
+
+    return synced;
+  }
 }

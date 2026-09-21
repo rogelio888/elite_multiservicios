@@ -1239,6 +1239,62 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
     );
   }
 
+  void _confirmDeleteTask(CrmTaskItem task) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(
+              Icons.delete_outline,
+              color: Color(0xFFDC2626),
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '¿Eliminar Tarea?',
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          '¿Estás seguro de que deseas eliminar la tarea "${task.title}"? Esta acción removerá el recordatorio permanentemente.',
+          style: GoogleFonts.inter(fontSize: 13),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFDC2626),
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await _agendaService.deleteTask(task.id);
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: const Color(0xFF991B1B),
+                    content: Text(
+                      'Tarea "${task.title}" eliminada de la agenda.',
+                    ),
+                  ),
+                );
+              }
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -2354,6 +2410,16 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
               ),
               Row(
                 children: [
+                  IconButton(
+                    tooltip: 'Eliminar / Descartar Tarea',
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      size: 16,
+                      color: Color(0xFFEF4444),
+                    ),
+                    onPressed: () => _confirmDeleteTask(task),
+                  ),
+                  const SizedBox(width: 2),
                   TextButton.icon(
                     onPressed: () => _showPostponeMenu(context, task),
                     icon: const Icon(

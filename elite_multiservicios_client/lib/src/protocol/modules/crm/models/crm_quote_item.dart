@@ -18,24 +18,33 @@ abstract class CrmQuoteItem implements _i1.SerializableModel {
   CrmQuoteItem._({
     this.id,
     required this.opportunityId,
+    this.catalogItemId,
+    this.catalogVersion,
     required this.category,
     required this.concept,
+    String? calculationType,
     required this.unitType,
     required this.quantity,
     required this.unitPrice,
+    this.metadata,
     bool? isDeleted,
     required this.createdAt,
     required this.updatedAt,
-  }) : isDeleted = isDeleted ?? false;
+  }) : calculationType = calculationType ?? 'PER_UNIT',
+       isDeleted = isDeleted ?? false;
 
   factory CrmQuoteItem({
     int? id,
     required int opportunityId,
+    int? catalogItemId,
+    int? catalogVersion,
     required String category,
     required String concept,
+    String? calculationType,
     required String unitType,
     required double quantity,
     required double unitPrice,
+    String? metadata,
     bool? isDeleted,
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -45,11 +54,15 @@ abstract class CrmQuoteItem implements _i1.SerializableModel {
     return CrmQuoteItem(
       id: jsonSerialization['id'] as int?,
       opportunityId: jsonSerialization['opportunityId'] as int,
+      catalogItemId: jsonSerialization['catalogItemId'] as int?,
+      catalogVersion: jsonSerialization['catalogVersion'] as int?,
       category: jsonSerialization['category'] as String,
       concept: jsonSerialization['concept'] as String,
+      calculationType: jsonSerialization['calculationType'] as String?,
       unitType: jsonSerialization['unitType'] as String,
       quantity: (jsonSerialization['quantity'] as num).toDouble(),
       unitPrice: (jsonSerialization['unitPrice'] as num).toDouble(),
+      metadata: jsonSerialization['metadata'] as String?,
       isDeleted: jsonSerialization['isDeleted'] == null
           ? null
           : _i1.BoolJsonExtension.fromJson(jsonSerialization['isDeleted']),
@@ -70,11 +83,20 @@ abstract class CrmQuoteItem implements _i1.SerializableModel {
   /// ID de la oportunidad a la que pertenece la cotización.
   int opportunityId;
 
+  /// ID opcional de la partida de catálogo de origen (sin join estricto obligatorio).
+  int? catalogItemId;
+
+  /// Versión de la partida al momento de cotizar.
+  int? catalogVersion;
+
   /// Categoría: Personal, Limpieza, Mantenimiento, Equipamiento, Materiales, Tecnología.
   String category;
 
   /// Concepto descriptivo del servicio o insumo.
   String concept;
+
+  /// Tipo de cálculo congelado al cotizar.
+  String calculationType;
 
   /// Tipo de unidad: Puesto 24/7, Puesto 12h, Operario, Global, m², Unid., Servicio, Kit, Tanque.
   String unitType;
@@ -82,8 +104,11 @@ abstract class CrmQuoteItem implements _i1.SerializableModel {
   /// Cantidad requerida.
   double quantity;
 
-  /// Precio unitario en Bs.
+  /// Precio unitario congelado en Bs.
   double unitPrice;
+
+  /// Parámetros auxiliares congelados en formato JSON.
+  String? metadata;
 
   /// Eliminación lógica y auditoría temporal.
   bool isDeleted;
@@ -98,11 +123,15 @@ abstract class CrmQuoteItem implements _i1.SerializableModel {
   CrmQuoteItem copyWith({
     int? id,
     int? opportunityId,
+    int? catalogItemId,
+    int? catalogVersion,
     String? category,
     String? concept,
+    String? calculationType,
     String? unitType,
     double? quantity,
     double? unitPrice,
+    String? metadata,
     bool? isDeleted,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -113,11 +142,15 @@ abstract class CrmQuoteItem implements _i1.SerializableModel {
       '__className__': 'CrmQuoteItem',
       if (id != null) 'id': id,
       'opportunityId': opportunityId,
+      if (catalogItemId != null) 'catalogItemId': catalogItemId,
+      if (catalogVersion != null) 'catalogVersion': catalogVersion,
       'category': category,
       'concept': concept,
+      'calculationType': calculationType,
       'unitType': unitType,
       'quantity': quantity,
       'unitPrice': unitPrice,
+      if (metadata != null) 'metadata': metadata,
       'isDeleted': isDeleted,
       'createdAt': createdAt.toJson(),
       'updatedAt': updatedAt.toJson(),
@@ -136,22 +169,30 @@ class _CrmQuoteItemImpl extends CrmQuoteItem {
   _CrmQuoteItemImpl({
     int? id,
     required int opportunityId,
+    int? catalogItemId,
+    int? catalogVersion,
     required String category,
     required String concept,
+    String? calculationType,
     required String unitType,
     required double quantity,
     required double unitPrice,
+    String? metadata,
     bool? isDeleted,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) : super._(
          id: id,
          opportunityId: opportunityId,
+         catalogItemId: catalogItemId,
+         catalogVersion: catalogVersion,
          category: category,
          concept: concept,
+         calculationType: calculationType,
          unitType: unitType,
          quantity: quantity,
          unitPrice: unitPrice,
+         metadata: metadata,
          isDeleted: isDeleted,
          createdAt: createdAt,
          updatedAt: updatedAt,
@@ -164,11 +205,15 @@ class _CrmQuoteItemImpl extends CrmQuoteItem {
   CrmQuoteItem copyWith({
     Object? id = _Undefined,
     int? opportunityId,
+    Object? catalogItemId = _Undefined,
+    Object? catalogVersion = _Undefined,
     String? category,
     String? concept,
+    String? calculationType,
     String? unitType,
     double? quantity,
     double? unitPrice,
+    Object? metadata = _Undefined,
     bool? isDeleted,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -176,11 +221,17 @@ class _CrmQuoteItemImpl extends CrmQuoteItem {
     return CrmQuoteItem(
       id: id is int? ? id : this.id,
       opportunityId: opportunityId ?? this.opportunityId,
+      catalogItemId: catalogItemId is int? ? catalogItemId : this.catalogItemId,
+      catalogVersion: catalogVersion is int?
+          ? catalogVersion
+          : this.catalogVersion,
       category: category ?? this.category,
       concept: concept ?? this.concept,
+      calculationType: calculationType ?? this.calculationType,
       unitType: unitType ?? this.unitType,
       quantity: quantity ?? this.quantity,
       unitPrice: unitPrice ?? this.unitPrice,
+      metadata: metadata is String? ? metadata : this.metadata,
       isDeleted: isDeleted ?? this.isDeleted,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

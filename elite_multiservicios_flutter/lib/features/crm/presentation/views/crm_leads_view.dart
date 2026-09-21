@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/crm_leads_service.dart';
 import '../../data/crm_agenda_service.dart';
+import '../../data/crm_catalog_service.dart';
 import '../../data/crm_pipeline_service.dart';
 import '../views/crm_pipeline_view.dart' show OpportunityItem;
 import '../../../security/services/auth_service.dart';
@@ -55,10 +56,21 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
     'Descartado',
   ];
 
+  List<String> get _dynamicSectors {
+    final catalogSectors = CrmCatalogService.instance.sectors
+        .map((s) => s.name)
+        .toList();
+    if (catalogSectors.isNotEmpty) {
+      return ['Todos', ...catalogSectors];
+    }
+    return _sectors;
+  }
+
   @override
   void initState() {
     super.initState();
     _leadsService.loadLeads();
+    CrmCatalogService.instance.loadSectors();
   }
 
   @override
@@ -417,7 +429,7 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: _sectors.map((sec) {
+        children: _dynamicSectors.map((sec) {
           final isSelected = _selectedSector == sec;
           final count = sec == 'Todos'
               ? allLeads.length
@@ -1593,324 +1605,410 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
             : (item.sector.contains('Colegios')
                   ? 'Mantenimiento & Jardinería Educativa'
                   : 'Mantenimiento Corporativo');
+        bool scheduleReminder = false;
 
-        return Dialog(
-          backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          insetPadding: const EdgeInsets.all(20),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 580),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+        return StatefulBuilder(
+          builder: (dialogCtx, setDialogState) {
+            return Dialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              insetPadding: const EdgeInsets.all(20),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 580),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFF2563EB,
-                            ).withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(
-                            Icons.rocket_launch,
-                            color: Color(0xFF2563EB),
-                            size: 22,
-                          ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF2563EB,
+                                ).withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.rocket_launch,
+                                color: Color(0xFF2563EB),
+                                size: 22,
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Promover Prospecto al Pipeline',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Convierte este prospecto verificado en una Oportunidad de Negocio activa',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: const Color(0xFF64748B),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 14),
-                        Expanded(
+                        const SizedBox(height: 20),
+
+                        // Resumen del Prospecto
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF1E293B).withValues(alpha: 0.5)
+                                : const Color(0xFFF8FAFC),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFFE2E8F0),
+                            ),
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Promover Prospecto al Pipeline',
-                                style: GoogleFonts.inter(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w800,
+                                'EMPRESA / PROSPECTO: ${item.company}',
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
+                              const SizedBox(height: 4),
                               Text(
-                                'Convierte este prospecto en una Oportunidad activa en etapa de Calificación.',
+                                'Ubicación / Sede: ${item.address}',
                                 style: GoogleFonts.inter(
-                                  fontSize: 12,
+                                  fontSize: 11.5,
                                   color: const Color(0xFF64748B),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
 
-                    // Resumen de Datos
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF16233B)
-                            : const Color(0xFFF8FAFC),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: isDark
-                              ? const Color(0xFF1E293B)
-                              : const Color(0xFFE2E8F0),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'EMPRESA / PROSPECTO: ${item.company}',
-                            style: GoogleFonts.jetBrainsMono(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Ubicación / Sede: ${item.address}',
-                            style: GoogleFonts.inter(
-                              fontSize: 11.5,
-                              color: const Color(0xFF64748B),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                        const SizedBox(height: 16),
 
-                    const SizedBox(height: 16),
-
-                    TextFormField(
-                      controller: titleCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Título de la Oportunidad / Negocio *',
-                        hintText: 'Ej: Servicio de Limpieza y Mantenimiento',
-                        isDense: true,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-
-                    DropdownButtonFormField<String>(
-                      initialValue: serviceType,
-                      isExpanded: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Tipo de Servicio a Cotizar',
-                        isDense: true,
-                      ),
-                      items:
-                          [
-                                'Limpieza Hospitalaria & Bioseguridad',
-                                'Mantenimiento Corporativo',
-                                'Mantenimiento & Jardinería Educativa',
-                                'Seguridad & Vigilancia Física',
-                                'Desinfección & Fumigación Integral',
-                              ]
-                              .map(
-                                (st) => DropdownMenuItem(
-                                  value: st,
-                                  child: Text(
-                                    st,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                      onChanged: (v) {
-                        if (v != null) serviceType = v;
-                      },
-                    ),
-                    const SizedBox(height: 14),
-
-                    // Campos de contacto real/confirmado
-                    TextFormField(
-                      controller: contactCtrl,
-                      decoration: const InputDecoration(
-                        labelText:
-                            'Nombre del Encargado / Tomador de Decisión *',
-                        hintText:
-                            'Ej: Lic. Roberto Gómez - Gerente Administrativo',
-                        prefixIcon: Icon(Icons.person_outline, size: 18),
-                        isDense: true,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: phoneCtrl,
-                            decoration: const InputDecoration(
-                              labelText: 'Teléfono / WhatsApp Directo *',
-                              hintText: 'Ej: 70012345',
-                              prefixIcon: Icon(Icons.phone_outlined, size: 18),
-                              isDense: true,
-                            ),
+                        TextFormField(
+                          controller: titleCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Título de la Oportunidad / Negocio *',
+                            hintText:
+                                'Ej: Servicio de Limpieza y Mantenimiento',
+                            isDense: true,
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextFormField(
-                            controller: emailCtrl,
-                            decoration: const InputDecoration(
-                              labelText: 'Correo Electrónico',
-                              hintText: 'Ej: contacto@empresa.com',
-                              prefixIcon: Icon(Icons.email_outlined, size: 18),
-                              isDense: true,
-                            ),
+                        const SizedBox(height: 14),
+
+                        DropdownButtonFormField<String>(
+                          initialValue: serviceType,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Tipo de Servicio a Cotizar',
+                            isDense: true,
                           ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(ctx),
-                          child: const Text('Cancelar'),
-                        ),
-                        const SizedBox(width: 10),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2563EB),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          onPressed: () async {
-                            final companyName = item.company;
-                            final oppTitle = titleCtrl.text.trim().isNotEmpty
-                                ? titleCtrl.text.trim()
-                                : 'Servicio Integral para $companyName';
-                            final confirmedContact =
-                                contactCtrl.text.trim().isNotEmpty
-                                ? contactCtrl.text.trim()
-                                : item.contactPerson;
-                            final confirmedPhone =
-                                phoneCtrl.text.trim().isNotEmpty
-                                ? phoneCtrl.text.trim()
-                                : item.phone;
-                            final confirmedEmail =
-                                emailCtrl.text.trim().isNotEmpty
-                                ? emailCtrl.text.trim()
-                                : item.emailOrWeb;
-
-                            // 1. Actualizar prospecto en PostgreSQL con los datos reales de contacto
-                            final updatedLead = item.copyWith(
-                              contactPerson: confirmedContact,
-                              phone: confirmedPhone,
-                              emailOrWeb: confirmedEmail,
-                            );
-                            await _leadsService.updateLead(updatedLead);
-
-                            // 2. Registrar Oportunidad en PostgreSQL vía CrmPipelineService
-                            final pipelineService = CrmPipelineService();
-                            final createdOpp = await pipelineService.addDeal(
-                              OpportunityItem(
-                                id: '',
-                                title: oppTitle,
-                                clientName: companyName,
-                                contactPerson: confirmedContact,
-                                phone: confirmedPhone,
-                                serviceType: serviceType,
-                                amount: item.estimatedValue > 0
-                                    ? item.estimatedValue
-                                    : 0.0,
-                                stage: 'Calificación',
-                                probability: 30,
-                                owner: item.advisor,
-                                closingDate: '',
-                                notes: item.notes ?? '',
-                                businessSegment: item.sector,
-                                siteName: companyName,
-                                siteAddress: item.address,
-                                siteContactName: confirmedContact,
-                                siteContactPhone: confirmedPhone,
-                                isSiteHeadquarters: true,
-                              ),
-                            );
-
-                            // 3. Marcar como promovido en el servicio de prospectos vinculando la Oportunidad
-                            await _leadsService.markPromoted(
-                              item.id,
-                              opportunityId: createdOpp?.id,
-                            );
-
-                            // 4. Agendar automáticamente una tarea en Agenda CRM
-                            await _agendaService.addTask(
-                              CrmTaskItem(
-                                id: 'TSK-${DateTime.now().millisecondsSinceEpoch}',
-                                title: 'Reunión de Calificación: $companyName',
-                                taskType: CrmTaskType.meeting,
-                                clientName: companyName,
-                                contactPerson: confirmedContact,
-                                phone: confirmedPhone,
-                                scheduledAt: DateTime.now().add(
-                                  const Duration(days: 1),
-                                ),
-                                scheduledTimeText: '10:00',
-                                priority: 'Alta / Urgente',
-                                status: 'Pendiente',
-                                callContext:
-                                    'Prospecto promovido desde Outbound Maps. Requiere propuesta formal.',
-                                createdAt: DateTime.now(),
-                                relatedOpportunityId: createdOpp?.id,
-                              ),
-                            );
-
-                            if (ctx.mounted) Navigator.pop(ctx);
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  backgroundColor: const Color(0xFF065F46),
-                                  content: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.check_circle,
-                                        color: Colors.white,
+                          items:
+                              [
+                                    'Limpieza Hospitalaria & Bioseguridad',
+                                    'Mantenimiento Corporativo',
+                                    'Mantenimiento & Jardinería Educativa',
+                                    'Seguridad & Vigilancia Física',
+                                    'Desinfección & Fumigación Integral',
+                                  ]
+                                  .map(
+                                    (st) => DropdownMenuItem(
+                                      value: st,
+                                      child: Text(
+                                        st,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Text(
-                                          '¡Oportunidad "$oppTitle" creada con éxito en el Pipeline!',
-                                          style: GoogleFonts.inter(
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged: (v) {
+                            if (v != null) serviceType = v;
+                          },
+                        ),
+                        const SizedBox(height: 14),
+
+                        // Campos de contacto real/confirmado
+                        TextFormField(
+                          controller: contactCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Contacto Clave / Decisor *',
+                            hintText:
+                                'Ej: Lic. Roberto Gómez - Gerente Administrativo',
+                            prefixIcon: Icon(Icons.person_outline, size: 18),
+                            isDense: true,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: phoneCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Teléfono / WhatsApp Directo *',
+                                  hintText: 'Ej: 70012345',
+                                  prefixIcon: Icon(
+                                    Icons.phone_outlined,
+                                    size: 18,
+                                  ),
+                                  isDense: true,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TextFormField(
+                                controller: emailCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Correo Electrónico',
+                                  hintText: 'Ej: contacto@empresa.com',
+                                  prefixIcon: Icon(
+                                    Icons.email_outlined,
+                                    size: 18,
+                                  ),
+                                  isDense: true,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Opción de agendar recordatorio manual (desmarcado por defecto)
+                        InkWell(
+                          onTap: () {
+                            setDialogState(() {
+                              scheduleReminder = !scheduleReminder;
+                            });
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? const Color(
+                                      0xFF1E293B,
+                                    ).withValues(alpha: 0.5)
+                                  : const Color(0xFFF1F5F9),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: scheduleReminder
+                                    ? const Color(0xFF2563EB)
+                                    : (isDark
+                                          ? const Color(0xFF334155)
+                                          : const Color(0xFFE2E8F0)),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Checkbox(
+                                  value: scheduleReminder,
+                                  activeColor: const Color(0xFF2563EB),
+                                  onChanged: (val) {
+                                    setDialogState(() {
+                                      scheduleReminder = val ?? false;
+                                    });
+                                  },
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Agendar recordatorio en Agenda CRM (Opcional)',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12.5,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'Desmarcado por defecto. Si no lo marcas, no se creará ninguna tarea.',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 11,
+                                          color: const Color(0xFF64748B),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              );
-                            }
-                          },
-                          icon: const Icon(Icons.check, size: 16),
-                          label: const Text('Confirmar & Promover'),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('Cancelar'),
+                            ),
+                            const SizedBox(width: 10),
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF2563EB),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 18,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: () async {
+                                final companyName = item.company;
+                                final oppTitle =
+                                    titleCtrl.text.trim().isNotEmpty
+                                    ? titleCtrl.text.trim()
+                                    : 'Servicio Integral para $companyName';
+                                final confirmedContact =
+                                    contactCtrl.text.trim().isNotEmpty
+                                    ? contactCtrl.text.trim()
+                                    : item.contactPerson;
+                                final confirmedPhone =
+                                    phoneCtrl.text.trim().isNotEmpty
+                                    ? phoneCtrl.text.trim()
+                                    : item.phone;
+                                final confirmedEmail =
+                                    emailCtrl.text.trim().isNotEmpty
+                                    ? emailCtrl.text.trim()
+                                    : item.emailOrWeb;
+
+                                // 1. Actualizar prospecto en PostgreSQL con los datos reales de contacto
+                                final updatedLead = item.copyWith(
+                                  contactPerson: confirmedContact,
+                                  phone: confirmedPhone,
+                                  emailOrWeb: confirmedEmail,
+                                );
+                                await _leadsService.updateLead(updatedLead);
+
+                                // 2. Registrar Oportunidad en PostgreSQL vía CrmPipelineService
+                                final pipelineService = CrmPipelineService();
+                                final createdOpp = await pipelineService
+                                    .addDeal(
+                                      OpportunityItem(
+                                        id: '',
+                                        title: oppTitle,
+                                        clientName: companyName,
+                                        contactPerson: confirmedContact,
+                                        phone: confirmedPhone,
+                                        serviceType: serviceType,
+                                        amount: item.estimatedValue > 0
+                                            ? item.estimatedValue
+                                            : 0.0,
+                                        stage: 'Calificación',
+                                        probability: 30,
+                                        owner: item.advisor,
+                                        closingDate: '',
+                                        notes: item.notes ?? '',
+                                        businessSegment: item.sector,
+                                        siteName: companyName,
+                                        siteAddress: item.address,
+                                        siteContactName: confirmedContact,
+                                        siteContactPhone: confirmedPhone,
+                                        isSiteHeadquarters: true,
+                                      ),
+                                    );
+
+                                // 3. Marcar como promovido en el servicio de prospectos vinculando la Oportunidad
+                                await _leadsService.markPromoted(
+                                  item.id,
+                                  opportunityId: createdOpp?.id,
+                                );
+
+                                // 4. Agendar tarea en Agenda CRM sólo si el usuario lo solicitó explícitamente
+                                if (scheduleReminder) {
+                                  await _agendaService.addTask(
+                                    CrmTaskItem(
+                                      id: 'TSK-${DateTime.now().millisecondsSinceEpoch}',
+                                      title:
+                                          'Reunión de Calificación: $companyName',
+                                      taskType: CrmTaskType.meeting,
+                                      clientName: companyName,
+                                      contactPerson: confirmedContact,
+                                      phone: confirmedPhone,
+                                      scheduledAt: DateTime.now().add(
+                                        const Duration(days: 1),
+                                      ),
+                                      scheduledTimeText: '10:00',
+                                      priority: 'Alta / Urgente',
+                                      status: 'Pendiente',
+                                      callContext:
+                                          'Prospecto promovido desde Outbound Maps. Requiere propuesta formal.',
+                                      createdAt: DateTime.now(),
+                                      relatedOpportunityId: createdOpp?.id,
+                                    ),
+                                  );
+                                }
+
+                                if (ctx.mounted) Navigator.pop(ctx);
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor: const Color(0xFF065F46),
+                                      content: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.check_circle,
+                                            color: Colors.white,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Text(
+                                              '¡Oportunidad "$oppTitle" creada con éxito en el Pipeline!',
+                                              style: GoogleFonts.inter(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              icon: const Icon(Icons.check, size: 16),
+                              label: const Text('Promover al Pipeline'),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );

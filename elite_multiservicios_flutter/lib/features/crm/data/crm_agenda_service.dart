@@ -44,9 +44,11 @@ class CrmTaskItem {
   final String? relatedOpportunityId;
   final String? customerId;
   final String? relatedContractId;
+  final int? dbId;
 
   const CrmTaskItem({
     required this.id,
+    this.dbId,
     required this.title,
     required this.taskType,
     required this.clientName,
@@ -135,9 +137,11 @@ class CrmTaskItem {
     String? relatedOpportunityId,
     String? customerId,
     String? relatedContractId,
+    int? dbId,
   }) {
     return CrmTaskItem(
       id: id,
+      dbId: dbId ?? this.dbId,
       title: title ?? this.title,
       taskType: taskType ?? this.taskType,
       clientName: clientName ?? this.clientName,
@@ -286,6 +290,7 @@ class CrmAgendaService extends ChangeNotifier {
   static CrmTaskItem _fromCrmTask(CrmTask t) {
     return CrmTaskItem(
       id: t.code.isNotEmpty ? t.code : (t.id?.toString() ?? ''),
+      dbId: t.id,
       title: t.title,
       taskType: t.taskType,
       clientName: t.clientName,
@@ -455,7 +460,9 @@ class CrmAgendaService extends ChangeNotifier {
   }
 
   Future<void> deleteTask(String taskId) async {
-    final rawId = int.tryParse(taskId.replaceAll(RegExp(r'[^0-9]'), ''));
+    final item = _tasks.where((t) => t.id == taskId).firstOrNull;
+    final rawId =
+        item?.dbId ?? int.tryParse(taskId.replaceAll(RegExp(r'[^0-9]'), ''));
     _tasks.removeWhere((t) => t.id == taskId);
     notifyListeners();
 

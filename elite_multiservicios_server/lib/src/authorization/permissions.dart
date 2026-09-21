@@ -59,6 +59,10 @@ abstract class AppPermissions {
   static const String crmAgendaDelete = 'agenda.delete';
   static const String crmAgendaComplete = 'agenda.complete';
 
+  // --- Módulo CRM: Catálogo & Tarifario ---
+  static const String crmCatalogView = 'catalog.view';
+  static const String crmCatalogManage = 'catalog.manage';
+
   /// Catálogo de todos los permisos registrados en el sistema.
   static const List<String> all = [
     usersView,
@@ -99,5 +103,7 @@ abstract class AppPermissions {
     crmAgendaUpdate,
     crmAgendaDelete,
     crmAgendaComplete,
+    crmCatalogView,
+    crmCatalogManage,
   ];
 }

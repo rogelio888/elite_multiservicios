@@ -125,4 +125,126 @@ class RbacRepository {
 
     return permissions.map((p) => p.code).toSet();
   }
+
+  /// Crea un nuevo rol empresarial (no de sistema).
+  Future<AppRole> createRole(AppRole role) async {
+    final cleanName = role.name.trim();
+    if (cleanName.isEmpty) {
+      throw const FormatException('El nombre del rol es requerido.');
+    }
+
+    final existing = await AppRole.db.findFirstRow(
+      session,
+      where: (t) => t.name.ilike(cleanName),
+    );
+    if (existing != null) {
+      throw FormatException('Ya existe un rol con el nombre "$cleanName".');
+    }
+
+    final toInsert = role.copyWith(
+      name: cleanName,
+      description: role.description.trim(),
+      isSystemRole: false,
+      createdAt: DateTime.now().toUtc(),
+    );
+
+    return await AppRole.db.insertRow(session, toInsert);
+  }
+
+  /// Actualiza un rol existente con salvaguarda para roles del sistema.
+  Future<AppRole> updateRole(AppRole role) async {
+    final existing = await AppRole.db.findById(session, role.id!);
+    if (existing == null) {
+      throw const FormatException('El rol solicitado no existe.');
+    }
+
+    final isSuper =
+        existing.isSystemRole || existing.name.toLowerCase() == 'superadmin';
+    final cleanName = isSuper ? existing.name : role.name.trim();
+
+    final toUpdate = existing.copyWith(
+      name: cleanName,
+      description: role.description.trim(),
+      isSystemRole: existing.isSystemRole,
+    );
+
+    return await AppRole.db.updateRow(session, toUpdate);
+  }
+
+  /// Elimina un rol si no es de sistema y purga sus dependencias.
+  Future<bool> deleteRole(int roleId) async {
+    final existing = await AppRole.db.findById(session, roleId);
+    if (existing == null) return false;
+
+    if (existing.isSystemRole || existing.name.toLowerCase() == 'superadmin') {
+      throw const FormatException(
+        'Los roles base del sistema son inmutables y no pueden ser eliminados.',
+      );
+    }
+
+    // 1. Limpiar asignaciones de usuarios y permisos
+    await UserRole.db.deleteWhere(
+      session,
+      where: (t) => t.roleId.equals(roleId),
+    );
+    await RolePermission.db.deleteWhere(
+      session,
+      where: (t) => t.roleId.equals(roleId),
+    );
+
+    // 2. Eliminar rol
+    await AppRole.db.deleteRow(session, existing);
+    return true;
+  }
+
+  /// Obtiene la lista de IDs de permisos asignados a un rol.
+  Future<List<int>> getRolePermissions(int roleId) async {
+    final links = await RolePermission.db.find(
+      session,
+      where: (t) => t.roleId.equals(roleId),
+    );
+    return links.map((l) => l.permissionId).toList();
+  }
+
+  /// Sincroniza atómicamente todos los permisos asignados a un rol.
+  Future<List<int>> syncRolePermissions(
+    int roleId,
+    List<int> permissionIds,
+  ) async {
+    final role = await AppRole.db.findById(session, roleId);
+    if (role == null) {
+      throw const FormatException('El rol no existe.');
+    }
+
+    final isSuper =
+        role.isSystemRole && role.name.toLowerCase() == 'superadmin';
+    List<int> targetIds = permissionIds;
+
+    // Si es superadmin, nunca se le pueden revocar permisos
+    if (isSuper) {
+      final allPerms = await AppPermission.db.find(session);
+      targetIds = allPerms.map((p) => p.id!).toList();
+    }
+
+    // Purgar anteriores
+    await RolePermission.db.deleteWhere(
+      session,
+      where: (t) => t.roleId.equals(roleId),
+    );
+
+    // Insertar nuevos
+    final now = DateTime.now().toUtc();
+    for (final permId in targetIds.toSet()) {
+      await RolePermission.db.insertRow(
+        session,
+        RolePermission(
+          roleId: roleId,
+          permissionId: permId,
+          assignedAt: now,
+        ),
+      );
+    }
+
+    return targetIds;
+  }
 }

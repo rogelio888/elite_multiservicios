@@ -25,6 +25,22 @@ crmAgenda:
   - scheduleQualityCheck:
   - scheduleRenewal:
   - getMetrics:
+crmCatalog:
+  - listSectors:
+  - createSector:
+  - updateSector:
+  - deleteSector:
+  - listServiceLines:
+  - createServiceLine:
+  - updateServiceLine:
+  - deleteServiceLine:
+  - listCatalogItems:
+  - getCatalogItem:
+  - createCatalogItem:
+  - updateCatalogItem:
+  - deleteCatalogItem:
+  - listScopesForItem:
+  - setCatalogItemScope:
 crmCustomers:
   - listCustomers:
   - getCustomerDetail:
@@ -76,6 +92,11 @@ rbac:
   - removeRoleFromUser:
   - assignPermissionToRole:
   - getUserEffectivePermissions:
+  - createRole:
+  - updateRole:
+  - deleteRole:
+  - getRolePermissions:
+  - syncRolePermissions:
 sessionManagement:
   - registerSession:
   - listUserSessions:

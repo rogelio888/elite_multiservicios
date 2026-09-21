@@ -1,0 +1,26 @@
+### Alcance y precio diferenciado de una partida de catálogo para un sector o rubro.
+class: CrmCatalogItemScope
+table: crm_catalog_item_scope
+fields:
+  ### Partida de catálogo sobre la que aplica la diferenciación.
+  catalogItemId: int, relation(parent=crm_catalog_item, onDelete=Cascade)
+  ### Sector o Rubro industrial al que aplica este override.
+  sectorId: int, relation(parent=crm_sector, onDelete=Cascade)
+  ### Línea de servicio opcional.
+  serviceLineId: int?, relation(parent=crm_service_line, onDelete=SetNull)
+  ### Precio diferenciado o sobreescrito para este rubro en Bs.
+  priceOverride: double?
+  ### Cantidad mínima diferenciada.
+  minQuantityOverride: double?
+  ### Parámetros auxiliares JSON sobreescritos para este sector.
+  metadataOverride: String?
+  ### Estado operativo.
+  isActive: bool, default=true
+  ### Eliminación lógica y auditoría temporal.
+  isDeleted: bool, default=false
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  crm_catalog_scope_unique_idx:
+    fields: catalogItemId, sectorId
+    unique: true

@@ -1,0 +1,40 @@
+### Partida maestra del catálogo y tarifario de servicios.
+class: CrmCatalogItem
+table: crm_catalog_item
+fields:
+  ### Código identificador de la partida (ej: CAT-LIMP-M2, CAT-VIG-247).
+  code: String
+  ### Categoría principal: Personal, Limpieza, Mantenimiento, Equipamiento, Tecnología.
+  category: String
+  ### Línea de servicio a la que pertenece la partida.
+  serviceLineId: int, relation(parent=crm_service_line, onDelete=Cascade)
+  ### Concepto descriptivo del servicio o partida.
+  concept: String
+  ### Tipo de cálculo: FIXED, PER_UNIT, PER_HOUR, PER_AREA, PER_POSITION, GLOBAL.
+  calculationType: String
+  ### Unidad de medida: m², Hora, Puesto 24/7, Puesto 12h, Operario, Tanque, Global, Unid., Kit.
+  unitType: String
+  ### Precio base de referencia vigente en Bolivianos (Bs.).
+  basePrice: double
+  ### Cantidad mínima requerida por orden o contrato.
+  minQuantity: double, default=1.0
+  ### Versión de la partida (incrementa ante cualquier cambio que altere el cálculo).
+  version: int, default=1
+  ### Parámetros auxiliares serializados en formato JSON (ej. turnos, horas, rendimiento).
+  metadata: String?
+  ### Especificación o alcance detallado.
+  description: String?
+  ### Estado operativo.
+  isActive: bool, default=true
+  ### Eliminación lógica y auditoría temporal.
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  crm_catalog_item_code_unique_idx:
+    fields: code
+    unique: true
+  crm_catalog_item_concept_service_line_unique_idx:
+    fields: serviceLineId, concept
+    unique: true

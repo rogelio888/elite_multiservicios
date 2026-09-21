@@ -4,6 +4,7 @@ import '../../../core/navigation/web_url_sync.dart';
 import '../../crm/data/crm_agenda_service.dart';
 import '../../crm/presentation/views/crm_activities_view.dart';
 import '../../crm/presentation/views/crm_customers_view.dart';
+import '../../crm/presentation/views/crm_catalog_management_view.dart';
 import '../../crm/presentation/views/crm_leads_view.dart';
 import '../../crm/presentation/views/crm_pipeline_view.dart';
 import '../../rrhh/presentation/views/rrhh_dashboard_view.dart';
@@ -57,6 +58,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'rrhh-asignaciones',
     'rrhh-laboral',
     'rrhh-reportes',
+    'crm-catalogo',
   ];
 
   static int _indexFromRouteOrHash(String raw) {
@@ -136,6 +138,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 'rrhh-auditoria':
       case 'bitacora-rrhh':
         return 15;
+      case 'crm-catalogo':
+      case 'catalogo':
+      case 'tarifario':
+      case 'partidas':
+        return 16;
       case 'dashboard':
       default:
         return 0;
@@ -179,7 +186,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     _selectedIndex = initialIndex;
     if (initialIndex >= 1 && initialIndex <= 5) {
       _isSecurityExpanded = true;
-    } else if (initialIndex >= 6 && initialIndex <= 9) {
+    } else if ((initialIndex >= 6 && initialIndex <= 9) || initialIndex == 16) {
       _isCrmExpanded = true;
     } else if (initialIndex >= 10 && initialIndex <= 15) {
       _isRrhhExpanded = true;
@@ -196,7 +203,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
           setState(() {
             _selectedIndex = newIndex;
             if (newIndex >= 1 && newIndex <= 5) _isSecurityExpanded = true;
-            if (newIndex >= 6 && newIndex <= 9) _isCrmExpanded = true;
+            if ((newIndex >= 6 && newIndex <= 9) || newIndex == 16) {
+              _isCrmExpanded = true;
+            }
             if (newIndex >= 10 && newIndex <= 15) _isRrhhExpanded = true;
           });
           _loadSidebarMetrics();
@@ -227,7 +236,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         _selectedIndex = index;
         if (index >= 1 && index <= 5) {
           _isSecurityExpanded = true;
-        } else if (index >= 6 && index <= 9) {
+        } else if ((index >= 6 && index <= 9) || index == 16) {
           _isCrmExpanded = true;
         } else if (index >= 10 && index <= 15) {
           _isRrhhExpanded = true;
@@ -347,6 +356,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'RRHH: Asignaciones & Horarios',
     'RRHH: Gestión Laboral & Novedades',
     'RRHH: Centro de Reportes & Métricas',
+    'CRM: Catálogo & Tarifario',
   ];
 
   Widget _buildNavItem({
@@ -362,6 +372,26 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     final isSelected = _selectedIndex == index;
     final collapsed = !isDrawer && _isSidebarCollapsed;
 
+    final isCrmItem = (index >= 6 && index <= 9) || index == 16;
+    final isRrhhItem = index >= 10 && index <= 15;
+    final Color activeAccent = isCrmItem
+        ? const Color(0xFF10B981)
+        : (isRrhhItem ? const Color(0xFF8B5CF6) : const Color(0xFF2563EB));
+    final Color activeAccentLight = isCrmItem
+        ? const Color(0xFF34D399)
+        : (isRrhhItem ? const Color(0xFFA78BFA) : const Color(0xFF60A5FA));
+    final Color activeBg = isDark
+        ? (isCrmItem
+              ? const Color(0xFF10B981).withValues(alpha: 0.12)
+              : (isRrhhItem
+                    ? const Color(0xFF8B5CF6).withValues(alpha: 0.12)
+                    : const Color(0xFF161F30)))
+        : (isCrmItem
+              ? const Color(0xFF10B981).withValues(alpha: 0.08)
+              : (isRrhhItem
+                    ? const Color(0xFF8B5CF6).withValues(alpha: 0.08)
+                    : const Color(0xFFF1F5F9)));
+
     final content = Material(
       color: Colors.transparent,
       child: InkWell(
@@ -375,14 +405,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
             vertical: isSubItem ? 8 : 10,
           ),
           decoration: BoxDecoration(
-            color: isSelected
-                ? (isDark ? const Color(0xFF161F30) : const Color(0xFFF1F5F9))
-                : Colors.transparent,
+            color: isSelected ? activeBg : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
             border: isSelected
                 ? Border(
                     left: BorderSide(
-                      color: const Color(0xFF2563EB),
+                      color: activeAccent,
                       width: 2.5,
                     ),
                   )
@@ -396,9 +424,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
               Icon(
                 isSelected ? selectedIcon : icon,
                 color: isSelected
-                    ? (isDark
-                          ? const Color(0xFF60A5FA)
-                          : const Color(0xFF2563EB))
+                    ? (isDark ? activeAccentLight : activeAccent)
                     : (isDark
                           ? const Color(0xFF94A3B8)
                           : const Color(0xFF64748B)),
@@ -442,8 +468,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       decoration: BoxDecoration(
                         color: isSelected
                             ? (isDark
-                                  ? const Color(0xFF1E293B)
-                                  : const Color(0xFFE2E8F0))
+                                  ? (isCrmItem
+                                        ? const Color(0xFF064E3B)
+                                        : const Color(0xFF1E293B))
+                                  : (isCrmItem
+                                        ? const Color(0xFFD1FAE5)
+                                        : const Color(0xFFE2E8F0)))
                             : (isDark
                                   ? const Color(0xFF111827)
                                   : const Color(0xFFF1F5F9)),
@@ -456,8 +486,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                           fontWeight: FontWeight.w600,
                           color: isSelected
                               ? (isDark
-                                    ? const Color(0xFF93C5FD)
-                                    : const Color(0xFF1D4ED8))
+                                    ? (isCrmItem
+                                          ? const Color(0xFF6EE7B7)
+                                          : const Color(0xFF93C5FD))
+                                    : (isCrmItem
+                                          ? const Color(0xFF047857)
+                                          : const Color(0xFF1D4ED8)))
                               : (isDark
                                     ? const Color(0xFF64748B)
                                     : const Color(0xFF94A3B8)),
@@ -559,10 +593,18 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         badge: 'dot',
         index: 9,
       ),
+      (
+        icon: Icons.menu_book_outlined,
+        selectedIcon: Icons.menu_book,
+        label: 'Catálogo & Tarifario',
+        badge: 'Maestro',
+        index: 16,
+      ),
     ];
 
     final isAnySecurityActive = _selectedIndex >= 1 && _selectedIndex <= 5;
-    final isAnyCrmActive = _selectedIndex >= 6 && _selectedIndex <= 9;
+    final isAnyCrmActive =
+        (_selectedIndex >= 6 && _selectedIndex <= 9) || _selectedIndex == 16;
     final isAnyRrhhActive = _selectedIndex >= 10 && _selectedIndex <= 15;
 
     final rrhhItems = [
@@ -664,6 +706,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 15:
         currentView = const RrhhReportsView();
         break;
+      case 16:
+        currentView = const CrmCatalogManagementView();
+        break;
       default:
         currentView = const Center(child: Text('Vista no encontrada'));
     }
@@ -710,9 +755,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                     ],
                     if (!isMobile) ...[
                       Text(
-                        _selectedIndex >= 10
-                            ? 'RRHH'
-                            : (_selectedIndex >= 6 ? 'CRM' : 'Seguridad'),
+                        ((_selectedIndex >= 6 && _selectedIndex <= 9) ||
+                                _selectedIndex == 16)
+                            ? 'CRM'
+                            : (_selectedIndex >= 10 && _selectedIndex <= 15
+                                  ? 'RRHH'
+                                  : 'Seguridad'),
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           color: isDark
@@ -736,7 +784,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                     ],
                     Flexible(
                       child: Text(
-                        _titles[_selectedIndex],
+                        _selectedIndex >= 0 && _selectedIndex < _titles.length
+                            ? _titles[_selectedIndex]
+                            : 'Elite Multiservicios',
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
