@@ -87,93 +87,109 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final isNarrow = constraints.maxWidth < 700;
-          return Flex(
-            direction: isNarrow ? Axis.vertical : Axis.horizontal,
-            crossAxisAlignment: isNarrow
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.center,
+          final isNarrow = constraints.maxWidth < 820;
+          final titleWidget = Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.25),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.menu_book_rounded,
+                  color: Color(0xFF10B981),
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Catálogo & Tarifario Maestro',
+                      style: GoogleFonts.inter(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Configuración de partidas, fórmulas por m²/puesto/hora y rubros objetivo',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: const Color(0xFF94A3B8),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+
+          final actionsWidget = Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              OutlinedButton.icon(
+                onPressed: _loadData,
+                icon: const Icon(Icons.refresh_rounded, size: 18),
+                label: const Text('Actualizar'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFF94A3B8),
+                  side: const BorderSide(color: Color(0xFF334155)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                ),
+              ),
+              ElevatedButton.icon(
+                onPressed: _onPrimaryCreateAction,
+                icon: const Icon(Icons.add_rounded, size: 18),
+                label: Text(_getCreateButtonLabel()),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF10B981),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          );
+
+          if (isNarrow) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                titleWidget,
+                const SizedBox(height: 14),
+                actionsWidget,
+              ],
+            );
+          }
+
+          return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF10B981).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: const Color(0xFF10B981).withValues(alpha: 0.25),
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.menu_book_rounded,
-                      color: Color(0xFF10B981),
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Catálogo & Tarifario Maestro',
-                        style: GoogleFonts.inter(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Configuración de partidas, fórmulas por m²/puesto/hora y rubros objetivo',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: const Color(0xFF94A3B8),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              if (isNarrow) const SizedBox(height: 14),
-              Row(
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: _loadData,
-                    icon: const Icon(Icons.refresh_rounded, size: 18),
-                    label: const Text('Actualizar'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF94A3B8),
-                      side: const BorderSide(color: Color(0xFF334155)),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 10,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton.icon(
-                    onPressed: _onPrimaryCreateAction,
-                    icon: const Icon(Icons.add_rounded, size: 18),
-                    label: Text(_getCreateButtonLabel()),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF10B981),
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ],
-              ),
+              Expanded(child: titleWidget),
+              const SizedBox(width: 16),
+              actionsWidget,
             ],
           );
         },
@@ -212,6 +228,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
       child: TabBar(
         controller: _tabController,
         onTap: (_) => setState(() {}),
+        isScrollable: true,
+        tabAlignment: TabAlignment.start,
         indicatorColor: const Color(0xFF10B981),
         indicatorWeight: 3,
         labelColor: const Color(0xFF10B981),
@@ -272,80 +290,87 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
           child: LayoutBuilder(
             builder: (context, constraints) {
               final isNarrow = constraints.maxWidth < 700;
-              return Flex(
-                direction: isNarrow ? Axis.vertical : Axis.horizontal,
+              final searchWidget = TextField(
+                style: GoogleFonts.inter(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Buscar por concepto o código...',
+                  hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B)),
+                  prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B)),
+                  filled: true,
+                  fillColor: const Color(0xFF1E293B),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFF334155)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFF334155)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFF10B981)),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                ),
+                onChanged: (val) => setState(() => _searchQuery = val.trim()),
+              );
+
+              final dropdownWidget = DropdownButtonFormField<int?>(
+                initialValue: _selectedServiceLineFilter,
+                dropdownColor: const Color(0xFF1E293B),
+                style: GoogleFonts.inter(color: Colors.white),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: const Color(0xFF1E293B),
+                  labelText: 'Filtrar por Línea',
+                  labelStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFF334155)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFF334155)),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                ),
+                items: [
+                  const DropdownMenuItem<int?>(
+                    value: null,
+                    child: Text('Todas las Líneas'),
+                  ),
+                  ..._catalogService.serviceLines.map(
+                    (l) => DropdownMenuItem<int?>(
+                      value: l.id,
+                      child: Text(l.name),
+                    ),
+                  ),
+                ],
+                onChanged: (val) =>
+                    setState(() => _selectedServiceLineFilter = val),
+              );
+
+              if (isNarrow) {
+                return Column(
+                  children: [
+                    searchWidget,
+                    const SizedBox(height: 12),
+                    dropdownWidget,
+                  ],
+                );
+              }
+
+              return Row(
                 children: [
-                  Expanded(
-                    flex: isNarrow ? 0 : 2,
-                    child: TextField(
-                      style: GoogleFonts.inter(color: Colors.white),
-                      decoration: InputDecoration(
-                        hintText: 'Buscar por concepto o código...',
-                        hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B)),
-                        prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B)),
-                        filled: true,
-                        fillColor: const Color(0xFF1E293B),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Color(0xFF334155)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Color(0xFF334155)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Color(0xFF10B981)),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 10,
-                        ),
-                      ),
-                      onChanged: (val) => setState(() => _searchQuery = val.trim()),
-                    ),
-                  ),
-                  SizedBox(width: isNarrow ? 0 : 16, height: isNarrow ? 12 : 0),
-                  Expanded(
-                    flex: isNarrow ? 0 : 1,
-                    child: DropdownButtonFormField<int?>(
-                      initialValue: _selectedServiceLineFilter,
-                      dropdownColor: const Color(0xFF1E293B),
-                      style: GoogleFonts.inter(color: Colors.white),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: const Color(0xFF1E293B),
-                        labelText: 'Filtrar por Línea',
-                        labelStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Color(0xFF334155)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Color(0xFF334155)),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 10,
-                        ),
-                      ),
-                      items: [
-                        const DropdownMenuItem<int?>(
-                          value: null,
-                          child: Text('Todas las Líneas'),
-                        ),
-                        ..._catalogService.serviceLines.map(
-                          (l) => DropdownMenuItem<int?>(
-                            value: l.id,
-                            child: Text(l.name),
-                          ),
-                        ),
-                      ],
-                      onChanged: (val) =>
-                          setState(() => _selectedServiceLineFilter = val),
-                    ),
-                  ),
+                  Expanded(flex: 2, child: searchWidget),
+                  const SizedBox(width: 16),
+                  Expanded(flex: 1, child: dropdownWidget),
                 ],
               );
             },
@@ -411,133 +436,122 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
       child: LayoutBuilder(
         builder: (context, constraints) {
           final isNarrow = constraints.maxWidth < 650;
-          return Flex(
-            direction: isNarrow ? Axis.vertical : Axis.horizontal,
-            crossAxisAlignment: isNarrow
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          final infoWidget = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Info principal
-              Expanded(
-                flex: isNarrow ? 0 : 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF334155),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            item.code,
-                            style: GoogleFonts.robotoMono(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF10B981),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        if (line != null)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF0F172A),
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: const Color(0xFF334155)),
-                            ),
-                            child: Text(
-                              line.name,
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                color: const Color(0xFF94A3B8),
-                              ),
-                            ),
-                          ),
-                        const SizedBox(width: 8),
-                        calcBadge,
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            'v${item.version}',
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFFA78BFA),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      item.concept,
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                    if (item.metadata != null && item.metadata!.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        'Parámetros: ${item.metadata}',
-                        style: GoogleFonts.robotoMono(
-                          fontSize: 11,
-                          color: const Color(0xFF64748B),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-
-              if (isNarrow) const SizedBox(height: 12),
-
-              // Precio y Acciones
-              Row(
-                mainAxisSize: MainAxisSize.min,
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Bs. ${item.basePrice.toStringAsFixed(2)}',
-                        style: GoogleFonts.inter(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF10B981),
-                        ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF334155),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      item.code,
+                      style: GoogleFonts.robotoMono(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF10B981),
                       ),
-                      Text(
-                        'por ${item.unitType}',
+                    ),
+                  ),
+                  if (line != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0F172A),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: const Color(0xFF334155)),
+                      ),
+                      child: Text(
+                        line.name,
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           color: const Color(0xFF94A3B8),
                         ),
                       ),
-                    ],
+                    ),
+                  calcBadge,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      'v${item.version}',
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFA78BFA),
+                      ),
+                    ),
                   ),
-                  const SizedBox(width: 16),
-                  // Botón Tarifas por Rubro (Scopes)
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                item.concept,
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              if (item.metadata != null && item.metadata!.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(
+                  'Parámetros: ${item.metadata}',
+                  style: GoogleFonts.robotoMono(
+                    fontSize: 11,
+                    color: const Color(0xFF64748B),
+                  ),
+                ),
+              ],
+            ],
+          );
+
+          final priceAndActionsWidget = Wrap(
+            spacing: 12,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'Bs. ${item.basePrice.toStringAsFixed(2)}',
+                    style: GoogleFonts.inter(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF10B981),
+                    ),
+                  ),
+                  Text(
+                    'por ${item.unitType}',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: const Color(0xFF94A3B8),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   IconButton(
                     tooltip: 'Tarifas Diferenciadas por Rubro',
                     icon: const Icon(
@@ -547,7 +561,6 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                     ),
                     onPressed: () => _showScopesDialog(item),
                   ),
-                  // Botón Editar
                   IconButton(
                     tooltip: 'Editar partida',
                     icon: const Icon(
@@ -557,7 +570,6 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                     ),
                     onPressed: () => _showCatalogItemDialog(item: item),
                   ),
-                  // Botón Eliminar
                   IconButton(
                     tooltip: 'Eliminar partida',
                     icon: const Icon(
@@ -569,6 +581,26 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                   ),
                 ],
               ),
+            ],
+          );
+
+          if (isNarrow) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                infoWidget,
+                const SizedBox(height: 12),
+                priceAndActionsWidget,
+              ],
+            );
+          }
+
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(child: infoWidget),
+              const SizedBox(width: 16),
+              priceAndActionsWidget,
             ],
           );
         },
@@ -674,7 +706,10 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
                           sector.name,
@@ -684,7 +719,6 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                             color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 6,
@@ -788,7 +822,10 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
                           line.name,
@@ -798,7 +835,6 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                             color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 6,
@@ -817,7 +853,6 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 6,
