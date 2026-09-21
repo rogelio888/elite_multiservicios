@@ -389,9 +389,10 @@ class RrhhEmptyState extends StatelessWidget {
   }
 }
 
-/// Selector de búsqueda predictiva en tiempo real (estilo Google Search).
-/// Sustituye los Dropdowns toscos por una barra de búsqueda con sugerencias compactas y filtrado instantáneo.
-class RrhhSearchableSelector<T extends Object> extends StatefulWidget {
+/// Selector interactivo con buscador integrado en el menú (estilo Notion / Slack / Linear).
+/// El campo principal se mantiene limpio y elegante; al abrirlo se despliega un panel
+/// con barra de búsqueda dedicada en la cabecera para filtrar instantáneamente en tiempo real.
+class RrhhSearchableSelector<T extends Object> extends StatelessWidget {
   final String label;
   final String hintText;
   final T? initialValue;
@@ -405,227 +406,459 @@ class RrhhSearchableSelector<T extends Object> extends StatefulWidget {
   const RrhhSearchableSelector({
     super.key,
     required this.label,
-    this.hintText = 'Escribe para buscar...',
+    this.hintText = 'Seleccionar...',
     this.initialValue,
     required this.items,
     required this.itemLabel,
     this.itemSubtitle,
-    this.prefixIcon = Icons.search,
+    this.prefixIcon,
     required this.onChanged,
     this.isRequired = false,
   });
 
   @override
-  State<RrhhSearchableSelector<T>> createState() =>
-      _RrhhSearchableSelectorState<T>();
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final hasValue = initialValue != null;
+    final displayLabel = hasValue ? itemLabel(initialValue!) : hintText;
+    final displaySubtitle = hasValue ? itemSubtitle?.call(initialValue!) : null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: () => _openSearchPicker(context),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF0F172A) : Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: hasValue
+                    ? (isDark
+                          ? const Color(0xFF3B82F6).withValues(alpha: 0.4)
+                          : const Color(0xFF93C5FD))
+                    : (isDark
+                          ? const Color(0xFF334155)
+                          : const Color(0xFFCBD5E1)),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  prefixIcon ??
+                      (hasValue ? Icons.check_circle_outline : Icons.search),
+                  size: 17,
+                  color: hasValue
+                      ? const Color(0xFF3B82F6)
+                      : (isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B)),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        label,
+                        style: GoogleFonts.inter(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        displayLabel,
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: hasValue
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                          color: hasValue
+                              ? (isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A))
+                              : (isDark
+                                    ? const Color(0xFF64748B)
+                                    : const Color(0xFF94A3B8)),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (displaySubtitle != null &&
+                          displaySubtitle.isNotEmpty) ...[
+                        const SizedBox(height: 1),
+                        Text(
+                          displaySubtitle,
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF3B82F6),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Buscar',
+                        style: GoogleFonts.inter(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w500,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                        ),
+                      ),
+                      const SizedBox(width: 3),
+                      Icon(
+                        Icons.unfold_more,
+                        size: 13,
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _openSearchPicker(BuildContext context) async {
+    final selected = await showDialog<T>(
+      context: context,
+      barrierColor: Colors.black54,
+      builder: (ctx) => _RrhhSearchPickerModal<T>(
+        title: label,
+        initialValue: initialValue,
+        items: items,
+        itemLabel: itemLabel,
+        itemSubtitle: itemSubtitle,
+        prefixIcon: prefixIcon,
+      ),
+    );
+
+    if (selected != null) {
+      onChanged(selected);
+    }
+  }
 }
 
-class _RrhhSearchableSelectorState<T extends Object>
-    extends State<RrhhSearchableSelector<T>> {
-  late TextEditingController _textCtrl;
-  late FocusNode _focusNode;
-  final GlobalKey _fieldKey = GlobalKey();
-  T? _selectedItem;
+class _RrhhSearchPickerModal<T extends Object> extends StatefulWidget {
+  final String title;
+  final T? initialValue;
+  final List<T> items;
+  final String Function(T item) itemLabel;
+  final String? Function(T item)? itemSubtitle;
+  final IconData? prefixIcon;
+
+  const _RrhhSearchPickerModal({
+    required this.title,
+    required this.initialValue,
+    required this.items,
+    required this.itemLabel,
+    this.itemSubtitle,
+    this.prefixIcon,
+  });
+
+  @override
+  State<_RrhhSearchPickerModal<T>> createState() =>
+      _RrhhSearchPickerModalState<T>();
+}
+
+class _RrhhSearchPickerModalState<T extends Object>
+    extends State<_RrhhSearchPickerModal<T>> {
+  late TextEditingController _searchCtrl;
+  String _query = '';
 
   @override
   void initState() {
     super.initState();
-    _selectedItem = widget.initialValue;
-    _textCtrl = TextEditingController(
-      text: widget.initialValue != null
-          ? widget.itemLabel(widget.initialValue!)
-          : '',
-    );
-    _focusNode = FocusNode();
-  }
-
-  @override
-  void didUpdateWidget(covariant RrhhSearchableSelector<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.initialValue != oldWidget.initialValue) {
-      _selectedItem = widget.initialValue;
-      final newText = widget.initialValue != null
-          ? widget.itemLabel(widget.initialValue!)
-          : '';
-      if (_textCtrl.text != newText) {
-        _textCtrl.text = newText;
-      }
-    }
+    _searchCtrl = TextEditingController();
   }
 
   @override
   void dispose() {
-    _textCtrl.dispose();
-    _focusNode.dispose();
+    _searchCtrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final normalizedQuery = _query.trim().toLowerCase();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        RawAutocomplete<T>(
-          textEditingController: _textCtrl,
-          focusNode: _focusNode,
-          displayStringForOption: widget.itemLabel,
-          optionsBuilder: (TextEditingValue textEditingValue) {
-            final query = textEditingValue.text.trim().toLowerCase();
-            if (query.isEmpty) {
-              return widget.items;
-            }
-            return widget.items.where((item) {
-              final label = widget.itemLabel(item).toLowerCase();
-              final subtitle =
-                  widget.itemSubtitle?.call(item)?.toLowerCase() ?? '';
-              return label.contains(query) || subtitle.contains(query);
-            });
-          },
-          onSelected: (T selection) {
-            setState(() {
-              _selectedItem = selection;
-              _textCtrl.text = widget.itemLabel(selection);
-            });
-            widget.onChanged(selection);
-          },
-          fieldViewBuilder:
-              (ctx, textEditingController, focusNode, onFieldSubmitted) {
-                return TextFormField(
-                  key: _fieldKey,
-                  controller: textEditingController,
-                  focusNode: focusNode,
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
-                  ),
-                  decoration: InputDecoration(
-                    labelText: widget.label,
-                    hintText: widget.hintText,
-                    prefixIcon: Icon(
-                      widget.prefixIcon ?? Icons.search,
+    final filtered = widget.items.where((item) {
+      if (normalizedQuery.isEmpty) return true;
+      final label = widget.itemLabel(item).toLowerCase();
+      final subtitle = widget.itemSubtitle?.call(item)?.toLowerCase() ?? '';
+      return label.contains(normalizedQuery) ||
+          subtitle.contains(normalizedQuery);
+    }).toList();
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480, maxHeight: 460),
+        child: Container(
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0F172A) : Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.35),
+                blurRadius: 28,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Cabecera con Título y Botón Cerrar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 12, 10),
+                child: Row(
+                  children: [
+                    Icon(
+                      widget.prefixIcon ?? Icons.manage_search,
                       size: 18,
-                      color: isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF64748B),
+                      color: const Color(0xFF3B82F6),
                     ),
-                    suffixIcon: textEditingController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, size: 16),
-                            tooltip: 'Limpiar',
-                            onPressed: () {
-                              textEditingController.clear();
-                              setState(() => _selectedItem = null);
-                              widget.onChanged(null);
-                            },
-                          )
-                        : const Icon(Icons.arrow_drop_down, size: 20),
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 11,
-                      horizontal: 12,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: isDark
-                            ? const Color(0xFF334155)
-                            : const Color(0xFFCBD5E1),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        widget.title,
+                        style: GoogleFonts.inter(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w700,
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: isDark
-                            ? const Color(0xFF334155)
-                            : const Color(0xFFCBD5E1),
+                    IconButton(
+                      icon: const Icon(Icons.close, size: 18),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
                       ),
+                      tooltip: 'Cerrar',
+                      onPressed: () => Navigator.pop(context),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF3B82F6),
-                        width: 1.5,
-                      ),
-                    ),
-                  ),
-                );
-              },
-          optionsViewBuilder: (ctx, onSelected, options) {
-            final renderBox =
-                _fieldKey.currentContext?.findRenderObject() as RenderBox?;
-            final fieldWidth = renderBox?.size.width ?? 400.0;
-            final optionList = options.toList();
+                  ],
+                ),
+              ),
 
-            return Align(
-              alignment: Alignment.topLeft,
-              child: Material(
-                elevation: 8,
-                borderRadius: BorderRadius.circular(8),
-                color: isDark ? const Color(0xFF0F172A) : Colors.white,
+              // Barra de Búsqueda Integrada tipo Google (Notion/Slack style)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
                 child: Container(
-                  width: fieldWidth,
-                  constraints: const BoxConstraints(maxHeight: 220),
                   decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF0B1324)
+                        : const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: isDark
-                          ? const Color(0xFF1E293B)
-                          : const Color(0xFFE2E8F0),
+                          ? const Color(0xFF334155)
+                          : const Color(0xFFCBD5E1),
                     ),
                   ),
-                  child: optionList.isEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Text(
-                            'No se encontraron coincidencias',
-                            style: GoogleFonts.inter(
-                              fontSize: 12.5,
-                              color: isDark
-                                  ? const Color(0xFF94A3B8)
-                                  : const Color(0xFF64748B),
-                            ),
-                          ),
-                        )
-                      : ListView.separated(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          shrinkWrap: true,
-                          itemCount: optionList.length,
-                          separatorBuilder: (ctx, idx) => Divider(
-                            height: 1,
-                            thickness: 1,
-                            color: isDark
-                                ? const Color(0xFF1E293B)
-                                : const Color(0xFFF1F5F9),
-                          ),
-                          itemBuilder: (context, index) {
-                            final item = optionList[index];
-                            final label = widget.itemLabel(item);
-                            final subtitle = widget.itemSubtitle?.call(item);
-                            final isCurrent = _selectedItem == item;
+                  child: TextField(
+                    controller: _searchCtrl,
+                    autofocus: true,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Escribe para buscar instantáneamente...',
+                      hintStyle: GoogleFonts.inter(
+                        fontSize: 12.5,
+                        color: isDark
+                            ? const Color(0xFF64748B)
+                            : const Color(0xFF94A3B8),
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        size: 18,
+                        color: Color(0xFF3B82F6),
+                      ),
+                      suffixIcon: _query.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, size: 16),
+                              onPressed: () {
+                                _searchCtrl.clear();
+                                setState(() => _query = '');
+                              },
+                            )
+                          : null,
+                      isDense: true,
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 12,
+                      ),
+                    ),
+                    onChanged: (val) => setState(() => _query = val),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
 
-                            return InkWell(
-                              onTap: () => onSelected(item),
-                              child: Container(
-                                color: isCurrent
-                                    ? (isDark
-                                          ? const Color(0xFF1E293B)
-                                          : const Color(0xFFEFF6FF))
-                                    : Colors.transparent,
+              // Barra de conteo de coincidencias
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Opciones encontradas (${filtered.length})',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
+                      ),
+                    ),
+                    if (_query.isNotEmpty)
+                      Text(
+                        'Filtrado por: "$_query"',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: const Color(0xFF3B82F6),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 6),
+              const Divider(height: 1),
+
+              // Lista de Opciones Filtradas con Hover y Microinteracciones
+              Flexible(
+                child: filtered.isEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 36,
+                          horizontal: 20,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.search_off,
+                              size: 32,
+                              color: isDark
+                                  ? const Color(0xFF475569)
+                                  : const Color(0xFF94A3B8),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'No se encontraron coincidencias',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Prueba buscando con otro término o palabra clave.',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 11.5,
+                                color: isDark
+                                    ? const Color(0xFF94A3B8)
+                                    : const Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.separated(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 6,
+                          horizontal: 8,
+                        ),
+                        shrinkWrap: true,
+                        itemCount: filtered.length,
+                        separatorBuilder: (ctx, idx) =>
+                            const SizedBox(height: 2),
+                        itemBuilder: (ctx, index) {
+                          final item = filtered[index];
+                          final label = widget.itemLabel(item);
+                          final subtitle = widget.itemSubtitle?.call(item);
+                          final isSelected = widget.initialValue == item;
+
+                          return Material(
+                            color: isSelected
+                                ? (isDark
+                                      ? const Color(0xFF1E293B)
+                                      : const Color(0xFFEFF6FF))
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(6),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(6),
+                              hoverColor: isDark
+                                  ? const Color(
+                                      0xFF1E293B,
+                                    ).withValues(alpha: 0.6)
+                                  : const Color(0xFFF1F5F9),
+                              onTap: () => Navigator.pop(context, item),
+                              child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 9,
+                                  horizontal: 10,
+                                  vertical: 8,
                                 ),
                                 child: Row(
                                   children: [
                                     Icon(
-                                      isCurrent
+                                      isSelected
                                           ? Icons.check_circle
-                                          : (widget.prefixIcon ?? Icons.search),
-                                      size: 15,
-                                      color: isCurrent
+                                          : (widget.prefixIcon ??
+                                                Icons.chevron_right),
+                                      size: 16,
+                                      color: isSelected
                                           ? const Color(0xFF10B981)
                                           : (isDark
                                                 ? const Color(0xFF64748B)
@@ -642,7 +875,7 @@ class _RrhhSearchableSelectorState<T extends Object>
                                             label,
                                             style: GoogleFonts.inter(
                                               fontSize: 12.5,
-                                              fontWeight: isCurrent
+                                              fontWeight: isSelected
                                                   ? FontWeight.w600
                                                   : FontWeight.w500,
                                               color: isDark
@@ -668,18 +901,41 @@ class _RrhhSearchableSelectorState<T extends Object>
                                         ],
                                       ),
                                     ),
+                                    if (isSelected)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(
+                                            0xFF10B981,
+                                          ).withValues(alpha: 0.15),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'Seleccionado',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w600,
+                                            color: const Color(0xFF10B981),
+                                          ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                ),
+                            ),
+                          );
+                        },
+                      ),
               ),
-            );
-          },
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
 }
