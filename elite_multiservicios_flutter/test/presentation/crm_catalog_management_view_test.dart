@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:elite_multiservicios_flutter/core/theme/app_theme.dart';
 import 'package:elite_multiservicios_flutter/features/crm/presentation/views/crm_catalog_management_view.dart';
-import 'package:elite_multiservicios_flutter/features/security/presentation/security_shell_screen.dart';
 
 class _MockHttpOverrides extends HttpOverrides {
   @override
@@ -105,7 +104,7 @@ void main() {
 
     await tester.pump();
     expect(find.text('Catálogo & Tarifario Maestro'), findsOneWidget);
-    expect(find.text('Partidas de Servicio (0)'), findsOneWidget);
+    expect(find.text('Partidas de Servicio'), findsOneWidget);
   });
 
   testWidgets('CrmCatalogManagementView renders on narrow mobile screens without error', (tester) async {

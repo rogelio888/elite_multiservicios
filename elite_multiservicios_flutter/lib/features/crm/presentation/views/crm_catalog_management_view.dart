@@ -6,6 +6,8 @@ import '../../data/crm_catalog_service.dart';
 
 /// Vista de Administración del Catálogo de Servicios, Rubros Industriales,
 /// Líneas de Servicio y Tarifario Maestro con Precios Diferenciados (Scopes).
+/// Diseñada bajo la misma identidad visual, tokens cromáticos (#111C30, #10B981, #090D16)
+/// y directrices de diseño suizo enterprise que el resto de submódulos CRM.
 class CrmCatalogManagementView extends StatefulWidget {
   const CrmCatalogManagementView({super.key});
 
@@ -14,25 +16,17 @@ class CrmCatalogManagementView extends StatefulWidget {
       _CrmCatalogManagementViewState();
 }
 
-class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
   final CrmCatalogService _catalogService = CrmCatalogService.instance;
 
+  int _selectedTabIndex = 0;
   String _searchQuery = '';
   int? _selectedServiceLineFilter;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
     _loadData();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -42,163 +36,198 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return AnimatedBuilder(
       animation: _catalogService,
       builder: (context, _) {
-        return Scaffold(
-          backgroundColor: const Color(0xFF0F172A),
-          body: Column(
-            children: [
-              _buildHeader(),
-              _buildTabBar(),
-              Expanded(
-                child: _catalogService.isLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(
-                          color: Color(0xFF10B981),
-                        ),
-                      )
-                    : TabBarView(
-                        controller: _tabController,
-                        children: [
-                          _buildItemsTab(),
-                          _buildSectorsTab(),
-                          _buildServiceLinesTab(),
-                        ],
-                      ),
+        return LayoutBuilder(
+          builder: (context, rootConstraints) {
+            final isMobile = rootConstraints.maxWidth < 720;
+            final isTablet = rootConstraints.maxWidth < 1080;
+            final hPad = isMobile ? 14.0 : 24.0;
+            final vPad = isMobile ? 16.0 : 24.0;
+
+            return SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1. Cabecera Ejecutiva & Botones de Acción
+                  _buildHeader(isDark, isMobile),
+                  const SizedBox(height: 14),
+
+                  if (_catalogService.isLoading) ...[
+                    const LinearProgressIndicator(
+                      color: Color(0xFF10B981),
+                      backgroundColor: Color(0xFFE2E8F0),
+                      minHeight: 3,
+                    ),
+                    const SizedBox(height: 14),
+                  ],
+
+                  // 2. Tablero Compacto de KPIs
+                  _buildKpiSection(isDark, isMobile, isTablet),
+                  const SizedBox(height: 20),
+
+                  // 3. Barra de Navegación de Pestañas (Segmented Bar)
+                  _buildTabsBar(isDark, isMobile),
+                  const SizedBox(height: 16),
+
+                  // 4. Contenido de la Pestaña Activa
+                  if (_selectedTabIndex == 0)
+                    _buildItemsTab(isDark, isMobile)
+                  else if (_selectedTabIndex == 1)
+                    _buildSectorsTab(isDark, isMobile)
+                  else
+                    _buildServiceLinesTab(isDark, isMobile),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
   }
 
   // ===========================================================================
-  // HEADER Y TABS
+  // 1. CABECERA EJECUTIVA
   // ===========================================================================
 
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-      decoration: const BoxDecoration(
-        color: Color(0xFF1E293B),
-        border: Border(bottom: BorderSide(color: Color(0xFF334155), width: 1)),
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final isNarrow = constraints.maxWidth < 820;
-          final titleWidget = Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF10B981).withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: const Color(0xFF10B981).withValues(alpha: 0.25),
-                  ),
-                ),
-                child: const Icon(
-                  Icons.menu_book_rounded,
-                  color: Color(0xFF10B981),
-                  size: 24,
+  Widget _buildHeader(bool isDark, bool isMobile) {
+    final titleColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.25),
                 ),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Catálogo & Tarifario Maestro',
-                      style: GoogleFonts.inter(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        letterSpacing: -0.5,
-                      ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.menu_book_rounded,
+                    size: 13,
+                    color: Color(0xFF10B981),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    'CATÁLOGO MAESTRO & TARIFARIO',
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF10B981),
+                      letterSpacing: 0.5,
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Configuración de partidas, fórmulas por m²/puesto/hora y rubros objetivo',
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: const Color(0xFF94A3B8),
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-
-          final actionsWidget = Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              OutlinedButton.icon(
-                onPressed: _loadData,
-                icon: const Icon(Icons.refresh_rounded, size: 18),
-                label: const Text('Actualizar'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF94A3B8),
-                  side: const BorderSide(color: Color(0xFF334155)),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
                   ),
-                ),
+                ],
               ),
-              ElevatedButton.icon(
-                onPressed: _onPrimaryCreateAction,
-                icon: const Icon(Icons.add_rounded, size: 18),
-                label: Text(_getCreateButtonLabel()),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF10B981),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
-                  textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
-                ),
+            ),
+            Text(
+              'Precios Base & Reglas por Rubro',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: const Color(0xFF64748B),
+                fontWeight: FontWeight.w500,
               ),
-            ],
-          );
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Catálogo & Tarifario Maestro',
+          style: GoogleFonts.inter(
+            fontSize: isMobile ? 20 : 23,
+            fontWeight: FontWeight.w800,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            letterSpacing: -0.4,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Configuración de partidas, fórmulas por m²/puesto/hora y tarifas diferenciadas por rubro industrial.',
+          style: GoogleFonts.inter(
+            fontSize: 12.5,
+            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+          ),
+        ),
+      ],
+    );
 
-          if (isNarrow) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                titleWidget,
-                const SizedBox(height: 14),
-                actionsWidget,
-              ],
-            );
-          }
+    final actionsWidget = Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        OutlinedButton.icon(
+          onPressed: _loadData,
+          icon: const Icon(Icons.refresh_rounded, size: 18),
+          label: const Text('Actualizar'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: isDark
+                ? const Color(0xFF94A3B8)
+                : const Color(0xFF64748B),
+            side: BorderSide(
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+        ElevatedButton.icon(
+          onPressed: _onPrimaryCreateAction,
+          icon: const Icon(Icons.add_rounded, size: 18),
+          label: Text(_getCreateButtonLabel()),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF10B981),
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
+    );
 
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(child: titleWidget),
-              const SizedBox(width: 16),
-              actionsWidget,
-            ],
-          );
-        },
-      ),
+    if (isMobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          titleColumn,
+          const SizedBox(height: 12),
+          actionsWidget,
+        ],
+      );
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: titleColumn),
+        const SizedBox(width: 16),
+        actionsWidget,
+      ],
     );
   }
 
   String _getCreateButtonLabel() {
-    switch (_tabController.index) {
+    switch (_selectedTabIndex) {
       case 1:
         return 'Nuevo Rubro';
       case 2:
@@ -209,7 +238,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
   }
 
   void _onPrimaryCreateAction() {
-    switch (_tabController.index) {
+    switch (_selectedTabIndex) {
       case 1:
         _showSectorDialog();
         break;
@@ -222,34 +251,160 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
     }
   }
 
-  Widget _buildTabBar() {
+  // ===========================================================================
+  // 2. TABLERO DE KPIS
+  // ===========================================================================
+
+  Widget _buildKpiSection(bool isDark, bool isMobile, bool isTablet) {
+    final totalItems = _catalogService.catalogItems.length;
+    final totalSectors = _catalogService.sectors.length;
+    final totalLines = _catalogService.serviceLines.length;
+    final avgPrice = _catalogService.catalogItems.isEmpty
+        ? 0.0
+        : _catalogService.catalogItems.fold<double>(
+                0.0,
+                (acc, i) => acc + i.basePrice,
+              ) /
+              _catalogService.catalogItems.length;
+
+    final kpis = [
+      _buildKpiCard(
+        title: 'TOTAL PARTIDAS',
+        value: '$totalItems',
+        subtitle: 'Servicios en tarifario',
+        icon: Icons.sell_outlined,
+        accentColor: const Color(0xFF10B981),
+        isDark: isDark,
+      ),
+      _buildKpiCard(
+        title: 'RUBROS INDUSTRIALES',
+        value: '$totalSectors',
+        subtitle: 'Sectores con tarifas',
+        icon: Icons.domain_rounded,
+        accentColor: const Color(0xFF3B82F6),
+        isDark: isDark,
+      ),
+      _buildKpiCard(
+        title: 'LÍNEAS DE SERVICIO',
+        value: '$totalLines',
+        subtitle: 'Familias operativas',
+        icon: Icons.account_tree_outlined,
+        accentColor: const Color(0xFF8B5CF6),
+        isDark: isDark,
+      ),
+      _buildKpiCard(
+        title: 'TARIFA BASE MEDIA',
+        value: 'Bs. ${avgPrice.toStringAsFixed(0)}',
+        subtitle: 'Promedio general catálogo',
+        icon: Icons.monetization_on_outlined,
+        accentColor: const Color(0xFFF59E0B),
+        isDark: isDark,
+      ),
+    ];
+
+    if (isMobile) {
+      return Column(
+        children: [
+          Row(
+            children: [
+              Expanded(child: kpis[0]),
+              const SizedBox(width: 10),
+              Expanded(child: kpis[1]),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(child: kpis[2]),
+              const SizedBox(width: 10),
+              Expanded(child: kpis[3]),
+            ],
+          ),
+        ],
+      );
+    } else if (isTablet) {
+      return Row(
+        children: [
+          Expanded(child: kpis[0]),
+          const SizedBox(width: 12),
+          Expanded(child: kpis[1]),
+          const SizedBox(width: 12),
+          Expanded(child: kpis[2]),
+          const SizedBox(width: 12),
+          Expanded(child: kpis[3]),
+        ],
+      );
+    }
+
+    return Row(
+      children: [
+        Expanded(child: kpis[0]),
+        const SizedBox(width: 14),
+        Expanded(child: kpis[1]),
+        const SizedBox(width: 14),
+        Expanded(child: kpis[2]),
+        const SizedBox(width: 14),
+        Expanded(child: kpis[3]),
+      ],
+    );
+  }
+
+  Widget _buildKpiCard({
+    required String title,
+    required String value,
+    required String subtitle,
+    required IconData icon,
+    required Color accentColor,
+    required bool isDark,
+  }) {
     return Container(
-      color: const Color(0xFF1E293B),
-      child: TabBar(
-        controller: _tabController,
-        onTap: (_) => setState(() {}),
-        isScrollable: true,
-        tabAlignment: TabAlignment.start,
-        indicatorColor: const Color(0xFF10B981),
-        indicatorWeight: 3,
-        labelColor: const Color(0xFF10B981),
-        unselectedLabelColor: const Color(0xFF94A3B8),
-        labelStyle: GoogleFonts.inter(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF111C30) : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
         ),
-        tabs: [
-          Tab(
-            icon: const Icon(Icons.sell_outlined, size: 18),
-            text: 'Partidas de Servicio (${_catalogService.catalogItems.length})',
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Icon(icon, size: 16, color: accentColor),
+            ],
           ),
-          Tab(
-            icon: const Icon(Icons.domain_rounded, size: 18),
-            text: 'Rubros Industriales (${_catalogService.sectors.length})',
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: GoogleFonts.inter(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: isDark ? Colors.white : const Color(0xFF0F172A),
+            ),
           ),
-          Tab(
-            icon: const Icon(Icons.account_tree_outlined, size: 18),
-            text: 'Líneas de Servicio (${_catalogService.serviceLines.length})',
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              color: const Color(0xFF64748B),
+            ),
           ),
         ],
       ),
@@ -257,10 +412,175 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
   }
 
   // ===========================================================================
-  // TAB 1: PARTIDAS DE SERVICIO (TARIFARIO)
+  // 3. BARRA DE PESTAÑAS (SEGMENTED BAR)
   // ===========================================================================
 
-  Widget _buildItemsTab() {
+  Widget _buildTabsBar(bool isDark, bool isMobile) {
+    final tabs = [
+      (
+        icon: Icons.sell_outlined,
+        label: 'Partidas de Servicio',
+        count: _catalogService.catalogItems.length,
+      ),
+      (
+        icon: Icons.domain_rounded,
+        label: 'Rubros Industriales',
+        count: _catalogService.sectors.length,
+      ),
+      (
+        icon: Icons.account_tree_outlined,
+        label: 'Líneas de Servicio',
+        count: _catalogService.serviceLines.length,
+      ),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF111C30) : const Color(0xFFF1F5F9),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: isMobile
+          ? Column(
+              children: tabs.asMap().entries.map((entry) {
+                final idx = entry.key;
+                final t = entry.value;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: _buildTabButton(
+                    idx: idx,
+                    icon: t.icon,
+                    label: t.label,
+                    count: t.count,
+                    isDark: isDark,
+                  ),
+                );
+              }).toList(),
+            )
+          : Row(
+              children: tabs.asMap().entries.map((entry) {
+                final idx = entry.key;
+                final t = entry.value;
+                return Expanded(
+                  child: _buildTabButton(
+                    idx: idx,
+                    icon: t.icon,
+                    label: t.label,
+                    count: t.count,
+                    isDark: isDark,
+                  ),
+                );
+              }).toList(),
+            ),
+    );
+  }
+
+  Widget _buildTabButton({
+    required int idx,
+    required IconData icon,
+    required String label,
+    required int count,
+    required bool isDark,
+  }) {
+    final isSelected = _selectedTabIndex == idx;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => setState(() => _selectedTabIndex = idx),
+        borderRadius: BorderRadius.circular(8),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? (isDark ? const Color(0xFF161F30) : Colors.white)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: isSelected
+                ? Border.all(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.35),
+                  )
+                : null,
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.2 : 0.04,
+                      ),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color: isSelected
+                    ? const Color(0xFF10B981)
+                    : (isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B)),
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  label,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    color: isSelected
+                        ? (isDark ? Colors.white : const Color(0xFF0F172A))
+                        : (isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B)),
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? const Color(0xFF10B981).withValues(alpha: 0.15)
+                      : (isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFE2E8F0)),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  '$count',
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: isSelected
+                        ? const Color(0xFF10B981)
+                        : (isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // 4. TAB 1: PARTIDAS DE SERVICIO (TARIFARIO)
+  // ===========================================================================
+
+  Widget _buildItemsTab(bool isDark, bool isMobile) {
     final items = _catalogService.catalogItems.where((item) {
       if (_searchQuery.isNotEmpty) {
         final q = _searchQuery.toLowerCase();
@@ -277,143 +597,142 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
     }).toList();
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Barra de filtros
+        // Barra de Filtros
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          decoration: const BoxDecoration(
-            color: Color(0xFF0F172A),
-            border: Border(
-              bottom: BorderSide(color: Color(0xFF334155), width: 1),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF111C30) : Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
             ),
           ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final isNarrow = constraints.maxWidth < 700;
-              final searchWidget = TextField(
-                style: GoogleFonts.inter(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Buscar por concepto o código...',
-                  hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B)),
-                  prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B)),
-                  filled: true,
-                  fillColor: const Color(0xFF1E293B),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF334155)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF334155)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF10B981)),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
-                  ),
-                ),
-                onChanged: (val) => setState(() => _searchQuery = val.trim()),
-              );
-
-              final dropdownWidget = DropdownButtonFormField<int?>(
-                initialValue: _selectedServiceLineFilter,
-                dropdownColor: const Color(0xFF1E293B),
-                style: GoogleFonts.inter(color: Colors.white),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: const Color(0xFF1E293B),
-                  labelText: 'Filtrar por Línea',
-                  labelStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF334155)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF334155)),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
-                  ),
-                ),
-                items: [
-                  const DropdownMenuItem<int?>(
-                    value: null,
-                    child: Text('Todas las Líneas'),
-                  ),
-                  ..._catalogService.serviceLines.map(
-                    (l) => DropdownMenuItem<int?>(
-                      value: l.id,
-                      child: Text(l.name),
-                    ),
-                  ),
-                ],
-                onChanged: (val) =>
-                    setState(() => _selectedServiceLineFilter = val),
-              );
-
-              if (isNarrow) {
-                return Column(
+          child: isMobile
+              ? Column(
                   children: [
-                    searchWidget,
-                    const SizedBox(height: 12),
-                    dropdownWidget,
+                    _buildSearchField(isDark),
+                    const SizedBox(height: 10),
+                    _buildServiceLineDropdown(isDark),
                   ],
-                );
-              }
-
-              return Row(
-                children: [
-                  Expanded(flex: 2, child: searchWidget),
-                  const SizedBox(width: 16),
-                  Expanded(flex: 1, child: dropdownWidget),
-                ],
-              );
-            },
-          ),
-        ),
-
-        // Lista de partidas
-        Expanded(
-          child: items.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.inventory_2_outlined,
-                        size: 48,
-                        color: const Color(0xFF64748B).withValues(alpha: 0.5),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'No se encontraron partidas con los filtros seleccionados',
-                        style: GoogleFonts.inter(
-                          color: const Color(0xFF94A3B8),
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
                 )
-              : ListView.builder(
-                  padding: const EdgeInsets.all(24),
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    return _buildCatalogItemCard(item);
-                  },
+              : Row(
+                  children: [
+                    Expanded(flex: 3, child: _buildSearchField(isDark)),
+                    const SizedBox(width: 14),
+                    Expanded(flex: 2, child: _buildServiceLineDropdown(isDark)),
+                  ],
                 ),
         ),
+        const SizedBox(height: 16),
+
+        // Lista de Partidas
+        if (items.isEmpty)
+          _buildEmptyState(
+            isDark: isDark,
+            icon: Icons.inventory_2_outlined,
+            title: 'No se encontraron partidas',
+            description: 'No hay partidas que coincidan con los filtros de búsqueda.',
+          )
+        else
+          Column(
+            children: items.map((item) => _buildCatalogItemCard(item, isDark)).toList(),
+          ),
       ],
     );
   }
 
-  Widget _buildCatalogItemCard(CrmCatalogItem item) {
+  Widget _buildSearchField(bool isDark) {
+    return TextField(
+      style: GoogleFonts.inter(
+        color: isDark ? Colors.white : const Color(0xFF0F172A),
+        fontSize: 13,
+      ),
+      decoration: InputDecoration(
+        hintText: 'Buscar por concepto o código (ej. CCTV, Guardia)...',
+        hintStyle: GoogleFonts.inter(
+          color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+          fontSize: 12.5,
+        ),
+        prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF64748B)),
+        filled: true,
+        fillColor: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
+        isDense: true,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1),
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF10B981)),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+      ),
+      onChanged: (val) => setState(() => _searchQuery = val.trim()),
+    );
+  }
+
+  Widget _buildServiceLineDropdown(bool isDark) {
+    return DropdownButtonFormField<int?>(
+      initialValue: _selectedServiceLineFilter,
+      dropdownColor: isDark ? const Color(0xFF111C30) : Colors.white,
+      style: GoogleFonts.inter(
+        color: isDark ? Colors.white : const Color(0xFF0F172A),
+        fontSize: 13,
+      ),
+      isDense: true,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
+        labelText: 'Filtrar por Línea de Servicio',
+        labelStyle: GoogleFonts.inter(
+          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+          fontSize: 12,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1),
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF10B981)),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      ),
+      items: [
+        const DropdownMenuItem<int?>(
+          value: null,
+          child: Text('Todas las Líneas'),
+        ),
+        ..._catalogService.serviceLines.map(
+          (l) => DropdownMenuItem<int?>(
+            value: l.id,
+            child: Text(l.name),
+          ),
+        ),
+      ],
+      onChanged: (val) => setState(() => _selectedServiceLineFilter = val),
+    );
+  }
+
+  Widget _buildCatalogItemCard(CrmCatalogItem item, bool isDark) {
     final line = _catalogService.serviceLines.cast<CrmServiceLine?>().firstWhere(
           (l) => l?.id == item.serviceLineId,
           orElse: () => null,
@@ -425,17 +744,25 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(10),
+        color: isDark ? const Color(0xFF111C30) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: item.isActive
-              ? const Color(0xFF334155)
+              ? (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0))
               : const Color(0xFFEF4444).withValues(alpha: 0.4),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final isNarrow = constraints.maxWidth < 650;
+          final isNarrow = constraints.maxWidth < 680;
+
           final infoWidget = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -445,51 +772,51 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF334155),
-                      borderRadius: BorderRadius.circular(4),
+                      color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.25),
+                      ),
                     ),
                     child: Text(
                       item.code,
                       style: GoogleFonts.robotoMono(
                         fontSize: 11,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         color: const Color(0xFF10B981),
                       ),
                     ),
                   ),
                   if (line != null)
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A),
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: const Color(0xFF334155)),
+                        color: isDark ? const Color(0xFF161F30) : const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1),
+                        ),
                       ),
                       child: Text(
                         line.name,
                         style: GoogleFonts.inter(
                           fontSize: 11,
-                          color: const Color(0xFF94A3B8),
+                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
                   calcBadge,
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
+                      color: const Color(0xFF8B5CF6).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                        color: const Color(0xFF8B5CF6).withValues(alpha: 0.25),
+                      ),
                     ),
                     child: Text(
                       'v${item.version}',
@@ -507,8 +834,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                 item.concept,
                 style: GoogleFonts.inter(
                   fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
                 ),
               ),
               if (item.metadata != null && item.metadata!.isNotEmpty) ...[
@@ -536,7 +863,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                     'Bs. ${item.basePrice.toStringAsFixed(2)}',
                     style: GoogleFonts.inter(
                       fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w800,
                       color: const Color(0xFF10B981),
                     ),
                   ),
@@ -544,7 +871,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                     'por ${item.unitType}',
                     style: GoogleFonts.inter(
                       fontSize: 11,
-                      color: const Color(0xFF94A3B8),
+                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                     ),
                   ),
                 ],
@@ -559,16 +886,16 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                       color: Color(0xFF10B981),
                       size: 20,
                     ),
-                    onPressed: () => _showScopesDialog(item),
+                    onPressed: () => _showScopesDialog(item, isDark),
                   ),
                   IconButton(
                     tooltip: 'Editar partida',
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.edit_outlined,
-                      color: Color(0xFF94A3B8),
+                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                       size: 20,
                     ),
-                    onPressed: () => _showCatalogItemDialog(item: item),
+                    onPressed: () => _showCatalogItemDialog(item: item, isDark: isDark),
                   ),
                   IconButton(
                     tooltip: 'Eliminar partida',
@@ -577,7 +904,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                       color: Color(0xFFEF4444),
                       size: 20,
                     ),
-                    onPressed: () => _confirmDeleteItem(item),
+                    onPressed: () => _confirmDeleteItem(item, isDark),
                   ),
                 ],
               ),
@@ -615,38 +942,38 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
 
     switch (type) {
       case 'PER_AREA':
-        bg = const Color(0xFF0284C7).withValues(alpha: 0.15);
+        bg = const Color(0xFF0284C7).withValues(alpha: 0.12);
         fg = const Color(0xFF38BDF8);
         label = 'Área (m²)';
         break;
       case 'PER_POSITION':
-        bg = const Color(0xFF10B981).withValues(alpha: 0.15);
+        bg = const Color(0xFF10B981).withValues(alpha: 0.12);
         fg = const Color(0xFF34D399);
         label = 'Puesto Operativo';
         break;
       case 'PER_HOUR':
-        bg = const Color(0xFFF59E0B).withValues(alpha: 0.15);
+        bg = const Color(0xFFF59E0B).withValues(alpha: 0.12);
         fg = const Color(0xFFFBBF24);
         label = 'Por Hora';
         break;
       case 'PER_UNIT':
-        bg = const Color(0xFF8B5CF6).withValues(alpha: 0.15);
+        bg = const Color(0xFF8B5CF6).withValues(alpha: 0.12);
         fg = const Color(0xFFA78BFA);
         label = 'Por Unidad';
         break;
       case 'FIXED':
-        bg = const Color(0xFF64748B).withValues(alpha: 0.15);
+        bg = const Color(0xFF64748B).withValues(alpha: 0.12);
         fg = const Color(0xFF94A3B8);
         label = 'Tarifa Fija';
         break;
       default:
-        bg = const Color(0xFF64748B).withValues(alpha: 0.15);
+        bg = const Color(0xFF64748B).withValues(alpha: 0.12);
         fg = const Color(0xFF94A3B8);
         label = type;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(4),
@@ -654,7 +981,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
       child: Text(
         label,
         style: GoogleFonts.inter(
-          fontSize: 10,
+          fontSize: 10.5,
           fontWeight: FontWeight.w600,
           color: fg,
         ),
@@ -663,42 +990,57 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
   }
 
   // ===========================================================================
-  // TAB 2: SECTORES / RUBROS
+  // 5. TAB 2: SECTORES / RUBROS
   // ===========================================================================
 
-  Widget _buildSectorsTab() {
+  Widget _buildSectorsTab(bool isDark, bool isMobile) {
     final sectors = _catalogService.sectors;
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(24),
-      itemCount: sectors.length,
-      itemBuilder: (context, index) {
-        final sector = sectors[index];
+    if (sectors.isEmpty) {
+      return _buildEmptyState(
+        isDark: isDark,
+        icon: Icons.domain_rounded,
+        title: 'No hay rubros industriales',
+        description: 'Crea el primer rubro industrial para asignar tarifas diferenciadas.',
+      );
+    }
+
+    return Column(
+      children: sectors.map((sector) {
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B),
-            borderRadius: BorderRadius.circular(10),
+            color: isDark ? const Color(0xFF111C30) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: sector.isActive
-                  ? const Color(0xFF334155)
+                  ? (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0))
                   : const Color(0xFFEF4444).withValues(alpha: 0.4),
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0F172A),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF334155)),
+                  color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.25),
+                  ),
                 ),
                 child: const Icon(
                   Icons.domain_rounded,
                   color: Color(0xFF10B981),
-                  size: 24,
+                  size: 22,
                 ),
               ),
               const SizedBox(width: 16),
@@ -714,39 +1056,35 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                         Text(
                           sector.name,
                           style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? Colors.white : const Color(0xFF0F172A),
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF334155),
+                            color: const Color(0xFF10B981).withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             sector.code,
                             style: GoogleFonts.robotoMono(
                               fontSize: 11,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                               color: const Color(0xFF10B981),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    if (sector.description != null &&
-                        sector.description!.isNotEmpty) ...[
+                    if (sector.description != null && sector.description!.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
                         sector.description!,
                         style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: const Color(0xFF94A3B8),
+                          fontSize: 12.5,
+                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                         ),
                       ),
                     ],
@@ -755,12 +1093,12 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
               ),
               IconButton(
                 tooltip: 'Editar Rubro',
-                icon: const Icon(
+                icon: Icon(
                   Icons.edit_outlined,
-                  color: Color(0xFF94A3B8),
+                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                   size: 20,
                 ),
-                onPressed: () => _showSectorDialog(sector: sector),
+                onPressed: () => _showSectorDialog(sector: sector, isDark: isDark),
               ),
               IconButton(
                 tooltip: 'Eliminar Rubro',
@@ -769,52 +1107,67 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                   color: Color(0xFFEF4444),
                   size: 20,
                 ),
-                onPressed: () => _confirmDeleteSector(sector),
+                onPressed: () => _confirmDeleteSector(sector, isDark),
               ),
             ],
           ),
         );
-      },
+      }).toList(),
     );
   }
 
   // ===========================================================================
-  // TAB 3: LÍNEAS DE SERVICIO
+  // 6. TAB 3: LÍNEAS DE SERVICIO
   // ===========================================================================
 
-  Widget _buildServiceLinesTab() {
+  Widget _buildServiceLinesTab(bool isDark, bool isMobile) {
     final lines = _catalogService.serviceLines;
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(24),
-      itemCount: lines.length,
-      itemBuilder: (context, index) {
-        final line = lines[index];
+    if (lines.isEmpty) {
+      return _buildEmptyState(
+        isDark: isDark,
+        icon: Icons.account_tree_outlined,
+        title: 'No hay líneas de servicio',
+        description: 'Registra una nueva línea operativa para clasificar tus partidas.',
+      );
+    }
+
+    return Column(
+      children: lines.map((line) {
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B),
-            borderRadius: BorderRadius.circular(10),
+            color: isDark ? const Color(0xFF111C30) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: line.isActive
-                  ? const Color(0xFF334155)
+                  ? (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0))
                   : const Color(0xFFEF4444).withValues(alpha: 0.4),
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0F172A),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF334155)),
+                  color: const Color(0xFF3B82F6).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: const Color(0xFF3B82F6).withValues(alpha: 0.25),
+                  ),
                 ),
                 child: const Icon(
                   Icons.account_tree_outlined,
-                  color: Color(0xFF10B981),
-                  size: 24,
+                  color: Color(0xFF3B82F6),
+                  size: 22,
                 ),
               ),
               const SizedBox(width: 16),
@@ -830,57 +1183,52 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                         Text(
                           line.name,
                           style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? Colors.white : const Color(0xFF0F172A),
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF334155),
+                            color: const Color(0xFF10B981).withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             line.code,
                             style: GoogleFonts.robotoMono(
                               fontSize: 11,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                               color: const Color(0xFF10B981),
                             ),
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0F172A),
+                            color: isDark ? const Color(0xFF161F30) : const Color(0xFFF1F5F9),
                             borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: const Color(0xFF334155)),
+                            border: Border.all(
+                              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1),
+                            ),
                           ),
                           child: Text(
                             line.category,
                             style: GoogleFonts.inter(
                               fontSize: 11,
-                              color: const Color(0xFF94A3B8),
+                              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    if (line.description != null &&
-                        line.description!.isNotEmpty) ...[
+                    if (line.description != null && line.description!.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
                         line.description!,
                         style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: const Color(0xFF94A3B8),
+                          fontSize: 12.5,
+                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                         ),
                       ),
                     ],
@@ -889,12 +1237,12 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
               ),
               IconButton(
                 tooltip: 'Editar Línea',
-                icon: const Icon(
+                icon: Icon(
                   Icons.edit_outlined,
-                  color: Color(0xFF94A3B8),
+                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                   size: 20,
                 ),
-                onPressed: () => _showServiceLineDialog(line: line),
+                onPressed: () => _showServiceLineDialog(line: line, isDark: isDark),
               ),
               IconButton(
                 tooltip: 'Eliminar Línea',
@@ -903,21 +1251,75 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                   color: Color(0xFFEF4444),
                   size: 20,
                 ),
-                onPressed: () => _confirmDeleteServiceLine(line),
+                onPressed: () => _confirmDeleteServiceLine(line, isDark),
               ),
             ],
           ),
         );
-      },
+      }).toList(),
     );
   }
 
   // ===========================================================================
-  // DIÁLOGOS Y MODALES
+  // ESTADO VACÍO (EMPTY STATE)
   // ===========================================================================
 
-  /// Diálogo para Crear / Editar Partida de Catálogo
-  void _showCatalogItemDialog({CrmCatalogItem? item}) {
+  Widget _buildEmptyState({
+    required bool isDark,
+    required IconData icon,
+    required String title,
+    required String description,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF111C30) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF10B981).withValues(alpha: 0.10),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 36, color: const Color(0xFF10B981)),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            title,
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: isDark ? Colors.white : const Color(0xFF0F172A),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            description,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ===========================================================================
+  // DIÁLOGOS DE CREACIÓN Y EDICIÓN
+  // ===========================================================================
+
+  void _showCatalogItemDialog({CrmCatalogItem? item, bool? isDark}) {
+    final dark = isDark ?? Theme.of(context).brightness == Brightness.dark;
     final isEditing = item != null;
     final codeCtrl = TextEditingController(text: item?.code ?? '');
     final conceptCtrl = TextEditingController(text: item?.concept ?? '');
@@ -932,7 +1334,6 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
       text: (item?.minQuantity ?? 1).toString(),
     );
 
-    // Campos de metadata para PER_POSITION
     String calcType = item?.calculationType ?? 'PER_AREA';
     final hoursShiftCtrl = TextEditingController(text: '12');
     final daysMonthCtrl = TextEditingController(text: '26');
@@ -960,12 +1361,19 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
         return StatefulBuilder(
           builder: (dialogCtx, setDialogState) {
             return AlertDialog(
-              backgroundColor: const Color(0xFF1E293B),
+              backgroundColor: dark ? const Color(0xFF111C30) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(
+                  color: dark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                ),
+              ),
               title: Text(
-                isEditing ? 'Editar Partida de Catálogo' : 'Nueva Partida',
+                isEditing ? 'Editar Partida de Catálogo' : 'Nueva Partida de Catálogo',
                 style: GoogleFonts.inter(
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  fontSize: 17,
+                  color: dark ? Colors.white : const Color(0xFF0F172A),
                 ),
               ),
               content: SizedBox(
@@ -974,24 +1382,27 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Código y Línea
                       Row(
                         children: [
                           Expanded(
                             child: TextField(
                               controller: codeCtrl,
-                              enabled: !isEditing, // Inmutable al editar
-                              style: GoogleFonts.inter(color: Colors.white),
-                              decoration: _inputDeco('Código Único (ej. LIMP-01)'),
+                              enabled: !isEditing,
+                              style: GoogleFonts.inter(
+                                color: dark ? Colors.white : const Color(0xFF0F172A),
+                              ),
+                              decoration: _inputDeco('Código Único (ej. LIMP-01)', dark),
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: DropdownButtonFormField<int?>(
                               initialValue: selectedLineId,
-                              dropdownColor: const Color(0xFF1E293B),
-                              style: GoogleFonts.inter(color: Colors.white),
-                              decoration: _inputDeco('Línea de Servicio'),
+                              dropdownColor: dark ? const Color(0xFF111C30) : Colors.white,
+                              style: GoogleFonts.inter(
+                                color: dark ? Colors.white : const Color(0xFF0F172A),
+                              ),
+                              decoration: _inputDeco('Línea de Servicio', dark),
                               items: _catalogService.serviceLines.map((l) {
                                 return DropdownMenuItem<int?>(
                                   value: l.id,
@@ -1005,24 +1416,24 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                         ],
                       ),
                       const SizedBox(height: 12),
-
-                      // Concepto
                       TextField(
                         controller: conceptCtrl,
-                        style: GoogleFonts.inter(color: Colors.white),
-                        decoration: _inputDeco('Concepto del Servicio'),
+                        style: GoogleFonts.inter(
+                          color: dark ? Colors.white : const Color(0xFF0F172A),
+                        ),
+                        decoration: _inputDeco('Concepto del Servicio', dark),
                       ),
                       const SizedBox(height: 12),
-
-                      // Tipo de cálculo y Unidad
                       Row(
                         children: [
                           Expanded(
                             child: DropdownButtonFormField<String>(
                               initialValue: calcType,
-                              dropdownColor: const Color(0xFF1E293B),
-                              style: GoogleFonts.inter(color: Colors.white),
-                              decoration: _inputDeco('Fórmula / Regla'),
+                              dropdownColor: dark ? const Color(0xFF111C30) : Colors.white,
+                              style: GoogleFonts.inter(
+                                color: dark ? Colors.white : const Color(0xFF0F172A),
+                              ),
+                              decoration: _inputDeco('Fórmula / Regla', dark),
                               items: const [
                                 DropdownMenuItem(
                                   value: 'PER_AREA',
@@ -1065,15 +1476,15 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                           Expanded(
                             child: TextField(
                               controller: unitCtrl,
-                              style: GoogleFonts.inter(color: Colors.white),
-                              decoration: _inputDeco('Unidad (m², puesto, etc)'),
+                              style: GoogleFonts.inter(
+                                color: dark ? Colors.white : const Color(0xFF0F172A),
+                              ),
+                              decoration: _inputDeco('Unidad (m², puesto, etc)', dark),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
-
-                      // Precio Base y Cantidad Mínima
                       Row(
                         children: [
                           Expanded(
@@ -1082,8 +1493,10 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                               keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true,
                               ),
-                              style: GoogleFonts.inter(color: Colors.white),
-                              decoration: _inputDeco('Precio Base (Bs.)'),
+                              style: GoogleFonts.inter(
+                                color: dark ? Colors.white : const Color(0xFF0F172A),
+                              ),
+                              decoration: _inputDeco('Precio Base (Bs.)', dark),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -1091,20 +1504,20 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                             child: TextField(
                               controller: minQtyCtrl,
                               keyboardType: TextInputType.number,
-                              style: GoogleFonts.inter(color: Colors.white),
-                              decoration: _inputDeco('Cantidad Mínima'),
+                              style: GoogleFonts.inter(
+                                color: dark ? Colors.white : const Color(0xFF0F172A),
+                              ),
+                              decoration: _inputDeco('Cantidad Mínima', dark),
                             ),
                           ),
                         ],
                       ),
-
-                      // Campos dinámicos si es PER_POSITION
                       if (calcType == 'PER_POSITION') ...[
                         const SizedBox(height: 16),
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0F172A),
+                            color: dark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: const Color(0xFF10B981).withValues(alpha: 0.3),
@@ -1128,8 +1541,10 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                                     child: TextField(
                                       controller: hoursShiftCtrl,
                                       keyboardType: TextInputType.number,
-                                      style: GoogleFonts.inter(color: Colors.white),
-                                      decoration: _inputDeco('Horas/Turno (ej. 12)'),
+                                      style: GoogleFonts.inter(
+                                        color: dark ? Colors.white : const Color(0xFF0F172A),
+                                      ),
+                                      decoration: _inputDeco('Horas/Turno (ej. 12)', dark),
                                     ),
                                   ),
                                   const SizedBox(width: 12),
@@ -1137,8 +1552,10 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                                     child: TextField(
                                       controller: daysMonthCtrl,
                                       keyboardType: TextInputType.number,
-                                      style: GoogleFonts.inter(color: Colors.white),
-                                      decoration: _inputDeco('Días/Mes (ej. 26)'),
+                                      style: GoogleFonts.inter(
+                                        color: dark ? Colors.white : const Color(0xFF0F172A),
+                                      ),
+                                      decoration: _inputDeco('Días/Mes (ej. 26)', dark),
                                     ),
                                   ),
                                 ],
@@ -1154,7 +1571,12 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+                  child: Text(
+                    'Cancelar',
+                    style: GoogleFonts.inter(
+                      color: dark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                    ),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -1242,8 +1664,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
     );
   }
 
-  /// Diálogo para Precios Diferenciados por Rubro (Scopes)
-  void _showScopesDialog(CrmCatalogItem item) async {
+  void _showScopesDialog(CrmCatalogItem item, bool isDark) async {
     final scopes = await _catalogService.loadScopesForItem(item.id!);
 
     if (!mounted) return;
@@ -1254,15 +1675,22 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
         return StatefulBuilder(
           builder: (dialogCtx, setDialogState) {
             return AlertDialog(
-              backgroundColor: const Color(0xFF1E293B),
+              backgroundColor: isDark ? const Color(0xFF111C30) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(
+                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                ),
+              ),
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Tarifas por Rubro',
+                    'Tarifas Diferenciadas por Rubro',
                     style: GoogleFonts.inter(
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      fontSize: 17,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -1270,20 +1698,21 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                     item.concept,
                     style: GoogleFonts.inter(
                       fontSize: 13,
+                      fontWeight: FontWeight.w600,
                       color: const Color(0xFF10B981),
                     ),
                   ),
                   Text(
-                    'Precio Base: Bs. ${item.basePrice.toStringAsFixed(2)} / ${item.unitType}',
+                    'Precio Base Referencial: Bs. ${item.basePrice.toStringAsFixed(2)} / ${item.unitType}',
                     style: GoogleFonts.inter(
-                      fontSize: 11,
-                      color: const Color(0xFF94A3B8),
+                      fontSize: 11.5,
+                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                     ),
                   ),
                 ],
               ),
               content: SizedBox(
-                width: 600,
+                width: 580,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -1303,12 +1732,12 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                         margin: const EdgeInsets.only(bottom: 8),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0F172A),
+                          color: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: existingScope != null
                                 ? const Color(0xFF10B981).withValues(alpha: 0.5)
-                                : const Color(0xFF334155),
+                                : (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
                           ),
                         ),
                         child: Row(
@@ -1322,14 +1751,16 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                                     sector.name,
                                     style: GoogleFonts.inter(
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.white,
+                                      fontSize: 13,
+                                      color: isDark ? Colors.white : const Color(0xFF0F172A),
                                     ),
                                   ),
                                   Text(
                                     sector.code,
                                     style: GoogleFonts.robotoMono(
                                       fontSize: 11,
-                                      color: const Color(0xFF94A3B8),
+                                      color: const Color(0xFF10B981),
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ],
@@ -1343,7 +1774,10 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                                 keyboardType: const TextInputType.numberWithOptions(
                                   decimal: true,
                                 ),
-                                style: GoogleFonts.inter(color: Colors.white),
+                                style: GoogleFonts.inter(
+                                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                                  fontSize: 13,
+                                ),
                                 decoration: InputDecoration(
                                   hintText: 'Bs. Base (${item.basePrice.toStringAsFixed(2)})',
                                   hintStyle: GoogleFonts.inter(
@@ -1351,9 +1785,12 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                                     fontSize: 12,
                                   ),
                                   filled: true,
-                                  fillColor: const Color(0xFF1E293B),
+                                  fillColor: isDark ? const Color(0xFF111C30) : Colors.white,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(6),
+                                    borderSide: BorderSide(
+                                      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1),
+                                    ),
                                   ),
                                   contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 10,
@@ -1418,7 +1855,12 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Cerrar', style: TextStyle(color: Colors.white)),
+                  child: Text(
+                    'Cerrar',
+                    style: GoogleFonts.inter(
+                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                    ),
+                  ),
                 ),
               ],
             );
@@ -1428,8 +1870,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
     );
   }
 
-  /// Diálogo para Crear / Editar Sector / Rubro
-  void _showSectorDialog({CrmSector? sector}) {
+  void _showSectorDialog({CrmSector? sector, bool? isDark}) {
+    final dark = isDark ?? Theme.of(context).brightness == Brightness.dark;
     final isEditing = sector != null;
     final codeCtrl = TextEditingController(text: sector?.code ?? '');
     final nameCtrl = TextEditingController(text: sector?.name ?? '');
@@ -1439,12 +1881,19 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1E293B),
+          backgroundColor: dark ? const Color(0xFF111C30) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(
+              color: dark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+            ),
+          ),
           title: Text(
             isEditing ? 'Editar Rubro Industrial' : 'Nuevo Rubro Industrial',
             style: GoogleFonts.inter(
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              fontSize: 17,
+              color: dark ? Colors.white : const Color(0xFF0F172A),
             ),
           ),
           content: SizedBox(
@@ -1455,21 +1904,27 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                 TextField(
                   controller: codeCtrl,
                   enabled: !isEditing,
-                  style: GoogleFonts.inter(color: Colors.white),
-                  decoration: _inputDeco('Código (ej. SALUD, BANCA)'),
+                  style: GoogleFonts.inter(
+                    color: dark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                  decoration: _inputDeco('Código (ej. SALUD, BANCA)', dark),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: nameCtrl,
-                  style: GoogleFonts.inter(color: Colors.white),
-                  decoration: _inputDeco('Nombre del Rubro'),
+                  style: GoogleFonts.inter(
+                    color: dark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                  decoration: _inputDeco('Nombre del Rubro', dark),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: descCtrl,
                   maxLines: 2,
-                  style: GoogleFonts.inter(color: Colors.white),
-                  decoration: _inputDeco('Descripción del Sector'),
+                  style: GoogleFonts.inter(
+                    color: dark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                  decoration: _inputDeco('Descripción del Sector', dark),
                 ),
               ],
             ),
@@ -1477,7 +1932,12 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+              child: Text(
+                'Cancelar',
+                style: GoogleFonts.inter(
+                  color: dark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -1534,8 +1994,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
     );
   }
 
-  /// Diálogo para Crear / Editar Línea de Servicio
-  void _showServiceLineDialog({CrmServiceLine? line}) {
+  void _showServiceLineDialog({CrmServiceLine? line, bool? isDark}) {
+    final dark = isDark ?? Theme.of(context).brightness == Brightness.dark;
     final isEditing = line != null;
     final codeCtrl = TextEditingController(text: line?.code ?? '');
     final nameCtrl = TextEditingController(text: line?.name ?? '');
@@ -1546,12 +2006,19 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1E293B),
+          backgroundColor: dark ? const Color(0xFF111C30) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(
+              color: dark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+            ),
+          ),
           title: Text(
             isEditing ? 'Editar Línea de Servicio' : 'Nueva Línea de Servicio',
             style: GoogleFonts.inter(
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              fontSize: 17,
+              color: dark ? Colors.white : const Color(0xFF0F172A),
             ),
           ),
           content: SizedBox(
@@ -1562,27 +2029,35 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
                 TextField(
                   controller: codeCtrl,
                   enabled: !isEditing,
-                  style: GoogleFonts.inter(color: Colors.white),
-                  decoration: _inputDeco('Código (ej. LIMPIEZA, SEGURIDAD)'),
+                  style: GoogleFonts.inter(
+                    color: dark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                  decoration: _inputDeco('Código (ej. LIMPIEZA, SEGURIDAD)', dark),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: nameCtrl,
-                  style: GoogleFonts.inter(color: Colors.white),
-                  decoration: _inputDeco('Nombre de la Línea'),
+                  style: GoogleFonts.inter(
+                    color: dark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                  decoration: _inputDeco('Nombre de la Línea', dark),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: catCtrl,
-                  style: GoogleFonts.inter(color: Colors.white),
-                  decoration: _inputDeco('Categoría'),
+                  style: GoogleFonts.inter(
+                    color: dark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                  decoration: _inputDeco('Categoría', dark),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: descCtrl,
                   maxLines: 2,
-                  style: GoogleFonts.inter(color: Colors.white),
-                  decoration: _inputDeco('Descripción'),
+                  style: GoogleFonts.inter(
+                    color: dark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                  decoration: _inputDeco('Descripción', dark),
                 ),
               ],
             ),
@@ -1590,7 +2065,12 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+              child: Text(
+                'Cancelar',
+                style: GoogleFonts.inter(
+                  color: dark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -1649,23 +2129,45 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
     );
   }
 
-  void _confirmDeleteItem(CrmCatalogItem item) {
+  void _confirmDeleteItem(CrmCatalogItem item, bool isDark) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Eliminar Partida', style: TextStyle(color: Colors.white)),
+        backgroundColor: isDark ? const Color(0xFF111C30) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+          ),
+        ),
+        title: Text(
+          'Eliminar Partida',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
+          ),
+        ),
         content: Text(
           '¿Desea dar de baja "${item.concept}"? Las cotizaciones históricas conservarán su snapshot.',
-          style: const TextStyle(color: Color(0xFF94A3B8)),
+          style: GoogleFonts.inter(
+            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(
+                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+              ),
+            ),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+            ),
             onPressed: () async {
               await _catalogService.deleteCatalogItem(item.id!);
               if (ctx.mounted) Navigator.of(ctx).pop();
@@ -1678,23 +2180,45 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
     );
   }
 
-  void _confirmDeleteSector(CrmSector sector) {
+  void _confirmDeleteSector(CrmSector sector, bool isDark) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Eliminar Rubro', style: TextStyle(color: Colors.white)),
+        backgroundColor: isDark ? const Color(0xFF111C30) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+          ),
+        ),
+        title: Text(
+          'Eliminar Rubro',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
+          ),
+        ),
         content: Text(
           '¿Desea dar de baja el rubro "${sector.name}"? Los precios diferenciados asociados se desactivarán lógicamente.',
-          style: const TextStyle(color: Color(0xFF94A3B8)),
+          style: GoogleFonts.inter(
+            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(
+                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+              ),
+            ),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+            ),
             onPressed: () async {
               await _catalogService.deleteSector(sector.id!);
               if (ctx.mounted) Navigator.of(ctx).pop();
@@ -1707,23 +2231,45 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
     );
   }
 
-  void _confirmDeleteServiceLine(CrmServiceLine line) {
+  void _confirmDeleteServiceLine(CrmServiceLine line, bool isDark) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Eliminar Línea', style: TextStyle(color: Colors.white)),
+        backgroundColor: isDark ? const Color(0xFF111C30) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+          ),
+        ),
+        title: Text(
+          'Eliminar Línea',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
+          ),
+        ),
         content: Text(
           '¿Desea dar de baja la línea "${line.name}"?',
-          style: const TextStyle(color: Color(0xFF94A3B8)),
+          style: GoogleFonts.inter(
+            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(
+                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+              ),
+            ),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+            ),
             onPressed: () async {
               await _catalogService.deleteServiceLine(line.id!);
               if (ctx.mounted) Navigator.of(ctx).pop();
@@ -1736,19 +2282,26 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView>
     );
   }
 
-  InputDecoration _inputDeco(String label) {
+  InputDecoration _inputDeco(String label, bool isDark) {
     return InputDecoration(
       labelText: label,
-      labelStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 13),
+      labelStyle: GoogleFonts.inter(
+        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+        fontSize: 12.5,
+      ),
       filled: true,
-      fillColor: const Color(0xFF0F172A),
+      fillColor: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Color(0xFF334155)),
+        borderSide: BorderSide(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1),
+        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Color(0xFF334155)),
+        borderSide: BorderSide(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFCBD5E1),
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
