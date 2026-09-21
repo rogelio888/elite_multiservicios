@@ -2142,6 +2142,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
           'Recepción conforme de servicio sin observaciones. Entrega a satisfacción del cliente.',
     );
     int rating = 5;
+    bool scheduleQualityCheck = false;
 
     showDialog(
       context: context,
@@ -2251,6 +2252,70 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         isDense: true,
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    InkWell(
+                      onTap: () {
+                        setDialogState(() {
+                          scheduleQualityCheck = !scheduleQualityCheck;
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF1E293B).withValues(alpha: 0.5)
+                              : const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: scheduleQualityCheck
+                                ? const Color(0xFF10B981)
+                                : (isDark
+                                    ? const Color(0xFF334155)
+                                    : const Color(0xFFE2E8F0)),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Checkbox(
+                              value: scheduleQualityCheck,
+                              activeColor: const Color(0xFF10B981),
+                              onChanged: (val) {
+                                setDialogState(() {
+                                  scheduleQualityCheck = val ?? false;
+                                });
+                              },
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Agendar control de calidad en Agenda (Opcional)',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Desmarcado por defecto. Si no se marca, no se creará ninguna tarea.',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      color: const Color(0xFF64748B),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -2274,14 +2339,16 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                       notes: notesCtrl.text.trim(),
                       rating: rating,
                     );
-                    CrmAgendaService().scheduleQualityCheckTask(
-                      clientName: customer.tradeName,
-                      contactPerson: customer.contactPerson,
-                      phone: customer.phone,
-                      contractTitle: contract.title,
-                      customerId: customer.id,
-                      contractId: contract.id,
-                    );
+                    if (scheduleQualityCheck) {
+                      CrmAgendaService().scheduleQualityCheckTask(
+                        clientName: customer.tradeName,
+                        contactPerson: customer.contactPerson,
+                        phone: customer.phone,
+                        contractTitle: contract.title,
+                        customerId: customer.id,
+                        contractId: contract.id,
+                      );
+                    }
                     if (dCtx.mounted) Navigator.of(dCtx).pop();
                     if (!mounted) return;
                     if (_selectedCustomer?.id == customer.id) {
@@ -2289,10 +2356,12 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                       setState(() {});
                     }
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: Color(0xFF065F46),
+                      SnackBar(
+                        backgroundColor: const Color(0xFF065F46),
                         content: Text(
-                          'Trabajo concluido con éxito. Tarea de control de calidad (72h) agendada en la Agenda Comercial.',
+                          scheduleQualityCheck
+                              ? 'Trabajo concluido con éxito. Tarea de control de calidad (72h) agendada en la Agenda Comercial.'
+                              : 'Trabajo concluido con éxito y registrado en el historial del cliente.',
                         ),
                       ),
                     );
