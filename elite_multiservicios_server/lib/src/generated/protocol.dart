@@ -19,55 +19,69 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i4;
 import 'greetings/greeting.dart' as _i5;
 import 'modules/crm/models/crm_agenda_metrics_response.dart' as _i6;
-import 'modules/crm/models/crm_contract_budget_item.dart' as _i7;
-import 'modules/crm/models/crm_customer.dart' as _i8;
-import 'modules/crm/models/crm_customer_branch.dart' as _i9;
-import 'modules/crm/models/crm_customer_contract.dart' as _i10;
-import 'modules/crm/models/crm_customer_detail_response.dart' as _i11;
-import 'modules/crm/models/crm_customer_metrics_response.dart' as _i12;
-import 'modules/crm/models/crm_lead.dart' as _i13;
-import 'modules/crm/models/crm_lead_metrics_response.dart' as _i14;
-import 'modules/crm/models/crm_opportunity.dart' as _i15;
-import 'modules/crm/models/crm_pipeline_metrics_response.dart' as _i16;
-import 'modules/crm/models/crm_quote_item.dart' as _i17;
-import 'modules/crm/models/crm_task.dart' as _i18;
-import 'modules/security/models/app_permission.dart' as _i19;
-import 'modules/security/models/app_role.dart' as _i20;
-import 'modules/security/models/app_user.dart' as _i21;
-import 'modules/security/models/audit_log.dart' as _i22;
-import 'modules/security/models/audit_log_page_response.dart' as _i23;
-import 'modules/security/models/mfa_challenge.dart' as _i24;
-import 'modules/security/models/mfa_challenge_response.dart' as _i25;
-import 'modules/security/models/mfa_verify_response.dart' as _i26;
-import 'modules/security/models/role_permission.dart' as _i27;
-import 'modules/security/models/server_metrics_response.dart' as _i28;
-import 'modules/security/models/trusted_device.dart' as _i29;
-import 'modules/security/models/user_role.dart' as _i30;
-import 'modules/security/models/user_session.dart' as _i31;
+import 'modules/crm/models/crm_catalog_item.dart' as _i7;
+import 'modules/crm/models/crm_catalog_item_scope.dart' as _i8;
+import 'modules/crm/models/crm_contract_budget_item.dart' as _i9;
+import 'modules/crm/models/crm_customer.dart' as _i10;
+import 'modules/crm/models/crm_customer_branch.dart' as _i11;
+import 'modules/crm/models/crm_customer_contract.dart' as _i12;
+import 'modules/crm/models/crm_customer_detail_response.dart' as _i13;
+import 'modules/crm/models/crm_customer_metrics_response.dart' as _i14;
+import 'modules/crm/models/crm_lead.dart' as _i15;
+import 'modules/crm/models/crm_lead_metrics_response.dart' as _i16;
+import 'modules/crm/models/crm_opportunity.dart' as _i17;
+import 'modules/crm/models/crm_pipeline_metrics_response.dart' as _i18;
+import 'modules/crm/models/crm_quote_item.dart' as _i19;
+import 'modules/crm/models/crm_sector.dart' as _i20;
+import 'modules/crm/models/crm_service_line.dart' as _i21;
+import 'modules/crm/models/crm_task.dart' as _i22;
+import 'modules/security/models/app_permission.dart' as _i23;
+import 'modules/security/models/app_role.dart' as _i24;
+import 'modules/security/models/app_user.dart' as _i25;
+import 'modules/security/models/audit_log.dart' as _i26;
+import 'modules/security/models/audit_log_page_response.dart' as _i27;
+import 'modules/security/models/mfa_challenge.dart' as _i28;
+import 'modules/security/models/mfa_challenge_response.dart' as _i29;
+import 'modules/security/models/mfa_verify_response.dart' as _i30;
+import 'modules/security/models/role_permission.dart' as _i31;
+import 'modules/security/models/server_metrics_response.dart' as _i32;
+import 'modules/security/models/trusted_device.dart' as _i33;
+import 'modules/security/models/user_role.dart' as _i34;
+import 'modules/security/models/user_session.dart' as _i35;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_task.dart'
-    as _i32;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
-    as _i33;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
-    as _i34;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
-    as _i35;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
     as _i36;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
     as _i37;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
     as _i38;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
     as _i39;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
     as _i40;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
     as _i41;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
     as _i42;
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
+    as _i43;
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
+    as _i44;
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
+    as _i45;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
+    as _i46;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
+    as _i47;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
+    as _i48;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
+    as _i49;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
+    as _i50;
 export 'greetings/greeting.dart';
 export 'modules/crm/models/crm_agenda_metrics_response.dart';
+export 'modules/crm/models/crm_catalog_item.dart';
+export 'modules/crm/models/crm_catalog_item_scope.dart';
 export 'modules/crm/models/crm_contract_budget_item.dart';
 export 'modules/crm/models/crm_customer.dart';
 export 'modules/crm/models/crm_customer_branch.dart';
@@ -79,6 +93,8 @@ export 'modules/crm/models/crm_lead_metrics_response.dart';
 export 'modules/crm/models/crm_opportunity.dart';
 export 'modules/crm/models/crm_pipeline_metrics_response.dart';
 export 'modules/crm/models/crm_quote_item.dart';
+export 'modules/crm/models/crm_sector.dart';
+export 'modules/crm/models/crm_service_line.dart';
 export 'modules/crm/models/crm_task.dart';
 export 'modules/security/models/app_permission.dart';
 export 'modules/security/models/app_role.dart';
@@ -492,6 +508,321 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'crm_catalog_item',
+      dartName: 'CrmCatalogItem',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'crm_catalog_item_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'code',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'category',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'serviceLineId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'concept',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'calculationType',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'unitType',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'basePrice',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'minQuantity',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+          columnDefault: '1.0',
+        ),
+        _i2.ColumnDefinition(
+          name: 'version',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '1',
+        ),
+        _i2.ColumnDefinition(
+          name: 'metadata',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'description',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isActive',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'true',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDeleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'crm_catalog_item_fk_0',
+          columns: ['serviceLineId'],
+          referenceTable: 'crm_service_line',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'crm_catalog_item_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'crm_catalog_item_code_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'code',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'crm_catalog_item_concept_service_line_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'serviceLineId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'concept',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'crm_catalog_item_scope',
+      dartName: 'CrmCatalogItemScope',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'crm_catalog_item_scope_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'catalogItemId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'sectorId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'serviceLineId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'priceOverride',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: true,
+          dartType: 'double?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'minQuantityOverride',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: true,
+          dartType: 'double?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'metadataOverride',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isActive',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'true',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDeleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'crm_catalog_item_scope_fk_0',
+          columns: ['catalogItemId'],
+          referenceTable: 'crm_catalog_item',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'crm_catalog_item_scope_fk_1',
+          columns: ['sectorId'],
+          referenceTable: 'crm_sector',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'crm_catalog_item_scope_fk_2',
+          columns: ['serviceLineId'],
+          referenceTable: 'crm_service_line',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.setNull,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'crm_catalog_item_scope_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'crm_catalog_scope_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'catalogItemId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'sectorId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
           isPrimary: false,
         ),
       ],
@@ -1734,6 +2065,18 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'int',
         ),
         _i2.ColumnDefinition(
+          name: 'catalogItemId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'catalogVersion',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
           name: 'category',
           columnType: _i2.ColumnType.text,
           isNullable: false,
@@ -1744,6 +2087,13 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'calculationType',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'PER_UNIT\'::text',
         ),
         _i2.ColumnDefinition(
           name: 'unitType',
@@ -1762,6 +2112,12 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.doublePrecision,
           isNullable: false,
           dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'metadata',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
         ),
         _i2.ColumnDefinition(
           name: 'isDeleted',
@@ -1820,6 +2176,215 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'crm_sector',
+      dartName: 'CrmSector',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'crm_sector_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'code',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'description',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isActive',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'true',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDeleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'crm_sector_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'crm_sector_code_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'code',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'crm_sector_name_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'name',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'crm_service_line',
+      dartName: 'CrmServiceLine',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'crm_service_line_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'code',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'category',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'description',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isActive',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'true',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDeleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'crm_service_line_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'crm_service_line_code_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'code',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
           isPrimary: false,
         ),
       ],
@@ -2666,80 +3231,92 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i6.CrmAgendaMetricsResponse) {
       return _i6.CrmAgendaMetricsResponse.fromJson(data) as T;
     }
-    if (t == _i7.CrmContractBudgetItem) {
-      return _i7.CrmContractBudgetItem.fromJson(data) as T;
+    if (t == _i7.CrmCatalogItem) {
+      return _i7.CrmCatalogItem.fromJson(data) as T;
     }
-    if (t == _i8.CrmCustomer) {
-      return _i8.CrmCustomer.fromJson(data) as T;
+    if (t == _i8.CrmCatalogItemScope) {
+      return _i8.CrmCatalogItemScope.fromJson(data) as T;
     }
-    if (t == _i9.CrmCustomerBranch) {
-      return _i9.CrmCustomerBranch.fromJson(data) as T;
+    if (t == _i9.CrmContractBudgetItem) {
+      return _i9.CrmContractBudgetItem.fromJson(data) as T;
     }
-    if (t == _i10.CrmCustomerContract) {
-      return _i10.CrmCustomerContract.fromJson(data) as T;
+    if (t == _i10.CrmCustomer) {
+      return _i10.CrmCustomer.fromJson(data) as T;
     }
-    if (t == _i11.CrmCustomerDetailResponse) {
-      return _i11.CrmCustomerDetailResponse.fromJson(data) as T;
+    if (t == _i11.CrmCustomerBranch) {
+      return _i11.CrmCustomerBranch.fromJson(data) as T;
     }
-    if (t == _i12.CrmCustomerMetricsResponse) {
-      return _i12.CrmCustomerMetricsResponse.fromJson(data) as T;
+    if (t == _i12.CrmCustomerContract) {
+      return _i12.CrmCustomerContract.fromJson(data) as T;
     }
-    if (t == _i13.CrmLead) {
-      return _i13.CrmLead.fromJson(data) as T;
+    if (t == _i13.CrmCustomerDetailResponse) {
+      return _i13.CrmCustomerDetailResponse.fromJson(data) as T;
     }
-    if (t == _i14.CrmLeadMetricsResponse) {
-      return _i14.CrmLeadMetricsResponse.fromJson(data) as T;
+    if (t == _i14.CrmCustomerMetricsResponse) {
+      return _i14.CrmCustomerMetricsResponse.fromJson(data) as T;
     }
-    if (t == _i15.CrmOpportunity) {
-      return _i15.CrmOpportunity.fromJson(data) as T;
+    if (t == _i15.CrmLead) {
+      return _i15.CrmLead.fromJson(data) as T;
     }
-    if (t == _i16.CrmPipelineMetricsResponse) {
-      return _i16.CrmPipelineMetricsResponse.fromJson(data) as T;
+    if (t == _i16.CrmLeadMetricsResponse) {
+      return _i16.CrmLeadMetricsResponse.fromJson(data) as T;
     }
-    if (t == _i17.CrmQuoteItem) {
-      return _i17.CrmQuoteItem.fromJson(data) as T;
+    if (t == _i17.CrmOpportunity) {
+      return _i17.CrmOpportunity.fromJson(data) as T;
     }
-    if (t == _i18.CrmTask) {
-      return _i18.CrmTask.fromJson(data) as T;
+    if (t == _i18.CrmPipelineMetricsResponse) {
+      return _i18.CrmPipelineMetricsResponse.fromJson(data) as T;
     }
-    if (t == _i19.AppPermission) {
-      return _i19.AppPermission.fromJson(data) as T;
+    if (t == _i19.CrmQuoteItem) {
+      return _i19.CrmQuoteItem.fromJson(data) as T;
     }
-    if (t == _i20.AppRole) {
-      return _i20.AppRole.fromJson(data) as T;
+    if (t == _i20.CrmSector) {
+      return _i20.CrmSector.fromJson(data) as T;
     }
-    if (t == _i21.AppUser) {
-      return _i21.AppUser.fromJson(data) as T;
+    if (t == _i21.CrmServiceLine) {
+      return _i21.CrmServiceLine.fromJson(data) as T;
     }
-    if (t == _i22.AuditLog) {
-      return _i22.AuditLog.fromJson(data) as T;
+    if (t == _i22.CrmTask) {
+      return _i22.CrmTask.fromJson(data) as T;
     }
-    if (t == _i23.AuditLogPageResponse) {
-      return _i23.AuditLogPageResponse.fromJson(data) as T;
+    if (t == _i23.AppPermission) {
+      return _i23.AppPermission.fromJson(data) as T;
     }
-    if (t == _i24.MfaChallenge) {
-      return _i24.MfaChallenge.fromJson(data) as T;
+    if (t == _i24.AppRole) {
+      return _i24.AppRole.fromJson(data) as T;
     }
-    if (t == _i25.MfaChallengeResponse) {
-      return _i25.MfaChallengeResponse.fromJson(data) as T;
+    if (t == _i25.AppUser) {
+      return _i25.AppUser.fromJson(data) as T;
     }
-    if (t == _i26.MfaVerifyResponse) {
-      return _i26.MfaVerifyResponse.fromJson(data) as T;
+    if (t == _i26.AuditLog) {
+      return _i26.AuditLog.fromJson(data) as T;
     }
-    if (t == _i27.RolePermission) {
-      return _i27.RolePermission.fromJson(data) as T;
+    if (t == _i27.AuditLogPageResponse) {
+      return _i27.AuditLogPageResponse.fromJson(data) as T;
     }
-    if (t == _i28.ServerMetricsResponse) {
-      return _i28.ServerMetricsResponse.fromJson(data) as T;
+    if (t == _i28.MfaChallenge) {
+      return _i28.MfaChallenge.fromJson(data) as T;
     }
-    if (t == _i29.TrustedDevice) {
-      return _i29.TrustedDevice.fromJson(data) as T;
+    if (t == _i29.MfaChallengeResponse) {
+      return _i29.MfaChallengeResponse.fromJson(data) as T;
     }
-    if (t == _i30.UserRole) {
-      return _i30.UserRole.fromJson(data) as T;
+    if (t == _i30.MfaVerifyResponse) {
+      return _i30.MfaVerifyResponse.fromJson(data) as T;
     }
-    if (t == _i31.UserSession) {
-      return _i31.UserSession.fromJson(data) as T;
+    if (t == _i31.RolePermission) {
+      return _i31.RolePermission.fromJson(data) as T;
+    }
+    if (t == _i32.ServerMetricsResponse) {
+      return _i32.ServerMetricsResponse.fromJson(data) as T;
+    }
+    if (t == _i33.TrustedDevice) {
+      return _i33.TrustedDevice.fromJson(data) as T;
+    }
+    if (t == _i34.UserRole) {
+      return _i34.UserRole.fromJson(data) as T;
+    }
+    if (t == _i35.UserSession) {
+      return _i35.UserSession.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.Greeting?>()) {
       return (data != null ? _i5.Greeting.fromJson(data) : null) as T;
@@ -2748,198 +3325,233 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data != null ? _i6.CrmAgendaMetricsResponse.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i7.CrmContractBudgetItem?>()) {
-      return (data != null ? _i7.CrmContractBudgetItem.fromJson(data) : null)
+    if (t == _i1.getType<_i7.CrmCatalogItem?>()) {
+      return (data != null ? _i7.CrmCatalogItem.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i8.CrmCatalogItemScope?>()) {
+      return (data != null ? _i8.CrmCatalogItemScope.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i8.CrmCustomer?>()) {
-      return (data != null ? _i8.CrmCustomer.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i9.CrmCustomerBranch?>()) {
-      return (data != null ? _i9.CrmCustomerBranch.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i10.CrmCustomerContract?>()) {
-      return (data != null ? _i10.CrmCustomerContract.fromJson(data) : null)
+    if (t == _i1.getType<_i9.CrmContractBudgetItem?>()) {
+      return (data != null ? _i9.CrmContractBudgetItem.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i11.CrmCustomerDetailResponse?>()) {
+    if (t == _i1.getType<_i10.CrmCustomer?>()) {
+      return (data != null ? _i10.CrmCustomer.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i11.CrmCustomerBranch?>()) {
+      return (data != null ? _i11.CrmCustomerBranch.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i12.CrmCustomerContract?>()) {
+      return (data != null ? _i12.CrmCustomerContract.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i13.CrmCustomerDetailResponse?>()) {
       return (data != null
-              ? _i11.CrmCustomerDetailResponse.fromJson(data)
+              ? _i13.CrmCustomerDetailResponse.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i12.CrmCustomerMetricsResponse?>()) {
+    if (t == _i1.getType<_i14.CrmCustomerMetricsResponse?>()) {
       return (data != null
-              ? _i12.CrmCustomerMetricsResponse.fromJson(data)
+              ? _i14.CrmCustomerMetricsResponse.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i13.CrmLead?>()) {
-      return (data != null ? _i13.CrmLead.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i15.CrmLead?>()) {
+      return (data != null ? _i15.CrmLead.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.CrmLeadMetricsResponse?>()) {
-      return (data != null ? _i14.CrmLeadMetricsResponse.fromJson(data) : null)
+    if (t == _i1.getType<_i16.CrmLeadMetricsResponse?>()) {
+      return (data != null ? _i16.CrmLeadMetricsResponse.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i15.CrmOpportunity?>()) {
-      return (data != null ? _i15.CrmOpportunity.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i17.CrmOpportunity?>()) {
+      return (data != null ? _i17.CrmOpportunity.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.CrmPipelineMetricsResponse?>()) {
+    if (t == _i1.getType<_i18.CrmPipelineMetricsResponse?>()) {
       return (data != null
-              ? _i16.CrmPipelineMetricsResponse.fromJson(data)
+              ? _i18.CrmPipelineMetricsResponse.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i17.CrmQuoteItem?>()) {
-      return (data != null ? _i17.CrmQuoteItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i19.CrmQuoteItem?>()) {
+      return (data != null ? _i19.CrmQuoteItem.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i18.CrmTask?>()) {
-      return (data != null ? _i18.CrmTask.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i20.CrmSector?>()) {
+      return (data != null ? _i20.CrmSector.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.AppPermission?>()) {
-      return (data != null ? _i19.AppPermission.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i21.CrmServiceLine?>()) {
+      return (data != null ? _i21.CrmServiceLine.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i20.AppRole?>()) {
-      return (data != null ? _i20.AppRole.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i22.CrmTask?>()) {
+      return (data != null ? _i22.CrmTask.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i21.AppUser?>()) {
-      return (data != null ? _i21.AppUser.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i23.AppPermission?>()) {
+      return (data != null ? _i23.AppPermission.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i22.AuditLog?>()) {
-      return (data != null ? _i22.AuditLog.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i24.AppRole?>()) {
+      return (data != null ? _i24.AppRole.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i23.AuditLogPageResponse?>()) {
-      return (data != null ? _i23.AuditLogPageResponse.fromJson(data) : null)
+    if (t == _i1.getType<_i25.AppUser?>()) {
+      return (data != null ? _i25.AppUser.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i26.AuditLog?>()) {
+      return (data != null ? _i26.AuditLog.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i27.AuditLogPageResponse?>()) {
+      return (data != null ? _i27.AuditLogPageResponse.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i24.MfaChallenge?>()) {
-      return (data != null ? _i24.MfaChallenge.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i28.MfaChallenge?>()) {
+      return (data != null ? _i28.MfaChallenge.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i25.MfaChallengeResponse?>()) {
-      return (data != null ? _i25.MfaChallengeResponse.fromJson(data) : null)
+    if (t == _i1.getType<_i29.MfaChallengeResponse?>()) {
+      return (data != null ? _i29.MfaChallengeResponse.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i26.MfaVerifyResponse?>()) {
-      return (data != null ? _i26.MfaVerifyResponse.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i30.MfaVerifyResponse?>()) {
+      return (data != null ? _i30.MfaVerifyResponse.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i27.RolePermission?>()) {
-      return (data != null ? _i27.RolePermission.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i31.RolePermission?>()) {
+      return (data != null ? _i31.RolePermission.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i28.ServerMetricsResponse?>()) {
-      return (data != null ? _i28.ServerMetricsResponse.fromJson(data) : null)
+    if (t == _i1.getType<_i32.ServerMetricsResponse?>()) {
+      return (data != null ? _i32.ServerMetricsResponse.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i29.TrustedDevice?>()) {
-      return (data != null ? _i29.TrustedDevice.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i33.TrustedDevice?>()) {
+      return (data != null ? _i33.TrustedDevice.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i30.UserRole?>()) {
-      return (data != null ? _i30.UserRole.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i34.UserRole?>()) {
+      return (data != null ? _i34.UserRole.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i31.UserSession?>()) {
-      return (data != null ? _i31.UserSession.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i35.UserSession?>()) {
+      return (data != null ? _i35.UserSession.fromJson(data) : null) as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i9.CrmCustomerBranch>) {
+    if (t == List<_i11.CrmCustomerBranch>) {
       return (data as List)
-              .map((e) => deserialize<_i9.CrmCustomerBranch>(e))
+              .map((e) => deserialize<_i11.CrmCustomerBranch>(e))
               .toList()
           as T;
     }
-    if (t == List<_i10.CrmCustomerContract>) {
+    if (t == List<_i12.CrmCustomerContract>) {
       return (data as List)
-              .map((e) => deserialize<_i10.CrmCustomerContract>(e))
+              .map((e) => deserialize<_i12.CrmCustomerContract>(e))
               .toList()
           as T;
     }
-    if (t == List<_i7.CrmContractBudgetItem>) {
+    if (t == List<_i9.CrmContractBudgetItem>) {
       return (data as List)
-              .map((e) => deserialize<_i7.CrmContractBudgetItem>(e))
+              .map((e) => deserialize<_i9.CrmContractBudgetItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i22.AuditLog>) {
-      return (data as List).map((e) => deserialize<_i22.AuditLog>(e)).toList()
+    if (t == List<_i26.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i26.AuditLog>(e)).toList()
           as T;
     }
-    if (t == List<_i32.CrmTask>) {
-      return (data as List).map((e) => deserialize<_i32.CrmTask>(e)).toList()
+    if (t == List<_i36.CrmTask>) {
+      return (data as List).map((e) => deserialize<_i36.CrmTask>(e)).toList()
           as T;
     }
-    if (t == List<_i33.CrmCustomer>) {
+    if (t == List<_i37.CrmSector>) {
+      return (data as List).map((e) => deserialize<_i37.CrmSector>(e)).toList()
+          as T;
+    }
+    if (t == List<_i38.CrmServiceLine>) {
       return (data as List)
-              .map((e) => deserialize<_i33.CrmCustomer>(e))
+              .map((e) => deserialize<_i38.CrmServiceLine>(e))
               .toList()
           as T;
     }
-    if (t == List<_i34.CrmContractBudgetItem>) {
+    if (t == List<_i39.CrmCatalogItem>) {
       return (data as List)
-              .map((e) => deserialize<_i34.CrmContractBudgetItem>(e))
+              .map((e) => deserialize<_i39.CrmCatalogItem>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i34.CrmContractBudgetItem>?>()) {
+    if (t == List<_i40.CrmCatalogItemScope>) {
+      return (data as List)
+              .map((e) => deserialize<_i40.CrmCatalogItemScope>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i41.CrmCustomer>) {
+      return (data as List)
+              .map((e) => deserialize<_i41.CrmCustomer>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i42.CrmContractBudgetItem>) {
+      return (data as List)
+              .map((e) => deserialize<_i42.CrmContractBudgetItem>(e))
+              .toList()
+          as T;
+    }
+    if (t == _i1.getType<List<_i42.CrmContractBudgetItem>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i34.CrmContractBudgetItem>(e))
+                    .map((e) => deserialize<_i42.CrmContractBudgetItem>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i35.CrmLead>) {
-      return (data as List).map((e) => deserialize<_i35.CrmLead>(e)).toList()
+    if (t == List<_i43.CrmLead>) {
+      return (data as List).map((e) => deserialize<_i43.CrmLead>(e)).toList()
           as T;
     }
-    if (t == List<_i36.CrmOpportunity>) {
+    if (t == List<_i44.CrmOpportunity>) {
       return (data as List)
-              .map((e) => deserialize<_i36.CrmOpportunity>(e))
+              .map((e) => deserialize<_i44.CrmOpportunity>(e))
               .toList()
           as T;
     }
-    if (t == List<_i37.CrmQuoteItem>) {
+    if (t == List<_i45.CrmQuoteItem>) {
       return (data as List)
-              .map((e) => deserialize<_i37.CrmQuoteItem>(e))
+              .map((e) => deserialize<_i45.CrmQuoteItem>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i37.CrmQuoteItem>?>()) {
+    if (t == _i1.getType<List<_i45.CrmQuoteItem>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i37.CrmQuoteItem>(e))
+                    .map((e) => deserialize<_i45.CrmQuoteItem>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i38.AuditLog>) {
-      return (data as List).map((e) => deserialize<_i38.AuditLog>(e)).toList()
+    if (t == List<_i46.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i46.AuditLog>(e)).toList()
           as T;
     }
-    if (t == List<_i39.AppRole>) {
-      return (data as List).map((e) => deserialize<_i39.AppRole>(e)).toList()
+    if (t == List<_i47.AppRole>) {
+      return (data as List).map((e) => deserialize<_i47.AppRole>(e)).toList()
           as T;
     }
-    if (t == List<_i40.AppPermission>) {
+    if (t == List<_i48.AppPermission>) {
       return (data as List)
-              .map((e) => deserialize<_i40.AppPermission>(e))
+              .map((e) => deserialize<_i48.AppPermission>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
-    }
-    if (t == List<_i41.UserSession>) {
-      return (data as List)
-              .map((e) => deserialize<_i41.UserSession>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i42.AppUser>) {
-      return (data as List).map((e) => deserialize<_i42.AppUser>(e)).toList()
-          as T;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
+    }
+    if (t == List<_i49.UserSession>) {
+      return (data as List)
+              .map((e) => deserialize<_i49.UserSession>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i50.AppUser>) {
+      return (data as List).map((e) => deserialize<_i50.AppUser>(e)).toList()
+          as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
@@ -2957,31 +3569,35 @@ class Protocol extends _i1.SerializationManagerServer {
     return switch (type) {
       _i5.Greeting => 'Greeting',
       _i6.CrmAgendaMetricsResponse => 'CrmAgendaMetricsResponse',
-      _i7.CrmContractBudgetItem => 'CrmContractBudgetItem',
-      _i8.CrmCustomer => 'CrmCustomer',
-      _i9.CrmCustomerBranch => 'CrmCustomerBranch',
-      _i10.CrmCustomerContract => 'CrmCustomerContract',
-      _i11.CrmCustomerDetailResponse => 'CrmCustomerDetailResponse',
-      _i12.CrmCustomerMetricsResponse => 'CrmCustomerMetricsResponse',
-      _i13.CrmLead => 'CrmLead',
-      _i14.CrmLeadMetricsResponse => 'CrmLeadMetricsResponse',
-      _i15.CrmOpportunity => 'CrmOpportunity',
-      _i16.CrmPipelineMetricsResponse => 'CrmPipelineMetricsResponse',
-      _i17.CrmQuoteItem => 'CrmQuoteItem',
-      _i18.CrmTask => 'CrmTask',
-      _i19.AppPermission => 'AppPermission',
-      _i20.AppRole => 'AppRole',
-      _i21.AppUser => 'AppUser',
-      _i22.AuditLog => 'AuditLog',
-      _i23.AuditLogPageResponse => 'AuditLogPageResponse',
-      _i24.MfaChallenge => 'MfaChallenge',
-      _i25.MfaChallengeResponse => 'MfaChallengeResponse',
-      _i26.MfaVerifyResponse => 'MfaVerifyResponse',
-      _i27.RolePermission => 'RolePermission',
-      _i28.ServerMetricsResponse => 'ServerMetricsResponse',
-      _i29.TrustedDevice => 'TrustedDevice',
-      _i30.UserRole => 'UserRole',
-      _i31.UserSession => 'UserSession',
+      _i7.CrmCatalogItem => 'CrmCatalogItem',
+      _i8.CrmCatalogItemScope => 'CrmCatalogItemScope',
+      _i9.CrmContractBudgetItem => 'CrmContractBudgetItem',
+      _i10.CrmCustomer => 'CrmCustomer',
+      _i11.CrmCustomerBranch => 'CrmCustomerBranch',
+      _i12.CrmCustomerContract => 'CrmCustomerContract',
+      _i13.CrmCustomerDetailResponse => 'CrmCustomerDetailResponse',
+      _i14.CrmCustomerMetricsResponse => 'CrmCustomerMetricsResponse',
+      _i15.CrmLead => 'CrmLead',
+      _i16.CrmLeadMetricsResponse => 'CrmLeadMetricsResponse',
+      _i17.CrmOpportunity => 'CrmOpportunity',
+      _i18.CrmPipelineMetricsResponse => 'CrmPipelineMetricsResponse',
+      _i19.CrmQuoteItem => 'CrmQuoteItem',
+      _i20.CrmSector => 'CrmSector',
+      _i21.CrmServiceLine => 'CrmServiceLine',
+      _i22.CrmTask => 'CrmTask',
+      _i23.AppPermission => 'AppPermission',
+      _i24.AppRole => 'AppRole',
+      _i25.AppUser => 'AppUser',
+      _i26.AuditLog => 'AuditLog',
+      _i27.AuditLogPageResponse => 'AuditLogPageResponse',
+      _i28.MfaChallenge => 'MfaChallenge',
+      _i29.MfaChallengeResponse => 'MfaChallengeResponse',
+      _i30.MfaVerifyResponse => 'MfaVerifyResponse',
+      _i31.RolePermission => 'RolePermission',
+      _i32.ServerMetricsResponse => 'ServerMetricsResponse',
+      _i33.TrustedDevice => 'TrustedDevice',
+      _i34.UserRole => 'UserRole',
+      _i35.UserSession => 'UserSession',
       _ => null,
     };
   }
@@ -3003,55 +3619,63 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'Greeting';
       case _i6.CrmAgendaMetricsResponse():
         return 'CrmAgendaMetricsResponse';
-      case _i7.CrmContractBudgetItem():
+      case _i7.CrmCatalogItem():
+        return 'CrmCatalogItem';
+      case _i8.CrmCatalogItemScope():
+        return 'CrmCatalogItemScope';
+      case _i9.CrmContractBudgetItem():
         return 'CrmContractBudgetItem';
-      case _i8.CrmCustomer():
+      case _i10.CrmCustomer():
         return 'CrmCustomer';
-      case _i9.CrmCustomerBranch():
+      case _i11.CrmCustomerBranch():
         return 'CrmCustomerBranch';
-      case _i10.CrmCustomerContract():
+      case _i12.CrmCustomerContract():
         return 'CrmCustomerContract';
-      case _i11.CrmCustomerDetailResponse():
+      case _i13.CrmCustomerDetailResponse():
         return 'CrmCustomerDetailResponse';
-      case _i12.CrmCustomerMetricsResponse():
+      case _i14.CrmCustomerMetricsResponse():
         return 'CrmCustomerMetricsResponse';
-      case _i13.CrmLead():
+      case _i15.CrmLead():
         return 'CrmLead';
-      case _i14.CrmLeadMetricsResponse():
+      case _i16.CrmLeadMetricsResponse():
         return 'CrmLeadMetricsResponse';
-      case _i15.CrmOpportunity():
+      case _i17.CrmOpportunity():
         return 'CrmOpportunity';
-      case _i16.CrmPipelineMetricsResponse():
+      case _i18.CrmPipelineMetricsResponse():
         return 'CrmPipelineMetricsResponse';
-      case _i17.CrmQuoteItem():
+      case _i19.CrmQuoteItem():
         return 'CrmQuoteItem';
-      case _i18.CrmTask():
+      case _i20.CrmSector():
+        return 'CrmSector';
+      case _i21.CrmServiceLine():
+        return 'CrmServiceLine';
+      case _i22.CrmTask():
         return 'CrmTask';
-      case _i19.AppPermission():
+      case _i23.AppPermission():
         return 'AppPermission';
-      case _i20.AppRole():
+      case _i24.AppRole():
         return 'AppRole';
-      case _i21.AppUser():
+      case _i25.AppUser():
         return 'AppUser';
-      case _i22.AuditLog():
+      case _i26.AuditLog():
         return 'AuditLog';
-      case _i23.AuditLogPageResponse():
+      case _i27.AuditLogPageResponse():
         return 'AuditLogPageResponse';
-      case _i24.MfaChallenge():
+      case _i28.MfaChallenge():
         return 'MfaChallenge';
-      case _i25.MfaChallengeResponse():
+      case _i29.MfaChallengeResponse():
         return 'MfaChallengeResponse';
-      case _i26.MfaVerifyResponse():
+      case _i30.MfaVerifyResponse():
         return 'MfaVerifyResponse';
-      case _i27.RolePermission():
+      case _i31.RolePermission():
         return 'RolePermission';
-      case _i28.ServerMetricsResponse():
+      case _i32.ServerMetricsResponse():
         return 'ServerMetricsResponse';
-      case _i29.TrustedDevice():
+      case _i33.TrustedDevice():
         return 'TrustedDevice';
-      case _i30.UserRole():
+      case _i34.UserRole():
         return 'UserRole';
-      case _i31.UserSession():
+      case _i35.UserSession():
         return 'UserSession';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -3081,80 +3705,92 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'CrmAgendaMetricsResponse') {
       return deserialize<_i6.CrmAgendaMetricsResponse>(data['data']);
     }
+    if (dataClassName == 'CrmCatalogItem') {
+      return deserialize<_i7.CrmCatalogItem>(data['data']);
+    }
+    if (dataClassName == 'CrmCatalogItemScope') {
+      return deserialize<_i8.CrmCatalogItemScope>(data['data']);
+    }
     if (dataClassName == 'CrmContractBudgetItem') {
-      return deserialize<_i7.CrmContractBudgetItem>(data['data']);
+      return deserialize<_i9.CrmContractBudgetItem>(data['data']);
     }
     if (dataClassName == 'CrmCustomer') {
-      return deserialize<_i8.CrmCustomer>(data['data']);
+      return deserialize<_i10.CrmCustomer>(data['data']);
     }
     if (dataClassName == 'CrmCustomerBranch') {
-      return deserialize<_i9.CrmCustomerBranch>(data['data']);
+      return deserialize<_i11.CrmCustomerBranch>(data['data']);
     }
     if (dataClassName == 'CrmCustomerContract') {
-      return deserialize<_i10.CrmCustomerContract>(data['data']);
+      return deserialize<_i12.CrmCustomerContract>(data['data']);
     }
     if (dataClassName == 'CrmCustomerDetailResponse') {
-      return deserialize<_i11.CrmCustomerDetailResponse>(data['data']);
+      return deserialize<_i13.CrmCustomerDetailResponse>(data['data']);
     }
     if (dataClassName == 'CrmCustomerMetricsResponse') {
-      return deserialize<_i12.CrmCustomerMetricsResponse>(data['data']);
+      return deserialize<_i14.CrmCustomerMetricsResponse>(data['data']);
     }
     if (dataClassName == 'CrmLead') {
-      return deserialize<_i13.CrmLead>(data['data']);
+      return deserialize<_i15.CrmLead>(data['data']);
     }
     if (dataClassName == 'CrmLeadMetricsResponse') {
-      return deserialize<_i14.CrmLeadMetricsResponse>(data['data']);
+      return deserialize<_i16.CrmLeadMetricsResponse>(data['data']);
     }
     if (dataClassName == 'CrmOpportunity') {
-      return deserialize<_i15.CrmOpportunity>(data['data']);
+      return deserialize<_i17.CrmOpportunity>(data['data']);
     }
     if (dataClassName == 'CrmPipelineMetricsResponse') {
-      return deserialize<_i16.CrmPipelineMetricsResponse>(data['data']);
+      return deserialize<_i18.CrmPipelineMetricsResponse>(data['data']);
     }
     if (dataClassName == 'CrmQuoteItem') {
-      return deserialize<_i17.CrmQuoteItem>(data['data']);
+      return deserialize<_i19.CrmQuoteItem>(data['data']);
+    }
+    if (dataClassName == 'CrmSector') {
+      return deserialize<_i20.CrmSector>(data['data']);
+    }
+    if (dataClassName == 'CrmServiceLine') {
+      return deserialize<_i21.CrmServiceLine>(data['data']);
     }
     if (dataClassName == 'CrmTask') {
-      return deserialize<_i18.CrmTask>(data['data']);
+      return deserialize<_i22.CrmTask>(data['data']);
     }
     if (dataClassName == 'AppPermission') {
-      return deserialize<_i19.AppPermission>(data['data']);
+      return deserialize<_i23.AppPermission>(data['data']);
     }
     if (dataClassName == 'AppRole') {
-      return deserialize<_i20.AppRole>(data['data']);
+      return deserialize<_i24.AppRole>(data['data']);
     }
     if (dataClassName == 'AppUser') {
-      return deserialize<_i21.AppUser>(data['data']);
+      return deserialize<_i25.AppUser>(data['data']);
     }
     if (dataClassName == 'AuditLog') {
-      return deserialize<_i22.AuditLog>(data['data']);
+      return deserialize<_i26.AuditLog>(data['data']);
     }
     if (dataClassName == 'AuditLogPageResponse') {
-      return deserialize<_i23.AuditLogPageResponse>(data['data']);
+      return deserialize<_i27.AuditLogPageResponse>(data['data']);
     }
     if (dataClassName == 'MfaChallenge') {
-      return deserialize<_i24.MfaChallenge>(data['data']);
+      return deserialize<_i28.MfaChallenge>(data['data']);
     }
     if (dataClassName == 'MfaChallengeResponse') {
-      return deserialize<_i25.MfaChallengeResponse>(data['data']);
+      return deserialize<_i29.MfaChallengeResponse>(data['data']);
     }
     if (dataClassName == 'MfaVerifyResponse') {
-      return deserialize<_i26.MfaVerifyResponse>(data['data']);
+      return deserialize<_i30.MfaVerifyResponse>(data['data']);
     }
     if (dataClassName == 'RolePermission') {
-      return deserialize<_i27.RolePermission>(data['data']);
+      return deserialize<_i31.RolePermission>(data['data']);
     }
     if (dataClassName == 'ServerMetricsResponse') {
-      return deserialize<_i28.ServerMetricsResponse>(data['data']);
+      return deserialize<_i32.ServerMetricsResponse>(data['data']);
     }
     if (dataClassName == 'TrustedDevice') {
-      return deserialize<_i29.TrustedDevice>(data['data']);
+      return deserialize<_i33.TrustedDevice>(data['data']);
     }
     if (dataClassName == 'UserRole') {
-      return deserialize<_i30.UserRole>(data['data']);
+      return deserialize<_i34.UserRole>(data['data']);
     }
     if (dataClassName == 'UserSession') {
-      return deserialize<_i31.UserSession>(data['data']);
+      return deserialize<_i35.UserSession>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -3192,40 +3828,48 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
     switch (t) {
-      case _i7.CrmContractBudgetItem:
-        return _i7.CrmContractBudgetItem.t;
-      case _i8.CrmCustomer:
-        return _i8.CrmCustomer.t;
-      case _i9.CrmCustomerBranch:
-        return _i9.CrmCustomerBranch.t;
-      case _i10.CrmCustomerContract:
-        return _i10.CrmCustomerContract.t;
-      case _i13.CrmLead:
-        return _i13.CrmLead.t;
-      case _i15.CrmOpportunity:
-        return _i15.CrmOpportunity.t;
-      case _i17.CrmQuoteItem:
-        return _i17.CrmQuoteItem.t;
-      case _i18.CrmTask:
-        return _i18.CrmTask.t;
-      case _i19.AppPermission:
-        return _i19.AppPermission.t;
-      case _i20.AppRole:
-        return _i20.AppRole.t;
-      case _i21.AppUser:
-        return _i21.AppUser.t;
-      case _i22.AuditLog:
-        return _i22.AuditLog.t;
-      case _i24.MfaChallenge:
-        return _i24.MfaChallenge.t;
-      case _i27.RolePermission:
-        return _i27.RolePermission.t;
-      case _i29.TrustedDevice:
-        return _i29.TrustedDevice.t;
-      case _i30.UserRole:
-        return _i30.UserRole.t;
-      case _i31.UserSession:
-        return _i31.UserSession.t;
+      case _i7.CrmCatalogItem:
+        return _i7.CrmCatalogItem.t;
+      case _i8.CrmCatalogItemScope:
+        return _i8.CrmCatalogItemScope.t;
+      case _i9.CrmContractBudgetItem:
+        return _i9.CrmContractBudgetItem.t;
+      case _i10.CrmCustomer:
+        return _i10.CrmCustomer.t;
+      case _i11.CrmCustomerBranch:
+        return _i11.CrmCustomerBranch.t;
+      case _i12.CrmCustomerContract:
+        return _i12.CrmCustomerContract.t;
+      case _i15.CrmLead:
+        return _i15.CrmLead.t;
+      case _i17.CrmOpportunity:
+        return _i17.CrmOpportunity.t;
+      case _i19.CrmQuoteItem:
+        return _i19.CrmQuoteItem.t;
+      case _i20.CrmSector:
+        return _i20.CrmSector.t;
+      case _i21.CrmServiceLine:
+        return _i21.CrmServiceLine.t;
+      case _i22.CrmTask:
+        return _i22.CrmTask.t;
+      case _i23.AppPermission:
+        return _i23.AppPermission.t;
+      case _i24.AppRole:
+        return _i24.AppRole.t;
+      case _i25.AppUser:
+        return _i25.AppUser.t;
+      case _i26.AuditLog:
+        return _i26.AuditLog.t;
+      case _i28.MfaChallenge:
+        return _i28.MfaChallenge.t;
+      case _i31.RolePermission:
+        return _i31.RolePermission.t;
+      case _i33.TrustedDevice:
+        return _i33.TrustedDevice.t;
+      case _i34.UserRole:
+        return _i34.UserRole.t;
+      case _i35.UserSession:
+        return _i35.UserSession.t;
     }
     return null;
   }

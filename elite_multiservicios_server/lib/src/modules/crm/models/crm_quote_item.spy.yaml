@@ -4,16 +4,24 @@ table: crm_quote_item
 fields:
   ### ID de la oportunidad a la que pertenece la cotización.
   opportunityId: int, relation(parent=crm_opportunity, onDelete=Cascade)
+  ### ID opcional de la partida de catálogo de origen (sin join estricto obligatorio).
+  catalogItemId: int?
+  ### Versión de la partida al momento de cotizar.
+  catalogVersion: int?
   ### Categoría: Personal, Limpieza, Mantenimiento, Equipamiento, Materiales, Tecnología.
   category: String
   ### Concepto descriptivo del servicio o insumo.
   concept: String
+  ### Tipo de cálculo congelado al cotizar.
+  calculationType: String, default='PER_UNIT'
   ### Tipo de unidad: Puesto 24/7, Puesto 12h, Operario, Global, m², Unid., Servicio, Kit, Tanque.
   unitType: String
   ### Cantidad requerida.
   quantity: double
-  ### Precio unitario en Bs.
+  ### Precio unitario congelado en Bs.
   unitPrice: double
+  ### Parámetros auxiliares congelados en formato JSON.
+  metadata: String?
   ### Eliminación lógica y auditoría temporal.
   isDeleted: bool, default=false
   createdAt: DateTime

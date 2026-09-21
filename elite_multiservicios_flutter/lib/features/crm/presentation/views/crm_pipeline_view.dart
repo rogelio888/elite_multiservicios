@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/crm_customers_service.dart';
 import '../../data/crm_pipeline_service.dart';
+import '../../data/crm_catalog_service.dart';
 
 /// Modelo local de Línea de Cotización para desglose operativo y propuesta comercial.
 class QuoteItem {
@@ -13,6 +14,10 @@ class QuoteItem {
   unitType; // 'Puesto 24/7', 'Puesto 12h', 'Operario', 'Global', 'm²', 'Unid.', 'Servicio', 'Kit', 'Tanque'
   final double quantity;
   final double unitPrice;
+  final int? catalogItemId;
+  final int? catalogVersion;
+  final String? calculationType;
+  final String? metadata;
 
   const QuoteItem({
     required this.id,
@@ -21,6 +26,10 @@ class QuoteItem {
     required this.unitType,
     required this.quantity,
     required this.unitPrice,
+    this.catalogItemId,
+    this.catalogVersion,
+    this.calculationType,
+    this.metadata,
   });
 
   double get subtotal => quantity * unitPrice;
@@ -32,6 +41,10 @@ class QuoteItem {
     String? unitType,
     double? quantity,
     double? unitPrice,
+    int? catalogItemId,
+    int? catalogVersion,
+    String? calculationType,
+    String? metadata,
   }) {
     return QuoteItem(
       id: id ?? this.id,
@@ -40,6 +53,10 @@ class QuoteItem {
       unitType: unitType ?? this.unitType,
       quantity: quantity ?? this.quantity,
       unitPrice: unitPrice ?? this.unitPrice,
+      catalogItemId: catalogItemId ?? this.catalogItemId,
+      catalogVersion: catalogVersion ?? this.catalogVersion,
+      calculationType: calculationType ?? this.calculationType,
+      metadata: metadata ?? this.metadata,
     );
   }
 }
@@ -248,6 +265,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
     _pipelineService.loadDeals();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       CrmCustomersService().loadCustomers();
+      CrmCatalogService.instance.loadCatalogItems();
     });
   }
 
@@ -5860,6 +5878,24 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
       ),
     ];
 
+    final dbItems = CrmCatalogService.instance.catalogItems;
+    final List<QuoteItem> effectiveItems = dbItems.isNotEmpty
+        ? dbItems.map((item) {
+            return QuoteItem(
+              id: '',
+              category: item.category,
+              concept: item.concept,
+              unitType: item.unitType,
+              quantity: item.minQuantity,
+              unitPrice: item.basePrice,
+              catalogItemId: item.id,
+              catalogVersion: item.version,
+              calculationType: item.calculationType,
+              metadata: item.metadata,
+            );
+          }).toList()
+        : catalogPresets;
+
     showDialog(
       context: parentCtx,
       builder: (catDialogCtx) {
@@ -5902,7 +5938,9 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'SELECCIONA DEL CATÁLOGO DE SERVICIOS',
+                    dbItems.isNotEmpty
+                        ? 'PARTIDAS VIGENTES EN BASE DE DATOS (${effectiveItems.length})'
+                        : 'SELECCIONA DEL CATÁLOGO DE SERVICIOS',
                     style: GoogleFonts.inter(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
@@ -5910,7 +5948,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  ...catalogPresets.map((preset) {
+                  ...effectiveItems.map((preset) {
                     final pColor = _getServiceColor(preset.category);
                     return InkWell(
                       onTap: () {

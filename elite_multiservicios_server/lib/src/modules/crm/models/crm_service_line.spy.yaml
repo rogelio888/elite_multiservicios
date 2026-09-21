@@ -1,0 +1,23 @@
+### Línea de servicio prestado por la empresa (ej: Limpieza Hospitalaria, Seguridad).
+class: CrmServiceLine
+table: crm_service_line
+fields:
+  ### Código único de la línea de servicio (ej: SRV-LIMP-HOSP, SRV-SEG-247).
+  code: String
+  ### Nombre de la línea de servicio.
+  name: String
+  ### Categoría principal: Personal, Limpieza, Mantenimiento, Equipamiento, Tecnología.
+  category: String
+  ### Descripción detallada del alcance técnico.
+  description: String?
+  ### Estado operativo.
+  isActive: bool, default=true
+  ### Eliminación lógica y auditoría temporal.
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  crm_service_line_code_unique_idx:
+    fields: code
+    unique: true

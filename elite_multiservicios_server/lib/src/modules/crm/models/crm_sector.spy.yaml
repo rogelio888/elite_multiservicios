@@ -1,0 +1,24 @@
+### Sector o Rubro industrial objetivo de clientes corporativos.
+class: CrmSector
+table: crm_sector
+fields:
+  ### Código único identificador (ej: SEC-SALUD, SEC-CORP, SEC-COND).
+  code: String
+  ### Nombre del rubro (ej: Clínicas y centros médicos).
+  name: String
+  ### Descripción detallada del perfil industrial.
+  description: String?
+  ### Estado operativo.
+  isActive: bool, default=true
+  ### Eliminación lógica y auditoría temporal.
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  crm_sector_code_unique_idx:
+    fields: code
+    unique: true
+  crm_sector_name_unique_idx:
+    fields: name
+    unique: true

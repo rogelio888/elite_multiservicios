@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/crm_leads_service.dart';
 import '../../data/crm_agenda_service.dart';
+import '../../data/crm_catalog_service.dart';
 import '../../data/crm_pipeline_service.dart';
 import '../views/crm_pipeline_view.dart' show OpportunityItem;
 import '../../../security/services/auth_service.dart';
@@ -55,10 +56,21 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
     'Descartado',
   ];
 
+  List<String> get _dynamicSectors {
+    final catalogSectors = CrmCatalogService.instance.sectors
+        .map((s) => s.name)
+        .toList();
+    if (catalogSectors.isNotEmpty) {
+      return ['Todos', ...catalogSectors];
+    }
+    return _sectors;
+  }
+
   @override
   void initState() {
     super.initState();
     _leadsService.loadLeads();
+    CrmCatalogService.instance.loadSectors();
   }
 
   @override
@@ -417,7 +429,7 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: _sectors.map((sec) {
+        children: _dynamicSectors.map((sec) {
           final isSelected = _selectedSector == sec;
           final count = sec == 'Todos'
               ? allLeads.length

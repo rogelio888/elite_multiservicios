@@ -4,6 +4,7 @@ import '../../../core/navigation/web_url_sync.dart';
 import '../../crm/data/crm_agenda_service.dart';
 import '../../crm/presentation/views/crm_activities_view.dart';
 import '../../crm/presentation/views/crm_customers_view.dart';
+import '../../crm/presentation/views/crm_catalog_management_view.dart';
 import '../../crm/presentation/views/crm_leads_view.dart';
 import '../../crm/presentation/views/crm_pipeline_view.dart';
 import '../../rrhh/presentation/views/rrhh_dashboard_view.dart';
@@ -57,6 +58,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'rrhh-asignaciones',
     'rrhh-laboral',
     'rrhh-reportes',
+    'crm-catalogo',
   ];
 
   static int _indexFromRouteOrHash(String raw) {
@@ -136,6 +138,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 'rrhh-auditoria':
       case 'bitacora-rrhh':
         return 15;
+      case 'crm-catalogo':
+      case 'catalogo':
+      case 'tarifario':
+      case 'partidas':
+        return 16;
       case 'dashboard':
       default:
         return 0;
@@ -559,10 +566,18 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         badge: 'dot',
         index: 9,
       ),
+      (
+        icon: Icons.menu_book_outlined,
+        selectedIcon: Icons.menu_book,
+        label: 'Catálogo & Tarifario',
+        badge: 'Maestro',
+        index: 16,
+      ),
     ];
 
     final isAnySecurityActive = _selectedIndex >= 1 && _selectedIndex <= 5;
-    final isAnyCrmActive = _selectedIndex >= 6 && _selectedIndex <= 9;
+    final isAnyCrmActive =
+        (_selectedIndex >= 6 && _selectedIndex <= 9) || _selectedIndex == 16;
     final isAnyRrhhActive = _selectedIndex >= 10 && _selectedIndex <= 15;
 
     final rrhhItems = [
@@ -663,6 +678,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         break;
       case 15:
         currentView = const RrhhReportsView();
+        break;
+      case 16:
+        currentView = const CrmCatalogManagementView();
         break;
       default:
         currentView = const Center(child: Text('Vista no encontrada'));

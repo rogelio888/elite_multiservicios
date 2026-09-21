@@ -29,6 +29,9 @@ class _RolesRbacViewState extends State<RolesRbacView> {
   List<AppRole> _roles = [];
   List<AppPermission> _permissions = [];
   AppRole? _selectedRole;
+  Set<int> _selectedRolePermissionIds = {};
+  final Map<int, int> _rolePermissionCounts = {};
+  bool _isSavingPermissions = false;
 
   String _searchQuery = '';
   String _selectedModuleFilter = 'todos';
@@ -125,6 +128,18 @@ class _RolesRbacViewState extends State<RolesRbacView> {
           'Operaciones globales de integridad y parámetros de seguridad del núcleo.',
       icon: Icons.settings_suggest_outlined,
     ),
+    'catalog.view': const _PermissionMeta(
+      title: 'Consultar Catálogo y Tarifario',
+      friendlyDescription:
+          'Visualización de partidas de servicio, rubros, líneas y tarifas base.',
+      icon: Icons.menu_book_outlined,
+    ),
+    'catalog.manage': const _PermissionMeta(
+      title: 'Gestionar Catálogo y Tarifas Especiales',
+      friendlyDescription:
+          'Creación, edición, precios diferenciados (scopes) y baja de partidas o rubros.',
+      icon: Icons.price_change_outlined,
+    ),
   };
 
   _PermissionMeta _getMeta(AppPermission perm) {
@@ -163,10 +178,363 @@ class _RolesRbacViewState extends State<RolesRbacView> {
           }
           _isLoading = false;
         });
+
+        if (_selectedRole != null) {
+          _selectRole(_selectedRole!);
+        }
+
+        for (final r in roles) {
+          if (r.id != null) {
+            _service.getRolePermissions(r.id!).then((ids) {
+              if (mounted) {
+                setState(() => _rolePermissionCounts[r.id!] = ids.length);
+              }
+            });
+          }
+        }
       }
     } catch (_) {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> _selectRole(AppRole role) async {
+    setState(() {
+      _selectedRole = role;
+      _selectedRolePermissionIds = {};
+    });
+
+    if (role.id != null) {
+      try {
+        final ids = await _service.getRolePermissions(role.id!);
+        if (mounted && _selectedRole?.id == role.id) {
+          setState(() {
+            _selectedRolePermissionIds = ids.toSet();
+            _rolePermissionCounts[role.id!] = ids.length;
+          });
+        }
+      } catch (_) {}
+    }
+  }
+
+  void _togglePermission(int permId) {
+    if (_selectedRole == null) return;
+    final isSuper = _selectedRole!.isSystemRole &&
+        _selectedRole!.name.toLowerCase() == 'superadmin';
+    if (isSuper) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'El Super Administrador posee todos los permisos de forma inherente.',
+          ),
+          backgroundColor: Color(0xFF2563EB),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      if (_selectedRolePermissionIds.contains(permId)) {
+        _selectedRolePermissionIds.remove(permId);
+      } else {
+        _selectedRolePermissionIds.add(permId);
+      }
+    });
+  }
+
+  Future<void> _saveRolePermissions() async {
+    if (_selectedRole?.id == null) return;
+    setState(() => _isSavingPermissions = true);
+    try {
+      final saved = await _service.syncRolePermissions(
+        roleId: _selectedRole!.id!,
+        permissionIds: _selectedRolePermissionIds.toList(),
+      );
+      if (mounted) {
+        setState(() {
+          _rolePermissionCounts[_selectedRole!.id!] = saved.length;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Permisos actualizados para ${_selectedRole!.name}'),
+            backgroundColor: const Color(0xFF10B981),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error guardando permisos: $e'),
+            backgroundColor: const Color(0xFFEF4444),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSavingPermissions = false);
+    }
+  }
+
+  void _showCreateRoleDialog() {
+    final nameCtrl = TextEditingController();
+    final descCtrl = TextEditingController();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+        title: Text(
+          'Nuevo Rol RBAC',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
+          ),
+        ),
+        content: SizedBox(
+          width: 420,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameCtrl,
+                style: GoogleFonts.inter(
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                ),
+                decoration: InputDecoration(
+                  labelText: 'Nombre del Rol (ej. Operaciones)',
+                  labelStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+                  filled: true,
+                  fillColor: isDark
+                      ? const Color(0xFF0F172A)
+                      : const Color(0xFFF8FAFC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: descCtrl,
+                maxLines: 2,
+                style: GoogleFonts.inter(
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                ),
+                decoration: InputDecoration(
+                  labelText: 'Descripción funcional',
+                  labelStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+                  filled: true,
+                  fillColor: isDark
+                      ? const Color(0xFF0F172A)
+                      : const Color(0xFFF8FAFC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final name = nameCtrl.text.trim();
+              if (name.isEmpty) return;
+              try {
+                final created = await _service.createRole(
+                  AppRole(
+                    name: name,
+                    description: descCtrl.text.trim(),
+                    isSystemRole: false,
+                    createdAt: DateTime.now().toUtc(),
+                  ),
+                );
+                if (ctx.mounted) Navigator.pop(ctx);
+                await _loadData();
+                _selectRole(created);
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$e'),
+                      backgroundColor: const Color(0xFFEF4444),
+                    ),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2563EB),
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Crear Rol'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditRoleDialog(AppRole role) {
+    final isSystem =
+        role.isSystemRole || role.name.toLowerCase() == 'superadmin';
+    final nameCtrl = TextEditingController(text: role.name);
+    final descCtrl = TextEditingController(text: role.description);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+        title: Text(
+          'Editar Rol',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
+          ),
+        ),
+        content: SizedBox(
+          width: 420,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameCtrl,
+                enabled: !isSystem,
+                style: GoogleFonts.inter(
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                ),
+                decoration: InputDecoration(
+                  labelText: isSystem
+                      ? 'Nombre (Protegido por Sistema)'
+                      : 'Nombre del Rol',
+                  labelStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+                  filled: true,
+                  fillColor: isDark
+                      ? const Color(0xFF0F172A)
+                      : const Color(0xFFF8FAFC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: descCtrl,
+                maxLines: 2,
+                style: GoogleFonts.inter(
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                ),
+                decoration: InputDecoration(
+                  labelText: 'Descripción funcional',
+                  labelStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+                  filled: true,
+                  fillColor: isDark
+                      ? const Color(0xFF0F172A)
+                      : const Color(0xFFF8FAFC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                final updated = await _service.updateRole(
+                  role.copyWith(
+                    name: isSystem ? role.name : nameCtrl.text.trim(),
+                    description: descCtrl.text.trim(),
+                  ),
+                );
+                if (ctx.mounted) Navigator.pop(ctx);
+                await _loadData();
+                _selectRole(updated);
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$e'),
+                      backgroundColor: const Color(0xFFEF4444),
+                    ),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2563EB),
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Guardar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDeleteRole(AppRole role) {
+    if (role.isSystemRole || role.name.toLowerCase() == 'superadmin') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Los roles base del sistema son inmutables y no pueden ser eliminados.',
+          ),
+          backgroundColor: Color(0xFF7C3AED),
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E293B),
+        title: const Text('Eliminar Rol', style: TextStyle(color: Colors.white)),
+        content: Text(
+          '¿Desea eliminar el rol "${role.name}"? Los usuarios y privilegios vinculados serán desasociados.',
+          style: const TextStyle(color: Color(0xFF94A3B8)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+            ),
+            onPressed: () async {
+              try {
+                await _service.deleteRole(role.id!);
+                if (ctx.mounted) Navigator.pop(ctx);
+                await _loadData();
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$e'),
+                      backgroundColor: const Color(0xFFEF4444),
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
   }
 
   List<AppPermission> get _filteredPermissions {
@@ -401,31 +769,62 @@ class _RolesRbacViewState extends State<RolesRbacView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Directorio de Roles',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? Colors.white : const Color(0xFF0F172A),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? const Color(0xFF1E293B)
-                      : const Color(0xFFF1F5F9),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  '${_roles.length}',
-                  style: GoogleFonts.jetBrainsMono(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: isDark
-                        ? const Color(0xFF94A3B8)
-                        : const Color(0xFF64748B),
+              Row(
+                children: [
+                  Text(
+                    'Directorio de Roles',
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
                   ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      '${_roles.length}',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              ElevatedButton.icon(
+                onPressed: _showCreateRoleDialog,
+                icon: const Icon(Icons.add, size: 14),
+                label: Text(
+                  'Nuevo Rol',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2563EB),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  elevation: 0,
                 ),
               ),
             ],
@@ -456,7 +855,7 @@ class _RolesRbacViewState extends State<RolesRbacView> {
             }),
 
           const SizedBox(height: 12),
-          // Nota sobria de integridad RBAC
+          // Nota de integridad RBAC
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -507,12 +906,19 @@ class _RolesRbacViewState extends State<RolesRbacView> {
               ? const Color(0xFF0B1120).withValues(alpha: 0.6)
               : const Color(0xFFF8FAFC));
 
+    final isSuper = role.isSystemRole && role.name.toLowerCase() == 'superadmin';
+    final count = isSuper
+        ? _permissions.length
+        : (_rolePermissionCounts[role.id] ?? 0);
+    final total = _permissions.length;
+    final progress = total > 0 ? (count / total).clamp(0.0, 1.0) : 0.0;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => setState(() => _selectedRole = role),
+          onTap: () => _selectRole(role),
           borderRadius: BorderRadius.circular(8),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 140),
@@ -537,8 +943,10 @@ class _RolesRbacViewState extends State<RolesRbacView> {
                           Container(
                             width: 7,
                             height: 7,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF10B981),
+                            decoration: BoxDecoration(
+                              color: isSuper
+                                  ? const Color(0xFF7C3AED)
+                                  : const Color(0xFF10B981),
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -556,33 +964,81 @@ class _RolesRbacViewState extends State<RolesRbacView> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
+                          if (role.isSystemRole) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? const Color(0xFF1E293B)
+                                    : const Color(0xFFE2E8F0),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'SISTEMA',
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 9.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark
+                                      ? const Color(0xFF94A3B8)
+                                      : const Color(0xFF475569),
+                                  letterSpacing: 0.4,
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
-                    if (role.isSystemRole)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit_outlined, size: 15),
+                          tooltip: 'Editar rol',
                           color: isDark
-                              ? const Color(0xFF1E293B)
-                              : const Color(0xFFE2E8F0),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'SISTEMA',
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 9.5,
-                            fontWeight: FontWeight.w600,
-                            color: isDark
-                                ? const Color(0xFF94A3B8)
-                                : const Color(0xFF475569),
-                            letterSpacing: 0.4,
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                          onPressed: () => _showEditRoleDialog(role),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(
+                            minWidth: 26,
+                            minHeight: 26,
                           ),
                         ),
-                      ),
+                        const SizedBox(width: 4),
+                        if (!role.isSystemRole &&
+                            role.name.toLowerCase() != 'superadmin')
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline, size: 15),
+                            tooltip: 'Eliminar rol',
+                            color: const Color(0xFFEF4444),
+                            onPressed: () => _confirmDeleteRole(role),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(
+                              minWidth: 26,
+                              minHeight: 26,
+                            ),
+                          )
+                        else
+                          Tooltip(
+                            message: 'Rol del sistema protegido contra eliminación',
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              child: Icon(
+                                Icons.lock_outline,
+                                size: 14,
+                                color: isDark
+                                    ? const Color(0xFF475569)
+                                    : const Color(0xFF94A3B8),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
                 const SizedBox(height: 6),
@@ -611,11 +1067,13 @@ class _RolesRbacViewState extends State<RolesRbacView> {
                       ),
                     ),
                     Text(
-                      '${_permissions.length} / ${_permissions.length}',
+                      '$count / $total',
                       style: GoogleFonts.jetBrainsMono(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: const Color(0xFF10B981),
+                        color: count > 0
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFF94A3B8),
                       ),
                     ),
                   ],
@@ -624,13 +1082,15 @@ class _RolesRbacViewState extends State<RolesRbacView> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(2),
                   child: LinearProgressIndicator(
-                    value: 1.0,
+                    value: progress,
                     minHeight: 3,
                     backgroundColor: isDark
                         ? const Color(0xFF1E293B)
                         : const Color(0xFFE2E8F0),
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      Color(0xFF10B981),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      isSuper
+                          ? const Color(0xFF7C3AED)
+                          : const Color(0xFF10B981),
                     ),
                   ),
                 ),
@@ -649,6 +1109,13 @@ class _RolesRbacViewState extends State<RolesRbacView> {
         : const Color(0xFFE2E8F0);
     final cardBg = isDark ? const Color(0xFF0F172A) : Colors.white;
     final filtered = _filteredPermissions;
+    final isSuper = _selectedRole != null &&
+        _selectedRole!.isSystemRole &&
+        _selectedRole!.name.toLowerCase() == 'superadmin';
+
+    final activeCount = isSuper
+        ? _permissions.length
+        : _selectedRolePermissionIds.length;
 
     return Container(
       decoration: BoxDecoration(
@@ -662,7 +1129,7 @@ class _RolesRbacViewState extends State<RolesRbacView> {
         children: [
           // Header del catálogo
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: Column(
@@ -681,7 +1148,9 @@ class _RolesRbacViewState extends State<RolesRbacView> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Operaciones y capacidades autorizadas para esta jerarquía de usuario.',
+                      isSuper
+                          ? 'El Super Administrador posee todos los privilegios del sistema de forma inherente.'
+                          : 'Selecciona o desmarca los privilegios operativos para este rol.',
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         color: isDark
@@ -694,6 +1163,40 @@ class _RolesRbacViewState extends State<RolesRbacView> {
                   ],
                 ),
               ),
+              const SizedBox(width: 10),
+              if (_selectedRole != null && !isSuper)
+                ElevatedButton.icon(
+                  onPressed: _isSavingPermissions ? null : _saveRolePermissions,
+                  icon: _isSavingPermissions
+                      ? const SizedBox(
+                          width: 13,
+                          height: 13,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.check, size: 14),
+                  label: Text(
+                    _isSavingPermissions ? 'Guardando...' : 'Guardar Permisos',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF10B981),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -704,7 +1207,7 @@ class _RolesRbacViewState extends State<RolesRbacView> {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  '${filtered.length} de ${_permissions.length}',
+                  '$activeCount de ${_permissions.length}',
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -735,7 +1238,7 @@ class _RolesRbacViewState extends State<RolesRbacView> {
               ),
               decoration: InputDecoration(
                 hintText:
-                    'Buscar permiso por código o nombre (ej: users.create, auditoría)...',
+                    'Buscar permiso por código o nombre (ej: catalog.manage, users.create)...',
                 hintStyle: GoogleFonts.inter(
                   fontSize: 12.5,
                   color: const Color(0xFF64748B),
@@ -783,6 +1286,13 @@ class _RolesRbacViewState extends State<RolesRbacView> {
                         (p) => p.module == 'roles' || p.module == 'permissions',
                       )
                       .length,
+                  isDark,
+                ),
+                const SizedBox(width: 6),
+                _buildFilterPill(
+                  'catalog',
+                  'Catálogo & Tarifas',
+                  _permissions.where((p) => p.module == 'catalog').length,
                   isDark,
                 ),
                 const SizedBox(width: 6),
@@ -950,126 +1460,174 @@ class _RolesRbacViewState extends State<RolesRbacView> {
     final borderColor = isDark
         ? const Color(0xFF1E293B)
         : const Color(0xFFE2E8F0);
+    final isSuper = _selectedRole != null &&
+        _selectedRole!.isSystemRole &&
+        _selectedRole!.name.toLowerCase() == 'superadmin';
+    final isGranted = isSuper ||
+        (perm.id != null && _selectedRolePermissionIds.contains(perm.id));
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0B1120) : const Color(0xFFF8FAFC),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: isSuper || perm.id == null
+            ? null
+            : () => _togglePermission(perm.id!),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: borderColor),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(7),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Icon(
-              meta.icon,
-              size: 16,
-              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: isGranted
+                ? (isDark
+                    ? const Color(0xFF10B981).withValues(alpha: 0.05)
+                    : const Color(0xFFECFDF5))
+                : (isDark ? const Color(0xFF0B1120) : const Color(0xFFF8FAFC)),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isGranted
+                  ? const Color(0xFF10B981).withValues(alpha: 0.4)
+                  : borderColor,
             ),
           ),
-          const SizedBox(width: 12),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        meta.title,
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: isDark
-                              ? Colors.white
-                              : const Color(0xFF0F172A),
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDark
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  color: isGranted
+                      ? const Color(0xFF10B981).withValues(alpha: 0.15)
+                      : (isDark
                             ? const Color(0xFF1E293B)
-                            : const Color(0xFFE2E8F0),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        perm.code,
-                        style: GoogleFonts.jetBrainsMono(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w500,
-                          color: isDark
-                              ? const Color(0xFFCBD5E1)
-                              : const Color(0xFF334155),
+                            : const Color(0xFFE2E8F0)),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(
+                  meta.icon,
+                  size: 16,
+                  color: isGranted
+                      ? const Color(0xFF10B981)
+                      : (isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF475569)),
+                ),
+              ),
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            meta.title,
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFE2E8F0),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            perm.code,
+                            style: GoogleFonts.jetBrainsMono(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w500,
+                              color: isDark
+                                  ? const Color(0xFFCBD5E1)
+                                  : const Color(0xFF334155),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      meta.friendlyDescription,
+                      style: GoogleFonts.inter(
+                        fontSize: 11.5,
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  meta.friendlyDescription,
-                  style: GoogleFonts.inter(
-                    fontSize: 11.5,
-                    color: isDark
-                        ? const Color(0xFF94A3B8)
-                        : const Color(0xFF64748B),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
+              ),
+              const SizedBox(width: 12),
 
-          Tooltip(
-            message: 'Privilegio canónico activo según política RBAC.',
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: const Color(0xFF10B981).withValues(alpha: 0.25),
+              if (isSuper)
+                Tooltip(
+                  message:
+                      'El Super Administrador posee este permiso de forma permanente.',
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF7C3AED).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                        color: const Color(0xFF7C3AED).withValues(alpha: 0.25),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.lock,
+                          size: 11,
+                          color: Color(0xFF7C3AED),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Heredado',
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF7C3AED),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Transform.scale(
+                  scale: 0.85,
+                  child: Switch(
+                    value: isGranted,
+                    activeThumbColor: const Color(0xFF10B981),
+                    activeTrackColor: const Color(
+                      0xFF10B981,
+                    ).withValues(alpha: 0.3),
+                    onChanged: (val) {
+                      if (perm.id != null) {
+                        _togglePermission(perm.id!);
+                      }
+                    },
+                  ),
                 ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 5,
-                    height: 5,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF10B981),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 5),
-                  Text(
-                    'Activo',
-                    style: GoogleFonts.jetBrainsMono(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF10B981),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
