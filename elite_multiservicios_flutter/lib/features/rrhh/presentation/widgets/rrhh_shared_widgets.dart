@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -425,12 +426,17 @@ class _RrhhSearchableSelectorState<T extends Object>
     extends State<RrhhSearchableSelector<T>> {
   final LayerLink _layerLink = LayerLink();
   final GlobalKey _triggerKey = GlobalKey();
+  final TextEditingController _searchCtrl = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   OverlayEntry? _overlayEntry;
   bool _isOpen = false;
+  bool _openUpwards = false;
   String _searchQuery = '';
 
   @override
   void dispose() {
+    _searchCtrl.dispose();
+    _searchFocusNode.dispose();
     _closeDropdown();
     super.dispose();
   }
@@ -451,6 +457,7 @@ class _RrhhSearchableSelectorState<T extends Object>
       setState(() {
         _isOpen = false;
         _searchQuery = '';
+        _searchCtrl.clear();
       });
     }
   }
@@ -459,21 +466,57 @@ class _RrhhSearchableSelectorState<T extends Object>
     final renderBox =
         _triggerKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
-    final size = renderBox.size;
+    final triggerSize = renderBox.size;
+    final triggerGlobalOffset = renderBox.localToGlobal(Offset.zero);
 
-    _overlayEntry = _createOverlayEntry(size);
+    final mediaQuery = MediaQuery.of(context);
+    final screenHeight = mediaQuery.size.height;
+    final bottomInset =
+        mediaQuery.viewInsets.bottom + mediaQuery.padding.bottom;
+    final topInset = mediaQuery.padding.top;
+
+    final triggerTop = triggerGlobalOffset.dy;
+    final triggerBottom = triggerTop + triggerSize.height;
+
+    // Espacio vertical disponible real
+    final availableBelow = screenHeight - bottomInset - triggerBottom - 16;
+    final availableAbove = triggerTop - topInset - 16;
+
+    // Abrir hacia arriba si no hay espacio suficiente abajo (< 220px) y arriba hay más espacio
+    final shouldOpenUpwards =
+        availableBelow < 220 && availableAbove > availableBelow;
+    final availableSpace = shouldOpenUpwards ? availableAbove : availableBelow;
+    final computedMaxHeight = math
+        .min(230.0, availableSpace)
+        .clamp(110.0, 260.0);
+
+    setState(() {
+      _openUpwards = shouldOpenUpwards;
+      _isOpen = true;
+      _searchQuery = '';
+      _searchCtrl.clear();
+    });
+
+    _overlayEntry = _createOverlayEntry(
+      triggerSize,
+      shouldOpenUpwards,
+      computedMaxHeight,
+    );
     Overlay.of(context).insert(_overlayEntry!);
-    setState(() => _isOpen = true);
   }
 
-  OverlayEntry _createOverlayEntry(Size triggerSize) {
+  OverlayEntry _createOverlayEntry(
+    Size triggerSize,
+    bool openUpwards,
+    double maxMenuHeight,
+  ) {
     return OverlayEntry(
       builder: (ctx) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
 
         return Stack(
           children: [
-            // Barrera transparente para cerrar al hacer clic afuera
+            // Cierre automático al pulsar fuera del menú
             Positioned.fill(
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
@@ -483,7 +526,13 @@ class _RrhhSearchableSelectorState<T extends Object>
             CompositedTransformFollower(
               link: _layerLink,
               showWhenUnlinked: false,
-              offset: Offset(0, triggerSize.height + 4),
+              targetAnchor: openUpwards
+                  ? Alignment.topLeft
+                  : Alignment.bottomLeft,
+              followerAnchor: openUpwards
+                  ? Alignment.bottomLeft
+                  : Alignment.topLeft,
+              offset: Offset(0, openUpwards ? -4 : 4),
               child: StatefulBuilder(
                 builder: (context, setOverlayState) {
                   final query = _searchQuery.trim().toLowerCase();
@@ -496,203 +545,263 @@ class _RrhhSearchableSelectorState<T extends Object>
                   }).toList();
 
                   return Material(
-                    elevation: 14,
-                    borderRadius: BorderRadius.circular(8),
+                    elevation: 16,
+                    shadowColor: Colors.black.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(10),
                     color: isDark ? const Color(0xFF0F172A) : Colors.white,
                     child: Container(
                       width: triggerSize.width,
-                      constraints: const BoxConstraints(maxHeight: 220),
+                      constraints: BoxConstraints(maxHeight: maxMenuHeight),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: isDark
-                              ? const Color(0xFF1E293B)
+                              ? const Color(0xFF334155)
                               : const Color(0xFFCBD5E1),
+                          width: 1.2,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.28),
-                            blurRadius: 18,
-                            offset: const Offset(0, 8),
+                            color: Colors.black.withValues(
+                              alpha: isDark ? 0.45 : 0.12,
+                            ),
+                            blurRadius: 20,
+                            offset: Offset(0, openUpwards ? -8 : 8),
                           ),
                         ],
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Buscador pequeño integrado arriba
-                          Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Container(
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? const Color(0xFF0B1324)
-                                    : const Color(0xFFF1F5F9),
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(9),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Buscador integrado (limpio y con botón de borrar rápido)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
+                              child: Container(
+                                height: 36,
+                                decoration: BoxDecoration(
                                   color: isDark
-                                      ? const Color(0xFF334155)
-                                      : const Color(0xFFCBD5E1),
-                                ),
-                              ),
-                              child: TextField(
-                                autofocus: true,
-                                style: GoogleFonts.inter(
-                                  fontSize: 12.5,
-                                  color: isDark
-                                      ? Colors.white
-                                      : const Color(0xFF0F172A),
-                                ),
-                                decoration: InputDecoration(
-                                  hintText: 'Buscar o escribir...',
-                                  hintStyle: GoogleFonts.inter(
-                                    fontSize: 12,
+                                      ? const Color(0xFF0B1324)
+                                      : const Color(0xFFF1F5F9),
+                                  borderRadius: BorderRadius.circular(7),
+                                  border: Border.all(
                                     color: isDark
-                                        ? const Color(0xFF64748B)
-                                        : const Color(0xFF94A3B8),
-                                  ),
-                                  prefixIcon: const Icon(
-                                    Icons.search,
-                                    size: 16,
-                                    color: Color(0xFF3B82F6),
-                                  ),
-                                  isDense: true,
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                    horizontal: 8,
+                                        ? const Color(0xFF334155)
+                                        : const Color(0xFFE2E8F0),
                                   ),
                                 ),
-                                onChanged: (val) {
-                                  setOverlayState(() => _searchQuery = val);
-                                },
+                                child: TextField(
+                                  controller: _searchCtrl,
+                                  focusNode: _searchFocusNode,
+                                  autofocus: true,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12.5,
+                                    color: isDark
+                                        ? Colors.white
+                                        : const Color(0xFF0F172A),
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: 'Buscar o escribir...',
+                                    hintStyle: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: isDark
+                                          ? const Color(0xFF64748B)
+                                          : const Color(0xFF94A3B8),
+                                    ),
+                                    prefixIcon: const Icon(
+                                      Icons.search,
+                                      size: 16,
+                                      color: Color(0xFF3B82F6),
+                                    ),
+                                    suffixIcon: _searchQuery.isNotEmpty
+                                        ? IconButton(
+                                            icon: const Icon(
+                                              Icons.close,
+                                              size: 14,
+                                            ),
+                                            tooltip: 'Limpiar',
+                                            visualDensity:
+                                                VisualDensity.compact,
+                                            padding: EdgeInsets.zero,
+                                            onPressed: () {
+                                              _searchCtrl.clear();
+                                              setOverlayState(() {
+                                                _searchQuery = '';
+                                              });
+                                            },
+                                          )
+                                        : null,
+                                    isDense: true,
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                      horizontal: 8,
+                                    ),
+                                  ),
+                                  onChanged: (val) {
+                                    setOverlayState(() => _searchQuery = val);
+                                  },
+                                ),
                               ),
                             ),
-                          ),
-                          const Divider(height: 1),
+                            Divider(
+                              height: 1,
+                              thickness: 1,
+                              color: isDark
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFFE2E8F0),
+                            ),
 
-                          // Lista de opciones directa (1 solo clic para elegir)
-                          Flexible(
-                            child: filtered.isEmpty
-                                ? Padding(
-                                    padding: const EdgeInsets.all(16),
-                                    child: Text(
-                                      'Sin resultados',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        color: isDark
-                                            ? const Color(0xFF64748B)
-                                            : const Color(0xFF94A3B8),
+                            // Lista de opciones: limpia, sin iconos repetitivos, con checkmark claro para la activa
+                            Flexible(
+                              child: filtered.isEmpty
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 18,
+                                        horizontal: 16,
                                       ),
-                                    ),
-                                  )
-                                : ListView.builder(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 4,
-                                    ),
-                                    shrinkWrap: true,
-                                    itemCount: filtered.length,
-                                    itemBuilder: (ctx, index) {
-                                      final item = filtered[index];
-                                      final label = widget.itemLabel(item);
-                                      final subtitle = widget.itemSubtitle
-                                          ?.call(item);
-                                      final isSelected =
-                                          widget.initialValue == item;
-
-                                      return InkWell(
-                                        onTap: () {
-                                          widget.onChanged(item);
-                                          _closeDropdown();
-                                        },
-                                        hoverColor: isDark
-                                            ? const Color(0xFF1E293B)
-                                            : const Color(0xFFF1F5F9),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 8,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.search_off,
+                                            size: 16,
+                                            color: isDark
+                                                ? const Color(0xFF64748B)
+                                                : const Color(0xFF94A3B8),
                                           ),
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                isSelected
-                                                    ? Icons.check_circle
-                                                    : (widget.prefixIcon ??
-                                                          Icons.chevron_right),
-                                                size: 15,
-                                                color: isSelected
-                                                    ? const Color(0xFF10B981)
-                                                    : (isDark
-                                                          ? const Color(
-                                                              0xFF64748B,
-                                                            )
-                                                          : const Color(
-                                                              0xFF94A3B8,
-                                                            )),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Text(
-                                                      label,
-                                                      style: GoogleFonts.inter(
-                                                        fontSize: 12.5,
-                                                        fontWeight: isSelected
-                                                            ? FontWeight.w600
-                                                            : FontWeight.w400,
-                                                        color: isDark
-                                                            ? Colors.white
-                                                            : const Color(
-                                                                0xFF0F172A,
-                                                              ),
-                                                      ),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                    if (subtitle != null &&
-                                                        subtitle
-                                                            .isNotEmpty) ...[
-                                                      const SizedBox(height: 1),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'Sin coincidencias',
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12,
+                                              color: isDark
+                                                  ? const Color(0xFF64748B)
+                                                  : const Color(0xFF94A3B8),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : ListView.separated(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 4,
+                                      ),
+                                      shrinkWrap: true,
+                                      itemCount: filtered.length,
+                                      separatorBuilder: (context, index) =>
+                                          Divider(
+                                            height: 1,
+                                            thickness: 0.5,
+                                            color: isDark
+                                                ? const Color(
+                                                    0xFF1E293B,
+                                                  ).withValues(alpha: 0.5)
+                                                : const Color(0xFFF1F5F9),
+                                          ),
+                                      itemBuilder: (ctx, index) {
+                                        final item = filtered[index];
+                                        final label = widget.itemLabel(item);
+                                        final subtitle = widget.itemSubtitle
+                                            ?.call(item);
+                                        final isSelected =
+                                            widget.initialValue == item;
+
+                                        return InkWell(
+                                          onTap: () {
+                                            widget.onChanged(item);
+                                            _closeDropdown();
+                                          },
+                                          hoverColor: isDark
+                                              ? const Color(0xFF1E293B)
+                                              : const Color(0xFFF1F5F9),
+                                          child: Container(
+                                            color: isSelected
+                                                ? (isDark
+                                                      ? const Color(0xFF1E293B)
+                                                      : const Color(0xFFEFF6FF))
+                                                : Colors.transparent,
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 14,
+                                              vertical: 9,
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
                                                       Text(
-                                                        subtitle,
+                                                        label,
                                                         style: GoogleFonts.inter(
-                                                          fontSize: 10.5,
-                                                          color: isDark
-                                                              ? const Color(
-                                                                  0xFF94A3B8,
-                                                                )
-                                                              : const Color(
-                                                                  0xFF64748B,
-                                                                ),
+                                                          fontSize: 12.5,
+                                                          fontWeight: isSelected
+                                                              ? FontWeight.w600
+                                                              : FontWeight.w400,
+                                                          color: isSelected
+                                                              ? (isDark
+                                                                    ? const Color(
+                                                                        0xFF60A5FA,
+                                                                      )
+                                                                    : const Color(
+                                                                        0xFF1D4ED8,
+                                                                      ))
+                                                              : (isDark
+                                                                    ? Colors
+                                                                          .white
+                                                                    : const Color(
+                                                                        0xFF0F172A,
+                                                                      )),
                                                         ),
                                                         overflow: TextOverflow
                                                             .ellipsis,
                                                       ),
+                                                      if (subtitle != null &&
+                                                          subtitle
+                                                              .isNotEmpty) ...[
+                                                        const SizedBox(
+                                                          height: 2,
+                                                        ),
+                                                        Text(
+                                                          subtitle,
+                                                          style: GoogleFonts.inter(
+                                                            fontSize: 10.5,
+                                                            color: isDark
+                                                                ? const Color(
+                                                                    0xFF94A3B8,
+                                                                  )
+                                                                : const Color(
+                                                                    0xFF64748B,
+                                                                  ),
+                                                          ),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ],
                                                     ],
-                                                  ],
+                                                  ),
                                                 ),
-                                              ),
-                                              if (isSelected)
-                                                const Icon(
-                                                  Icons.check,
-                                                  size: 14,
-                                                  color: Color(0xFF10B981),
-                                                ),
-                                            ],
+                                                if (isSelected)
+                                                  const Icon(
+                                                    Icons.check_rounded,
+                                                    size: 16,
+                                                    color: Color(0xFF10B981),
+                                                  ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                          ),
-                        ],
+                                        );
+                                      },
+                                    ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -785,11 +894,17 @@ class _RrhhSearchableSelectorState<T extends Object>
                 ),
               ),
               Icon(
-                _isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                _isOpen
+                    ? (_openUpwards
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down)
+                    : Icons.keyboard_arrow_down,
                 size: 18,
-                color: isDark
-                    ? const Color(0xFF94A3B8)
-                    : const Color(0xFF64748B),
+                color: _isOpen
+                    ? const Color(0xFF3B82F6)
+                    : (isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B)),
               ),
             ],
           ),
