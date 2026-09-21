@@ -25,6 +25,9 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
   String _searchQuery = '';
   String _selectedTypeFilter = 'TODOS'; // 'TODOS', 'OFICINA', 'CAMPO'
 
+  late final ScrollController _employeesScrollController;
+  late final ScrollController _applicantsScrollController;
+
   @override
   void initState() {
     super.initState();
@@ -32,12 +35,16 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
     _tabController.addListener(() {
       if (mounted) setState(() {});
     });
+    _employeesScrollController = ScrollController();
+    _applicantsScrollController = ScrollController();
     _rrhhService.addListener(_onStateChange);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _employeesScrollController.dispose();
+    _applicantsScrollController.dispose();
     _rrhhService.removeListener(_onStateChange);
     super.dispose();
   }
@@ -395,8 +402,11 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                     // Filas con scroll vertical interactivo
                     Expanded(
                       child: Scrollbar(
+                        controller: _employeesScrollController,
                         thumbVisibility: true,
+                        interactive: true,
                         child: SingleChildScrollView(
+                          controller: _employeesScrollController,
                           scrollDirection: Axis.vertical,
                           physics: const AlwaysScrollableScrollPhysics(),
                           child: Table(
@@ -717,8 +727,11 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                     // Filas con scroll vertical interactivo
                     Expanded(
                       child: Scrollbar(
+                        controller: _applicantsScrollController,
                         thumbVisibility: true,
+                        interactive: true,
                         child: SingleChildScrollView(
+                          controller: _applicantsScrollController,
                           scrollDirection: Axis.vertical,
                           physics: const AlwaysScrollableScrollPhysics(),
                           child: Table(
