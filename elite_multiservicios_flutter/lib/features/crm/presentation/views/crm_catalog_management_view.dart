@@ -683,6 +683,7 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
 
   Widget _buildServiceLineDropdown(bool isDark) {
     return DropdownButtonFormField<int?>(
+      isExpanded: true,
       initialValue: _selectedServiceLineFilter,
       dropdownColor: isDark ? const Color(0xFF111C30) : Colors.white,
       style: GoogleFonts.inter(
@@ -719,12 +720,12 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
       items: [
         const DropdownMenuItem<int?>(
           value: null,
-          child: Text('Todas las Líneas'),
+          child: Text('Todas las Líneas', overflow: TextOverflow.ellipsis),
         ),
         ..._catalogService.serviceLines.map(
           (l) => DropdownMenuItem<int?>(
             value: l.id,
-            child: Text(l.name),
+            child: Text(l.name, overflow: TextOverflow.ellipsis),
           ),
         ),
       ],
@@ -1358,6 +1359,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
     showDialog(
       context: context,
       builder: (ctx) {
+        final isMobileDialog = MediaQuery.of(ctx).size.width < 560;
+
         return StatefulBuilder(
           builder: (dialogCtx, setDialogState) {
             return AlertDialog(
@@ -1376,45 +1379,75 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                   color: dark ? Colors.white : const Color(0xFF0F172A),
                 ),
               ),
-              content: SizedBox(
-                width: 500,
+              content: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 520),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: codeCtrl,
-                              enabled: !isEditing,
-                              style: GoogleFonts.inter(
-                                color: dark ? Colors.white : const Color(0xFF0F172A),
-                              ),
-                              decoration: _inputDeco('Código Único (ej. LIMP-01)', dark),
-                            ),
+                      if (isMobileDialog) ...[
+                        TextField(
+                          controller: codeCtrl,
+                          enabled: !isEditing,
+                          style: GoogleFonts.inter(
+                            color: dark ? Colors.white : const Color(0xFF0F172A),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: DropdownButtonFormField<int?>(
-                              initialValue: selectedLineId,
-                              dropdownColor: dark ? const Color(0xFF111C30) : Colors.white,
-                              style: GoogleFonts.inter(
-                                color: dark ? Colors.white : const Color(0xFF0F172A),
-                              ),
-                              decoration: _inputDeco('Línea de Servicio', dark),
-                              items: _catalogService.serviceLines.map((l) {
-                                return DropdownMenuItem<int?>(
-                                  value: l.id,
-                                  child: Text(l.name),
-                                );
-                              }).toList(),
-                              onChanged: (val) =>
-                                  setDialogState(() => selectedLineId = val),
-                            ),
+                          decoration: _inputDeco('Código Único (ej. LIMP-01)', dark),
+                        ),
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<int?>(
+                          isExpanded: true,
+                          initialValue: selectedLineId,
+                          dropdownColor: dark ? const Color(0xFF111C30) : Colors.white,
+                          style: GoogleFonts.inter(
+                            color: dark ? Colors.white : const Color(0xFF0F172A),
                           ),
-                        ],
-                      ),
+                          decoration: _inputDeco('Línea de Servicio', dark),
+                          items: _catalogService.serviceLines.map((l) {
+                            return DropdownMenuItem<int?>(
+                              value: l.id,
+                              child: Text(l.name, overflow: TextOverflow.ellipsis),
+                            );
+                          }).toList(),
+                          onChanged: (val) =>
+                              setDialogState(() => selectedLineId = val),
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: codeCtrl,
+                                enabled: !isEditing,
+                                style: GoogleFonts.inter(
+                                  color: dark ? Colors.white : const Color(0xFF0F172A),
+                                ),
+                                decoration: _inputDeco('Código Único (ej. LIMP-01)', dark),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: DropdownButtonFormField<int?>(
+                                isExpanded: true,
+                                initialValue: selectedLineId,
+                                dropdownColor: dark ? const Color(0xFF111C30) : Colors.white,
+                                style: GoogleFonts.inter(
+                                  color: dark ? Colors.white : const Color(0xFF0F172A),
+                                ),
+                                decoration: _inputDeco('Línea de Servicio', dark),
+                                items: _catalogService.serviceLines.map((l) {
+                                  return DropdownMenuItem<int?>(
+                                    value: l.id,
+                                    child: Text(l.name, overflow: TextOverflow.ellipsis),
+                                  );
+                                }).toList(),
+                                onChanged: (val) =>
+                                    setDialogState(() => selectedLineId = val),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                       const SizedBox(height: 12),
                       TextField(
                         controller: conceptCtrl,
@@ -1424,94 +1457,173 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                         decoration: _inputDeco('Concepto del Servicio', dark),
                       ),
                       const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              initialValue: calcType,
-                              dropdownColor: dark ? const Color(0xFF111C30) : Colors.white,
-                              style: GoogleFonts.inter(
-                                color: dark ? Colors.white : const Color(0xFF0F172A),
-                              ),
-                              decoration: _inputDeco('Fórmula / Regla', dark),
-                              items: const [
-                                DropdownMenuItem(
-                                  value: 'PER_AREA',
-                                  child: Text('Por Área (m²)'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'PER_POSITION',
-                                  child: Text('Por Puesto Operativo'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'PER_HOUR',
-                                  child: Text('Por Hora de Trabajo'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'PER_UNIT',
-                                  child: Text('Por Unidad'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'FIXED',
-                                  child: Text('Tarifa Fija'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'GLOBAL',
-                                  child: Text('Global'),
-                                ),
-                              ],
-                              onChanged: (val) {
-                                if (val != null) {
-                                  setDialogState(() {
-                                    calcType = val;
-                                    if (val == 'PER_AREA') unitCtrl.text = 'm²';
-                                    if (val == 'PER_POSITION') unitCtrl.text = 'puesto';
-                                    if (val == 'PER_HOUR') unitCtrl.text = 'hora';
-                                  });
-                                }
-                              },
-                            ),
+                      if (isMobileDialog) ...[
+                        DropdownButtonFormField<String>(
+                          isExpanded: true,
+                          initialValue: calcType,
+                          dropdownColor: dark ? const Color(0xFF111C30) : Colors.white,
+                          style: GoogleFonts.inter(
+                            color: dark ? Colors.white : const Color(0xFF0F172A),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: TextField(
-                              controller: unitCtrl,
-                              style: GoogleFonts.inter(
-                                color: dark ? Colors.white : const Color(0xFF0F172A),
-                              ),
-                              decoration: _inputDeco('Unidad (m², puesto, etc)', dark),
+                          decoration: _inputDeco('Fórmula / Regla', dark),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'PER_AREA',
+                              child: Text('Por Área (m²)', overflow: TextOverflow.ellipsis),
                             ),
+                            DropdownMenuItem(
+                              value: 'PER_POSITION',
+                              child: Text('Por Puesto Operativo', overflow: TextOverflow.ellipsis),
+                            ),
+                            DropdownMenuItem(
+                              value: 'PER_HOUR',
+                              child: Text('Por Hora de Trabajo', overflow: TextOverflow.ellipsis),
+                            ),
+                            DropdownMenuItem(
+                              value: 'PER_UNIT',
+                              child: Text('Por Unidad', overflow: TextOverflow.ellipsis),
+                            ),
+                            DropdownMenuItem(
+                              value: 'FIXED',
+                              child: Text('Tarifa Fija', overflow: TextOverflow.ellipsis),
+                            ),
+                            DropdownMenuItem(
+                              value: 'GLOBAL',
+                              child: Text('Global', overflow: TextOverflow.ellipsis),
+                            ),
+                          ],
+                          onChanged: (val) {
+                            if (val != null) {
+                              setDialogState(() {
+                                calcType = val;
+                                if (val == 'PER_AREA') unitCtrl.text = 'm²';
+                                if (val == 'PER_POSITION') unitCtrl.text = 'puesto';
+                                if (val == 'PER_HOUR') unitCtrl.text = 'hora';
+                              });
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: unitCtrl,
+                          style: GoogleFonts.inter(
+                            color: dark ? Colors.white : const Color(0xFF0F172A),
                           ),
-                        ],
-                      ),
+                          decoration: _inputDeco('Unidad (m², puesto, etc)', dark),
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                isExpanded: true,
+                                initialValue: calcType,
+                                dropdownColor: dark ? const Color(0xFF111C30) : Colors.white,
+                                style: GoogleFonts.inter(
+                                  color: dark ? Colors.white : const Color(0xFF0F172A),
+                                ),
+                                decoration: _inputDeco('Fórmula / Regla', dark),
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 'PER_AREA',
+                                    child: Text('Por Área (m²)', overflow: TextOverflow.ellipsis),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'PER_POSITION',
+                                    child: Text('Por Puesto Operativo', overflow: TextOverflow.ellipsis),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'PER_HOUR',
+                                    child: Text('Por Hora de Trabajo', overflow: TextOverflow.ellipsis),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'PER_UNIT',
+                                    child: Text('Por Unidad', overflow: TextOverflow.ellipsis),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'FIXED',
+                                    child: Text('Tarifa Fija', overflow: TextOverflow.ellipsis),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'GLOBAL',
+                                    child: Text('Global', overflow: TextOverflow.ellipsis),
+                                  ),
+                                ],
+                                onChanged: (val) {
+                                  if (val != null) {
+                                    setDialogState(() {
+                                      calcType = val;
+                                      if (val == 'PER_AREA') unitCtrl.text = 'm²';
+                                      if (val == 'PER_POSITION') unitCtrl.text = 'puesto';
+                                      if (val == 'PER_HOUR') unitCtrl.text = 'hora';
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextField(
+                                controller: unitCtrl,
+                                style: GoogleFonts.inter(
+                                  color: dark ? Colors.white : const Color(0xFF0F172A),
+                                ),
+                                decoration: _inputDeco('Unidad (m², puesto, etc)', dark),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                       const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: priceCtrl,
-                              keyboardType: const TextInputType.numberWithOptions(
-                                decimal: true,
-                              ),
-                              style: GoogleFonts.inter(
-                                color: dark ? Colors.white : const Color(0xFF0F172A),
-                              ),
-                              decoration: _inputDeco('Precio Base (Bs.)', dark),
-                            ),
+                      if (isMobileDialog) ...[
+                        TextField(
+                          controller: priceCtrl,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: TextField(
-                              controller: minQtyCtrl,
-                              keyboardType: TextInputType.number,
-                              style: GoogleFonts.inter(
-                                color: dark ? Colors.white : const Color(0xFF0F172A),
-                              ),
-                              decoration: _inputDeco('Cantidad Mínima', dark),
-                            ),
+                          style: GoogleFonts.inter(
+                            color: dark ? Colors.white : const Color(0xFF0F172A),
                           ),
-                        ],
-                      ),
+                          decoration: _inputDeco('Precio Base (Bs.)', dark),
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: minQtyCtrl,
+                          keyboardType: TextInputType.number,
+                          style: GoogleFonts.inter(
+                            color: dark ? Colors.white : const Color(0xFF0F172A),
+                          ),
+                          decoration: _inputDeco('Cantidad Mínima', dark),
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: priceCtrl,
+                                keyboardType: const TextInputType.numberWithOptions(
+                                  decimal: true,
+                                ),
+                                style: GoogleFonts.inter(
+                                  color: dark ? Colors.white : const Color(0xFF0F172A),
+                                ),
+                                decoration: _inputDeco('Precio Base (Bs.)', dark),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextField(
+                                controller: minQtyCtrl,
+                                keyboardType: TextInputType.number,
+                                style: GoogleFonts.inter(
+                                  color: dark ? Colors.white : const Color(0xFF0F172A),
+                                ),
+                                decoration: _inputDeco('Cantidad Mínima', dark),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                       if (calcType == 'PER_POSITION') ...[
                         const SizedBox(height: 16),
                         Container(
@@ -1535,31 +1647,51 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      controller: hoursShiftCtrl,
-                                      keyboardType: TextInputType.number,
-                                      style: GoogleFonts.inter(
-                                        color: dark ? Colors.white : const Color(0xFF0F172A),
-                                      ),
-                                      decoration: _inputDeco('Horas/Turno (ej. 12)', dark),
-                                    ),
+                              if (isMobileDialog) ...[
+                                TextField(
+                                  controller: hoursShiftCtrl,
+                                  keyboardType: TextInputType.number,
+                                  style: GoogleFonts.inter(
+                                    color: dark ? Colors.white : const Color(0xFF0F172A),
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: TextField(
-                                      controller: daysMonthCtrl,
-                                      keyboardType: TextInputType.number,
-                                      style: GoogleFonts.inter(
-                                        color: dark ? Colors.white : const Color(0xFF0F172A),
-                                      ),
-                                      decoration: _inputDeco('Días/Mes (ej. 26)', dark),
-                                    ),
+                                  decoration: _inputDeco('Horas/Turno (ej. 12)', dark),
+                                ),
+                                const SizedBox(height: 12),
+                                TextField(
+                                  controller: daysMonthCtrl,
+                                  keyboardType: TextInputType.number,
+                                  style: GoogleFonts.inter(
+                                    color: dark ? Colors.white : const Color(0xFF0F172A),
                                   ),
-                                ],
-                              ),
+                                  decoration: _inputDeco('Días/Mes (ej. 26)', dark),
+                                ),
+                              ] else ...[
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextField(
+                                        controller: hoursShiftCtrl,
+                                        keyboardType: TextInputType.number,
+                                        style: GoogleFonts.inter(
+                                          color: dark ? Colors.white : const Color(0xFF0F172A),
+                                        ),
+                                        decoration: _inputDeco('Horas/Turno (ej. 12)', dark),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: TextField(
+                                        controller: daysMonthCtrl,
+                                        keyboardType: TextInputType.number,
+                                        style: GoogleFonts.inter(
+                                          color: dark ? Colors.white : const Color(0xFF0F172A),
+                                        ),
+                                        decoration: _inputDeco('Días/Mes (ej. 26)', dark),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ],
                           ),
                         ),
@@ -1711,8 +1843,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                   ),
                 ],
               ),
-              content: SizedBox(
-                width: 580,
+              content: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 580),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -1896,8 +2028,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
               color: dark ? Colors.white : const Color(0xFF0F172A),
             ),
           ),
-          content: SizedBox(
-            width: 450,
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 450),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -2021,8 +2153,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
               color: dark ? Colors.white : const Color(0xFF0F172A),
             ),
           ),
-          content: SizedBox(
-            width: 450,
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 450),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
