@@ -1277,18 +1277,9 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(
+                  FilledButton.tonal(
                     onPressed: () => Navigator.pop(ctx),
                     child: const Text('Cerrar'),
-                  ),
-                  const SizedBox(width: 8),
-                  FilledButton.icon(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      _openReassignDialog(context, a);
-                    },
-                    icon: const Icon(Icons.swap_horiz, size: 16),
-                    label: const Text('Rotar a Nuevo Destino'),
                   ),
                 ],
               ),
