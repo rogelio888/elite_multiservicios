@@ -1070,6 +1070,7 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                         ),
                       )
                     : ListView.builder(
+                        padding: const EdgeInsets.only(right: 14),
                         itemCount: history.length,
                         itemBuilder: (context, index) {
                           final item = history[index];
@@ -1415,12 +1416,14 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
               ),
             ],
           ),
+          contentPadding: const EdgeInsets.fromLTRB(24, 16, 10, 16),
           content: ConstrainedBox(
             constraints: BoxConstraints(
-              maxWidth: 520,
+              maxWidth: 530,
               maxHeight: MediaQuery.sizeOf(ctx).height * 0.78,
             ),
             child: SingleChildScrollView(
+              padding: const EdgeInsets.only(right: 14, top: 4, bottom: 4),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
