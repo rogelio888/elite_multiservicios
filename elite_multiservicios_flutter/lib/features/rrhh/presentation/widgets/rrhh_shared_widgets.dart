@@ -388,3 +388,298 @@ class RrhhEmptyState extends StatelessWidget {
     );
   }
 }
+
+/// Selector de búsqueda predictiva en tiempo real (estilo Google Search).
+/// Sustituye los Dropdowns toscos por una barra de búsqueda con sugerencias compactas y filtrado instantáneo.
+class RrhhSearchableSelector<T extends Object> extends StatefulWidget {
+  final String label;
+  final String hintText;
+  final T? initialValue;
+  final List<T> items;
+  final String Function(T item) itemLabel;
+  final String? Function(T item)? itemSubtitle;
+  final IconData? prefixIcon;
+  final ValueChanged<T?> onChanged;
+  final bool isRequired;
+
+  const RrhhSearchableSelector({
+    super.key,
+    required this.label,
+    this.hintText = 'Escribe para buscar...',
+    this.initialValue,
+    required this.items,
+    required this.itemLabel,
+    this.itemSubtitle,
+    this.prefixIcon = Icons.search,
+    required this.onChanged,
+    this.isRequired = false,
+  });
+
+  @override
+  State<RrhhSearchableSelector<T>> createState() =>
+      _RrhhSearchableSelectorState<T>();
+}
+
+class _RrhhSearchableSelectorState<T extends Object>
+    extends State<RrhhSearchableSelector<T>> {
+  late TextEditingController _textCtrl;
+  late FocusNode _focusNode;
+  final GlobalKey _fieldKey = GlobalKey();
+  T? _selectedItem;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedItem = widget.initialValue;
+    _textCtrl = TextEditingController(
+      text: widget.initialValue != null
+          ? widget.itemLabel(widget.initialValue!)
+          : '',
+    );
+    _focusNode = FocusNode();
+  }
+
+  @override
+  void didUpdateWidget(covariant RrhhSearchableSelector<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue) {
+      _selectedItem = widget.initialValue;
+      final newText = widget.initialValue != null
+          ? widget.itemLabel(widget.initialValue!)
+          : '';
+      if (_textCtrl.text != newText) {
+        _textCtrl.text = newText;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _textCtrl.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        RawAutocomplete<T>(
+          textEditingController: _textCtrl,
+          focusNode: _focusNode,
+          displayStringForOption: widget.itemLabel,
+          optionsBuilder: (TextEditingValue textEditingValue) {
+            final query = textEditingValue.text.trim().toLowerCase();
+            if (query.isEmpty) {
+              return widget.items;
+            }
+            return widget.items.where((item) {
+              final label = widget.itemLabel(item).toLowerCase();
+              final subtitle =
+                  widget.itemSubtitle?.call(item)?.toLowerCase() ?? '';
+              return label.contains(query) || subtitle.contains(query);
+            });
+          },
+          onSelected: (T selection) {
+            setState(() {
+              _selectedItem = selection;
+              _textCtrl.text = widget.itemLabel(selection);
+            });
+            widget.onChanged(selection);
+          },
+          fieldViewBuilder:
+              (ctx, textEditingController, focusNode, onFieldSubmitted) {
+                return TextFormField(
+                  key: _fieldKey,
+                  controller: textEditingController,
+                  focusNode: focusNode,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                  decoration: InputDecoration(
+                    labelText: widget.label,
+                    hintText: widget.hintText,
+                    prefixIcon: Icon(
+                      widget.prefixIcon ?? Icons.search,
+                      size: 18,
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
+                    ),
+                    suffixIcon: textEditingController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, size: 16),
+                            tooltip: 'Limpiar',
+                            onPressed: () {
+                              textEditingController.clear();
+                              setState(() => _selectedItem = null);
+                              widget.onChanged(null);
+                            },
+                          )
+                        : const Icon(Icons.arrow_drop_down, size: 20),
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 11,
+                      horizontal: 12,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFCBD5E1),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFCBD5E1),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF3B82F6),
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                );
+              },
+          optionsViewBuilder: (ctx, onSelected, options) {
+            final renderBox =
+                _fieldKey.currentContext?.findRenderObject() as RenderBox?;
+            final fieldWidth = renderBox?.size.width ?? 400.0;
+            final optionList = options.toList();
+
+            return Align(
+              alignment: Alignment.topLeft,
+              child: Material(
+                elevation: 8,
+                borderRadius: BorderRadius.circular(8),
+                color: isDark ? const Color(0xFF0F172A) : Colors.white,
+                child: Container(
+                  width: fieldWidth,
+                  constraints: const BoxConstraints(maxHeight: 220),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFFE2E8F0),
+                    ),
+                  ),
+                  child: optionList.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            'No se encontraron coincidencias',
+                            style: GoogleFonts.inter(
+                              fontSize: 12.5,
+                              color: isDark
+                                  ? const Color(0xFF94A3B8)
+                                  : const Color(0xFF64748B),
+                            ),
+                          ),
+                        )
+                      : ListView.separated(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          shrinkWrap: true,
+                          itemCount: optionList.length,
+                          separatorBuilder: (ctx, idx) => Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFF1F5F9),
+                          ),
+                          itemBuilder: (context, index) {
+                            final item = optionList[index];
+                            final label = widget.itemLabel(item);
+                            final subtitle = widget.itemSubtitle?.call(item);
+                            final isCurrent = _selectedItem == item;
+
+                            return InkWell(
+                              onTap: () => onSelected(item),
+                              child: Container(
+                                color: isCurrent
+                                    ? (isDark
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFEFF6FF))
+                                    : Colors.transparent,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 9,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      isCurrent
+                                          ? Icons.check_circle
+                                          : (widget.prefixIcon ?? Icons.search),
+                                      size: 15,
+                                      color: isCurrent
+                                          ? const Color(0xFF10B981)
+                                          : (isDark
+                                                ? const Color(0xFF64748B)
+                                                : const Color(0xFF94A3B8)),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            label,
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12.5,
+                                              fontWeight: isCurrent
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w500,
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : const Color(0xFF0F172A),
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          if (subtitle != null &&
+                                              subtitle.isNotEmpty) ...[
+                                            const SizedBox(height: 1),
+                                            Text(
+                                              subtitle,
+                                              style: GoogleFonts.inter(
+                                                fontSize: 11,
+                                                color: isDark
+                                                    ? const Color(0xFF94A3B8)
+                                                    : const Color(0xFF64748B),
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}

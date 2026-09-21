@@ -1519,24 +1519,16 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                   const SizedBox(height: 14),
 
                   if (selectedType == 'CAMPO') ...[
-                    // Dropdown de Empresa Cliente
-                    DropdownButtonFormField<RrhhClientCompany>(
+                    // Selector predictivo de Empresa Cliente
+                    RrhhSearchableSelector<RrhhClientCompany>(
+                      label: 'Empresa Cliente Destino *',
+                      hintText: 'Escribe para buscar empresa...',
+                      prefixIcon: Icons.search,
                       initialValue: selectedClient,
-                      isExpanded: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Empresa Cliente Destino *',
-                      ),
-                      items: clients
-                          .map(
-                            (c) => DropdownMenuItem(
-                              value: c,
-                              child: Text(
-                                c.name,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          )
-                          .toList(),
+                      items: clients,
+                      itemLabel: (c) => c.name,
+                      itemSubtitle: (c) =>
+                          '${c.services.length} servicio(s) activo(s)',
                       onChanged: (c) {
                         setDlgState(() {
                           selectedClient = c;
@@ -1551,46 +1543,31 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                     const SizedBox(height: 12),
                     if (selectedClient != null &&
                         selectedClient!.services.isNotEmpty)
-                      DropdownButtonFormField<RrhhClientContractedService>(
-                        initialValue: selectedService,
-                        isExpanded: true,
-                        decoration: const InputDecoration(
-                          labelText: 'Servicio Contratado y Sede *',
+                      RrhhSearchableSelector<RrhhClientContractedService>(
+                        key: ValueKey(
+                          'service_${selectedClient?.id ?? "none"}',
                         ),
-                        items: selectedClient!.services
-                            .map(
-                              (s) => DropdownMenuItem(
-                                value: s,
-                                child: Text(
-                                  '${s.serviceName} (${s.branchLocation})',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            )
-                            .toList(),
+                        label: 'Servicio Contratado y Sede *',
+                        hintText: 'Escribe para buscar servicio o sede...',
+                        prefixIcon: Icons.search,
+                        initialValue: selectedService,
+                        items: selectedClient!.services,
+                        itemLabel: (s) =>
+                            '${s.serviceName} (${s.branchLocation})',
+                        itemSubtitle: (s) => 'Sede: ${s.branchLocation}',
                         onChanged: (s) {
                           setDlgState(() => selectedService = s);
                         },
                       ),
                   ] else ...[
-                    // Dropdown de Área de Oficina
-                    DropdownButtonFormField<String>(
+                    // Selector predictivo de Área de Oficina
+                    RrhhSearchableSelector<String>(
+                      label: 'Área en Oficina Central *',
+                      hintText: 'Escribe para buscar área...',
+                      prefixIcon: Icons.search,
                       initialValue: selectedArea,
-                      isExpanded: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Área en Oficina Central *',
-                      ),
-                      items: areas
-                          .map(
-                            (ar) => DropdownMenuItem(
-                              value: ar.name,
-                              child: Text(
-                                ar.name,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          )
-                          .toList(),
+                      items: areas.map((ar) => ar.name).toList(),
+                      itemLabel: (ar) => ar,
                       onChanged: (val) {
                         if (val != null) {
                           setDlgState(() => selectedArea = val);
@@ -1607,24 +1584,14 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                   ],
                   const SizedBox(height: 12),
 
-                  // Nuevo Horario
-                  DropdownButtonFormField<String>(
+                  // Nuevo Horario con búsqueda interactiva
+                  RrhhSearchableSelector<String>(
+                    label: 'Horario / Turno Asignado *',
+                    hintText: 'Escribe para buscar turno...',
+                    prefixIcon: Icons.search,
                     initialValue: currentSchedule,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Horario / Turno Asignado *',
-                    ),
-                    items: availableScheduleNames
-                        .map(
-                          (name) => DropdownMenuItem(
-                            value: name,
-                            child: Text(
-                              name,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        )
-                        .toList(),
+                    items: availableScheduleNames.toList(),
+                    itemLabel: (name) => name,
                     onChanged: (val) {
                       if (val != null) {
                         setDlgState(() => currentSchedule = val);
@@ -1652,23 +1619,13 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                     ),
                   ),
                   const SizedBox(height: 8),
-                  DropdownButtonFormField<String>(
+                  RrhhSearchableSelector<String>(
+                    label: 'Causal de Rotación *',
+                    hintText: 'Escribe para buscar causal...',
+                    prefixIcon: Icons.search,
                     initialValue: selectedQuickReason,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Causal de Rotación *',
-                    ),
-                    items: quickReasons
-                        .map(
-                          (r) => DropdownMenuItem(
-                            value: r,
-                            child: Text(
-                              r,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        )
-                        .toList(),
+                    items: quickReasons,
+                    itemLabel: (r) => r,
                     onChanged: (val) {
                       if (val != null) {
                         setDlgState(() => selectedQuickReason = val);
