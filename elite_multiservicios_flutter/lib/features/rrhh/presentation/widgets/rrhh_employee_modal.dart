@@ -554,81 +554,234 @@ class _RrhhEmployeeModalState extends State<RrhhEmployeeModal>
   }
 
   Widget _buildHistoryTab(RrhhEmployee emp, bool isDark) {
-    if (emp.timeline.isEmpty) {
-      return const Center(child: Text('Sin eventos históricos registrados'));
-    }
+    final rotations = RrhhStateService().getRotationHistory(emp.id);
 
-    return ListView.builder(
-      itemCount: emp.timeline.length,
-      itemBuilder: (ctx, index) {
-        final ev = emp.timeline[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2563EB).withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.circle,
-                  size: 8,
-                  color: Color(0xFF2563EB),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (rotations.isNotEmpty) ...[
+            Container(
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? const Color(0xFF0B1324)
+                    : const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFE2E8F0),
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.alt_route,
+                        size: 16,
+                        color: Color(0xFF10B981),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Historial de Rotaciones de Personal (${rotations.length})',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  ...rotations.map((r) {
+                    final isFirst = r.rotationNumber == 0;
+                    final isActive = r.status == 'ACTIVA';
+                    final dateStr =
+                        '${r.startDate.day}/${r.startDate.month}/${r.startDate.year} → ${r.endDate != null ? "${r.endDate!.day}/${r.endDate!.month}/${r.endDate!.year}" : "Vigente"}';
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF161F30) : Colors.white,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: isActive
+                              ? const Color(0xFF10B981).withValues(alpha: 0.4)
+                              : (isDark
+                                    ? const Color(0xFF1E293B)
+                                    : const Color(0xFFE2E8F0)),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                isFirst
+                                    ? '🌱 Puesto Inicial'
+                                    : '🔄 Rotación #${r.rotationNumber}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: isFirst
+                                      ? const Color(0xFF2563EB)
+                                      : (isActive
+                                            ? const Color(0xFF10B981)
+                                            : const Color(0xFFF59E0B)),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              RrhhStatusChip(
+                                label: r.status,
+                                statusType: isActive
+                                    ? StatusType.success
+                                    : StatusType.neutral,
+                              ),
+                              const Spacer(),
+                              Text(
+                                dateStr,
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 11,
+                                  color: isDark
+                                      ? const Color(0xFF94A3B8)
+                                      : const Color(0xFF64748B),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            r.fullDestinationSummary,
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
+                            ),
+                          ),
+                          if (r.originDescription != null && !isFirst) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              'Origen previo: ${r.originDescription}',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: const Color(0xFF3B82F6),
+                              ),
+                            ),
+                          ],
+                          if (r.rotationReason != null &&
+                              r.rotationReason!.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              'Motivo: ${r.rotationReason}',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontStyle: FontStyle.italic,
+                                color: isDark
+                                    ? const Color(0xFF94A3B8)
+                                    : const Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ],
+          Text(
+            'Hitos y Eventos Registrados',
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: isDark ? Colors.white : const Color(0xFF0F172A),
+            ),
+          ),
+          const SizedBox(height: 10),
+          if (emp.timeline.isEmpty)
+            const Text('Sin eventos adicionales registrados')
+          else
+            ...emp.timeline.map((ev) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          ev.title,
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: isDark
-                                ? Colors.white
-                                : const Color(0xFF0F172A),
-                          ),
-                        ),
-                        Text(
-                          '${ev.date.day}/${ev.date.month}/${ev.date.year}',
-                          style: GoogleFonts.inter(
-                            fontSize: 10,
-                            color: const Color(0xFF64748B),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      ev.description,
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        color: const Color(0xFF64748B),
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2563EB).withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.circle,
+                        size: 8,
+                        color: Color(0xFF2563EB),
                       ),
                     ),
-                    Text(
-                      'Registrado por: ${ev.registeredBy}',
-                      style: GoogleFonts.inter(
-                        fontSize: 10,
-                        color: const Color(0xFF2563EB),
-                        fontWeight: FontWeight.w500,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                ev.title,
+                                style: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
+                                ),
+                              ),
+                              Text(
+                                '${ev.date.day}/${ev.date.month}/${ev.date.year}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  color: const Color(0xFF64748B),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            ev.description,
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: const Color(0xFF64748B),
+                            ),
+                          ),
+                          Text(
+                            'Registrado por: ${ev.registeredBy}',
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              color: const Color(0xFF2563EB),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-        );
-      },
+              );
+            }),
+        ],
+      ),
     );
   }
 

@@ -70,6 +70,13 @@ class RrhhAssignment {
   final String? branchLocation;
   final String? fieldSupervisor;
 
+  // Trazabilidad de Rotación y Origen
+  final String?
+  originDescription; // Ej: 'Puesto Inicial' o 'Kolping Bolivia • Sede Central • Mantenimiento Preventivo'
+  final String? rotationReason; // Motivo formal del traslado o rotación
+  final int
+  rotationNumber; // 0 = Asignación inicial, 1 = Primera rotación, 2 = Segunda rotación...
+
   // Parámetros de asignación
   final String scheduleName; // Ej. 'Turno Mañana (07:00 - 15:00)'
   final DateTime startDate;
@@ -83,6 +90,17 @@ class RrhhAssignment {
   String? get workplaceBranch => branchLocation;
   String get supervisorName =>
       fieldSupervisor ?? officeDepartmentLeader ?? 'Supervisión de Operaciones';
+
+  bool get isInitialAssignment =>
+      rotationNumber == 0 || originDescription == null;
+
+  String get fullDestinationSummary {
+    if (employeeType == 'OFICINA') {
+      return 'Oficina Central: Área ${officeArea ?? "General"} • Cargo: ${officePosition ?? "Operativo"}';
+    } else {
+      return 'Empresa: ${clientCompanyName ?? "Cliente"} • Servicio: ${serviceName ?? "General"} • Sede: ${branchLocation ?? "Principal"}';
+    }
+  }
 
   const RrhhAssignment({
     required this.id,
@@ -99,6 +117,9 @@ class RrhhAssignment {
     this.serviceName,
     this.branchLocation,
     this.fieldSupervisor,
+    this.originDescription,
+    this.rotationReason,
+    this.rotationNumber = 0,
     required this.scheduleName,
     required this.startDate,
     this.endDate,
@@ -121,6 +142,9 @@ class RrhhAssignment {
     String? serviceName,
     String? branchLocation,
     String? fieldSupervisor,
+    String? originDescription,
+    String? rotationReason,
+    int? rotationNumber,
     String? scheduleName,
     DateTime? startDate,
     DateTime? endDate,
@@ -143,6 +167,9 @@ class RrhhAssignment {
       serviceName: serviceName ?? this.serviceName,
       branchLocation: branchLocation ?? this.branchLocation,
       fieldSupervisor: fieldSupervisor ?? this.fieldSupervisor,
+      originDescription: originDescription ?? this.originDescription,
+      rotationReason: rotationReason ?? this.rotationReason,
+      rotationNumber: rotationNumber ?? this.rotationNumber,
       scheduleName: scheduleName ?? this.scheduleName,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,

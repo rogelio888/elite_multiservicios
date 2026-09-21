@@ -48,6 +48,44 @@ class RrhhStateService extends ChangeNotifier {
         .toList();
   }
 
+  /// Reinicializa el estado con la semilla de mock data para pruebas unitarias
+  void resetForTesting() {
+    _areas = List.from(RrhhMockData.initialAreas);
+    _positions = List.from(RrhhMockData.initialPositions);
+    _specialties = List.from(RrhhMockData.initialSpecialties);
+    _clients = List.from(RrhhMockData.initialClients);
+    _schedules = List.from(RrhhMockData.initialSchedules);
+    _applicants = List.from(RrhhMockData.initialApplicants);
+    _employees = List.from(RrhhMockData.initialEmployees);
+    _assignments = List.from(RrhhMockData.initialAssignments);
+    _leaves = List.from(RrhhMockData.initialLeaves);
+    _vacations = List.from(RrhhMockData.initialVacations);
+    _incidents = List.from(RrhhMockData.initialIncidents);
+    _movements = List.from(RrhhMockData.initialMovements);
+    _exits = _employees
+        .where((e) => e.status == 'INACTIVO')
+        .map(
+          (e) => RrhhExitRecord(
+            id: 'exit-${e.id}',
+            employeeId: e.id,
+            employeeName: e.fullName,
+            employeeCode: e.code,
+            exitDate:
+                e.exitDate ?? DateTime.now().subtract(const Duration(days: 30)),
+            reason: e.exitReason ?? 'Conclusión de contrato a plazo fijo',
+            observations:
+                e.exitObservations ??
+                'Liquidación de beneficios sociales cancelada y entrega de puesto completada.',
+            documentationAttached:
+                'Acta de finiquito firmada ante el Ministerio de Trabajo.',
+            processedBy: e.exitRegisteredBy ?? 'Lic. Laura Mendoza (RRHH)',
+            severancePay: 5400.0,
+          ),
+        )
+        .toList();
+    notifyListeners();
+  }
+
   // -------------------------------------------------------------
   // ESTADO LOCAL EN MEMORIA
   // -------------------------------------------------------------
@@ -420,6 +458,170 @@ class RrhhStateService extends ChangeNotifier {
     }
   }
 
+  /// Obtiene la lista histórica completa de asignaciones y rotaciones de un colaborador,
+  /// ordenada cronológicamente (desde el puesto inicial donde empezó hasta el actual).
+  List<RrhhAssignment> getRotationHistory(String employeeId) {
+    final list = _assignments.where((a) => a.employeeId == employeeId).toList();
+    list.sort((a, b) => a.startDate.compareTo(b.startDate));
+    return list;
+  }
+
+  /// Obtiene la asignación activa vigente de un colaborador (si existe)
+  RrhhAssignment? getActiveAssignment(String employeeId) {
+    try {
+      return _assignments.firstWhere(
+        (a) => a.employeeId == employeeId && a.status == 'ACTIVA',
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Rota a un colaborador a un nuevo destino (empresa/servicio en campo u oficina),
+  /// guardando fielmente de dónde partió (origen), el historial sucesivo y motivo.
+  void rotateEmployee({
+    required String employeeId,
+    required String employeeName,
+    required String employeeCode,
+    required String type,
+    String? clientCompanyId,
+    String? clientCompanyName,
+    String? contractedServiceId,
+    String? contractedServiceName,
+    String? officeArea,
+    String? officeRole,
+    String? workplaceBranch,
+    required String scheduleName,
+    required String supervisorName,
+    required String rotationReason,
+    String? notes,
+    DateTime? effectiveDate,
+  }) {
+    final now = effectiveDate ?? DateTime.now();
+
+    // 1. Obtener la asignación activa previa para rescatar el origen exacto
+    RrhhAssignment? currentActive;
+    try {
+      currentActive = _assignments.firstWhere(
+        (a) => a.employeeId == employeeId && a.status == 'ACTIVA',
+      );
+    } catch (_) {
+      currentActive = null;
+    }
+
+    String originText;
+    int nextRotationNumber = 1;
+
+    if (currentActive != null) {
+      originText = currentActive.fullDestinationSummary;
+      nextRotationNumber = currentActive.rotationNumber + 1;
+    } else {
+      originText = 'Puesto Inicial de Contratación';
+      nextRotationNumber = 1;
+    }
+
+    // 2. Finalizar la asignación previa guardando fecha de cierre
+    for (int i = 0; i < _assignments.length; i++) {
+      if (_assignments[i].employeeId == employeeId &&
+          _assignments[i].status == 'ACTIVA') {
+        _assignments[i] = _assignments[i].copyWith(
+          status: 'FINALIZADA',
+          endDate: now,
+          notes: 'Rotado a nuevo destino: $rotationReason',
+        );
+      }
+    }
+
+    final newDestinationSummary = type == 'OFICINA'
+        ? 'Oficina Central: Área ${officeArea ?? "General"} • Cargo: ${officeRole ?? "Operativo"}'
+        : 'Empresa: ${clientCompanyName ?? "Cliente"} • Servicio: ${contractedServiceName ?? "General"} • Sede: ${workplaceBranch ?? "Principal"}';
+
+    // 3. Crear y registrar la nueva asignación activa con trazabilidad de origen
+    final newAssignment = RrhhAssignment(
+      id: 'asg-${DateTime.now().millisecondsSinceEpoch}',
+      employeeId: employeeId,
+      employeeName: employeeName,
+      employeeCode: employeeCode,
+      employeeType: type,
+      clientCompanyId: clientCompanyId,
+      clientCompanyName: clientCompanyName,
+      contractedServiceId: contractedServiceId ?? 'svc-01',
+      serviceName: contractedServiceName,
+      officeArea: officeArea,
+      officePosition: officeRole,
+      branchLocation:
+          workplaceBranch ??
+          (type == 'OFICINA' ? 'Oficina Central' : 'Sede Principal'),
+      scheduleName: scheduleName,
+      fieldSupervisor: supervisorName,
+      officeDepartmentLeader: supervisorName,
+      originDescription: originText,
+      rotationReason: rotationReason,
+      rotationNumber: nextRotationNumber,
+      startDate: now,
+      status: 'ACTIVA',
+      notes: notes ?? 'Rotación operativa registrada por RRHH.',
+    );
+
+    _assignments.insert(0, newAssignment);
+
+    // 4. Sincronizar el expediente del empleado (workplace, supervisor y timeline)
+    final empIndex = _employees.indexWhere((e) => e.id == employeeId);
+    if (empIndex != -1) {
+      final oldEmp = _employees[empIndex];
+      final updatedTimeline = List<RrhhTimelineEvent>.from(oldEmp.timeline);
+      updatedTimeline.insert(
+        0,
+        RrhhTimelineEvent(
+          id: 'ev-rot-${DateTime.now().millisecondsSinceEpoch}',
+          date: now,
+          title: 'Rotación de Personal #$nextRotationNumber',
+          description:
+              'Traslado desde: $originText → Hacia: $newDestinationSummary. Motivo: $rotationReason.',
+          category: 'ASIGNACION',
+          registeredBy: supervisorName.isNotEmpty
+              ? supervisorName
+              : 'RRHH Operaciones',
+        ),
+      );
+
+      _employees[empIndex] = oldEmp.copyWith(
+        workplace:
+            workplaceBranch ??
+            (type == 'OFICINA'
+                ? 'Oficina Central'
+                : clientCompanyName ?? oldEmp.workplace),
+        supervisor: supervisorName.isNotEmpty
+            ? supervisorName
+            : oldEmp.supervisor,
+        area: officeArea ?? oldEmp.area,
+        position: officeRole ?? oldEmp.position,
+        timeline: updatedTimeline,
+      );
+    }
+
+    // 5. Registrar movimiento laboral
+    _movements.insert(
+      0,
+      RrhhLaborMovement(
+        id: 'mov-${DateTime.now().millisecondsSinceEpoch}',
+        employeeId: employeeId,
+        employeeName: employeeName,
+        employeeCode: employeeCode,
+        effectiveDate: now,
+        movementType: type == 'OFICINA'
+            ? 'TRANSFERENCIA_SEDE'
+            : 'CAMBIO_CLIENTE',
+        previousValue: originText,
+        newValue: newDestinationSummary,
+        justification: rotationReason,
+        authorizedBy: 'Lic. Laura Mendoza (RRHH)',
+      ),
+    );
+
+    notifyListeners();
+  }
+
   void assignEmployee({
     required String employeeId,
     required String employeeName,
@@ -433,63 +635,23 @@ class RrhhStateService extends ChangeNotifier {
     String? workplaceBranch,
     required String scheduleName,
     required String supervisorName,
+    String? rotationReason,
   }) {
-    for (int i = 0; i < _assignments.length; i++) {
-      if (_assignments[i].employeeId == employeeId &&
-          _assignments[i].status == 'ACTIVA') {
-        _assignments[i] = _assignments[i].copyWith(
-          status: 'FINALIZADA',
-          endDate: DateTime.now(),
-          notes: 'Reasignado a nuevo destino o turno.',
-        );
-      }
-    }
-
-    _assignments.insert(
-      0,
-      RrhhAssignment(
-        id: 'asg-${DateTime.now().millisecondsSinceEpoch}',
-        employeeId: employeeId,
-        employeeName: employeeName,
-        employeeCode: employeeCode,
-        employeeType: type,
-        clientCompanyId: clientCompanyId,
-        clientCompanyName: clientCompanyName,
-        contractedServiceId: 'svc-01',
-        serviceName: contractedServiceName,
-        officeArea: officeArea,
-        officePosition: officeRole,
-        branchLocation: workplaceBranch ?? 'Sede Central',
-        scheduleName: scheduleName,
-        fieldSupervisor: supervisorName,
-        officeDepartmentLeader: supervisorName,
-        startDate: DateTime.now(),
-        status: 'ACTIVA',
-        notes: 'Reasignación de funciones',
-      ),
+    rotateEmployee(
+      employeeId: employeeId,
+      employeeName: employeeName,
+      employeeCode: employeeCode,
+      type: type,
+      clientCompanyId: clientCompanyId,
+      clientCompanyName: clientCompanyName,
+      contractedServiceName: contractedServiceName,
+      officeArea: officeArea,
+      officeRole: officeRole,
+      workplaceBranch: workplaceBranch,
+      scheduleName: scheduleName,
+      supervisorName: supervisorName,
+      rotationReason: rotationReason ?? 'Reasignación de funciones',
     );
-
-    _movements.insert(
-      0,
-      RrhhLaborMovement(
-        id: 'mov-${DateTime.now().millisecondsSinceEpoch}',
-        employeeId: employeeId,
-        employeeName: employeeName,
-        employeeCode: employeeCode,
-        effectiveDate: DateTime.now(),
-        movementType: type == 'OFICINA'
-            ? 'TRANSFERENCIA_SEDE'
-            : 'CAMBIO_CLIENTE',
-        previousValue: 'Destino previo',
-        newValue: type == 'OFICINA'
-            ? 'Oficina ($officeArea)'
-            : 'Cliente ($clientCompanyName - $contractedServiceName)',
-        justification: 'Reasignación operativa de personal.',
-        authorizedBy: 'Lic. Laura Mendoza (RRHH)',
-      ),
-    );
-
-    notifyListeners();
   }
 
   void addSchedule(RrhhWorkSchedule schedule) {

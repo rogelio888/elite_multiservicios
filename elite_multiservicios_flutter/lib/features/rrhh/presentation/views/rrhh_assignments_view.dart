@@ -41,6 +41,7 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
       listenable: _stateService,
       builder: (context, _) {
         final assignments = _stateService.assignments.where((a) {
+          if (a.status != 'ACTIVA') return false;
           if (_filterType != 'TODOS' && a.type != _filterType) return false;
           if (_searchQuery.isEmpty) return true;
           final q = _searchQuery.toLowerCase();
@@ -48,7 +49,8 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
               a.employeeCode.toLowerCase().contains(q) ||
               (a.clientCompanyName?.toLowerCase().contains(q) ?? false) ||
               (a.contractedServiceName?.toLowerCase().contains(q) ?? false) ||
-              (a.officeArea?.toLowerCase().contains(q) ?? false);
+              (a.officeArea?.toLowerCase().contains(q) ?? false) ||
+              (a.originDescription?.toLowerCase().contains(q) ?? false);
         }).toList();
 
         final clients = _stateService.clientCompanies.where((c) {
@@ -360,6 +362,81 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                           ),
                           const SizedBox(width: 8),
                           RrhhEmployeeTypeBadge(type: a.type),
+                          const SizedBox(width: 8),
+                          if (a.rotationNumber > 0)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFFF59E0B,
+                                ).withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: const Color(
+                                    0xFFF59E0B,
+                                  ).withValues(alpha: 0.35),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.sync_alt,
+                                    size: 12,
+                                    color: Color(0xFFF59E0B),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Rotación #${a.rotationNumber}',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFFF59E0B),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF64748B,
+                                ).withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: const Color(
+                                    0xFF64748B,
+                                  ).withValues(alpha: 0.35),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.flag_outlined,
+                                    size: 12,
+                                    color: Color(0xFF64748B),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Puesto Inicial',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xFF64748B),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           const Spacer(),
                           RrhhStatusChip(
                             label: a.status,
@@ -405,6 +482,70 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                           ],
                         ),
                       ),
+                      if (a.originDescription != null && a.rotationNumber > 0)
+                        Container(
+                          margin: const EdgeInsets.only(top: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF0F172A)
+                                : const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFFE2E8F0),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.alt_route,
+                                size: 14,
+                                color: Color(0xFF3B82F6),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Rotó desde: ',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF3B82F6),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  a.originDescription!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11.5,
+                                    color: isDark
+                                        ? const Color(0xFFCBD5E1)
+                                        : const Color(0xFF334155),
+                                  ),
+                                ),
+                              ),
+                              if (a.rotationReason != null &&
+                                  a.rotationReason!.isNotEmpty) ...[
+                                const SizedBox(width: 8),
+                                Text(
+                                  '• Motivo: ${a.rotationReason}',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontStyle: FontStyle.italic,
+                                    color: isDark
+                                        ? const Color(0xFF94A3B8)
+                                        : const Color(0xFF64748B),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -445,12 +586,42 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                           ),
                           const Spacer(),
                           OutlinedButton.icon(
-                            onPressed: () => _openReassignDialog(context, a),
-                            icon: const Icon(Icons.swap_horiz, size: 14),
-                            label: const Text('Reasignar Destino / Turno'),
+                            onPressed: () =>
+                                _openRotationHistoryDialog(context, a),
+                            icon: const Icon(
+                              Icons.history,
+                              size: 14,
+                              color: Color(0xFF3B82F6),
+                            ),
+                            label: Text(
+                              _stateService
+                                          .getRotationHistory(a.employeeId)
+                                          .length >
+                                      1
+                                  ? 'Historial (${_stateService.getRotationHistory(a.employeeId).length})'
+                                  : 'Ver Historial',
+                              style: const TextStyle(color: Color(0xFF3B82F6)),
+                            ),
                             style: OutlinedButton.styleFrom(
                               visualDensity: VisualDensity.compact,
-                              textStyle: GoogleFonts.inter(fontSize: 11),
+                              side: const BorderSide(color: Color(0xFF3B82F6)),
+                              textStyle: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          FilledButton.tonalIcon(
+                            onPressed: () => _openReassignDialog(context, a),
+                            icon: const Icon(Icons.swap_horiz, size: 14),
+                            label: const Text('Rotar Destino / Turno'),
+                            style: FilledButton.styleFrom(
+                              visualDensity: VisualDensity.compact,
+                              textStyle: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ],
@@ -769,90 +940,734 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
     );
   }
 
+  void _openRotationHistoryDialog(BuildContext context, RrhhAssignment a) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final history = _stateService.getRotationHistory(a.employeeId);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Container(
+          width: 680,
+          constraints: const BoxConstraints(maxHeight: 700),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF3B82F6).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.history_toggle_off,
+                      color: Color(0xFF3B82F6),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Historial de Rotaciones & Asignaciones',
+                          style: GoogleFonts.inter(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                          ),
+                        ),
+                        Text(
+                          'Colaborador: ${a.employeeName} (${a.employeeCode}) • ${a.type}',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            color: isDark
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Barra de Resumen
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? const Color(0xFF0B1324)
+                      : const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFE2E8F0),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.alt_route,
+                          size: 16,
+                          color: Color(0xFF10B981),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Total de Destinos / Puntos: ${history.length}',
+                          style: GoogleFonts.inter(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (history.isNotEmpty)
+                      Text(
+                        'Puesto Inicial: ${history.first.startDate.day}/${history.first.startDate.month}/${history.first.startDate.year}',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Línea de Tiempo Vertical
+              Expanded(
+                child: history.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'Sin historial de rotaciones registrado',
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: history.length,
+                        itemBuilder: (context, index) {
+                          final item = history[index];
+                          final isFirst = index == 0;
+                          final isLast = index == history.length - 1;
+                          final isActive = item.status == 'ACTIVA';
+
+                          final startStr =
+                              '${item.startDate.day}/${item.startDate.month}/${item.startDate.year}';
+                          final endStr = item.endDate != null
+                              ? '${item.endDate!.day}/${item.endDate!.month}/${item.endDate!.year}'
+                              : 'Actualidad (Vigente)';
+
+                          final days = (item.endDate ?? DateTime.now())
+                              .difference(item.startDate)
+                              .inDays;
+                          final durationStr = days >= 30
+                              ? '${(days / 30).floor()} meses y ${days % 30} días'
+                              : '$days días';
+
+                          return IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Línea vertical y nodo
+                                SizedBox(
+                                  width: 40,
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        width: 24,
+                                        height: 24,
+                                        decoration: BoxDecoration(
+                                          color: isActive
+                                              ? const Color(0xFF10B981)
+                                              : (isFirst
+                                                    ? const Color(0xFF2563EB)
+                                                    : const Color(0xFFF59E0B)),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Center(
+                                          child: Icon(
+                                            isActive
+                                                ? Icons.check
+                                                : (isFirst
+                                                      ? Icons.flag
+                                                      : Icons.sync_alt),
+                                            size: 13,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      if (!isLast)
+                                        Expanded(
+                                          child: Container(
+                                            width: 2,
+                                            color: isDark
+                                                ? const Color(0xFF1E293B)
+                                                : const Color(0xFFCBD5E1),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+
+                                // Tarjeta informativa del hito
+                                Expanded(
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 16),
+                                    padding: const EdgeInsets.all(14),
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? const Color(0xFF0B1324)
+                                          : Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: isActive
+                                            ? const Color(
+                                                0xFF10B981,
+                                              ).withValues(alpha: 0.5)
+                                            : (isDark
+                                                  ? const Color(0xFF1E293B)
+                                                  : const Color(0xFFE2E8F0)),
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              isFirst
+                                                  ? '🌱 PUESTO INICIAL'
+                                                  : '🔄 ROTACIÓN #${item.rotationNumber}',
+                                              style: GoogleFonts.inter(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w700,
+                                                color: isFirst
+                                                    ? const Color(0xFF2563EB)
+                                                    : (isActive
+                                                          ? const Color(
+                                                              0xFF10B981,
+                                                            )
+                                                          : const Color(
+                                                              0xFFF59E0B,
+                                                            )),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            RrhhStatusChip(
+                                              label: item.status,
+                                              statusType: isActive
+                                                  ? StatusType.success
+                                                  : StatusType.neutral,
+                                            ),
+                                            const Spacer(),
+                                            Text(
+                                              '$startStr → $endStr',
+                                              style: GoogleFonts.jetBrainsMono(
+                                                fontSize: 11.5,
+                                                fontWeight: FontWeight.w500,
+                                                color: isDark
+                                                    ? const Color(0xFF94A3B8)
+                                                    : const Color(0xFF64748B),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          item.fullDestinationSummary,
+                                          style: GoogleFonts.inter(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            color: isDark
+                                                ? Colors.white
+                                                : const Color(0xFF0F172A),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Horario: ${item.scheduleName}  •  Supervisor: ${item.supervisorName}  •  Permanencia: $durationStr',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 11.5,
+                                            color: isDark
+                                                ? const Color(0xFF94A3B8)
+                                                : const Color(0xFF64748B),
+                                          ),
+                                        ),
+                                        if (item.originDescription != null &&
+                                            !isFirst) ...[
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            'Punto de partida previo: ${item.originDescription}',
+                                            style: GoogleFonts.inter(
+                                              fontSize: 11,
+                                              color: const Color(0xFF3B82F6),
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                        if (item.rotationReason != null &&
+                                            item
+                                                .rotationReason!
+                                                .isNotEmpty) ...[
+                                          const SizedBox(height: 6),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: isDark
+                                                  ? const Color(0xFF1E293B)
+                                                  : const Color(0xFFF1F5F9),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              'Motivo: ${item.rotationReason}',
+                                              style: GoogleFonts.inter(
+                                                fontSize: 11,
+                                                fontStyle: FontStyle.italic,
+                                                color: isDark
+                                                    ? const Color(0xFFCBD5E1)
+                                                    : const Color(0xFF475569),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: const Text('Cerrar'),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton.icon(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _openReassignDialog(context, a);
+                    },
+                    icon: const Icon(Icons.swap_horiz, size: 16),
+                    label: const Text('Rotar a Nuevo Destino'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _openReassignDialog(BuildContext context, RrhhAssignment a) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Construir lista única de horarios disponibles
+    // Horarios disponibles
     final availableScheduleNames = <String>{};
     for (final s in _stateService.schedules) {
       availableScheduleNames.add('${s.name} (${s.formattedTimeRange})');
     }
-
-    // Resolver initialValue garantizando que exista exactamente en items
-    String initialSchedule;
-    if (availableScheduleNames.contains(a.scheduleName)) {
-      initialSchedule = a.scheduleName;
-    } else {
-      final match = _stateService.schedules.where(
-        (s) => s.name == a.scheduleName || a.scheduleName.startsWith(s.name),
-      );
-      if (match.isNotEmpty) {
-        initialSchedule =
-            '${match.first.name} (${match.first.formattedTimeRange})';
-      } else if (a.scheduleName.isNotEmpty) {
-        availableScheduleNames.add(a.scheduleName);
-        initialSchedule = a.scheduleName;
-      } else if (availableScheduleNames.isNotEmpty) {
-        initialSchedule = availableScheduleNames.first;
-      } else {
-        initialSchedule = 'Administrativo Central (08:30 - 17:30)';
-        availableScheduleNames.add(initialSchedule);
+    String currentSchedule = availableScheduleNames.isNotEmpty
+        ? availableScheduleNames.first
+        : 'Administrativo Central (08:30 - 17:30)';
+    for (final name in availableScheduleNames) {
+      if (name.contains(a.scheduleName) || a.scheduleName.contains(name)) {
+        currentSchedule = name;
+        break;
       }
     }
 
-    String currentSchedule = initialSchedule;
+    // Tipo de destino (OFICINA o CAMPO)
+    String selectedType = a.type;
+
+    // Si es campo: selección de cliente y servicio/sede
+    final clients = _stateService.clientCompanies;
+    RrhhClientCompany? selectedClient = clients.isNotEmpty
+        ? clients.first
+        : null;
+    if (a.clientCompanyId != null) {
+      final match = clients.where(
+        (c) => c.id == a.clientCompanyId || c.name == a.clientCompanyName,
+      );
+      if (match.isNotEmpty) selectedClient = match.first;
+    }
+
+    RrhhClientContractedService? selectedService;
+    if (selectedClient != null && selectedClient.services.isNotEmpty) {
+      selectedService = selectedClient.services.first;
+      if (a.contractedServiceName != null) {
+        final matchSvc = selectedClient.services.where(
+          (s) => s.serviceName == a.contractedServiceName,
+        );
+        if (matchSvc.isNotEmpty) selectedService = matchSvc.first;
+      }
+    }
+
+    // Si es oficina: selección de área y cargo
+    final areas = _stateService.areas;
+    String selectedArea = areas.isNotEmpty ? areas.first.name : 'Operaciones';
+    if (a.officeArea != null && areas.any((ar) => ar.name == a.officeArea)) {
+      selectedArea = a.officeArea!;
+    }
+    final positionCtrl = TextEditingController(
+      text: a.officeRole ?? 'Operativo',
+    );
+
     final supervisorCtrl = TextEditingController(text: a.supervisorName);
+    final reasonCtrl = TextEditingController();
+    final notesCtrl = TextEditingController();
+
+    const quickReasons = [
+      'Rotación periódica por política preventiva',
+      'Cobertura temporal por baja o vacaciones',
+      'Refuerzo operativo por alta demanda',
+      'Solicitud formal del cliente',
+      'Reorganización de cuadrilla de campo',
+      'Ascenso o traslado de área',
+    ];
+    String selectedQuickReason = quickReasons.first;
 
     showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDlgState) => AlertDialog(
           backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
-          title: Text(
-            'Reasignar Horario y Supervisor',
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: isDark ? Colors.white : const Color(0xFF0F172A),
-            ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.swap_horiz,
+                  color: Color(0xFF10B981),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Rotar Personal a Nuevo Destino',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      ),
+                    ),
+                    Text(
+                      '${a.employeeName} (${a.employeeCode})',
+                      style: GoogleFonts.inter(
+                        fontSize: 12.5,
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
           content: SizedBox(
-            width: 400,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Colaborador: ${a.employeeName}',
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                DropdownButtonFormField<String>(
-                  initialValue: currentSchedule,
-                  decoration: const InputDecoration(labelText: 'Nuevo Horario'),
-                  items: availableScheduleNames
-                      .map(
-                        (name) => DropdownMenuItem(
-                          value: name,
-                          child: Text(name),
+            width: 520,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Cuadro destacado de Destino Actual (Desde dónde rota)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF0B1324)
+                          : const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFE2E8F0),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.pin_drop,
+                              size: 14,
+                              color: Color(0xFF3B82F6),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'PUNTO DE ORIGEN ACTUAL (Desde dónde rota):',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF3B82F6),
+                              ),
+                            ),
+                          ],
                         ),
-                      )
-                      .toList(),
-                  onChanged: (val) {
-                    if (val != null) setDlgState(() => currentSchedule = val);
-                  },
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: supervisorCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Supervisor Asignado',
+                        const SizedBox(height: 6),
+                        Text(
+                          a.fullDestinationSummary,
+                          style: GoogleFonts.inter(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Horario: ${a.scheduleName}  •  Supervisor: ${a.supervisorName}',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: isDark
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+
+                  // Selector de Tipo de Destino (Campo u Oficina)
+                  Text(
+                    'Nuevo Destino',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SegmentedButton<String>(
+                    segments: const [
+                      ButtonSegment(
+                        value: 'CAMPO',
+                        label: Text('Empresa Cliente (Campo)'),
+                        icon: Icon(Icons.location_city, size: 16),
+                      ),
+                      ButtonSegment(
+                        value: 'OFICINA',
+                        label: Text('Oficina Central'),
+                        icon: Icon(Icons.business, size: 16),
+                      ),
+                    ],
+                    selected: {selectedType},
+                    onSelectionChanged: (val) {
+                      setDlgState(() {
+                        selectedType = val.first;
+                        if (selectedType == 'OFICINA') {
+                          supervisorCtrl.text = 'Gerencia General';
+                        } else if (selectedService != null) {
+                          supervisorCtrl.text = 'Ricardo Montaño Justiniano';
+                        }
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 14),
+
+                  if (selectedType == 'CAMPO') ...[
+                    // Dropdown de Empresa Cliente
+                    DropdownButtonFormField<RrhhClientCompany>(
+                      initialValue: selectedClient,
+                      decoration: const InputDecoration(
+                        labelText: 'Empresa Cliente Destino *',
+                      ),
+                      items: clients
+                          .map(
+                            (c) => DropdownMenuItem(
+                              value: c,
+                              child: Text(c.name),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (c) {
+                        setDlgState(() {
+                          selectedClient = c;
+                          if (c != null && c.services.isNotEmpty) {
+                            selectedService = c.services.first;
+                          } else {
+                            selectedService = null;
+                          }
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    if (selectedClient != null &&
+                        selectedClient!.services.isNotEmpty)
+                      DropdownButtonFormField<RrhhClientContractedService>(
+                        initialValue: selectedService,
+                        decoration: const InputDecoration(
+                          labelText: 'Servicio Contratado y Sede *',
+                        ),
+                        items: selectedClient!.services
+                            .map(
+                              (s) => DropdownMenuItem(
+                                value: s,
+                                child: Text(
+                                  '${s.serviceName} (${s.branchLocation})',
+                                ),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (s) {
+                          setDlgState(() => selectedService = s);
+                        },
+                      ),
+                  ] else ...[
+                    // Dropdown de Área de Oficina
+                    DropdownButtonFormField<String>(
+                      initialValue: selectedArea,
+                      decoration: const InputDecoration(
+                        labelText: 'Área en Oficina Central *',
+                      ),
+                      items: areas
+                          .map(
+                            (ar) => DropdownMenuItem(
+                              value: ar.name,
+                              child: Text(ar.name),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          setDlgState(() => selectedArea = val);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: positionCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Cargo o Rol *',
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 12),
+
+                  // Nuevo Horario
+                  DropdownButtonFormField<String>(
+                    initialValue: currentSchedule,
+                    decoration: const InputDecoration(
+                      labelText: 'Horario / Turno Asignado *',
+                    ),
+                    items: availableScheduleNames
+                        .map(
+                          (name) => DropdownMenuItem(
+                            value: name,
+                            child: Text(name),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (val) {
+                      if (val != null) {
+                        setDlgState(() => currentSchedule = val);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Supervisor Asignado
+                  TextField(
+                    controller: supervisorCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Supervisor Inmediato *',
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Motivo de la Rotación
+                  Text(
+                    'Motivo de la Rotación',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    initialValue: selectedQuickReason,
+                    decoration: const InputDecoration(
+                      labelText: 'Causal de Rotación *',
+                    ),
+                    items: quickReasons
+                        .map(
+                          (r) => DropdownMenuItem(value: r, child: Text(r)),
+                        )
+                        .toList(),
+                    onChanged: (val) {
+                      if (val != null) {
+                        setDlgState(() => selectedQuickReason = val);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: reasonCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Detalle o Justificación Adicional (opcional)',
+                      hintText:
+                          'Ej: Reemplazo por baja médica de 3 semanas en sede Equipetrol...',
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           actions: [
@@ -860,31 +1675,60 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
               onPressed: () => Navigator.pop(ctx),
               child: const Text('Cancelar'),
             ),
-            FilledButton(
+            FilledButton.icon(
+              icon: const Icon(Icons.check, size: 16),
+              label: const Text('Confirmar Rotación y Guardar'),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFF10B981),
+                foregroundColor: Colors.white,
+              ),
               onPressed: () {
-                _stateService.assignEmployee(
+                final fullReason = reasonCtrl.text.trim().isNotEmpty
+                    ? '$selectedQuickReason: ${reasonCtrl.text.trim()}'
+                    : selectedQuickReason;
+
+                _stateService.rotateEmployee(
                   employeeId: a.employeeId,
                   employeeName: a.employeeName,
                   employeeCode: a.employeeCode,
-                  type: a.type,
-                  clientCompanyId: a.clientCompanyId,
-                  clientCompanyName: a.clientCompanyName,
-                  contractedServiceName: a.contractedServiceName,
-                  officeArea: a.officeArea,
-                  officeRole: a.officeRole,
-                  workplaceBranch: a.workplaceBranch,
+                  type: selectedType,
+                  clientCompanyId: selectedType == 'CAMPO'
+                      ? selectedClient?.id
+                      : null,
+                  clientCompanyName: selectedType == 'CAMPO'
+                      ? selectedClient?.name
+                      : null,
+                  contractedServiceId: selectedType == 'CAMPO'
+                      ? selectedService?.id
+                      : null,
+                  contractedServiceName: selectedType == 'CAMPO'
+                      ? selectedService?.serviceName
+                      : null,
+                  workplaceBranch: selectedType == 'CAMPO'
+                      ? selectedService?.branchLocation
+                      : 'Oficina Central',
+                  officeArea: selectedType == 'OFICINA' ? selectedArea : null,
+                  officeRole: selectedType == 'OFICINA'
+                      ? positionCtrl.text.trim()
+                      : null,
                   scheduleName: currentSchedule,
                   supervisorName: supervisorCtrl.text.trim(),
+                  rotationReason: fullReason,
+                  notes: notesCtrl.text.trim().isNotEmpty
+                      ? notesCtrl.text.trim()
+                      : null,
                 );
+
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Reasignación guardada exitosamente.'),
-                    backgroundColor: Color(0xFF10B981),
+                  SnackBar(
+                    content: Text(
+                      'Rotación registrada para ${a.employeeName}. Se conservó el origen en el historial.',
+                    ),
+                    backgroundColor: const Color(0xFF10B981),
                   ),
                 );
               },
-              child: const Text('Confirmar Reasignación'),
             ),
           ],
         ),
