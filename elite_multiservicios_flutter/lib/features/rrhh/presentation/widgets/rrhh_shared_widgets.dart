@@ -389,10 +389,10 @@ class RrhhEmptyState extends StatelessWidget {
   }
 }
 
-/// Selector interactivo con buscador integrado en el menú (estilo Notion / Slack / Linear).
-/// El campo principal se mantiene limpio y elegante; al abrirlo se despliega un panel
-/// con barra de búsqueda dedicada en la cabecera para filtrar instantáneamente en tiempo real.
-class RrhhSearchableSelector<T extends Object> extends StatelessWidget {
+/// Selector desplegable directo (1 solo paso) con barra de búsqueda compacta integrada.
+/// Sin abrir ventanas ni modales adicionales: el menú se despliega directamente debajo
+/// del campo con un buscador rápido y selección en 1 solo clic.
+class RrhhSearchableSelector<T extends Object> extends StatefulWidget {
   final String label;
   final String hintText;
   final T? initialValue;
@@ -417,520 +417,379 @@ class RrhhSearchableSelector<T extends Object> extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final hasValue = initialValue != null;
-    final displayLabel = hasValue ? itemLabel(initialValue!) : hintText;
-    final displaySubtitle = hasValue ? itemSubtitle?.call(initialValue!) : null;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        InkWell(
-          borderRadius: BorderRadius.circular(8),
-          onTap: () => _openSearchPicker(context),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF0F172A) : Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: hasValue
-                    ? (isDark
-                          ? const Color(0xFF3B82F6).withValues(alpha: 0.4)
-                          : const Color(0xFF93C5FD))
-                    : (isDark
-                          ? const Color(0xFF334155)
-                          : const Color(0xFFCBD5E1)),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  prefixIcon ??
-                      (hasValue ? Icons.check_circle_outline : Icons.search),
-                  size: 17,
-                  color: hasValue
-                      ? const Color(0xFF3B82F6)
-                      : (isDark
-                            ? const Color(0xFF94A3B8)
-                            : const Color(0xFF64748B)),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        label,
-                        style: GoogleFonts.inter(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w600,
-                          color: isDark
-                              ? const Color(0xFF94A3B8)
-                              : const Color(0xFF64748B),
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        displayLabel,
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: hasValue
-                              ? FontWeight.w600
-                              : FontWeight.w400,
-                          color: hasValue
-                              ? (isDark
-                                    ? Colors.white
-                                    : const Color(0xFF0F172A))
-                              : (isDark
-                                    ? const Color(0xFF64748B)
-                                    : const Color(0xFF94A3B8)),
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (displaySubtitle != null &&
-                          displaySubtitle.isNotEmpty) ...[
-                        const SizedBox(height: 1),
-                        Text(
-                          displaySubtitle,
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            color: const Color(0xFF3B82F6),
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 7,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF1E293B)
-                        : const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Buscar',
-                        style: GoogleFonts.inter(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w500,
-                          color: isDark
-                              ? const Color(0xFF94A3B8)
-                              : const Color(0xFF64748B),
-                        ),
-                      ),
-                      const SizedBox(width: 3),
-                      Icon(
-                        Icons.unfold_more,
-                        size: 13,
-                        color: isDark
-                            ? const Color(0xFF94A3B8)
-                            : const Color(0xFF64748B),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _openSearchPicker(BuildContext context) async {
-    final selected = await showDialog<T>(
-      context: context,
-      barrierColor: Colors.black54,
-      builder: (ctx) => _RrhhSearchPickerModal<T>(
-        title: label,
-        initialValue: initialValue,
-        items: items,
-        itemLabel: itemLabel,
-        itemSubtitle: itemSubtitle,
-        prefixIcon: prefixIcon,
-      ),
-    );
-
-    if (selected != null) {
-      onChanged(selected);
-    }
-  }
+  State<RrhhSearchableSelector<T>> createState() =>
+      _RrhhSearchableSelectorState<T>();
 }
 
-class _RrhhSearchPickerModal<T extends Object> extends StatefulWidget {
-  final String title;
-  final T? initialValue;
-  final List<T> items;
-  final String Function(T item) itemLabel;
-  final String? Function(T item)? itemSubtitle;
-  final IconData? prefixIcon;
-
-  const _RrhhSearchPickerModal({
-    required this.title,
-    required this.initialValue,
-    required this.items,
-    required this.itemLabel,
-    this.itemSubtitle,
-    this.prefixIcon,
-  });
-
-  @override
-  State<_RrhhSearchPickerModal<T>> createState() =>
-      _RrhhSearchPickerModalState<T>();
-}
-
-class _RrhhSearchPickerModalState<T extends Object>
-    extends State<_RrhhSearchPickerModal<T>> {
-  late TextEditingController _searchCtrl;
-  String _query = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _searchCtrl = TextEditingController();
-  }
+class _RrhhSearchableSelectorState<T extends Object>
+    extends State<RrhhSearchableSelector<T>> {
+  final LayerLink _layerLink = LayerLink();
+  final GlobalKey _triggerKey = GlobalKey();
+  OverlayEntry? _overlayEntry;
+  bool _isOpen = false;
+  String _searchQuery = '';
 
   @override
   void dispose() {
-    _searchCtrl.dispose();
+    _closeDropdown();
     super.dispose();
+  }
+
+  void _toggleDropdown() {
+    if (_isOpen) {
+      _closeDropdown();
+    } else {
+      _openDropdown();
+    }
+  }
+
+  void _closeDropdown() {
+    if (!_isOpen) return;
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    if (mounted) {
+      setState(() {
+        _isOpen = false;
+        _searchQuery = '';
+      });
+    }
+  }
+
+  void _openDropdown() {
+    final renderBox =
+        _triggerKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    final size = renderBox.size;
+
+    _overlayEntry = _createOverlayEntry(size);
+    Overlay.of(context).insert(_overlayEntry!);
+    setState(() => _isOpen = true);
+  }
+
+  OverlayEntry _createOverlayEntry(Size triggerSize) {
+    return OverlayEntry(
+      builder: (ctx) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+
+        return Stack(
+          children: [
+            // Barrera transparente para cerrar al hacer clic afuera
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: _closeDropdown,
+              ),
+            ),
+            CompositedTransformFollower(
+              link: _layerLink,
+              showWhenUnlinked: false,
+              offset: Offset(0, triggerSize.height + 4),
+              child: StatefulBuilder(
+                builder: (context, setOverlayState) {
+                  final query = _searchQuery.trim().toLowerCase();
+                  final filtered = widget.items.where((item) {
+                    if (query.isEmpty) return true;
+                    final label = widget.itemLabel(item).toLowerCase();
+                    final subtitle =
+                        widget.itemSubtitle?.call(item)?.toLowerCase() ?? '';
+                    return label.contains(query) || subtitle.contains(query);
+                  }).toList();
+
+                  return Material(
+                    elevation: 14,
+                    borderRadius: BorderRadius.circular(8),
+                    color: isDark ? const Color(0xFF0F172A) : Colors.white,
+                    child: Container(
+                      width: triggerSize.width,
+                      constraints: const BoxConstraints(maxHeight: 220),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFCBD5E1),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.28),
+                            blurRadius: 18,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Buscador pequeño integrado arriba
+                          Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Container(
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? const Color(0xFF0B1324)
+                                    : const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: isDark
+                                      ? const Color(0xFF334155)
+                                      : const Color(0xFFCBD5E1),
+                                ),
+                              ),
+                              child: TextField(
+                                autofocus: true,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12.5,
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: 'Buscar o escribir...',
+                                  hintStyle: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: isDark
+                                        ? const Color(0xFF64748B)
+                                        : const Color(0xFF94A3B8),
+                                  ),
+                                  prefixIcon: const Icon(
+                                    Icons.search,
+                                    size: 16,
+                                    color: Color(0xFF3B82F6),
+                                  ),
+                                  isDense: true,
+                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                    horizontal: 8,
+                                  ),
+                                ),
+                                onChanged: (val) {
+                                  setOverlayState(() => _searchQuery = val);
+                                },
+                              ),
+                            ),
+                          ),
+                          const Divider(height: 1),
+
+                          // Lista de opciones directa (1 solo clic para elegir)
+                          Flexible(
+                            child: filtered.isEmpty
+                                ? Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'Sin resultados',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: isDark
+                                            ? const Color(0xFF64748B)
+                                            : const Color(0xFF94A3B8),
+                                      ),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 4,
+                                    ),
+                                    shrinkWrap: true,
+                                    itemCount: filtered.length,
+                                    itemBuilder: (ctx, index) {
+                                      final item = filtered[index];
+                                      final label = widget.itemLabel(item);
+                                      final subtitle = widget.itemSubtitle
+                                          ?.call(item);
+                                      final isSelected =
+                                          widget.initialValue == item;
+
+                                      return InkWell(
+                                        onTap: () {
+                                          widget.onChanged(item);
+                                          _closeDropdown();
+                                        },
+                                        hoverColor: isDark
+                                            ? const Color(0xFF1E293B)
+                                            : const Color(0xFFF1F5F9),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 8,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                isSelected
+                                                    ? Icons.check_circle
+                                                    : (widget.prefixIcon ??
+                                                          Icons.chevron_right),
+                                                size: 15,
+                                                color: isSelected
+                                                    ? const Color(0xFF10B981)
+                                                    : (isDark
+                                                          ? const Color(
+                                                              0xFF64748B,
+                                                            )
+                                                          : const Color(
+                                                              0xFF94A3B8,
+                                                            )),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Text(
+                                                      label,
+                                                      style: GoogleFonts.inter(
+                                                        fontSize: 12.5,
+                                                        fontWeight: isSelected
+                                                            ? FontWeight.w600
+                                                            : FontWeight.w400,
+                                                        color: isDark
+                                                            ? Colors.white
+                                                            : const Color(
+                                                                0xFF0F172A,
+                                                              ),
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    if (subtitle != null &&
+                                                        subtitle
+                                                            .isNotEmpty) ...[
+                                                      const SizedBox(height: 1),
+                                                      Text(
+                                                        subtitle,
+                                                        style: GoogleFonts.inter(
+                                                          fontSize: 10.5,
+                                                          color: isDark
+                                                              ? const Color(
+                                                                  0xFF94A3B8,
+                                                                )
+                                                              : const Color(
+                                                                  0xFF64748B,
+                                                                ),
+                                                        ),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ],
+                                                  ],
+                                                ),
+                                              ),
+                                              if (isSelected)
+                                                const Icon(
+                                                  Icons.check,
+                                                  size: 14,
+                                                  color: Color(0xFF10B981),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final normalizedQuery = _query.trim().toLowerCase();
+    final hasValue = widget.initialValue != null;
+    final displayLabel = hasValue
+        ? widget.itemLabel(widget.initialValue!)
+        : widget.hintText;
 
-    final filtered = widget.items.where((item) {
-      if (normalizedQuery.isEmpty) return true;
-      final label = widget.itemLabel(item).toLowerCase();
-      final subtitle = widget.itemSubtitle?.call(item)?.toLowerCase() ?? '';
-      return label.contains(normalizedQuery) ||
-          subtitle.contains(normalizedQuery);
-    }).toList();
-
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 480, maxHeight: 460),
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: InkWell(
+        key: _triggerKey,
+        borderRadius: BorderRadius.circular(8),
+        onTap: _toggleDropdown,
         child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: isDark ? const Color(0xFF0F172A) : Colors.white,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+              color: _isOpen
+                  ? const Color(0xFF3B82F6)
+                  : (hasValue
+                        ? (isDark
+                              ? const Color(0xFF3B82F6).withValues(alpha: 0.4)
+                              : const Color(0xFF93C5FD))
+                        : (isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFCBD5E1))),
+              width: _isOpen ? 1.5 : 1,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.35),
-                blurRadius: 28,
-                offset: const Offset(0, 10),
-              ),
-            ],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Row(
             children: [
-              // Cabecera con Título y Botón Cerrar
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 12, 10),
-                child: Row(
-                  children: [
-                    Icon(
-                      widget.prefixIcon ?? Icons.manage_search,
-                      size: 18,
-                      color: const Color(0xFF3B82F6),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        widget.title,
-                        style: GoogleFonts.inter(
-                          fontSize: 14.5,
-                          fontWeight: FontWeight.w700,
-                          color: isDark
-                              ? Colors.white
-                              : const Color(0xFF0F172A),
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 18),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 32,
-                        minHeight: 32,
-                      ),
-                      tooltip: 'Cerrar',
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
+              Icon(
+                widget.prefixIcon ??
+                    (hasValue ? Icons.check_circle_outline : Icons.search),
+                size: 17,
+                color: hasValue
+                    ? const Color(0xFF3B82F6)
+                    : (isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B)),
               ),
-
-              // Barra de Búsqueda Integrada tipo Google (Notion/Slack style)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF0B1324)
-                        : const Color(0xFFF8FAFC),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: isDark
-                          ? const Color(0xFF334155)
-                          : const Color(0xFFCBD5E1),
-                    ),
-                  ),
-                  child: TextField(
-                    controller: _searchCtrl,
-                    autofocus: true,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Escribe para buscar instantáneamente...',
-                      hintStyle: GoogleFonts.inter(
-                        fontSize: 12.5,
-                        color: isDark
-                            ? const Color(0xFF64748B)
-                            : const Color(0xFF94A3B8),
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.search,
-                        size: 18,
-                        color: Color(0xFF3B82F6),
-                      ),
-                      suffixIcon: _query.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear, size: 16),
-                              onPressed: () {
-                                _searchCtrl.clear();
-                                setState(() => _query = '');
-                              },
-                            )
-                          : null,
-                      isDense: true,
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 12,
-                      ),
-                    ),
-                    onChanged: (val) => setState(() => _query = val),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              // Barra de conteo de coincidencias
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Opciones encontradas (${filtered.length})',
+                      widget.label,
                       style: GoogleFonts.inter(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w600,
                         color: isDark
                             ? const Color(0xFF94A3B8)
                             : const Color(0xFF64748B),
                       ),
                     ),
-                    if (_query.isNotEmpty)
-                      Text(
-                        'Filtrado por: "$_query"',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          color: const Color(0xFF3B82F6),
-                          fontWeight: FontWeight.w500,
-                        ),
+                    const SizedBox(height: 2),
+                    Text(
+                      displayLabel,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: hasValue
+                            ? FontWeight.w600
+                            : FontWeight.w400,
+                        color: hasValue
+                            ? (isDark ? Colors.white : const Color(0xFF0F172A))
+                            : (isDark
+                                  ? const Color(0xFF64748B)
+                                  : const Color(0xFF94A3B8)),
                       ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 6),
-              const Divider(height: 1),
-
-              // Lista de Opciones Filtradas con Hover y Microinteracciones
-              Flexible(
-                child: filtered.isEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 36,
-                          horizontal: 20,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.search_off,
-                              size: 32,
-                              color: isDark
-                                  ? const Color(0xFF475569)
-                                  : const Color(0xFF94A3B8),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'No se encontraron coincidencias',
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: isDark
-                                    ? Colors.white
-                                    : const Color(0xFF0F172A),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Prueba buscando con otro término o palabra clave.',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                fontSize: 11.5,
-                                color: isDark
-                                    ? const Color(0xFF94A3B8)
-                                    : const Color(0xFF64748B),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 6,
-                          horizontal: 8,
-                        ),
-                        shrinkWrap: true,
-                        itemCount: filtered.length,
-                        separatorBuilder: (ctx, idx) =>
-                            const SizedBox(height: 2),
-                        itemBuilder: (ctx, index) {
-                          final item = filtered[index];
-                          final label = widget.itemLabel(item);
-                          final subtitle = widget.itemSubtitle?.call(item);
-                          final isSelected = widget.initialValue == item;
-
-                          return Material(
-                            color: isSelected
-                                ? (isDark
-                                      ? const Color(0xFF1E293B)
-                                      : const Color(0xFFEFF6FF))
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(6),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(6),
-                              hoverColor: isDark
-                                  ? const Color(
-                                      0xFF1E293B,
-                                    ).withValues(alpha: 0.6)
-                                  : const Color(0xFFF1F5F9),
-                              onTap: () => Navigator.pop(context, item),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 8,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      isSelected
-                                          ? Icons.check_circle
-                                          : (widget.prefixIcon ??
-                                                Icons.chevron_right),
-                                      size: 16,
-                                      color: isSelected
-                                          ? const Color(0xFF10B981)
-                                          : (isDark
-                                                ? const Color(0xFF64748B)
-                                                : const Color(0xFF94A3B8)),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            label,
-                                            style: GoogleFonts.inter(
-                                              fontSize: 12.5,
-                                              fontWeight: isSelected
-                                                  ? FontWeight.w600
-                                                  : FontWeight.w500,
-                                              color: isDark
-                                                  ? Colors.white
-                                                  : const Color(0xFF0F172A),
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          if (subtitle != null &&
-                                              subtitle.isNotEmpty) ...[
-                                            const SizedBox(height: 1),
-                                            Text(
-                                              subtitle,
-                                              style: GoogleFonts.inter(
-                                                fontSize: 11,
-                                                color: isDark
-                                                    ? const Color(0xFF94A3B8)
-                                                    : const Color(0xFF64748B),
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
-                                    if (isSelected)
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 6,
-                                          vertical: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: const Color(
-                                            0xFF10B981,
-                                          ).withValues(alpha: 0.15),
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          'Seleccionado',
-                                          style: GoogleFonts.inter(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w600,
-                                            color: const Color(0xFF10B981),
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+              Icon(
+                _isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                size: 18,
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ],
           ),
