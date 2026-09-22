@@ -44,40 +44,39 @@ import 'modules/security/models/mfa_challenge.dart' as _i28;
 import 'modules/security/models/mfa_challenge_response.dart' as _i29;
 import 'modules/security/models/mfa_verify_response.dart' as _i30;
 import 'modules/security/models/role_permission.dart' as _i31;
-import 'modules/security/models/server_metrics_response.dart' as _i32;
-import 'modules/security/models/trusted_device.dart' as _i33;
-import 'modules/security/models/user_role.dart' as _i34;
-import 'modules/security/models/user_session.dart' as _i35;
+import 'modules/security/models/trusted_device.dart' as _i32;
+import 'modules/security/models/user_role.dart' as _i33;
+import 'modules/security/models/user_session.dart' as _i34;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_task.dart'
-    as _i36;
+    as _i35;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
-    as _i37;
+    as _i36;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
-    as _i38;
+    as _i37;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
-    as _i39;
+    as _i38;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
-    as _i40;
+    as _i39;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
-    as _i41;
+    as _i40;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
-    as _i42;
+    as _i41;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
-    as _i43;
+    as _i42;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
-    as _i44;
+    as _i43;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
-    as _i45;
+    as _i44;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
-    as _i46;
+    as _i45;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
-    as _i47;
+    as _i46;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
-    as _i48;
+    as _i47;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
-    as _i49;
+    as _i48;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
-    as _i50;
+    as _i49;
 export 'greetings/greeting.dart';
 export 'modules/crm/models/crm_agenda_metrics_response.dart';
 export 'modules/crm/models/crm_catalog_item.dart';
@@ -105,7 +104,6 @@ export 'modules/security/models/mfa_challenge.dart';
 export 'modules/security/models/mfa_challenge_response.dart';
 export 'modules/security/models/mfa_verify_response.dart';
 export 'modules/security/models/role_permission.dart';
-export 'modules/security/models/server_metrics_response.dart';
 export 'modules/security/models/trusted_device.dart';
 export 'modules/security/models/user_role.dart';
 export 'modules/security/models/user_session.dart';
@@ -849,6 +847,12 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'int',
         ),
         _i2.ColumnDefinition(
+          name: 'catalogItemId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
           name: 'description',
           columnType: _i2.ColumnType.text,
           isNullable: false,
@@ -925,6 +929,19 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'contractId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'crm_contract_budget_item_catalog_item_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'catalogItemId',
             ),
           ],
           type: 'btree',
@@ -1303,6 +1320,32 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'String',
         ),
         _i2.ColumnDefinition(
+          name: 'serviceFrequency',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'Lunes a Viernes\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'scheduleHours',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'billingCycleDay',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+          columnDefault: '5',
+        ),
+        _i2.ColumnDefinition(
+          name: 'specificRequirements',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
           name: 'totalAmount',
           columnType: _i2.ColumnType.doublePrecision,
           isNullable: false,
@@ -1540,6 +1583,19 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'String',
         ),
         _i2.ColumnDefinition(
+          name: 'origin',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'Google Maps\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'requestedService',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
           name: 'companyUrl',
           columnType: _i2.ColumnType.text,
           isNullable: true,
@@ -1676,6 +1732,19 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
         _i2.IndexDefinition(
+          indexName: 'crm_lead_origin_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'origin',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
           indexName: 'crm_lead_status_idx',
           tableSpace: null,
           elements: [
@@ -1809,6 +1878,32 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
           dartType: 'String',
           columnDefault: '\'Recurrente Mensual\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'serviceFrequency',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'Lunes a Viernes\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'scheduleHours',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'billingCycleDay',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+          columnDefault: '5',
+        ),
+        _i2.ColumnDefinition(
+          name: 'specificRequirements',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
         ),
         _i2.ColumnDefinition(
           name: 'executionTime',
@@ -3306,17 +3401,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i31.RolePermission) {
       return _i31.RolePermission.fromJson(data) as T;
     }
-    if (t == _i32.ServerMetricsResponse) {
-      return _i32.ServerMetricsResponse.fromJson(data) as T;
+    if (t == _i32.TrustedDevice) {
+      return _i32.TrustedDevice.fromJson(data) as T;
     }
-    if (t == _i33.TrustedDevice) {
-      return _i33.TrustedDevice.fromJson(data) as T;
+    if (t == _i33.UserRole) {
+      return _i33.UserRole.fromJson(data) as T;
     }
-    if (t == _i34.UserRole) {
-      return _i34.UserRole.fromJson(data) as T;
-    }
-    if (t == _i35.UserSession) {
-      return _i35.UserSession.fromJson(data) as T;
+    if (t == _i34.UserSession) {
+      return _i34.UserSession.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.Greeting?>()) {
       return (data != null ? _i5.Greeting.fromJson(data) : null) as T;
@@ -3415,18 +3507,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i31.RolePermission?>()) {
       return (data != null ? _i31.RolePermission.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i32.ServerMetricsResponse?>()) {
-      return (data != null ? _i32.ServerMetricsResponse.fromJson(data) : null)
-          as T;
+    if (t == _i1.getType<_i32.TrustedDevice?>()) {
+      return (data != null ? _i32.TrustedDevice.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i33.TrustedDevice?>()) {
-      return (data != null ? _i33.TrustedDevice.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i33.UserRole?>()) {
+      return (data != null ? _i33.UserRole.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i34.UserRole?>()) {
-      return (data != null ? _i34.UserRole.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i35.UserSession?>()) {
-      return (data != null ? _i35.UserSession.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i34.UserSession?>()) {
+      return (data != null ? _i34.UserSession.fromJson(data) : null) as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
@@ -3453,87 +3541,87 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List).map((e) => deserialize<_i26.AuditLog>(e)).toList()
           as T;
     }
-    if (t == List<_i36.CrmTask>) {
-      return (data as List).map((e) => deserialize<_i36.CrmTask>(e)).toList()
+    if (t == List<_i35.CrmTask>) {
+      return (data as List).map((e) => deserialize<_i35.CrmTask>(e)).toList()
           as T;
     }
-    if (t == List<_i37.CrmSector>) {
-      return (data as List).map((e) => deserialize<_i37.CrmSector>(e)).toList()
+    if (t == List<_i36.CrmSector>) {
+      return (data as List).map((e) => deserialize<_i36.CrmSector>(e)).toList()
           as T;
     }
-    if (t == List<_i38.CrmServiceLine>) {
+    if (t == List<_i37.CrmServiceLine>) {
       return (data as List)
-              .map((e) => deserialize<_i38.CrmServiceLine>(e))
+              .map((e) => deserialize<_i37.CrmServiceLine>(e))
               .toList()
           as T;
     }
-    if (t == List<_i39.CrmCatalogItem>) {
+    if (t == List<_i38.CrmCatalogItem>) {
       return (data as List)
-              .map((e) => deserialize<_i39.CrmCatalogItem>(e))
+              .map((e) => deserialize<_i38.CrmCatalogItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i40.CrmCatalogItemScope>) {
+    if (t == List<_i39.CrmCatalogItemScope>) {
       return (data as List)
-              .map((e) => deserialize<_i40.CrmCatalogItemScope>(e))
+              .map((e) => deserialize<_i39.CrmCatalogItemScope>(e))
               .toList()
           as T;
     }
-    if (t == List<_i41.CrmCustomer>) {
+    if (t == List<_i40.CrmCustomer>) {
       return (data as List)
-              .map((e) => deserialize<_i41.CrmCustomer>(e))
+              .map((e) => deserialize<_i40.CrmCustomer>(e))
               .toList()
           as T;
     }
-    if (t == List<_i42.CrmContractBudgetItem>) {
+    if (t == List<_i41.CrmContractBudgetItem>) {
       return (data as List)
-              .map((e) => deserialize<_i42.CrmContractBudgetItem>(e))
+              .map((e) => deserialize<_i41.CrmContractBudgetItem>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i42.CrmContractBudgetItem>?>()) {
+    if (t == _i1.getType<List<_i41.CrmContractBudgetItem>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i42.CrmContractBudgetItem>(e))
+                    .map((e) => deserialize<_i41.CrmContractBudgetItem>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i43.CrmLead>) {
-      return (data as List).map((e) => deserialize<_i43.CrmLead>(e)).toList()
+    if (t == List<_i42.CrmLead>) {
+      return (data as List).map((e) => deserialize<_i42.CrmLead>(e)).toList()
           as T;
     }
-    if (t == List<_i44.CrmOpportunity>) {
+    if (t == List<_i43.CrmOpportunity>) {
       return (data as List)
-              .map((e) => deserialize<_i44.CrmOpportunity>(e))
+              .map((e) => deserialize<_i43.CrmOpportunity>(e))
               .toList()
           as T;
     }
-    if (t == List<_i45.CrmQuoteItem>) {
+    if (t == List<_i44.CrmQuoteItem>) {
       return (data as List)
-              .map((e) => deserialize<_i45.CrmQuoteItem>(e))
+              .map((e) => deserialize<_i44.CrmQuoteItem>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i45.CrmQuoteItem>?>()) {
+    if (t == _i1.getType<List<_i44.CrmQuoteItem>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i45.CrmQuoteItem>(e))
+                    .map((e) => deserialize<_i44.CrmQuoteItem>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i46.AuditLog>) {
-      return (data as List).map((e) => deserialize<_i46.AuditLog>(e)).toList()
+    if (t == List<_i45.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i45.AuditLog>(e)).toList()
           as T;
     }
-    if (t == List<_i47.AppRole>) {
-      return (data as List).map((e) => deserialize<_i47.AppRole>(e)).toList()
+    if (t == List<_i46.AppRole>) {
+      return (data as List).map((e) => deserialize<_i46.AppRole>(e)).toList()
           as T;
     }
-    if (t == List<_i48.AppPermission>) {
+    if (t == List<_i47.AppPermission>) {
       return (data as List)
-              .map((e) => deserialize<_i48.AppPermission>(e))
+              .map((e) => deserialize<_i47.AppPermission>(e))
               .toList()
           as T;
     }
@@ -3543,14 +3631,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
-    if (t == List<_i49.UserSession>) {
+    if (t == List<_i48.UserSession>) {
       return (data as List)
-              .map((e) => deserialize<_i49.UserSession>(e))
+              .map((e) => deserialize<_i48.UserSession>(e))
               .toList()
           as T;
     }
-    if (t == List<_i50.AppUser>) {
-      return (data as List).map((e) => deserialize<_i50.AppUser>(e)).toList()
+    if (t == List<_i49.AppUser>) {
+      return (data as List).map((e) => deserialize<_i49.AppUser>(e)).toList()
           as T;
     }
     try {
@@ -3594,10 +3682,9 @@ class Protocol extends _i1.SerializationManagerServer {
       _i29.MfaChallengeResponse => 'MfaChallengeResponse',
       _i30.MfaVerifyResponse => 'MfaVerifyResponse',
       _i31.RolePermission => 'RolePermission',
-      _i32.ServerMetricsResponse => 'ServerMetricsResponse',
-      _i33.TrustedDevice => 'TrustedDevice',
-      _i34.UserRole => 'UserRole',
-      _i35.UserSession => 'UserSession',
+      _i32.TrustedDevice => 'TrustedDevice',
+      _i33.UserRole => 'UserRole',
+      _i34.UserSession => 'UserSession',
       _ => null,
     };
   }
@@ -3669,13 +3756,11 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'MfaVerifyResponse';
       case _i31.RolePermission():
         return 'RolePermission';
-      case _i32.ServerMetricsResponse():
-        return 'ServerMetricsResponse';
-      case _i33.TrustedDevice():
+      case _i32.TrustedDevice():
         return 'TrustedDevice';
-      case _i34.UserRole():
+      case _i33.UserRole():
         return 'UserRole';
-      case _i35.UserSession():
+      case _i34.UserSession():
         return 'UserSession';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -3780,17 +3865,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'RolePermission') {
       return deserialize<_i31.RolePermission>(data['data']);
     }
-    if (dataClassName == 'ServerMetricsResponse') {
-      return deserialize<_i32.ServerMetricsResponse>(data['data']);
-    }
     if (dataClassName == 'TrustedDevice') {
-      return deserialize<_i33.TrustedDevice>(data['data']);
+      return deserialize<_i32.TrustedDevice>(data['data']);
     }
     if (dataClassName == 'UserRole') {
-      return deserialize<_i34.UserRole>(data['data']);
+      return deserialize<_i33.UserRole>(data['data']);
     }
     if (dataClassName == 'UserSession') {
-      return deserialize<_i35.UserSession>(data['data']);
+      return deserialize<_i34.UserSession>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -3864,12 +3946,12 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i28.MfaChallenge.t;
       case _i31.RolePermission:
         return _i31.RolePermission.t;
-      case _i33.TrustedDevice:
-        return _i33.TrustedDevice.t;
-      case _i34.UserRole:
-        return _i34.UserRole.t;
-      case _i35.UserSession:
-        return _i35.UserSession.t;
+      case _i32.TrustedDevice:
+        return _i32.TrustedDevice.t;
+      case _i33.UserRole:
+        return _i33.UserRole.t;
+      case _i34.UserSession:
+        return _i34.UserSession.t;
     }
     return null;
   }

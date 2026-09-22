@@ -103,8 +103,6 @@ sessionManagement:
   - revokeSession:
   - logout:
   - markMfaVerified:
-systemMetrics:
-  - getMetrics:
 user:
   - listUsers:
   - getUser:

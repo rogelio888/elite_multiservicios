@@ -4,6 +4,8 @@ table: crm_contract_budget_item
 fields:
   ### ID del contrato al que pertenece la partida.
   contractId: int, relation(parent=crm_customer_contract, onDelete=Cascade)
+  ### ID referencial de la partida en el catálogo maestro (service_id).
+  catalogItemId: int?
   ### Descripción detallada del ítem o servicio.
   description: String
   ### Cantidad requerida.
@@ -19,3 +21,5 @@ fields:
 indexes:
   crm_contract_budget_item_contract_idx:
     fields: contractId
+  crm_contract_budget_item_catalog_item_idx:
+    fields: catalogItemId

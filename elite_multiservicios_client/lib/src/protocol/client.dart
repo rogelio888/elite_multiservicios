@@ -71,11 +71,9 @@ import 'package:elite_multiservicios_client/src/protocol/modules/security/models
     as _i30;
 import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_session.dart'
     as _i31;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/server_metrics_response.dart'
-    as _i32;
 import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_user.dart'
-    as _i33;
-import 'protocol.dart' as _i34;
+    as _i32;
+import 'protocol.dart' as _i33;
 
 /// Endpoint de autenticación mediante correo y contraseña.
 /// Extiende [EmailIdpBaseEndpoint] para incorporar auditoría de login fallido
@@ -819,6 +817,8 @@ class EndpointCrmLeads extends _i2.EndpointRef {
     String? status,
     String? temperature,
     String? advisor,
+    String? origin,
+    String? requestedService,
   }) => caller.callServerEndpoint<List<_i18.CrmLead>>(
     'crmLeads',
     'listLeads',
@@ -830,6 +830,8 @@ class EndpointCrmLeads extends _i2.EndpointRef {
       'status': status,
       'temperature': temperature,
       'advisor': advisor,
+      'origin': origin,
+      'requestedService': requestedService,
     },
   );
 
@@ -1305,23 +1307,6 @@ class EndpointSessionManagement extends _i2.EndpointRef {
   );
 }
 
-/// Endpoint RPC para consulta de métricas de telemetría y salud del servidor.
-/// {@category Endpoint}
-class EndpointSystemMetrics extends _i2.EndpointRef {
-  EndpointSystemMetrics(_i2.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'systemMetrics';
-
-  /// Retorna las métricas del sistema en tiempo real. Requiere permiso `audit.view`.
-  _i3.Future<_i32.ServerMetricsResponse> getMetrics() =>
-      caller.callServerEndpoint<_i32.ServerMetricsResponse>(
-        'systemMetrics',
-        'getMetrics',
-        {},
-      );
-}
-
 /// Endpoint RPC para administración del ciclo de vida de usuarios.
 /// Protegido con autorización backend-first estricta.
 /// {@category Endpoint}
@@ -1332,11 +1317,11 @@ class EndpointUser extends _i2.EndpointRef {
   String get name => 'user';
 
   /// Lista usuarios paginados. Requiere permiso users.view.
-  _i3.Future<List<_i33.AppUser>> listUsers({
+  _i3.Future<List<_i32.AppUser>> listUsers({
     required int limit,
     required int offset,
     required bool includeDeleted,
-  }) => caller.callServerEndpoint<List<_i33.AppUser>>(
+  }) => caller.callServerEndpoint<List<_i32.AppUser>>(
     'user',
     'listUsers',
     {
@@ -1347,19 +1332,19 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Obtiene el detalle de un usuario por ID. Requiere permiso users.view.
-  _i3.Future<_i33.AppUser?> getUser(int id) =>
-      caller.callServerEndpoint<_i33.AppUser?>(
+  _i3.Future<_i32.AppUser?> getUser(int id) =>
+      caller.callServerEndpoint<_i32.AppUser?>(
         'user',
         'getUser',
         {'id': id},
       );
 
   /// Crea un nuevo usuario empresarial y le asocia sus roles iniciales. Requiere users.create.
-  _i3.Future<_i33.AppUser> createUser({
+  _i3.Future<_i32.AppUser> createUser({
     required String email,
     required String fullName,
     required List<int> roleIds,
-  }) => caller.callServerEndpoint<_i33.AppUser>(
+  }) => caller.callServerEndpoint<_i32.AppUser>(
     'user',
     'createUser',
     {
@@ -1370,10 +1355,10 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Actualiza información de un usuario. Requiere users.update.
-  _i3.Future<_i33.AppUser?> updateUser({
+  _i3.Future<_i32.AppUser?> updateUser({
     required int id,
     required String fullName,
-  }) => caller.callServerEndpoint<_i33.AppUser?>(
+  }) => caller.callServerEndpoint<_i32.AppUser?>(
     'user',
     'updateUser',
     {
@@ -1403,8 +1388,8 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Retorna el AppUser asociado a la sesión autenticada actual.
-  _i3.Future<_i33.AppUser> getCurrentUser() =>
-      caller.callServerEndpoint<_i33.AppUser>(
+  _i3.Future<_i32.AppUser> getCurrentUser() =>
+      caller.callServerEndpoint<_i32.AppUser>(
         'user',
         'getCurrentUser',
         {},
@@ -1455,7 +1440,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i34.Protocol(),
+         _i33.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -1476,7 +1461,6 @@ class Client extends _i2.ServerpodClientShared {
     mfa = EndpointMfa(this);
     rbac = EndpointRbac(this);
     sessionManagement = EndpointSessionManagement(this);
-    systemMetrics = EndpointSystemMetrics(this);
     user = EndpointUser(this);
     modules = Modules(this);
   }
@@ -1505,8 +1489,6 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointSessionManagement sessionManagement;
 
-  late final EndpointSystemMetrics systemMetrics;
-
   late final EndpointUser user;
 
   late final Modules modules;
@@ -1525,7 +1507,6 @@ class Client extends _i2.ServerpodClientShared {
     'mfa': mfa,
     'rbac': rbac,
     'sessionManagement': sessionManagement,
-    'systemMetrics': systemMetrics,
     'user': user,
   };
 

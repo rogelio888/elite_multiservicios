@@ -13,6 +13,8 @@ class LeadModel {
   final String company; // Nombre comercial de la empresa o edificio
   final String? companyUrl; // Enlace web o Google Maps asociado
   final String sector; // Rubro / Industria (Clínicas, Colegios, Banca, etc.)
+  final String origin; // Canal de captación (Google Maps, Web, Teléfono, etc.)
+  final String? requestedService; // Servicio solicitado / Línea de interés
   final String address; // Dirección física / Ubicación
   final String phone; // Teléfono(s) o WhatsApp
   final String? emailOrWeb; // Correo o enlace oficial
@@ -34,6 +36,8 @@ class LeadModel {
     required this.company,
     this.companyUrl,
     required this.sector,
+    this.origin = 'Google Maps',
+    this.requestedService,
     required this.address,
     required this.phone,
     this.emailOrWeb,
@@ -60,6 +64,8 @@ class LeadModel {
       company: lead.company,
       companyUrl: lead.companyUrl,
       sector: lead.sector,
+      origin: lead.origin,
+      requestedService: lead.requestedService,
       address: lead.address,
       phone: lead.phone,
       emailOrWeb: lead.emailOrWeb,
@@ -81,6 +87,8 @@ class LeadModel {
       company: company,
       companyUrl: companyUrl,
       sector: sector,
+      origin: origin,
+      requestedService: requestedService,
       advisor: advisor,
       address: address,
       phone: phone,
@@ -106,6 +114,8 @@ class LeadModel {
     String? company,
     String? companyUrl,
     String? sector,
+    String? origin,
+    String? requestedService,
     String? address,
     String? phone,
     String? emailOrWeb,
@@ -126,6 +136,8 @@ class LeadModel {
       company: company ?? this.company,
       companyUrl: companyUrl ?? this.companyUrl,
       sector: sector ?? this.sector,
+      origin: origin ?? this.origin,
+      requestedService: requestedService ?? this.requestedService,
       address: address ?? this.address,
       phone: phone ?? this.phone,
       emailOrWeb: emailOrWeb ?? this.emailOrWeb,

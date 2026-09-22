@@ -16,6 +16,8 @@ class CrmLeadDataService {
     String? status,
     String? temperature,
     String? advisor,
+    String? origin,
+    String? requestedService,
   }) async {
     return await CrmLead.db.find(
       session,
@@ -38,6 +40,14 @@ class CrmLeadDataService {
           filter = filter & t.advisor.equals(advisor);
         }
 
+        if (origin != null && origin != 'Todos') {
+          filter = filter & t.origin.equals(origin);
+        }
+
+        if (requestedService != null && requestedService != 'Todos') {
+          filter = filter & t.requestedService.ilike('%$requestedService%');
+        }
+
         if (search != null && search.trim().isNotEmpty) {
           final q = '%${search.trim()}%';
           final searchExpr =
@@ -45,6 +55,9 @@ class CrmLeadDataService {
               t.address.ilike(q) |
               t.phone.ilike(q) |
               t.contactPerson.ilike(q) |
+              t.origin.ilike(q) |
+              (t.requestedService.notEquals(null) &
+                  t.requestedService.ilike(q)) |
               t.code.ilike(q);
           filter = filter & searchExpr;
         }
