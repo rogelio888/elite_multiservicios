@@ -79,6 +79,11 @@ class OpportunityItem {
   final String
   contractType; // 'Proyecto Único', 'Recurrente Mensual', 'Servicio por Evento', 'Híbrido'
   final String
+  serviceFrequency; // 'Lunes a Viernes', 'Lunes a Sábado', '24/7 (Continuo)', 'Interdiario', 'Fin de Semana'
+  final String? scheduleHours; // Ej: '08:00 - 17:00' o 'Turno 24h rotativo'
+  final int? billingCycleDay; // Día de corte de facturación mensual (1 al 31)
+  final String? specificRequirements; // Requisitos operativos específicos
+  final String
   executionTime; // Ej: '7 días hábiles', 'Contrato 12 meses', '15 días + Abono'
   final String
   paymentTerms; // Ej: '50% Anticipo / 50% Recepción Conforme', 'Facturación mensual a 30 días'
@@ -128,6 +133,10 @@ class OpportunityItem {
     required this.closingDate,
     required this.notes,
     this.contractType = 'Recurrente Mensual',
+    this.serviceFrequency = 'Lunes a Viernes',
+    this.scheduleHours,
+    this.billingCycleDay = 5,
+    this.specificRequirements,
     this.executionTime = '12 meses',
     this.paymentTerms = 'Facturación mensual a 30 días',
     this.advancePercentage = 0,
@@ -159,6 +168,10 @@ class OpportunityItem {
     String? notes,
     double? amount,
     String? contractType,
+    String? serviceFrequency,
+    String? scheduleHours,
+    int? billingCycleDay,
+    String? specificRequirements,
     String? executionTime,
     String? paymentTerms,
     int? advancePercentage,
@@ -204,6 +217,10 @@ class OpportunityItem {
       closingDate: closingDate,
       notes: notes ?? this.notes,
       contractType: contractType ?? this.contractType,
+      serviceFrequency: serviceFrequency ?? this.serviceFrequency,
+      scheduleHours: scheduleHours ?? this.scheduleHours,
+      billingCycleDay: billingCycleDay ?? this.billingCycleDay,
+      specificRequirements: specificRequirements ?? this.specificRequirements,
       executionTime: executionTime ?? this.executionTime,
       paymentTerms: paymentTerms ?? this.paymentTerms,
       advancePercentage: advancePercentage ?? this.advancePercentage,
@@ -1502,6 +1519,144 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                     ),
                   ),
 
+                  // Parámetros Operativos y Ciclo Comercial
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF161F30)
+                          : const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFE2E8F0),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.sync_alt,
+                              size: 14,
+                              color: Color(0xFF3B82F6),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'PARÁMETROS OPERATIVOS & FACTURACIÓN',
+                              style: GoogleFonts.inter(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF3B82F6),
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 6,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.repeat,
+                                  size: 13,
+                                  color: Color(0xFF64748B),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Frecuencia: ',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                ),
+                                Text(
+                                  deal.serviceFrequency,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (deal.scheduleHours != null &&
+                                deal.scheduleHours!.isNotEmpty)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.schedule,
+                                    size: 13,
+                                    color: Color(0xFF64748B),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Horario: ',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      color: const Color(0xFF64748B),
+                                    ),
+                                  ),
+                                  Text(
+                                    deal.scheduleHours!,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.calendar_month,
+                                  size: 13,
+                                  color: Color(0xFF64748B),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Corte mensual: ',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                ),
+                                Text(
+                                  'Día ${deal.billingCycleDay ?? 5}',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        if (deal.specificRequirements != null &&
+                            deal.specificRequirements!.isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            'Requerimientos: ${deal.specificRequirements}',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontStyle: FontStyle.italic,
+                              color: const Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+
                   // Desglose de cotización y servicios
                   const SizedBox(height: 14),
                   Row(
@@ -2061,6 +2216,15 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
         ? deal.siteCity
         : 'Santa Cruz';
     bool isHq = deal.isSiteHeadquarters;
+    String selectedFrequency = deal.serviceFrequency.isNotEmpty
+        ? deal.serviceFrequency
+        : 'Lunes a Viernes';
+    final scheduleHoursCtrl = TextEditingController(
+      text: deal.scheduleHours ?? '08:00 - 17:00',
+    );
+    final specificReqCtrl = TextEditingController(
+      text: deal.specificRequirements ?? '',
+    );
 
     showDialog(
       context: context,
@@ -2280,6 +2444,102 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 12),
+                        const Divider(height: 1),
+                        const SizedBox(height: 10),
+                        Text(
+                          'PARÁMETROS OPERATIVOS PARA LA INSPECCIÓN',
+                          style: GoogleFonts.inter(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF3B82F6),
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                initialValue: selectedFrequency,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: isDark ? Colors.white : Colors.black,
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Frecuencia Prevista *',
+                                  isDense: true,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 'Lunes a Viernes',
+                                    child: Text('Lunes a Viernes'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Lunes a Sábado',
+                                    child: Text('Lunes a Sábado'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: '24/7 (Continuo)',
+                                    child: Text('24/7 (Continuo)'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Interdiario',
+                                    child: Text('Interdiario (3x sem)'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'Fin de Semana',
+                                    child: Text('Fin de Semana'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'A Demanda / Eventual',
+                                    child: Text('A Demanda / Eventual'),
+                                  ),
+                                ],
+                                onChanged: (val) {
+                                  if (val != null) {
+                                    setDialogState(
+                                      () => selectedFrequency = val,
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: scheduleHoursCtrl,
+                                style: GoogleFonts.inter(fontSize: 12),
+                                decoration: InputDecoration(
+                                  labelText: 'Horario Operativo',
+                                  hintText: 'Ej: 08:00 - 17:00 / 24h',
+                                  isDense: true,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: specificReqCtrl,
+                          maxLines: 2,
+                          style: GoogleFonts.inter(fontSize: 12),
+                          decoration: InputDecoration(
+                            labelText: 'Requisitos Operativos Específicos',
+                            hintText:
+                                'Ej: Requiere uniforme ignífugo, certificación médica o inducción especial.',
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
                         const SizedBox(height: 10),
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
@@ -2339,6 +2599,14 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                         siteContactPhone: sitePhoneCtrl.text.trim(),
                         siteAccessRequirements: siteAccessCtrl.text.trim(),
                         isSiteHeadquarters: isHq,
+                        serviceFrequency: selectedFrequency,
+                        scheduleHours: scheduleHoursCtrl.text.trim().isNotEmpty
+                            ? scheduleHoursCtrl.text.trim()
+                            : null,
+                        specificRequirements:
+                            specificReqCtrl.text.trim().isNotEmpty
+                            ? specificReqCtrl.text.trim()
+                            : null,
                       );
                       Navigator.pop(dCtx);
                       _moveDeal(updatedDeal, 'Visita Técnica');
@@ -2379,6 +2647,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
           ? deal.billingEmail
           : 'facturacion@${deal.clientName.toLowerCase().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}.bo',
     );
+    int selectedBillingDay = deal.billingCycleDay ?? 5;
 
     showDialog(
       context: context,
@@ -2543,6 +2812,62 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                               ? 'Ingresa el correo para envío de facturas'
                               : null,
                         ),
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<int>(
+                          initialValue: selectedBillingDay,
+                          style: GoogleFonts.inter(
+                            fontSize: 12.5,
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Día de Facturación / Corte Mensual *',
+                            helperText:
+                                'Día acordado para emisión y cobro mensual (PDF Pág. 3 y 4)',
+                            prefixIcon: const Icon(
+                              Icons.calendar_month_outlined,
+                              size: 18,
+                            ),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 1,
+                              child: Text('Día 1 de cada mes'),
+                            ),
+                            DropdownMenuItem(
+                              value: 5,
+                              child: Text('Día 5 de cada mes'),
+                            ),
+                            DropdownMenuItem(
+                              value: 10,
+                              child: Text('Día 10 de cada mes'),
+                            ),
+                            DropdownMenuItem(
+                              value: 15,
+                              child: Text('Día 15 de cada mes'),
+                            ),
+                            DropdownMenuItem(
+                              value: 20,
+                              child: Text('Día 20 de cada mes'),
+                            ),
+                            DropdownMenuItem(
+                              value: 25,
+                              child: Text('Día 25 de cada mes'),
+                            ),
+                            DropdownMenuItem(
+                              value: 30,
+                              child: Text('Día 30 de cada mes'),
+                            ),
+                          ],
+                          onChanged: (val) {
+                            if (val != null) {
+                              setDialogState(() => selectedBillingDay = val);
+                            }
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -2575,6 +2900,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                         taxId: taxIdCtrl.text.trim(),
                         legalRepresentative: repCtrl.text.trim(),
                         billingEmail: billingEmailCtrl.text.trim(),
+                        billingCycleDay: selectedBillingDay,
                       );
                       Navigator.pop(dCtx);
                       _moveDeal(updatedDeal, 'Negociación');
@@ -2917,6 +3243,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                 quantity: q.quantity,
                                 unit: q.unitType,
                                 unitPrice: q.unitPrice,
+                                catalogItemId: q.catalogItemId,
                               ),
                             )
                             .toList();
@@ -2936,6 +3263,10 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                             title: deal.title,
                             contractType: deal.contractType,
                             serviceCategory: deal.serviceType,
+                            serviceFrequency: deal.serviceFrequency,
+                            scheduleHours: deal.scheduleHours,
+                            billingCycleDay: deal.billingCycleDay,
+                            specificRequirements: deal.specificRequirements,
                             branchId:
                                 deal.branchId ??
                                 (existingCustomer.branches.isNotEmpty
@@ -2976,6 +3307,10 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                             title: deal.title,
                             contractType: deal.contractType,
                             serviceCategory: deal.serviceType,
+                            serviceFrequency: deal.serviceFrequency,
+                            scheduleHours: deal.scheduleHours,
+                            billingCycleDay: deal.billingCycleDay,
+                            specificRequirements: deal.specificRequirements,
                             branchId: initialBranch.id,
                             branchName: initialBranch.name,
                             originType: 'Pipeline Ganada',
@@ -3180,7 +3515,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                 label: const Text('Ir a Clientes 360°'),
                 onPressed: () {
                   Navigator.of(dCtx).pop();
-                  widget.onNavigateToTab!(8);
+                  widget.onNavigateToTab!(7);
                 },
               ),
           ],
@@ -3215,7 +3550,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
 
     if (isAlreadyPromoted) {
       if (widget.onNavigateToTab != null) {
-        widget.onNavigateToTab!(8);
+        widget.onNavigateToTab!(7);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: const Color(0xFF0F172A),
@@ -3722,6 +4057,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                                 quantity: q.quantity,
                                 unit: q.unitType,
                                 unitPrice: q.unitPrice,
+                                catalogItemId: q.catalogItemId,
                               ),
                             )
                             .toList();
@@ -3739,6 +4075,10 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           title: deal.title,
                           contractType: deal.contractType,
                           serviceCategory: deal.serviceType,
+                          serviceFrequency: deal.serviceFrequency,
+                          scheduleHours: deal.scheduleHours,
+                          billingCycleDay: deal.billingCycleDay,
+                          specificRequirements: deal.specificRequirements,
                           branchId: initialBranch.id,
                           branchName: initialBranch.name,
                           originType: 'Pipeline Ganada',
@@ -5767,134 +6107,25 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
     final priceCtrl = TextEditingController(text: '1500');
     String catVal = 'Personal';
 
-    final catalogPresets = [
-      // Seguridad
-      const QuoteItem(
-        id: '',
-        category: 'Personal',
-        concept: 'Puesto Vigilancia Física 24/7 (3 guardias rotativos)',
-        unitType: 'Puesto 24/7',
-        quantity: 1,
-        unitPrice: 6800.0,
-      ),
-      const QuoteItem(
-        id: '',
-        category: 'Personal',
-        concept: 'Guardia Seguridad Turno Diurno 12h',
-        unitType: 'Puesto 12h',
-        quantity: 1,
-        unitPrice: 3800.0,
-      ),
-      const QuoteItem(
-        id: '',
-        category: 'Personal',
-        concept: 'Patrullaje Preventivo Motorizado Nocturno',
-        unitType: 'Servicio',
-        quantity: 1,
-        unitPrice: 1600.0,
-      ),
-      // Limpieza
-      const QuoteItem(
-        id: '',
-        category: 'Limpieza',
-        concept: 'Operario Limpieza Diaria Oficinas y Áreas Comunes',
-        unitType: 'Operario',
-        quantity: 1,
-        unitPrice: 3500.0,
-      ),
-      const QuoteItem(
-        id: '',
-        category: 'Limpieza',
-        concept: 'Limpieza Profunda Post-Construcción / Entrega de Obra',
-        unitType: 'm²',
-        quantity: 200,
-        unitPrice: 25.0,
-      ),
-      const QuoteItem(
-        id: '',
-        category: 'Limpieza',
-        concept: 'Lavado y Desinfección Profunda de Tanques de Agua Potable',
-        unitType: 'Tanque',
-        quantity: 2,
-        unitPrice: 1800.0,
-      ),
-      const QuoteItem(
-        id: '',
-        category: 'Limpieza',
-        concept: 'Pulido, Sellado y Vitrificado de Pisos de Alto Tráfico',
-        unitType: 'm²',
-        quantity: 100,
-        unitPrice: 35.0,
-      ),
-      // Mantenimiento
-      const QuoteItem(
-        id: '',
-        category: 'Mantenimiento',
-        concept: 'Mantenimiento Preventivo y Calibración Grupo Electrógeno',
-        unitType: 'Global',
-        quantity: 1,
-        unitPrice: 4200.0,
-      ),
-      const QuoteItem(
-        id: '',
-        category: 'Mantenimiento',
-        concept: 'Inspección y Reparación Bombas Hidroneumáticas',
-        unitType: 'Servicio',
-        quantity: 1,
-        unitPrice: 2000.0,
-      ),
-      const QuoteItem(
-        id: '',
-        category: 'Materiales',
-        concept: 'Jardinero Especializado (Poda, abono y riego)',
-        unitType: 'Operario',
-        quantity: 1,
-        unitPrice: 2200.0,
-      ),
-      // Equipamiento y Tecnología
-      const QuoteItem(
-        id: '',
-        category: 'Equipamiento',
-        concept: 'Kit Radios VHF Motorola + Base y Cargador',
-        unitType: 'Kit',
-        quantity: 1,
-        unitPrice: 500.0,
-      ),
-      const QuoteItem(
-        id: '',
-        category: 'Tecnología',
-        concept: 'Cámara IP Dahua 4K IA Reconocimiento Facial y LPR',
-        unitType: 'Unid.',
-        quantity: 4,
-        unitPrice: 2500.0,
-      ),
-      const QuoteItem(
-        id: '',
-        category: 'Tecnología',
-        concept: 'Rondín Electrónico RFID con Reportes en Tiempo Real',
-        unitType: 'Servicio',
-        quantity: 1,
-        unitPrice: 400.0,
-      ),
-    ];
+    if (CrmCatalogService.instance.catalogItems.isEmpty) {
+      CrmCatalogService.instance.loadCatalogItems();
+    }
 
     final dbItems = CrmCatalogService.instance.catalogItems;
-    final List<QuoteItem> effectiveItems = dbItems.isNotEmpty
-        ? dbItems.map((item) {
-            return QuoteItem(
-              id: '',
-              category: item.category,
-              concept: item.concept,
-              unitType: item.unitType,
-              quantity: item.minQuantity,
-              unitPrice: item.basePrice,
-              catalogItemId: item.id,
-              catalogVersion: item.version,
-              calculationType: item.calculationType,
-              metadata: item.metadata,
-            );
-          }).toList()
-        : catalogPresets;
+    final List<QuoteItem> effectiveItems = dbItems.map((item) {
+      return QuoteItem(
+        id: '',
+        category: item.category,
+        concept: item.concept,
+        unitType: item.unitType,
+        quantity: item.minQuantity,
+        unitPrice: item.basePrice,
+        catalogItemId: item.id,
+        catalogVersion: item.version,
+        calculationType: item.calculationType,
+        metadata: item.metadata,
+      );
+    }).toList();
 
     showDialog(
       context: parentCtx,
@@ -5938,9 +6169,9 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    dbItems.isNotEmpty
+                    effectiveItems.isNotEmpty
                         ? 'PARTIDAS VIGENTES EN BASE DE DATOS (${effectiveItems.length})'
-                        : 'SELECCIONA DEL CATÁLOGO DE SERVICIOS',
+                        : 'CATÁLOGO DE SERVICIOS EN LÍNEA',
                     style: GoogleFonts.inter(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
@@ -5948,6 +6179,53 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                     ),
                   ),
                   const SizedBox(height: 8),
+                  if (effectiveItems.isEmpty)
+                    Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF161F30)
+                            : const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFCBD5E1),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          const Icon(
+                            Icons.inventory_2_outlined,
+                            size: 26,
+                            color: Color(0xFF64748B),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'No hay partidas registradas en el catálogo aún.',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: isDark
+                                  ? Colors.white70
+                                  : const Color(0xFF334155),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            'Puedes agregar una partida personalizada abajo o registrar servicios en el submódulo Catálogo.',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: const Color(0xFF64748B),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
                   ...effectiveItems.map((preset) {
                     final pColor = _getServiceColor(preset.category);
                     return InkWell(
@@ -7781,6 +8059,34 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                           ],
                         ),
                       ),
+                      if (deal.contractType == 'Recurrente Mensual')
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(
+                              0xFF64748B,
+                            ).withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            deal.serviceFrequency == 'Lunes a Viernes'
+                                ? 'L-V'
+                                : (deal.serviceFrequency == '24/7 (Continuo)'
+                                      ? '24/7'
+                                      : (deal.serviceFrequency ==
+                                                'Lunes a Sábado'
+                                            ? 'L-S'
+                                            : deal.serviceFrequency)),
+                            style: GoogleFonts.inter(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF64748B),
+                            ),
+                          ),
+                        ),
                       Text(
                         deal.id,
                         style: GoogleFonts.jetBrainsMono(
@@ -7808,7 +8114,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                       _showProposalPreviewDialog(deal);
                     } else if (action == 'customer360') {
                       if (widget.onNavigateToTab != null) {
-                        widget.onNavigateToTab!(8);
+                        widget.onNavigateToTab!(7);
                       } else {
                         _showPromoteToCustomerDialog(deal);
                       }
@@ -8089,7 +8395,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
                         color: const Color(0xFF10B981),
                         onPressed: () {
                           if (widget.onNavigateToTab != null) {
-                            widget.onNavigateToTab!(8);
+                            widget.onNavigateToTab!(7);
                           } else {
                             _showPromoteToCustomerDialog(deal);
                           }

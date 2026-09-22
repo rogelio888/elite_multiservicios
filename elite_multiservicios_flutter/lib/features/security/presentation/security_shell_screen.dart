@@ -20,7 +20,6 @@ import 'views/users_management_view.dart';
 import 'views/roles_rbac_view.dart';
 import 'views/audit_log_view.dart';
 import 'views/active_sessions_view.dart';
-import 'views/server_metrics_view.dart';
 
 /// Shell principal de navegación para el módulo de seguridad de Elite Multiservicios.
 /// Diseñado con estética minimalista ejecutiva, contención visual y escala suiza.
@@ -47,7 +46,6 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'roles',
     'audit',
     'sessions',
-    'metrics',
     'crm-leads',
     'crm-pipeline',
     'crm-clientes',
@@ -81,49 +79,46 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 'sessions':
       case 'sesiones':
         return 4;
-      case 'metrics':
-      case 'metricas':
-      case 'telemetria':
-        return 5;
+
       case 'crm-leads':
       case 'leads':
       case 'prospectos':
-        return 6;
+        return 5;
       case 'crm-pipeline':
       case 'pipeline':
       case 'embudo':
-        return 7;
+        return 6;
       case 'crm-clientes':
       case 'clientes':
       case 'directorio':
-        return 8;
+        return 7;
       case 'crm-actividades':
       case 'actividades':
       case 'agenda':
-        return 9;
+        return 8;
       case 'rrhh-dashboard':
       case 'dashboard-rrhh':
-        return 10;
+        return 9;
       case 'rrhh-personal':
       case 'rrhh-colaboradores':
       case 'colaboradores':
       case 'empleados':
       case 'personal':
       case 'rrhh':
-        return 11;
+        return 10;
       case 'rrhh-organizacion':
       case 'organizacion':
       case 'areas':
       case 'cargos':
       case 'especialidades':
-        return 12;
+        return 11;
       case 'rrhh-asignaciones':
       case 'asignaciones':
       case 'horarios':
       case 'turnos':
       case 'rrhh-contratos':
       case 'contratos':
-        return 13;
+        return 12;
       case 'rrhh-laboral':
       case 'rrhh-permisos':
       case 'permisos':
@@ -131,18 +126,18 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 'incidencias':
       case 'rrhh-bajas':
       case 'bajas':
-        return 14;
+        return 13;
       case 'rrhh-reportes':
       case 'reportes':
       case 'rrhh-bitacora':
       case 'rrhh-auditoria':
       case 'bitacora-rrhh':
-        return 15;
+        return 14;
       case 'crm-catalogo':
       case 'catalogo':
       case 'tarifario':
       case 'partidas':
-        return 16;
+        return 15;
       case 'dashboard':
       default:
         return 0;
@@ -184,11 +179,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     }
 
     _selectedIndex = initialIndex;
-    if (initialIndex >= 1 && initialIndex <= 5) {
+    if (initialIndex >= 1 && initialIndex <= 4) {
       _isSecurityExpanded = true;
-    } else if ((initialIndex >= 6 && initialIndex <= 9) || initialIndex == 16) {
+    } else if ((initialIndex >= 5 && initialIndex <= 8) || initialIndex == 15) {
       _isCrmExpanded = true;
-    } else if (initialIndex >= 10 && initialIndex <= 15) {
+    } else if (initialIndex >= 9 && initialIndex <= 14) {
       _isRrhhExpanded = true;
     }
 
@@ -202,11 +197,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         if (newIndex != _selectedIndex) {
           setState(() {
             _selectedIndex = newIndex;
-            if (newIndex >= 1 && newIndex <= 5) _isSecurityExpanded = true;
-            if ((newIndex >= 6 && newIndex <= 9) || newIndex == 16) {
+            if (newIndex >= 1 && newIndex <= 4) _isSecurityExpanded = true;
+            if ((newIndex >= 5 && newIndex <= 8) || newIndex == 15) {
               _isCrmExpanded = true;
             }
-            if (newIndex >= 10 && newIndex <= 15) _isRrhhExpanded = true;
+            if (newIndex >= 9 && newIndex <= 14) _isRrhhExpanded = true;
           });
           _loadSidebarMetrics();
         }
@@ -234,11 +229,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     if (_selectedIndex != index) {
       setState(() {
         _selectedIndex = index;
-        if (index >= 1 && index <= 5) {
+        if (index >= 1 && index <= 4) {
           _isSecurityExpanded = true;
-        } else if ((index >= 6 && index <= 9) || index == 16) {
+        } else if ((index >= 5 && index <= 8) || index == 15) {
           _isCrmExpanded = true;
-        } else if (index >= 10 && index <= 15) {
+        } else if (index >= 9 && index <= 14) {
           _isRrhhExpanded = true;
         }
       });
@@ -345,7 +340,6 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'Roles y Permisos RBAC',
     'Bitácora de Auditoría',
     'Sesiones Activas',
-    'Telemetría y Métricas',
     'CRM: Prospectos & Leads',
     'CRM: Pipeline Comercial',
     'CRM: Directorio Clientes 360°',
@@ -372,8 +366,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     final isSelected = _selectedIndex == index;
     final collapsed = !isDrawer && _isSidebarCollapsed;
 
-    final isCrmItem = (index >= 6 && index <= 9) || index == 16;
-    final isRrhhItem = index >= 10 && index <= 15;
+    final isCrmItem = (index >= 5 && index <= 8) || index == 15;
+    final isRrhhItem = index >= 9 && index <= 14;
     final Color activeAccent = isCrmItem
         ? const Color(0xFF10B981)
         : (isRrhhItem ? const Color(0xFF8B5CF6) : const Color(0xFF2563EB));
@@ -555,13 +549,6 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
             : null,
         index: 4,
       ),
-      (
-        icon: Icons.speed_outlined,
-        selectedIcon: Icons.speed,
-        label: 'Métricas',
-        badge: null,
-        index: 5,
-      ),
     ];
 
     final crmItems = [
@@ -569,43 +556,43 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         icon: Icons.person_search_outlined,
         selectedIcon: Icons.person_search,
         label: 'Prospectos / Leads',
-        badge: 'Nuevo',
-        index: 6,
+        badge: null,
+        index: 5,
       ),
       (
         icon: Icons.view_kanban_outlined,
         selectedIcon: Icons.view_kanban,
         label: 'Pipeline & Embudo',
         badge: null,
-        index: 7,
+        index: 6,
       ),
       (
         icon: Icons.business_outlined,
         selectedIcon: Icons.business,
         label: 'Clientes 360°',
         badge: null,
-        index: 8,
+        index: 7,
       ),
       (
         icon: Icons.event_available_outlined,
         selectedIcon: Icons.event_available,
         label: 'Agenda & Tareas',
         badge: 'dot',
-        index: 9,
+        index: 8,
       ),
       (
         icon: Icons.menu_book_outlined,
         selectedIcon: Icons.menu_book,
         label: 'Catálogo & Tarifario',
-        badge: 'Maestro',
-        index: 16,
+        badge: null,
+        index: 15,
       ),
     ];
 
-    final isAnySecurityActive = _selectedIndex >= 1 && _selectedIndex <= 5;
+    final isAnySecurityActive = _selectedIndex >= 1 && _selectedIndex <= 4;
     final isAnyCrmActive =
-        (_selectedIndex >= 6 && _selectedIndex <= 9) || _selectedIndex == 16;
-    final isAnyRrhhActive = _selectedIndex >= 10 && _selectedIndex <= 15;
+        (_selectedIndex >= 5 && _selectedIndex <= 8) || _selectedIndex == 15;
+    final isAnyRrhhActive = _selectedIndex >= 9 && _selectedIndex <= 14;
 
     final rrhhItems = [
       (
@@ -613,42 +600,42 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         selectedIcon: Icons.dashboard,
         label: 'Dashboard RRHH',
         badge: null,
-        index: 10,
+        index: 9,
       ),
       (
         icon: Icons.badge_outlined,
         selectedIcon: Icons.badge,
         label: 'Personal & Expedientes',
         badge: null,
-        index: 11,
+        index: 10,
       ),
       (
         icon: Icons.account_tree_outlined,
         selectedIcon: Icons.account_tree,
         label: 'Organización',
         badge: null,
-        index: 12,
+        index: 11,
       ),
       (
         icon: Icons.work_history_outlined,
         selectedIcon: Icons.work_history,
         label: 'Asignaciones & Turnos',
         badge: null,
-        index: 13,
+        index: 12,
       ),
       (
         icon: Icons.fact_check_outlined,
         selectedIcon: Icons.fact_check,
         label: 'Gestión Laboral',
         badge: null,
-        index: 14,
+        index: 13,
       ),
       (
         icon: Icons.analytics_outlined,
         selectedIcon: Icons.analytics,
         label: 'Centro de Reportes',
         badge: null,
-        index: 15,
+        index: 14,
       ),
     ];
 
@@ -672,41 +659,38 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         currentView = const ActiveSessionsView();
         break;
       case 5:
-        currentView = const ServerMetricsView();
-        break;
-      case 6:
         currentView = const CrmLeadsView();
         break;
-      case 7:
+      case 6:
         currentView = CrmPipelineView(
           onNavigateToTab: _onTabSelected,
         );
         break;
-      case 8:
+      case 7:
         currentView = const CrmCustomersView();
         break;
-      case 9:
+      case 8:
         currentView = const CrmActivitiesView();
         break;
-      case 10:
+      case 9:
         currentView = const RrhhDashboardView();
         break;
-      case 11:
+      case 10:
         currentView = const RrhhPersonalView();
         break;
-      case 12:
+      case 11:
         currentView = const RrhhOrganizationView();
         break;
-      case 13:
+      case 12:
         currentView = const RrhhAssignmentsView();
         break;
-      case 14:
+      case 13:
         currentView = const RrhhLaborView();
         break;
-      case 15:
+      case 14:
         currentView = const RrhhReportsView();
         break;
-      case 16:
+      case 15:
         currentView = const CrmCatalogManagementView();
         break;
       default:
@@ -755,10 +739,10 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                     ],
                     if (!isMobile) ...[
                       Text(
-                        ((_selectedIndex >= 6 && _selectedIndex <= 9) ||
-                                _selectedIndex == 16)
+                        ((_selectedIndex >= 5 && _selectedIndex <= 8) ||
+                                _selectedIndex == 15)
                             ? 'CRM'
-                            : (_selectedIndex >= 10 && _selectedIndex <= 15
+                            : (_selectedIndex >= 9 && _selectedIndex <= 14
                                   ? 'RRHH'
                                   : 'Seguridad'),
                         style: GoogleFonts.inter(
@@ -993,7 +977,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                               return PopupMenuItem<String>(
                                 value: 'task_${t.id}',
                                 onTap: () {
-                                  _onTabSelected(9);
+                                  _onTabSelected(8);
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -1060,7 +1044,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                             PopupMenuItem<String>(
                               value: 'go_to_agenda',
                               onTap: () {
-                                _onTabSelected(9);
+                                _onTabSelected(8);
                               },
                               child: Center(
                                 child: Text(

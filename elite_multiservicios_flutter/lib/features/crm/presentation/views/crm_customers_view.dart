@@ -1,9 +1,10 @@
 import 'dart:math' as math;
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../data/crm_catalog_service.dart';
 import '../../data/crm_customers_service.dart';
-import '../../data/crm_agenda_service.dart';
 
 /// Vista ejecutiva del Directorio Clientes 360° y Sedes Operativas.
 class CrmCustomersView extends StatefulWidget {
@@ -33,6 +34,7 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     super.initState();
     _service.addListener(_onServiceUpdate);
     _service.loadCustomers();
+    CrmCatalogService.instance.loadAll();
   }
 
   @override
@@ -1574,6 +1576,130 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
             ),
           ],
 
+          // Condiciones Operativas y Facturación (Handoff a Operaciones & Finanzas)
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(top: 10),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF334155)
+                    : const Color(0xFFE2E8F0),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.handshake_outlined,
+                      size: 14,
+                      color: Color(0xFF6366F1),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Condiciones Operativas & Facturación:',
+                      style: GoogleFonts.inter(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
+                        color: isDark
+                            ? const Color(0xFFE2E8F0)
+                            : const Color(0xFF1E293B),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 4,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.repeat,
+                          size: 12,
+                          color: Color(0xFF64748B),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Frecuencia: ${contract.serviceFrequency}',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF334155),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (contract.scheduleHours != null &&
+                        contract.scheduleHours!.isNotEmpty)
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.schedule,
+                            size: 12,
+                            color: Color(0xFF64748B),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Horario: ${contract.scheduleHours}',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: isDark
+                                  ? const Color(0xFFCBD5E1)
+                                  : const Color(0xFF334155),
+                            ),
+                          ),
+                        ],
+                      ),
+                    if (contract.billingCycleDay != null)
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.calendar_today,
+                            size: 12,
+                            color: Color(0xFF64748B),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Corte Facturación: Día ${contract.billingCycleDay}',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF10B981),
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+                if (contract.specificRequirements != null &&
+                    contract.specificRequirements!.trim().isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Requisitos operativos: ${contract.specificRequirements!.trim()}',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontStyle: FontStyle.italic,
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+
           // Partidas Presupuestarias Cotizadas
           if (contract.budgetItems.isNotEmpty) ...[
             const SizedBox(height: 10),
@@ -1633,22 +1759,55 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                       padding: const EdgeInsets.symmetric(vertical: 2.5),
                       child: Row(
                         children: [
-                          const Icon(
-                            Icons.circle,
-                            size: 5,
-                            color: Color(0xFF64748B),
+                          Icon(
+                            item.catalogItemId != null
+                                ? Icons.inventory_2_outlined
+                                : Icons.circle,
+                            size: item.catalogItemId != null ? 12 : 5,
+                            color: item.catalogItemId != null
+                                ? const Color(0xFF2563EB)
+                                : const Color(0xFF64748B),
                           ),
                           const SizedBox(width: 6),
                           Expanded(
-                            child: Text(
-                              item.description,
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                color: isDark
-                                    ? const Color(0xFFCBD5E1)
-                                    : const Color(0xFF334155),
-                              ),
-                              overflow: TextOverflow.ellipsis,
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    item.description,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      color: isDark
+                                          ? const Color(0xFFCBD5E1)
+                                          : const Color(0xFF334155),
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (item.catalogItemId != null) ...[
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                      vertical: 1,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(
+                                        0xFF2563EB,
+                                      ).withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(3),
+                                    ),
+                                    child: Text(
+                                      'Catálogo #${item.catalogItemId}',
+                                      style: GoogleFonts.jetBrainsMono(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFF2563EB),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -2142,7 +2301,6 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
           'Recepción conforme de servicio sin observaciones. Entrega a satisfacción del cliente.',
     );
     int rating = 5;
-    bool scheduleQualityCheck = false;
 
     showDialog(
       context: context,
@@ -2252,70 +2410,6 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                         isDense: true,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    InkWell(
-                      onTap: () {
-                        setDialogState(() {
-                          scheduleQualityCheck = !scheduleQualityCheck;
-                        });
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? const Color(0xFF1E293B).withValues(alpha: 0.5)
-                              : const Color(0xFFF1F5F9),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: scheduleQualityCheck
-                                ? const Color(0xFF10B981)
-                                : (isDark
-                                      ? const Color(0xFF334155)
-                                      : const Color(0xFFE2E8F0)),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Checkbox(
-                              value: scheduleQualityCheck,
-                              activeColor: const Color(0xFF10B981),
-                              onChanged: (val) {
-                                setDialogState(() {
-                                  scheduleQualityCheck = val ?? false;
-                                });
-                              },
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Agendar control de calidad en Agenda (Opcional)',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 12.5,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    'Desmarcado por defecto. Si no se marca, no se creará ninguna tarea.',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 11,
-                                      color: const Color(0xFF64748B),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -2339,16 +2433,6 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                       notes: notesCtrl.text.trim(),
                       rating: rating,
                     );
-                    if (scheduleQualityCheck) {
-                      CrmAgendaService().scheduleQualityCheckTask(
-                        clientName: customer.tradeName,
-                        contactPerson: customer.contactPerson,
-                        phone: customer.phone,
-                        contractTitle: contract.title,
-                        customerId: customer.id,
-                        contractId: contract.id,
-                      );
-                    }
                     if (dCtx.mounted) Navigator.of(dCtx).pop();
                     if (!mounted) return;
                     if (_selectedCustomer?.id == customer.id) {
@@ -2356,12 +2440,10 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                       setState(() {});
                     }
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: const Color(0xFF065F46),
+                      const SnackBar(
+                        backgroundColor: Color(0xFF065F46),
                         content: Text(
-                          scheduleQualityCheck
-                              ? 'Trabajo concluido con éxito. Tarea de control de calidad (72h) agendada en la Agenda Comercial.'
-                              : 'Trabajo concluido con éxito y registrado en el historial del cliente.',
+                          'Trabajo concluido con éxito y registrado en el historial del cliente.',
                         ),
                       ),
                     );
@@ -2920,88 +3002,357 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     String contractType,
   ) {
     final category = _canonicalCategory(rawCategory);
-    final isRecurrent = contractType == 'Recurrente Mensual';
-    switch (category) {
-      case 'Seguridad Física':
-        return [
-          ContractBudgetItem(
-            id: 'ITM-1',
-            description:
-                'Puesto de Vigilancia Física 24/7 (Guardias rotativos)',
-            quantity: 2,
-            unit: isRecurrent ? 'Mes' : 'Puesto',
-            unitPrice: 3800,
-          ),
-          ContractBudgetItem(
-            id: 'ITM-2',
-            description: 'Equipamiento táctico, linternas y libro de control',
-            quantity: 1,
-            unit: isRecurrent ? 'Mes' : 'Global',
-            unitPrice: 600,
-          ),
-        ];
-      case 'Limpieza Integral':
-        return [
-          ContractBudgetItem(
-            id: 'ITM-1',
-            description: 'Operarios de limpieza integral (Turno matutino)',
-            quantity: 2,
-            unit: isRecurrent ? 'Mes' : 'Mes',
-            unitPrice: 2800,
-          ),
-          ContractBudgetItem(
-            id: 'ITM-2',
-            description: 'Insumos químicos industriales y bolsas de residuos',
-            quantity: 1,
-            unit: isRecurrent ? 'Mes' : 'Global',
-            unitPrice: 1200,
-          ),
-        ];
-      case 'Mantenimiento':
-        return [
-          ContractBudgetItem(
-            id: 'ITM-1',
-            description: 'Inspección técnica preventiva y diagnóstico mensual',
-            quantity: 1,
-            unit: isRecurrent ? 'Mes' : 'Global',
-            unitPrice: 3200,
-          ),
-          ContractBudgetItem(
-            id: 'ITM-2',
-            description: 'Disponibilidad para emergencias correctivas 24/7',
-            quantity: 1,
-            unit: isRecurrent ? 'Mes' : 'Global',
-            unitPrice: 1500,
-          ),
-        ];
-      case 'Software / Tecnología':
-        return [
-          ContractBudgetItem(
-            id: 'ITM-1',
-            description: 'Administración de red, servidores y backups',
-            quantity: 1,
-            unit: isRecurrent ? 'Mes' : 'Global',
-            unitPrice: 4000,
-          ),
-          ContractBudgetItem(
-            id: 'ITM-2',
-            description: 'Soporte técnico y mesa de ayuda Helpdesk',
-            quantity: 8,
-            unit: 'Horas',
-            unitPrice: 150,
-          ),
-        ];
-      default:
-        return [
-          ContractBudgetItem(
-            id: 'ITM-1',
-            description: 'Mantenimiento de áreas verdes y jardines',
-            quantity: 2,
-            unit: isRecurrent ? 'Mes' : 'Visita',
-            unitPrice: 1800,
-          ),
-        ];
+    final catalogItems = CrmCatalogService.instance.catalogItems;
+
+    // Buscar partidas maestras activas desde la base de datos PostgreSQL
+    final matching = catalogItems
+        .where((item) {
+          if (!item.isActive) return false;
+          final itemCat = _canonicalCategory(item.category);
+          return itemCat == category ||
+              item.category.toLowerCase().contains(category.toLowerCase()) ||
+              category.toLowerCase().contains(item.category.toLowerCase());
+        })
+        .take(4)
+        .toList();
+
+    if (matching.isNotEmpty) {
+      return matching.map((catItem) {
+        return ContractBudgetItem(
+          id: 'CAT-${catItem.id}',
+          catalogItemId: catItem.id,
+          description: catItem.concept,
+          quantity: 1,
+          unit: catItem.unitType.isNotEmpty
+              ? catItem.unitType
+              : (contractType == 'Recurrente Mensual' ? 'Mes' : 'Global'),
+          unitPrice: catItem.basePrice,
+        );
+      }).toList();
     }
+
+    return [];
+  }
+
+  // ===========================================================================
+  // SELECTOR DE PARTIDAS DESDE EL CATÁLOGO MAESTRO (POSTGRESQL)
+  // ===========================================================================
+  void _showCatalogItemSelectorDialog(
+    BuildContext context, {
+    required ValueChanged<CrmCatalogItem> onSelect,
+  }) {
+    final catalogService = CrmCatalogService.instance;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    String filterQuery = '';
+    String? filterCategory;
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            final allItems = catalogService.catalogItems
+                .where((i) => i.isActive)
+                .toList();
+            final categories = allItems.map((i) => i.category).toSet().toList()
+              ..sort();
+
+            final filtered = allItems.where((item) {
+              final q = filterQuery.toLowerCase().trim();
+              final matchesQuery =
+                  q.isEmpty ||
+                  item.concept.toLowerCase().contains(q) ||
+                  item.code.toLowerCase().contains(q) ||
+                  (item.description != null &&
+                      item.description!.toLowerCase().contains(q));
+              final matchesCategory =
+                  filterCategory == null || item.category == filterCategory;
+              return matchesQuery && matchesCategory;
+            }).toList();
+
+            return Dialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: SizedBox(
+                width: 720,
+                height: 600,
+                child: Column(
+                  children: [
+                    // Header
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF131D31)
+                            : const Color(0xFFF8FAFC),
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(16),
+                        ),
+                        border: Border(
+                          bottom: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFE2E8F0),
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF2563EB,
+                              ).withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.inventory_2_outlined,
+                              color: Color(0xFF2563EB),
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Catálogo Maestro de Servicios y Suministros',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: isDark
+                                        ? Colors.white
+                                        : const Color(0xFF0F172A),
+                                  ),
+                                ),
+                                Text(
+                                  'Selecciona una partida oficial con tarifa base para agregarla a la cotización.',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, size: 20),
+                            onPressed: () => Navigator.of(dialogCtx).pop(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Filters
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: TextField(
+                              decoration: const InputDecoration(
+                                hintText:
+                                    'Buscar por servicio, insumo o código...',
+                                prefixIcon: Icon(Icons.search, size: 18),
+                                isDense: true,
+                              ),
+                              onChanged: (v) =>
+                                  setDialogState(() => filterQuery = v),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 2,
+                            child: DropdownButtonFormField<String?>(
+                              initialValue: filterCategory,
+                              isExpanded: true,
+                              decoration: const InputDecoration(
+                                labelText: 'Categoría',
+                                isDense: true,
+                              ),
+                              items: [
+                                const DropdownMenuItem(
+                                  value: null,
+                                  child: Text('Todas las categorías'),
+                                ),
+                                ...categories.map(
+                                  (c) => DropdownMenuItem(
+                                    value: c,
+                                    child: Text(c),
+                                  ),
+                                ),
+                              ],
+                              onChanged: (v) =>
+                                  setDialogState(() => filterCategory = v),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    // Items List
+                    Expanded(
+                      child: filtered.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.search_off,
+                                    size: 40,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'No se encontraron partidas en el catálogo maestro.',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 13,
+                                      color: const Color(0xFF64748B),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListView.separated(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: filtered.length,
+                              separatorBuilder: (_, _) =>
+                                  const SizedBox(height: 8),
+                              itemBuilder: (ctx, i) {
+                                final itm = filtered[i];
+                                return InkWell(
+                                  borderRadius: BorderRadius.circular(8),
+                                  onTap: () {
+                                    Navigator.of(dialogCtx).pop();
+                                    onSelect(itm);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFF8FAFC),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: isDark
+                                            ? const Color(0xFF334155)
+                                            : const Color(0xFFE2E8F0),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: const Color(
+                                              0xFF2563EB,
+                                            ).withValues(alpha: 0.1),
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            itm.code.isNotEmpty
+                                                ? itm.code
+                                                : '#${itm.id}',
+                                            style: GoogleFonts.jetBrainsMono(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w700,
+                                              color: const Color(0xFF2563EB),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                itm.concept,
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: isDark
+                                                      ? Colors.white
+                                                      : const Color(0xFF0F172A),
+                                                ),
+                                              ),
+                                              if (itm.description != null &&
+                                                  itm.description!.isNotEmpty)
+                                                Text(
+                                                  itm.description!,
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 11,
+                                                    color: const Color(
+                                                      0xFF64748B,
+                                                    ),
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              'Bs. ${itm.basePrice.toStringAsFixed(2)}',
+                                              style: GoogleFonts.jetBrainsMono(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w700,
+                                                color: const Color(0xFF10B981),
+                                              ),
+                                            ),
+                                            Text(
+                                              itm.unitType.isNotEmpty
+                                                  ? 'por ${itm.unitType}'
+                                                  : '',
+                                              style: GoogleFonts.inter(
+                                                fontSize: 10.5,
+                                                color: const Color(0xFF94A3B8),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(width: 12),
+                                        const Icon(
+                                          Icons.add_circle_outline,
+                                          color: Color(0xFF2563EB),
+                                          size: 20,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   // ===========================================================================
@@ -3056,6 +3407,24 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
     int advancePct = isRecontract
         ? prefilledContract.advancePercentage
         : (contractType == 'Recurrente Mensual' ? 0 : 50);
+
+    String serviceFrequency = isRecontract
+        ? prefilledContract.serviceFrequency
+        : 'Lunes a Viernes';
+
+    final scheduleHoursCtrl = TextEditingController(
+      text: isRecontract
+          ? (prefilledContract.scheduleHours ?? '08:00 - 17:00')
+          : '08:00 - 17:00',
+    );
+
+    int billingCycleDay = isRecontract
+        ? (prefilledContract.billingCycleDay ?? 5)
+        : 5;
+
+    final specificRequirementsCtrl = TextEditingController(
+      text: isRecontract ? (prefilledContract.specificRequirements ?? '') : '',
+    );
 
     String? selectedBranchId;
     if (customer.branches.isNotEmpty) {
@@ -3783,6 +4152,157 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                               ),
                                             ],
                                           ),
+                                          const SizedBox(height: 16),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                flex: 3,
+                                                child: DropdownButtonFormField<String>(
+                                                  key: ValueKey(
+                                                    'freq_$serviceFrequency',
+                                                  ),
+                                                  initialValue:
+                                                      serviceFrequency,
+                                                  isExpanded: true,
+                                                  decoration: const InputDecoration(
+                                                    labelText:
+                                                        'Frecuencia del Servicio *',
+                                                    isDense: true,
+                                                    prefixIcon: Icon(
+                                                      Icons.repeat,
+                                                      size: 18,
+                                                    ),
+                                                  ),
+                                                  items: const [
+                                                    DropdownMenuItem(
+                                                      value: 'Lunes a Viernes',
+                                                      child: Text(
+                                                        'Lunes a Viernes',
+                                                      ),
+                                                    ),
+                                                    DropdownMenuItem(
+                                                      value: 'Lunes a Sábado',
+                                                      child: Text(
+                                                        'Lunes a Sábado',
+                                                      ),
+                                                    ),
+                                                    DropdownMenuItem(
+                                                      value: '24/7 (Continuo)',
+                                                      child: Text(
+                                                        '24/7 (Continuo)',
+                                                      ),
+                                                    ),
+                                                    DropdownMenuItem(
+                                                      value: 'Interdiario',
+                                                      child: Text(
+                                                        'Interdiario',
+                                                      ),
+                                                    ),
+                                                    DropdownMenuItem(
+                                                      value: 'Fin de Semana',
+                                                      child: Text(
+                                                        'Fin de Semana',
+                                                      ),
+                                                    ),
+                                                    DropdownMenuItem(
+                                                      value: 'A Demanda',
+                                                      child: Text(
+                                                        'A Demanda',
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  onChanged: (v) {
+                                                    if (v != null) {
+                                                      setDialogState(
+                                                        () => serviceFrequency =
+                                                            v,
+                                                      );
+                                                    }
+                                                  },
+                                                ),
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Expanded(
+                                                flex: 2,
+                                                child: TextFormField(
+                                                  controller: scheduleHoursCtrl,
+                                                  decoration:
+                                                      const InputDecoration(
+                                                        labelText:
+                                                            'Horario Operativo',
+                                                        hintText:
+                                                            'Ej: 08:00 - 17:00',
+                                                        isDense: true,
+                                                        prefixIcon: Icon(
+                                                          Icons.schedule,
+                                                          size: 18,
+                                                        ),
+                                                      ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Expanded(
+                                                flex: 2,
+                                                child: DropdownButtonFormField<int>(
+                                                  key: ValueKey(
+                                                    'cycle_$billingCycleDay',
+                                                  ),
+                                                  initialValue: billingCycleDay,
+                                                  isExpanded: true,
+                                                  decoration:
+                                                      const InputDecoration(
+                                                        labelText:
+                                                            'Día Facturación',
+                                                        isDense: true,
+                                                        prefixIcon: Icon(
+                                                          Icons.calendar_today,
+                                                          size: 18,
+                                                        ),
+                                                      ),
+                                                  items:
+                                                      const [
+                                                        1,
+                                                        5,
+                                                        10,
+                                                        15,
+                                                        20,
+                                                        25,
+                                                        30,
+                                                      ].map((d) {
+                                                        return DropdownMenuItem(
+                                                          value: d,
+                                                          child: Text('Día $d'),
+                                                        );
+                                                      }).toList(),
+                                                  onChanged: (v) {
+                                                    if (v != null) {
+                                                      setDialogState(
+                                                        () =>
+                                                            billingCycleDay = v,
+                                                      );
+                                                    }
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 16),
+                                          TextFormField(
+                                            controller:
+                                                specificRequirementsCtrl,
+                                            decoration: const InputDecoration(
+                                              labelText:
+                                                  'Requisitos Operativos Específicos & Condiciones de Entrega',
+                                              hintText:
+                                                  'Ej: Protocolos especiales, uniformes reflectivos, actas de control.',
+                                              isDense: true,
+                                              prefixIcon: Icon(
+                                                Icons
+                                                    .assignment_turned_in_outlined,
+                                                size: 18,
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -4005,51 +4525,127 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                                   ),
                                                 ],
                                               ),
-                                              ElevatedButton.icon(
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: const Color(
-                                                    0xFF2563EB,
-                                                  ),
-                                                  foregroundColor: Colors.white,
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 16,
-                                                        vertical: 10,
-                                                      ),
-                                                  elevation: 0,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          8,
+                                              Row(
+                                                children: [
+                                                  OutlinedButton.icon(
+                                                    style: OutlinedButton.styleFrom(
+                                                      foregroundColor:
+                                                          const Color(
+                                                            0xFF2563EB,
+                                                          ),
+                                                      side: const BorderSide(
+                                                        color: Color(
+                                                          0xFF2563EB,
                                                         ),
-                                                  ),
-                                                ),
-                                                onPressed: () {
-                                                  setDialogState(() {
-                                                    budgetItems.add(
-                                                      ContractBudgetItem(
-                                                        id: 'ITM-${DateTime.now().millisecondsSinceEpoch % 10000}',
-                                                        description: '',
-                                                        quantity: 1,
-                                                        unit: isRecurrent
-                                                            ? 'Mes'
-                                                            : 'Global',
-                                                        unitPrice: 0,
                                                       ),
-                                                    );
-                                                  });
-                                                },
-                                                icon: const Icon(
-                                                  Icons.add,
-                                                  size: 16,
-                                                ),
-                                                label: Text(
-                                                  'Añadir Partida',
-                                                  style: GoogleFonts.inter(
-                                                    fontSize: 12.5,
-                                                    fontWeight: FontWeight.w700,
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 14,
+                                                            vertical: 10,
+                                                          ),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              8,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                    onPressed: () {
+                                                      _showCatalogItemSelectorDialog(
+                                                        ctx,
+                                                        onSelect: (catItem) {
+                                                          setDialogState(() {
+                                                            budgetItems.add(
+                                                              ContractBudgetItem(
+                                                                id: 'CAT-${catItem.id ?? 0}-${DateTime.now().millisecondsSinceEpoch % 1000}',
+                                                                catalogItemId:
+                                                                    catItem.id,
+                                                                description:
+                                                                    catItem
+                                                                        .concept,
+                                                                quantity: 1,
+                                                                unit:
+                                                                    catItem
+                                                                        .unitType
+                                                                        .isNotEmpty
+                                                                    ? catItem
+                                                                          .unitType
+                                                                    : (isRecurrent
+                                                                          ? 'Mes'
+                                                                          : 'Global'),
+                                                                unitPrice: catItem
+                                                                    .basePrice,
+                                                              ),
+                                                            );
+                                                          });
+                                                        },
+                                                      );
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons
+                                                          .inventory_2_outlined,
+                                                      size: 16,
+                                                    ),
+                                                    label: Text(
+                                                      'Catálogo Maestro',
+                                                      style: GoogleFonts.inter(
+                                                        fontSize: 12.5,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
+                                                  const SizedBox(width: 8),
+                                                  ElevatedButton.icon(
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor:
+                                                          const Color(
+                                                            0xFF2563EB,
+                                                          ),
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 14,
+                                                            vertical: 10,
+                                                          ),
+                                                      elevation: 0,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              8,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                    onPressed: () {
+                                                      setDialogState(() {
+                                                        budgetItems.add(
+                                                          ContractBudgetItem(
+                                                            id: 'LIBRE-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                                                            description: '',
+                                                            quantity: 1,
+                                                            unit: isRecurrent
+                                                                ? 'Mes'
+                                                                : 'Global',
+                                                            unitPrice: 0,
+                                                          ),
+                                                        );
+                                                      });
+                                                    },
+                                                    icon: const Icon(
+                                                      Icons.add,
+                                                      size: 16,
+                                                    ),
+                                                    label: Text(
+                                                      'Partida Libre',
+                                                      style: GoogleFonts.inter(
+                                                        fontSize: 12.5,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
@@ -4149,6 +4745,62 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
+                                                      if (item.catalogItemId !=
+                                                          null) ...[
+                                                        Container(
+                                                          margin:
+                                                              const EdgeInsets.only(
+                                                                bottom: 8,
+                                                              ),
+                                                          padding:
+                                                              const EdgeInsets.symmetric(
+                                                                horizontal: 7,
+                                                                vertical: 2.5,
+                                                              ),
+                                                          decoration: BoxDecoration(
+                                                            color:
+                                                                const Color(
+                                                                  0xFF2563EB,
+                                                                ).withValues(
+                                                                  alpha: 0.1,
+                                                                ),
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  4,
+                                                                ),
+                                                          ),
+                                                          child: Row(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              const Icon(
+                                                                Icons
+                                                                    .inventory_2_outlined,
+                                                                size: 13,
+                                                                color: Color(
+                                                                  0xFF2563EB,
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 4,
+                                                              ),
+                                                              Text(
+                                                                'Partida del Catálogo Maestro #${item.catalogItemId}',
+                                                                style: GoogleFonts.inter(
+                                                                  fontSize: 11,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: const Color(
+                                                                    0xFF2563EB,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
                                                       // Fila 1: Concepto con ancho completo
                                                       TextFormField(
                                                         initialValue:
@@ -4624,6 +5276,18 @@ class _CrmCustomersViewState extends State<CrmCustomersView> {
                                   title: titleCtrl.text.trim(),
                                   contractType: contractType,
                                   serviceCategory: category,
+                                  serviceFrequency: serviceFrequency,
+                                  scheduleHours:
+                                      scheduleHoursCtrl.text.trim().isNotEmpty
+                                      ? scheduleHoursCtrl.text.trim()
+                                      : null,
+                                  billingCycleDay: billingCycleDay,
+                                  specificRequirements:
+                                      specificRequirementsCtrl.text
+                                          .trim()
+                                          .isNotEmpty
+                                      ? specificRequirementsCtrl.text.trim()
+                                      : null,
                                   totalAmount: totalBudget,
                                   recurringMonthlyAmount: isRecurrent
                                       ? totalBudget

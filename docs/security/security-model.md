@@ -43,7 +43,6 @@ Definidos centralizadamente en `AppPermissions`:
 | | `audit.export` | Exportación de reportes de auditoría |
 | **Sesiones** | `sessions.view` | Visualización de sesiones activas en el servidor |
 | | `sessions.revoke` | Cierre forzoso de sesiones activas |
-| **Monitoreo** | `metrics.view` | Consulta del estado de salud del servidor |
 | **Operaciones** | `system.maintenance`| Ejecución de tareas administrativas y operativas |
 
 ---

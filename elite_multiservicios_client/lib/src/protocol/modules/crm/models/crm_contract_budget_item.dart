@@ -18,6 +18,7 @@ abstract class CrmContractBudgetItem implements _i1.SerializableModel {
   CrmContractBudgetItem._({
     this.id,
     required this.contractId,
+    this.catalogItemId,
     required this.description,
     required this.quantity,
     required this.unit,
@@ -30,6 +31,7 @@ abstract class CrmContractBudgetItem implements _i1.SerializableModel {
   factory CrmContractBudgetItem({
     int? id,
     required int contractId,
+    int? catalogItemId,
     required String description,
     required double quantity,
     required String unit,
@@ -45,6 +47,7 @@ abstract class CrmContractBudgetItem implements _i1.SerializableModel {
     return CrmContractBudgetItem(
       id: jsonSerialization['id'] as int?,
       contractId: jsonSerialization['contractId'] as int,
+      catalogItemId: jsonSerialization['catalogItemId'] as int?,
       description: jsonSerialization['description'] as String,
       quantity: (jsonSerialization['quantity'] as num).toDouble(),
       unit: jsonSerialization['unit'] as String,
@@ -68,6 +71,9 @@ abstract class CrmContractBudgetItem implements _i1.SerializableModel {
 
   /// ID del contrato al que pertenece la partida.
   int contractId;
+
+  /// ID referencial de la partida en el catálogo maestro (service_id).
+  int? catalogItemId;
 
   /// Descripción detallada del ítem o servicio.
   String description;
@@ -94,6 +100,7 @@ abstract class CrmContractBudgetItem implements _i1.SerializableModel {
   CrmContractBudgetItem copyWith({
     int? id,
     int? contractId,
+    int? catalogItemId,
     String? description,
     double? quantity,
     String? unit,
@@ -108,6 +115,7 @@ abstract class CrmContractBudgetItem implements _i1.SerializableModel {
       '__className__': 'CrmContractBudgetItem',
       if (id != null) 'id': id,
       'contractId': contractId,
+      if (catalogItemId != null) 'catalogItemId': catalogItemId,
       'description': description,
       'quantity': quantity,
       'unit': unit,
@@ -130,6 +138,7 @@ class _CrmContractBudgetItemImpl extends CrmContractBudgetItem {
   _CrmContractBudgetItemImpl({
     int? id,
     required int contractId,
+    int? catalogItemId,
     required String description,
     required double quantity,
     required String unit,
@@ -140,6 +149,7 @@ class _CrmContractBudgetItemImpl extends CrmContractBudgetItem {
   }) : super._(
          id: id,
          contractId: contractId,
+         catalogItemId: catalogItemId,
          description: description,
          quantity: quantity,
          unit: unit,
@@ -156,6 +166,7 @@ class _CrmContractBudgetItemImpl extends CrmContractBudgetItem {
   CrmContractBudgetItem copyWith({
     Object? id = _Undefined,
     int? contractId,
+    Object? catalogItemId = _Undefined,
     String? description,
     double? quantity,
     String? unit,
@@ -167,6 +178,7 @@ class _CrmContractBudgetItemImpl extends CrmContractBudgetItem {
     return CrmContractBudgetItem(
       id: id is int? ? id : this.id,
       contractId: contractId ?? this.contractId,
+      catalogItemId: catalogItemId is int? ? catalogItemId : this.catalogItemId,
       description: description ?? this.description,
       quantity: quantity ?? this.quantity,
       unit: unit ?? this.unit,

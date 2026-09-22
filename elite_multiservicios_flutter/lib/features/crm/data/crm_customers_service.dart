@@ -53,6 +53,7 @@ class ContractBudgetItem {
   final String
   unit; // 'Mes', 'Puesto', 'Global', 'Horas', 'm²', 'Unidad', 'Visita'
   final double unitPrice;
+  final int? catalogItemId;
 
   const ContractBudgetItem({
     required this.id,
@@ -60,6 +61,7 @@ class ContractBudgetItem {
     required this.quantity,
     required this.unit,
     required this.unitPrice,
+    this.catalogItemId,
   });
 
   double get subtotal => quantity * unitPrice;
@@ -70,6 +72,7 @@ class ContractBudgetItem {
     double? quantity,
     String? unit,
     double? unitPrice,
+    int? catalogItemId,
   }) {
     return ContractBudgetItem(
       id: id ?? this.id,
@@ -77,6 +80,7 @@ class ContractBudgetItem {
       quantity: quantity ?? this.quantity,
       unit: unit ?? this.unit,
       unitPrice: unitPrice ?? this.unitPrice,
+      catalogItemId: catalogItemId ?? this.catalogItemId,
     );
   }
 }
@@ -91,6 +95,11 @@ class CustomerContract {
   contractType; // 'Recurrente Mensual', 'Proyecto Único', 'Servicio por Evento', 'Híbrido'
   final String
   serviceCategory; // 'Seguridad', 'Limpieza', 'Mantenimiento', 'Software', 'Jardinería'
+  final String
+  serviceFrequency; // 'Lunes a Viernes', 'Lunes a Sábado', '24/7 (Continuo)', 'Interdiario', 'Fin de Semana'
+  final String? scheduleHours; // Ej: '08:00 - 17:00'
+  final int? billingCycleDay; // Día de corte de facturación mensual (1 al 31)
+  final String? specificRequirements; // Requisitos operativos específicos
   final double totalAmount; // Monto global o valor referencial
   final double recurringMonthlyAmount; // Canon recurrente si aplica
   final double oneTimeAmount; // Monto por obra/evento/instalación si aplica
@@ -120,6 +129,10 @@ class CustomerContract {
     required this.title,
     required this.contractType,
     required this.serviceCategory,
+    this.serviceFrequency = 'Lunes a Viernes',
+    this.scheduleHours,
+    this.billingCycleDay = 5,
+    this.specificRequirements,
     required this.totalAmount,
     this.recurringMonthlyAmount = 0.0,
     this.oneTimeAmount = 0.0,
@@ -147,6 +160,10 @@ class CustomerContract {
     String? title,
     String? contractType,
     String? serviceCategory,
+    String? serviceFrequency,
+    String? scheduleHours,
+    int? billingCycleDay,
+    String? specificRequirements,
     double? totalAmount,
     double? recurringMonthlyAmount,
     double? oneTimeAmount,
@@ -173,6 +190,10 @@ class CustomerContract {
       title: title ?? this.title,
       contractType: contractType ?? this.contractType,
       serviceCategory: serviceCategory ?? this.serviceCategory,
+      serviceFrequency: serviceFrequency ?? this.serviceFrequency,
+      scheduleHours: scheduleHours ?? this.scheduleHours,
+      billingCycleDay: billingCycleDay ?? this.billingCycleDay,
+      specificRequirements: specificRequirements ?? this.specificRequirements,
       totalAmount: totalAmount ?? this.totalAmount,
       recurringMonthlyAmount:
           recurringMonthlyAmount ?? this.recurringMonthlyAmount,
@@ -519,6 +540,10 @@ class CrmCustomersService extends ChangeNotifier {
             title: ctr.title,
             contractType: ctr.contractType,
             serviceCategory: ctr.serviceCategory,
+            serviceFrequency: ctr.serviceFrequency,
+            scheduleHours: ctr.scheduleHours,
+            billingCycleDay: ctr.billingCycleDay,
+            specificRequirements: ctr.specificRequirements,
             totalAmount: ctr.totalAmount,
             recurringMonthlyAmount: ctr.recurringMonthlyAmount,
             oneTimeAmount: ctr.oneTimeAmount,
@@ -538,6 +563,7 @@ class CrmCustomersService extends ChangeNotifier {
               .map(
                 (b) => CrmContractBudgetItem(
                   contractId: 0,
+                  catalogItemId: b.catalogItemId,
                   description: b.description,
                   quantity: b.quantity,
                   unit: b.unit,
@@ -634,6 +660,10 @@ class CrmCustomersService extends ChangeNotifier {
             title: newContract.title,
             contractType: newContract.contractType,
             serviceCategory: newContract.serviceCategory,
+            serviceFrequency: newContract.serviceFrequency,
+            scheduleHours: newContract.scheduleHours,
+            billingCycleDay: newContract.billingCycleDay,
+            specificRequirements: newContract.specificRequirements,
             totalAmount: newContract.totalAmount,
             recurringMonthlyAmount: newContract.recurringMonthlyAmount,
             oneTimeAmount: newContract.oneTimeAmount,
@@ -653,6 +683,7 @@ class CrmCustomersService extends ChangeNotifier {
               .map(
                 (b) => CrmContractBudgetItem(
                   contractId: 0,
+                  catalogItemId: b.catalogItemId,
                   description: b.description,
                   quantity: b.quantity,
                   unit: b.unit,
@@ -978,6 +1009,10 @@ class CrmCustomersService extends ChangeNotifier {
               title: ctr.title,
               contractType: ctr.contractType,
               serviceCategory: ctr.serviceCategory,
+              serviceFrequency: ctr.serviceFrequency,
+              scheduleHours: ctr.scheduleHours,
+              billingCycleDay: ctr.billingCycleDay,
+              specificRequirements: ctr.specificRequirements,
               totalAmount: ctr.totalAmount,
               recurringMonthlyAmount: ctr.recurringMonthlyAmount,
               oneTimeAmount: ctr.oneTimeAmount,
@@ -1000,6 +1035,7 @@ class CrmCustomersService extends ChangeNotifier {
                   .map(
                     (b) => ContractBudgetItem(
                       id: b.id.toString(),
+                      catalogItemId: b.catalogItemId,
                       description: b.description,
                       quantity: b.quantity,
                       unit: b.unit,

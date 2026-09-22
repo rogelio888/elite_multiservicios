@@ -116,12 +116,6 @@ class _RolesRbacViewState extends State<RolesRbacView> {
           'Terminación inmediata de sesiones activas y expulsión de tokens.',
       icon: Icons.power_settings_new_outlined,
     ),
-    'metrics.view': const _PermissionMeta(
-      title: 'Telemetría y Métricas del Servidor',
-      friendlyDescription:
-          'Inspección de tiempos de respuesta, carga de memoria y sockets.',
-      icon: Icons.analytics_outlined,
-    ),
     'system.maintenance': const _PermissionMeta(
       title: 'Mantenimiento y Gobernanza',
       friendlyDescription:
@@ -1318,13 +1312,7 @@ class _RolesRbacViewState extends State<RolesRbacView> {
                   _permissions.where((p) => p.module == 'sessions').length,
                   isDark,
                 ),
-                const SizedBox(width: 6),
-                _buildFilterPill(
-                  'metrics',
-                  'Métricas',
-                  _permissions.where((p) => p.module == 'metrics').length,
-                  isDark,
-                ),
+
                 const SizedBox(width: 6),
                 _buildFilterPill(
                   'system',

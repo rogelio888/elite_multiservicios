@@ -14,6 +14,14 @@ fields:
   contractType: String
   ### Categoría: Seguridad Física, Limpieza Integral, Mantenimiento, Software / Tecnología, Jardinería.
   serviceCategory: String
+  ### Frecuencia del servicio acordada (ej. Lunes a Viernes, 24/7, Interdiario).
+  serviceFrequency: String, default='Lunes a Viernes'
+  ### Horario programado de prestación (ej. 08:00 - 17:00, Turno 12h).
+  scheduleHours: String?
+  ### Día de corte / facturación de cuotas para Contabilidad (1 al 31).
+  billingCycleDay: int?, default=5
+  ### Requerimientos específicos del cliente (normativas, uniformes, pólizas).
+  specificRequirements: String?
   ### Monto total global o valor referencial en Bs.
   totalAmount: double
   ### Monto recurrente mensual si aplica en Bs.

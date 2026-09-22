@@ -6,6 +6,10 @@ fields:
   code: String
   ### Nombre comercial de la empresa o edificio.
   company: String
+  ### Canal de captación / origen del prospecto (Google Maps, Sitio Web, Llamada Telefónica, Referido, Redes Sociales, Prospección en Frío).
+  origin: String, default='Google Maps'
+  ### Servicio solicitado o de interés inicial.
+  requestedService: String?
   ### Enlace web o ficha en Google Maps.
   companyUrl: String?
   ### Rubro o industria (Clínicas, Corporativo, Colegios, Banca, etc.).
@@ -44,6 +48,8 @@ indexes:
   crm_lead_code_idx:
     fields: code
     unique: true
+  crm_lead_origin_idx:
+    fields: origin
   crm_lead_status_idx:
     fields: status
   crm_lead_sector_idx:

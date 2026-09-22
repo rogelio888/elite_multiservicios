@@ -306,6 +306,7 @@ class CrmPipelineDataService {
         .map(
           (q) => CrmContractBudgetItem(
             contractId: 0, // Se asigna en addContract
+            catalogItemId: q.catalogItemId,
             description: '${q.category}: ${q.concept}',
             quantity: q.quantity,
             unit: q.unitType,
@@ -322,7 +323,7 @@ class CrmPipelineDataService {
         opp.contractType.contains('Proyecto') ||
         opp.contractType.contains('Evento');
 
-    final contract = await customerService.addContract(
+    await customerService.addContract(
       CrmCustomerContract(
         code: '',
         customerId: customerId,
@@ -330,6 +331,10 @@ class CrmPipelineDataService {
         title: opp.title,
         contractType: opp.contractType,
         serviceCategory: opp.serviceType,
+        serviceFrequency: opp.serviceFrequency,
+        scheduleHours: opp.scheduleHours,
+        billingCycleDay: opp.billingCycleDay,
+        specificRequirements: opp.specificRequirements,
         totalAmount: opp.amount,
         recurringMonthlyAmount: isRecurring ? (opp.amount / 12) : 0.0,
         oneTimeAmount: isProject ? opp.amount : 0.0,
@@ -355,34 +360,6 @@ class CrmPipelineDataService {
         probability: 100,
         customerId: customerId,
         branchId: branchId,
-        updatedAt: now,
-      ),
-    );
-
-    // 4. Programar tarea de cobro de anticipo / inicio de servicio en la Agenda
-    final taskCount = await CrmTask.db.count(session);
-    final taskCode = 'TSK-${(taskCount + 1).toString().padLeft(3, '0')}';
-    await CrmTask.db.insertRow(
-      session,
-      CrmTask(
-        code: taskCode,
-        title: 'Cobro de Anticipo / Inicio: ${opp.title}',
-        taskType: 'Cobro / Seguimiento de Anticipo',
-        clientName: opp.clientName,
-        contactPerson: opp.contactPerson,
-        phone: opp.phone,
-        scheduledAt: now.add(const Duration(days: 1)),
-        scheduledTimeText: '09:30',
-        priority: 'Alta / Urgente',
-        status: 'Pendiente',
-        callContext:
-            'Oportunidad adjudicada. Confirmar acreditación de anticipo del ${opp.advancePercentage}% e inicio de operaciones.',
-        leadId: opp.leadId,
-        opportunityId: opp.id,
-        customerId: customerId,
-        contractId: contract.id,
-        isDeleted: false,
-        createdAt: now,
         updatedAt: now,
       ),
     );

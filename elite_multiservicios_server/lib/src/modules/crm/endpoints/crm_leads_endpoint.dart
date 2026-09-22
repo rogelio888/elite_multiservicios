@@ -16,6 +16,8 @@ class CrmLeadsEndpoint extends Endpoint {
     String? status,
     String? temperature,
     String? advisor,
+    String? origin,
+    String? requestedService,
   }) async {
     await RbacGuard.requirePermission(session, AppPermissions.crmLeadsView);
 
@@ -28,6 +30,8 @@ class CrmLeadsEndpoint extends Endpoint {
       status: status,
       temperature: temperature,
       advisor: advisor,
+      origin: origin,
+      requestedService: requestedService,
     );
   }
 

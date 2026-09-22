@@ -288,6 +288,10 @@ class CrmPipelineService extends ChangeNotifier {
       closingDate: opp.closingDate,
       notes: opp.notes ?? '',
       contractType: opp.contractType,
+      serviceFrequency: opp.serviceFrequency,
+      scheduleHours: opp.scheduleHours,
+      billingCycleDay: opp.billingCycleDay,
+      specificRequirements: opp.specificRequirements,
       executionTime: opp.executionTime,
       paymentTerms: opp.paymentTerms,
       advancePercentage: opp.advancePercentage,
@@ -337,6 +341,17 @@ class CrmPipelineService extends ChangeNotifier {
       closingDate: item.closingDate,
       notes: item.notes.isNotEmpty ? item.notes : null,
       contractType: item.contractType,
+      serviceFrequency: item.serviceFrequency,
+      scheduleHours:
+          item.scheduleHours != null && item.scheduleHours!.isNotEmpty
+          ? item.scheduleHours
+          : null,
+      billingCycleDay: item.billingCycleDay,
+      specificRequirements:
+          item.specificRequirements != null &&
+              item.specificRequirements!.isNotEmpty
+          ? item.specificRequirements
+          : null,
       executionTime: item.executionTime,
       paymentTerms: item.paymentTerms,
       advancePercentage: item.advancePercentage,

@@ -850,6 +850,73 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                             ),
                           ),
                         ),
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 1.5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getOriginColor(
+                              item.origin,
+                            ).withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                _getOriginIcon(item.origin),
+                                size: 10,
+                                color: _getOriginColor(item.origin),
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                item.origin,
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: _getOriginColor(item.origin),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (item.requestedService != null &&
+                            item.requestedService!.isNotEmpty) ...[
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 1.5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF10B981,
+                              ).withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.handyman_outlined,
+                                  size: 10,
+                                  color: Color(0xFF10B981),
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  item.requestedService!,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF10B981),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                         const SizedBox(width: 8),
                         const Icon(
                           Icons.badge_outlined,
@@ -1345,13 +1412,57 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                     ),
                   ),
                   DataCell(
-                    Text(
-                      item.sector,
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: _getSectorColor(item.sector),
-                      ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.sector,
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: _getSectorColor(item.sector),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _getOriginIcon(item.origin),
+                              size: 10,
+                              color: _getOriginColor(item.origin),
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              item.origin,
+                              style: GoogleFonts.inter(
+                                fontSize: 10,
+                                color: _getOriginColor(item.origin),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            if (item.requestedService != null &&
+                                item.requestedService!.isNotEmpty) ...[
+                              Text(
+                                ' • ',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  color: const Color(0xFF64748B),
+                                ),
+                              ),
+                              Text(
+                                item.requestedService!,
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  color: const Color(0xFF10B981),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                   DataCell(
@@ -1600,12 +1711,14 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
         final emailCtrl = TextEditingController(
           text: item.emailOrWeb ?? '',
         );
-        String serviceType = item.sector.contains('Clínicas')
-            ? 'Limpieza Hospitalaria & Bioseguridad'
-            : (item.sector.contains('Colegios')
-                  ? 'Mantenimiento & Jardinería Educativa'
-                  : 'Mantenimiento Corporativo');
-        bool scheduleReminder = false;
+        String serviceType =
+            (item.requestedService != null && item.requestedService!.isNotEmpty)
+            ? item.requestedService!
+            : (item.sector.contains('Clínicas')
+                  ? 'Limpieza Hospitalaria & Bioseguridad'
+                  : (item.sector.contains('Colegios')
+                        ? 'Mantenimiento & Jardinería Educativa'
+                        : 'Mantenimiento Corporativo'));
 
         return StatefulBuilder(
           builder: (dialogCtx, setDialogState) {
@@ -1793,76 +1906,6 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                           ],
                         ),
 
-                        const SizedBox(height: 16),
-
-                        // Opción de agendar recordatorio manual (desmarcado por defecto)
-                        InkWell(
-                          onTap: () {
-                            setDialogState(() {
-                              scheduleReminder = !scheduleReminder;
-                            });
-                          },
-                          borderRadius: BorderRadius.circular(8),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? const Color(
-                                      0xFF1E293B,
-                                    ).withValues(alpha: 0.5)
-                                  : const Color(0xFFF1F5F9),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: scheduleReminder
-                                    ? const Color(0xFF2563EB)
-                                    : (isDark
-                                          ? const Color(0xFF334155)
-                                          : const Color(0xFFE2E8F0)),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Checkbox(
-                                  value: scheduleReminder,
-                                  activeColor: const Color(0xFF2563EB),
-                                  onChanged: (val) {
-                                    setDialogState(() {
-                                      scheduleReminder = val ?? false;
-                                    });
-                                  },
-                                ),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Agendar recordatorio en Agenda CRM (Opcional)',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12.5,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        'Desmarcado por defecto. Si no lo marcas, no se creará ninguna tarea.',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 11,
-                                          color: const Color(0xFF64748B),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
                         const SizedBox(height: 24),
 
                         Row(
@@ -1945,31 +1988,6 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                                   item.id,
                                   opportunityId: createdOpp?.id,
                                 );
-
-                                // 4. Agendar tarea en Agenda CRM sólo si el usuario lo solicitó explícitamente
-                                if (scheduleReminder) {
-                                  await _agendaService.addTask(
-                                    CrmTaskItem(
-                                      id: 'TSK-${DateTime.now().millisecondsSinceEpoch}',
-                                      title:
-                                          'Reunión de Calificación: $companyName',
-                                      taskType: CrmTaskType.meeting,
-                                      clientName: companyName,
-                                      contactPerson: confirmedContact,
-                                      phone: confirmedPhone,
-                                      scheduledAt: DateTime.now().add(
-                                        const Duration(days: 1),
-                                      ),
-                                      scheduledTimeText: '10:00',
-                                      priority: 'Alta / Urgente',
-                                      status: 'Pendiente',
-                                      callContext:
-                                          'Prospecto promovido desde Outbound Maps. Requiere propuesta formal.',
-                                      createdAt: DateTime.now(),
-                                      relatedOpportunityId: createdOpp?.id,
-                                    ),
-                                  );
-                                }
 
                                 if (ctx.mounted) Navigator.pop(ctx);
                                 if (mounted) {
@@ -2646,7 +2664,19 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
     final urlCtrl = TextEditingController();
     final contactCtrl = TextEditingController();
     final notesCtrl = TextEditingController();
-    String sectorVal = 'Clínicas y centros médicos';
+    final availableSectors = _dynamicSectors
+        .where((s) => s != 'Todos')
+        .toList();
+    String sectorVal = availableSectors.isNotEmpty
+        ? availableSectors.first
+        : 'Corporativo / Oficinas';
+    String originVal = 'Google Maps';
+    final availableServices = CrmCatalogService.instance.serviceLines
+        .map((s) => s.name)
+        .toList();
+    String? requestedServiceVal = availableServices.isNotEmpty
+        ? availableServices.first
+        : null;
     final currentAdvisor = AuthService().currentDisplayName ?? 'Administrador';
     final advisorVal = currentAdvisor;
 
@@ -2739,8 +2769,7 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                             labelText: 'Rubro / Industria *',
                             isDense: true,
                           ),
-                          items: _sectors
-                              .where((s) => s != 'Todos')
+                          items: availableSectors
                               .map(
                                 (s) => DropdownMenuItem(
                                   value: s,
@@ -2791,6 +2820,80 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                                 ? const Color(0xFF1E293B).withValues(alpha: 0.5)
                                 : const Color(0xFFF1F5F9),
                           ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Fila Canal de Origen y Servicio Solicitado
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          initialValue: originVal,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Canal de Origen *',
+                            prefixIcon: Icon(Icons.share_location_outlined),
+                            isDense: true,
+                          ),
+                          items:
+                              const [
+                                    'Google Maps',
+                                    'Sitio Web',
+                                    'Llamada Telefónica',
+                                    'Referido',
+                                    'Redes Sociales',
+                                    'Prospección en Frío',
+                                  ]
+                                  .map(
+                                    (o) => DropdownMenuItem(
+                                      value: o,
+                                      child: Text(
+                                        o,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged: (v) {
+                            if (v != null) originVal = v;
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          initialValue: requestedServiceVal,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Servicio Solicitado / Interés',
+                            prefixIcon: Icon(Icons.handyman_outlined),
+                            isDense: true,
+                          ),
+                          items: [
+                            const DropdownMenuItem<String>(
+                              value: null,
+                              child: Text(
+                                '(A definir en visita)',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(color: Color(0xFF94A3B8)),
+                              ),
+                            ),
+                            ...availableServices.map(
+                              (srv) => DropdownMenuItem<String>(
+                                value: srv,
+                                child: Text(
+                                  srv,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          ],
+                          onChanged: (v) {
+                            requestedServiceVal = v;
+                          },
                         ),
                       ),
                     ],
@@ -2911,6 +3014,8 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                                 company: companyCtrl.text.trim(),
                                 companyUrl: urlText.isNotEmpty ? urlText : null,
                                 sector: sectorVal,
+                                origin: originVal,
+                                requestedService: requestedServiceVal,
                                 address: addressCtrl.text.trim().isNotEmpty
                                     ? addressCtrl.text.trim()
                                     : 'Santa Cruz de la Sierra',
@@ -3021,6 +3126,42 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
       return const Color(0xFFF59E0B);
     }
     return const Color(0xFF64748B);
+  }
+
+  IconData _getOriginIcon(String origin) {
+    switch (origin) {
+      case 'Google Maps':
+        return Icons.place;
+      case 'Sitio Web':
+        return Icons.language;
+      case 'Llamada Telefónica':
+        return Icons.phone_in_talk;
+      case 'Referido':
+        return Icons.handshake;
+      case 'Redes Sociales':
+        return Icons.share;
+      case 'Prospección en Frío':
+        return Icons.business_center;
+      default:
+        return Icons.explore_outlined;
+    }
+  }
+
+  Color _getOriginColor(String origin) {
+    switch (origin) {
+      case 'Google Maps':
+        return const Color(0xFF10B981);
+      case 'Sitio Web':
+        return const Color(0xFF3B82F6);
+      case 'Llamada Telefónica':
+        return const Color(0xFF8B5CF6);
+      case 'Referido':
+        return const Color(0xFFF59E0B);
+      case 'Redes Sociales':
+        return const Color(0xFFEC4899);
+      default:
+        return const Color(0xFF64748B);
+    }
   }
 
   Widget _buildEmptyState(bool isDark) {

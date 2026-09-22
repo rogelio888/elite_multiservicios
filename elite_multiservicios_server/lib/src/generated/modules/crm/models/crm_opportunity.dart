@@ -31,6 +31,10 @@ abstract class CrmOpportunity
     required this.closingDate,
     this.notes,
     String? contractType,
+    String? serviceFrequency,
+    this.scheduleHours,
+    int? billingCycleDay,
+    this.specificRequirements,
     String? executionTime,
     required this.paymentTerms,
     int? advancePercentage,
@@ -59,6 +63,8 @@ abstract class CrmOpportunity
     required this.updatedAt,
   }) : probability = probability ?? 20,
        contractType = contractType ?? 'Recurrente Mensual',
+       serviceFrequency = serviceFrequency ?? 'Lunes a Viernes',
+       billingCycleDay = billingCycleDay ?? 5,
        executionTime = executionTime ?? '12 meses',
        advancePercentage = advancePercentage ?? 0,
        contactRole = contactRole ?? 'Administrador',
@@ -83,6 +89,10 @@ abstract class CrmOpportunity
     required String closingDate,
     String? notes,
     String? contractType,
+    String? serviceFrequency,
+    String? scheduleHours,
+    int? billingCycleDay,
+    String? specificRequirements,
     String? executionTime,
     required String paymentTerms,
     int? advancePercentage,
@@ -127,6 +137,11 @@ abstract class CrmOpportunity
       closingDate: jsonSerialization['closingDate'] as String,
       notes: jsonSerialization['notes'] as String?,
       contractType: jsonSerialization['contractType'] as String?,
+      serviceFrequency: jsonSerialization['serviceFrequency'] as String?,
+      scheduleHours: jsonSerialization['scheduleHours'] as String?,
+      billingCycleDay: jsonSerialization['billingCycleDay'] as int?,
+      specificRequirements:
+          jsonSerialization['specificRequirements'] as String?,
       executionTime: jsonSerialization['executionTime'] as String?,
       paymentTerms: jsonSerialization['paymentTerms'] as String,
       advancePercentage: jsonSerialization['advancePercentage'] as int?,
@@ -213,6 +228,18 @@ abstract class CrmOpportunity
   /// Modalidad de contrato propuesta.
   String contractType;
 
+  /// Frecuencia acordada del servicio (ej. Lunes a Viernes, 24/7, Interdiario).
+  String serviceFrequency;
+
+  /// Horario previsto de prestación acordado (ej. 08:00 - 17:00, Turno 12h).
+  String? scheduleHours;
+
+  /// Día de corte / facturación de cuotas para Contabilidad (1 al 31).
+  int? billingCycleDay;
+
+  /// Requerimientos específicos del cliente (normativas, uniformes, pólizas).
+  String? specificRequirements;
+
   /// Tiempo o plazo de ejecución estimado.
   String executionTime;
 
@@ -295,6 +322,10 @@ abstract class CrmOpportunity
     String? closingDate,
     String? notes,
     String? contractType,
+    String? serviceFrequency,
+    String? scheduleHours,
+    int? billingCycleDay,
+    String? specificRequirements,
     String? executionTime,
     String? paymentTerms,
     int? advancePercentage,
@@ -340,6 +371,11 @@ abstract class CrmOpportunity
       'closingDate': closingDate,
       if (notes != null) 'notes': notes,
       'contractType': contractType,
+      'serviceFrequency': serviceFrequency,
+      if (scheduleHours != null) 'scheduleHours': scheduleHours,
+      if (billingCycleDay != null) 'billingCycleDay': billingCycleDay,
+      if (specificRequirements != null)
+        'specificRequirements': specificRequirements,
       'executionTime': executionTime,
       'paymentTerms': paymentTerms,
       'advancePercentage': advancePercentage,
@@ -389,6 +425,11 @@ abstract class CrmOpportunity
       'closingDate': closingDate,
       if (notes != null) 'notes': notes,
       'contractType': contractType,
+      'serviceFrequency': serviceFrequency,
+      if (scheduleHours != null) 'scheduleHours': scheduleHours,
+      if (billingCycleDay != null) 'billingCycleDay': billingCycleDay,
+      if (specificRequirements != null)
+        'specificRequirements': specificRequirements,
       'executionTime': executionTime,
       'paymentTerms': paymentTerms,
       'advancePercentage': advancePercentage,
@@ -468,6 +509,10 @@ class _CrmOpportunityImpl extends CrmOpportunity {
     required String closingDate,
     String? notes,
     String? contractType,
+    String? serviceFrequency,
+    String? scheduleHours,
+    int? billingCycleDay,
+    String? specificRequirements,
     String? executionTime,
     required String paymentTerms,
     int? advancePercentage,
@@ -509,6 +554,10 @@ class _CrmOpportunityImpl extends CrmOpportunity {
          closingDate: closingDate,
          notes: notes,
          contractType: contractType,
+         serviceFrequency: serviceFrequency,
+         scheduleHours: scheduleHours,
+         billingCycleDay: billingCycleDay,
+         specificRequirements: specificRequirements,
          executionTime: executionTime,
          paymentTerms: paymentTerms,
          advancePercentage: advancePercentage,
@@ -556,6 +605,10 @@ class _CrmOpportunityImpl extends CrmOpportunity {
     String? closingDate,
     Object? notes = _Undefined,
     String? contractType,
+    String? serviceFrequency,
+    Object? scheduleHours = _Undefined,
+    Object? billingCycleDay = _Undefined,
+    Object? specificRequirements = _Undefined,
     String? executionTime,
     String? paymentTerms,
     int? advancePercentage,
@@ -598,6 +651,16 @@ class _CrmOpportunityImpl extends CrmOpportunity {
       closingDate: closingDate ?? this.closingDate,
       notes: notes is String? ? notes : this.notes,
       contractType: contractType ?? this.contractType,
+      serviceFrequency: serviceFrequency ?? this.serviceFrequency,
+      scheduleHours: scheduleHours is String?
+          ? scheduleHours
+          : this.scheduleHours,
+      billingCycleDay: billingCycleDay is int?
+          ? billingCycleDay
+          : this.billingCycleDay,
+      specificRequirements: specificRequirements is String?
+          ? specificRequirements
+          : this.specificRequirements,
       executionTime: executionTime ?? this.executionTime,
       paymentTerms: paymentTerms ?? this.paymentTerms,
       advancePercentage: advancePercentage ?? this.advancePercentage,
@@ -708,6 +771,29 @@ class CrmOpportunityUpdateTable extends _i1.UpdateTable<CrmOpportunityTable> {
     table.contractType,
     value,
   );
+
+  _i1.ColumnValue<String, String> serviceFrequency(String value) =>
+      _i1.ColumnValue(
+        table.serviceFrequency,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> scheduleHours(String? value) =>
+      _i1.ColumnValue(
+        table.scheduleHours,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> billingCycleDay(int? value) => _i1.ColumnValue(
+    table.billingCycleDay,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> specificRequirements(String? value) =>
+      _i1.ColumnValue(
+        table.specificRequirements,
+        value,
+      );
 
   _i1.ColumnValue<String, String> executionTime(String value) =>
       _i1.ColumnValue(
@@ -909,6 +995,24 @@ class CrmOpportunityTable extends _i1.Table<int?> {
       this,
       hasDefault: true,
     );
+    serviceFrequency = _i1.ColumnString(
+      'serviceFrequency',
+      this,
+      hasDefault: true,
+    );
+    scheduleHours = _i1.ColumnString(
+      'scheduleHours',
+      this,
+    );
+    billingCycleDay = _i1.ColumnInt(
+      'billingCycleDay',
+      this,
+      hasDefault: true,
+    );
+    specificRequirements = _i1.ColumnString(
+      'specificRequirements',
+      this,
+    );
     executionTime = _i1.ColumnString(
       'executionTime',
       this,
@@ -1064,6 +1168,18 @@ class CrmOpportunityTable extends _i1.Table<int?> {
   /// Modalidad de contrato propuesta.
   late final _i1.ColumnString contractType;
 
+  /// Frecuencia acordada del servicio (ej. Lunes a Viernes, 24/7, Interdiario).
+  late final _i1.ColumnString serviceFrequency;
+
+  /// Horario previsto de prestación acordado (ej. 08:00 - 17:00, Turno 12h).
+  late final _i1.ColumnString scheduleHours;
+
+  /// Día de corte / facturación de cuotas para Contabilidad (1 al 31).
+  late final _i1.ColumnInt billingCycleDay;
+
+  /// Requerimientos específicos del cliente (normativas, uniformes, pólizas).
+  late final _i1.ColumnString specificRequirements;
+
   /// Tiempo o plazo de ejecución estimado.
   late final _i1.ColumnString executionTime;
 
@@ -1141,6 +1257,10 @@ class CrmOpportunityTable extends _i1.Table<int?> {
     closingDate,
     notes,
     contractType,
+    serviceFrequency,
+    scheduleHours,
+    billingCycleDay,
+    specificRequirements,
     executionTime,
     paymentTerms,
     advancePercentage,

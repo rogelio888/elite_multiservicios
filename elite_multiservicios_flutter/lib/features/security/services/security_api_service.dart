@@ -206,9 +206,4 @@ class SecurityApiService {
   Future<bool> revokeSession(int sessionId) async {
     return await _client.sessionManagement.revokeSession(sessionId);
   }
-
-  // --- Telemetría y Métricas del Servidor ---
-  Future<ServerMetricsResponse> getServerMetrics() async {
-    return await _client.systemMetrics.getMetrics();
-  }
 }

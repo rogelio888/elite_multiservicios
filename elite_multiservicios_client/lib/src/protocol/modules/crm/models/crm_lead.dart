@@ -19,6 +19,8 @@ abstract class CrmLead implements _i1.SerializableModel {
     this.id,
     required this.code,
     required this.company,
+    String? origin,
+    this.requestedService,
     this.companyUrl,
     required this.sector,
     required this.advisor,
@@ -36,7 +38,8 @@ abstract class CrmLead implements _i1.SerializableModel {
     bool? isDeleted,
     required this.createdAt,
     required this.updatedAt,
-  }) : status = status ?? 'Prospectado',
+  }) : origin = origin ?? 'Google Maps',
+       status = status ?? 'Prospectado',
        temperature = temperature ?? 'Templado',
        estimatedValue = estimatedValue ?? 0.0,
        isPromoted = isPromoted ?? false,
@@ -46,6 +49,8 @@ abstract class CrmLead implements _i1.SerializableModel {
     int? id,
     required String code,
     required String company,
+    String? origin,
+    String? requestedService,
     String? companyUrl,
     required String sector,
     required String advisor,
@@ -70,6 +75,8 @@ abstract class CrmLead implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       code: jsonSerialization['code'] as String,
       company: jsonSerialization['company'] as String,
+      origin: jsonSerialization['origin'] as String?,
+      requestedService: jsonSerialization['requestedService'] as String?,
       companyUrl: jsonSerialization['companyUrl'] as String?,
       sector: jsonSerialization['sector'] as String,
       advisor: jsonSerialization['advisor'] as String,
@@ -108,6 +115,12 @@ abstract class CrmLead implements _i1.SerializableModel {
 
   /// Nombre comercial de la empresa o edificio.
   String company;
+
+  /// Canal de captación / origen del prospecto (Google Maps, Sitio Web, Llamada Telefónica, Referido, Redes Sociales, Prospección en Frío).
+  String origin;
+
+  /// Servicio solicitado o de interés inicial.
+  String? requestedService;
 
   /// Enlace web o ficha en Google Maps.
   String? companyUrl;
@@ -167,6 +180,8 @@ abstract class CrmLead implements _i1.SerializableModel {
     int? id,
     String? code,
     String? company,
+    String? origin,
+    String? requestedService,
     String? companyUrl,
     String? sector,
     String? advisor,
@@ -192,6 +207,8 @@ abstract class CrmLead implements _i1.SerializableModel {
       if (id != null) 'id': id,
       'code': code,
       'company': company,
+      'origin': origin,
+      if (requestedService != null) 'requestedService': requestedService,
       if (companyUrl != null) 'companyUrl': companyUrl,
       'sector': sector,
       'advisor': advisor,
@@ -226,6 +243,8 @@ class _CrmLeadImpl extends CrmLead {
     int? id,
     required String code,
     required String company,
+    String? origin,
+    String? requestedService,
     String? companyUrl,
     required String sector,
     required String advisor,
@@ -247,6 +266,8 @@ class _CrmLeadImpl extends CrmLead {
          id: id,
          code: code,
          company: company,
+         origin: origin,
+         requestedService: requestedService,
          companyUrl: companyUrl,
          sector: sector,
          advisor: advisor,
@@ -274,6 +295,8 @@ class _CrmLeadImpl extends CrmLead {
     Object? id = _Undefined,
     String? code,
     String? company,
+    String? origin,
+    Object? requestedService = _Undefined,
     Object? companyUrl = _Undefined,
     String? sector,
     String? advisor,
@@ -296,6 +319,10 @@ class _CrmLeadImpl extends CrmLead {
       id: id is int? ? id : this.id,
       code: code ?? this.code,
       company: company ?? this.company,
+      origin: origin ?? this.origin,
+      requestedService: requestedService is String?
+          ? requestedService
+          : this.requestedService,
       companyUrl: companyUrl is String? ? companyUrl : this.companyUrl,
       sector: sector ?? this.sector,
       advisor: advisor ?? this.advisor,

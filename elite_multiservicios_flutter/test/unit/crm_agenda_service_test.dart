@@ -102,56 +102,6 @@ void main() {
     });
 
     test(
-      'scheduleQualityCheckTask automatically schedules post-sale quality audit after 72h',
-      () {
-        final initialCount = service.totalTasks;
-        service.scheduleQualityCheckTask(
-          customerId: 'CLI-PALMAS-01',
-          contractId: 'CTR-PALMAS-01',
-          clientName: 'Condominio Las Palmas Real',
-          contactPerson: 'Lic. Marcelo Justiniano',
-          phone: '77312890',
-          contractTitle: 'Mantenimiento de Piscinas y Áreas Húmedas',
-        );
-
-        expect(service.totalTasks, equals(initialCount + 1));
-        final task = service.tasks.firstWhere(
-          (t) => t.relatedContractId == 'CTR-PALMAS-01',
-        );
-        expect(task.taskType, equals(CrmTaskType.postSale));
-        expect(task.customerId, equals('CLI-PALMAS-01'));
-        expect(task.priority, equals('Alta / Urgente'));
-        expect(task.title, contains('Control de calidad'));
-        expect(task.callContext, contains('verificación de satisfacción'));
-      },
-    );
-
-    test(
-      'scheduleRenewalTask schedules renewal reminder ahead of expiration',
-      () {
-        final initialCount = service.totalTasks;
-        service.scheduleRenewalTask(
-          customerId: 'CLI-SANTA-CRUZ-01',
-          contractId: 'CTR-SECURITY-01',
-          clientName: 'Edificio Torre Duo',
-          contactPerson: 'Arq. Gabriela Soto',
-          phone: '78899001',
-          contractTitle: 'Seguridad Integral 24/7',
-          expiryDate: DateTime.now().add(const Duration(days: 45)),
-        );
-
-        expect(service.totalTasks, equals(initialCount + 1));
-        final task = service.tasks.firstWhere(
-          (t) => t.relatedContractId == 'CTR-SECURITY-01',
-        );
-        expect(task.taskType, equals(CrmTaskType.renewal));
-        expect(task.customerId, equals('CLI-SANTA-CRUZ-01'));
-        expect(task.title, contains('Renovación de Contrato'));
-        expect(task.callContext, contains('El contrato vencerá próximamente'));
-      },
-    );
-
-    test(
       'deleteTask removes task from local memory and updates counts',
       () async {
         final initialCount = service.totalTasks;

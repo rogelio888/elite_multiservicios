@@ -24,6 +24,10 @@ abstract class CrmCustomerContract
     required this.title,
     required this.contractType,
     required this.serviceCategory,
+    String? serviceFrequency,
+    this.scheduleHours,
+    int? billingCycleDay,
+    this.specificRequirements,
     required this.totalAmount,
     double? recurringMonthlyAmount,
     double? oneTimeAmount,
@@ -43,7 +47,9 @@ abstract class CrmCustomerContract
     bool? isDeleted,
     required this.createdAt,
     required this.updatedAt,
-  }) : recurringMonthlyAmount = recurringMonthlyAmount ?? 0.0,
+  }) : serviceFrequency = serviceFrequency ?? 'Lunes a Viernes',
+       billingCycleDay = billingCycleDay ?? 5,
+       recurringMonthlyAmount = recurringMonthlyAmount ?? 0.0,
        oneTimeAmount = oneTimeAmount ?? 0.0,
        advancePercentage = advancePercentage ?? 0,
        status = status ?? 'Vigente',
@@ -58,6 +64,10 @@ abstract class CrmCustomerContract
     required String title,
     required String contractType,
     required String serviceCategory,
+    String? serviceFrequency,
+    String? scheduleHours,
+    int? billingCycleDay,
+    String? specificRequirements,
     required double totalAmount,
     double? recurringMonthlyAmount,
     double? oneTimeAmount,
@@ -88,6 +98,11 @@ abstract class CrmCustomerContract
       title: jsonSerialization['title'] as String,
       contractType: jsonSerialization['contractType'] as String,
       serviceCategory: jsonSerialization['serviceCategory'] as String,
+      serviceFrequency: jsonSerialization['serviceFrequency'] as String?,
+      scheduleHours: jsonSerialization['scheduleHours'] as String?,
+      billingCycleDay: jsonSerialization['billingCycleDay'] as int?,
+      specificRequirements:
+          jsonSerialization['specificRequirements'] as String?,
       totalAmount: (jsonSerialization['totalAmount'] as num).toDouble(),
       recurringMonthlyAmount:
           (jsonSerialization['recurringMonthlyAmount'] as num?)?.toDouble(),
@@ -149,6 +164,18 @@ abstract class CrmCustomerContract
 
   /// Categoría: Seguridad Física, Limpieza Integral, Mantenimiento, Software / Tecnología, Jardinería.
   String serviceCategory;
+
+  /// Frecuencia del servicio acordada (ej. Lunes a Viernes, 24/7, Interdiario).
+  String serviceFrequency;
+
+  /// Horario programado de prestación (ej. 08:00 - 17:00, Turno 12h).
+  String? scheduleHours;
+
+  /// Día de corte / facturación de cuotas para Contabilidad (1 al 31).
+  int? billingCycleDay;
+
+  /// Requerimientos específicos del cliente (normativas, uniformes, pólizas).
+  String? specificRequirements;
 
   /// Monto total global o valor referencial en Bs.
   double totalAmount;
@@ -216,6 +243,10 @@ abstract class CrmCustomerContract
     String? title,
     String? contractType,
     String? serviceCategory,
+    String? serviceFrequency,
+    String? scheduleHours,
+    int? billingCycleDay,
+    String? specificRequirements,
     double? totalAmount,
     double? recurringMonthlyAmount,
     double? oneTimeAmount,
@@ -247,6 +278,11 @@ abstract class CrmCustomerContract
       'title': title,
       'contractType': contractType,
       'serviceCategory': serviceCategory,
+      'serviceFrequency': serviceFrequency,
+      if (scheduleHours != null) 'scheduleHours': scheduleHours,
+      if (billingCycleDay != null) 'billingCycleDay': billingCycleDay,
+      if (specificRequirements != null)
+        'specificRequirements': specificRequirements,
       'totalAmount': totalAmount,
       'recurringMonthlyAmount': recurringMonthlyAmount,
       'oneTimeAmount': oneTimeAmount,
@@ -280,6 +316,11 @@ abstract class CrmCustomerContract
       'title': title,
       'contractType': contractType,
       'serviceCategory': serviceCategory,
+      'serviceFrequency': serviceFrequency,
+      if (scheduleHours != null) 'scheduleHours': scheduleHours,
+      if (billingCycleDay != null) 'billingCycleDay': billingCycleDay,
+      if (specificRequirements != null)
+        'specificRequirements': specificRequirements,
       'totalAmount': totalAmount,
       'recurringMonthlyAmount': recurringMonthlyAmount,
       'oneTimeAmount': oneTimeAmount,
@@ -343,6 +384,10 @@ class _CrmCustomerContractImpl extends CrmCustomerContract {
     required String title,
     required String contractType,
     required String serviceCategory,
+    String? serviceFrequency,
+    String? scheduleHours,
+    int? billingCycleDay,
+    String? specificRequirements,
     required double totalAmount,
     double? recurringMonthlyAmount,
     double? oneTimeAmount,
@@ -370,6 +415,10 @@ class _CrmCustomerContractImpl extends CrmCustomerContract {
          title: title,
          contractType: contractType,
          serviceCategory: serviceCategory,
+         serviceFrequency: serviceFrequency,
+         scheduleHours: scheduleHours,
+         billingCycleDay: billingCycleDay,
+         specificRequirements: specificRequirements,
          totalAmount: totalAmount,
          recurringMonthlyAmount: recurringMonthlyAmount,
          oneTimeAmount: oneTimeAmount,
@@ -403,6 +452,10 @@ class _CrmCustomerContractImpl extends CrmCustomerContract {
     String? title,
     String? contractType,
     String? serviceCategory,
+    String? serviceFrequency,
+    Object? scheduleHours = _Undefined,
+    Object? billingCycleDay = _Undefined,
+    Object? specificRequirements = _Undefined,
     double? totalAmount,
     double? recurringMonthlyAmount,
     double? oneTimeAmount,
@@ -431,6 +484,16 @@ class _CrmCustomerContractImpl extends CrmCustomerContract {
       title: title ?? this.title,
       contractType: contractType ?? this.contractType,
       serviceCategory: serviceCategory ?? this.serviceCategory,
+      serviceFrequency: serviceFrequency ?? this.serviceFrequency,
+      scheduleHours: scheduleHours is String?
+          ? scheduleHours
+          : this.scheduleHours,
+      billingCycleDay: billingCycleDay is int?
+          ? billingCycleDay
+          : this.billingCycleDay,
+      specificRequirements: specificRequirements is String?
+          ? specificRequirements
+          : this.specificRequirements,
       totalAmount: totalAmount ?? this.totalAmount,
       recurringMonthlyAmount:
           recurringMonthlyAmount ?? this.recurringMonthlyAmount,
@@ -493,6 +556,29 @@ class CrmCustomerContractUpdateTable
   _i1.ColumnValue<String, String> serviceCategory(String value) =>
       _i1.ColumnValue(
         table.serviceCategory,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> serviceFrequency(String value) =>
+      _i1.ColumnValue(
+        table.serviceFrequency,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> scheduleHours(String? value) =>
+      _i1.ColumnValue(
+        table.scheduleHours,
+        value,
+      );
+
+  _i1.ColumnValue<int, int> billingCycleDay(int? value) => _i1.ColumnValue(
+    table.billingCycleDay,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> specificRequirements(String? value) =>
+      _i1.ColumnValue(
+        table.specificRequirements,
         value,
       );
 
@@ -630,6 +716,24 @@ class CrmCustomerContractTable extends _i1.Table<int?> {
       'serviceCategory',
       this,
     );
+    serviceFrequency = _i1.ColumnString(
+      'serviceFrequency',
+      this,
+      hasDefault: true,
+    );
+    scheduleHours = _i1.ColumnString(
+      'scheduleHours',
+      this,
+    );
+    billingCycleDay = _i1.ColumnInt(
+      'billingCycleDay',
+      this,
+      hasDefault: true,
+    );
+    specificRequirements = _i1.ColumnString(
+      'specificRequirements',
+      this,
+    );
     totalAmount = _i1.ColumnDouble(
       'totalAmount',
       this,
@@ -734,6 +838,18 @@ class CrmCustomerContractTable extends _i1.Table<int?> {
   /// Categoría: Seguridad Física, Limpieza Integral, Mantenimiento, Software / Tecnología, Jardinería.
   late final _i1.ColumnString serviceCategory;
 
+  /// Frecuencia del servicio acordada (ej. Lunes a Viernes, 24/7, Interdiario).
+  late final _i1.ColumnString serviceFrequency;
+
+  /// Horario programado de prestación (ej. 08:00 - 17:00, Turno 12h).
+  late final _i1.ColumnString scheduleHours;
+
+  /// Día de corte / facturación de cuotas para Contabilidad (1 al 31).
+  late final _i1.ColumnInt billingCycleDay;
+
+  /// Requerimientos específicos del cliente (normativas, uniformes, pólizas).
+  late final _i1.ColumnString specificRequirements;
+
   /// Monto total global o valor referencial en Bs.
   late final _i1.ColumnDouble totalAmount;
 
@@ -795,6 +911,10 @@ class CrmCustomerContractTable extends _i1.Table<int?> {
     title,
     contractType,
     serviceCategory,
+    serviceFrequency,
+    scheduleHours,
+    billingCycleDay,
+    specificRequirements,
     totalAmount,
     recurringMonthlyAmount,
     oneTimeAmount,
