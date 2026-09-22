@@ -6,7 +6,7 @@ import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Audit and SystemMetrics Integration Tests',
+    'Audit Integration Tests',
     testGroupTagsOverride: ['db-integration'],
     (
       sessionBuilder,
@@ -96,17 +96,6 @@ void main() {
               page: 1,
               pageSize: 25,
             ),
-            throwsA(isA<Exception>()),
-          );
-        },
-      );
-
-      test(
-        'SystemMetricsEndpoint requires authentication & audit.view permission',
-        () async {
-          // Llamada sin autenticación debe fallar
-          expect(
-            () => endpoints.systemMetrics.getMetrics(sessionBuilder),
             throwsA(isA<Exception>()),
           );
         },

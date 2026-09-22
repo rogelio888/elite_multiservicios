@@ -87,7 +87,7 @@ class SecuritySeed {
       AppRole(
         name: 'Developer',
         description:
-            'Rol de ingeniería con acceso completo a todos los módulos y telemetría',
+            'Rol de ingeniería con acceso completo a todos los módulos del sistema',
         isSystemRole: true,
         createdAt: DateTime.now().toUtc(),
       ),

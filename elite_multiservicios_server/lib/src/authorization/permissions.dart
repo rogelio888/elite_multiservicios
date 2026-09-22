@@ -18,10 +18,9 @@ abstract class AppPermissions {
   static const String auditView = 'audit.view';
   static const String auditExport = 'audit.export';
 
-  // --- Módulo Sesiones y Monitoreo ---
+  // --- Módulo Sesiones ---
   static const String sessionsView = 'sessions.view';
   static const String sessionsRevoke = 'sessions.revoke';
-  static const String serverMetricsView = 'metrics.view';
 
   // --- Operaciones de Mantenimiento ---
   static const String systemMaintenance = 'system.maintenance';
@@ -78,7 +77,6 @@ abstract class AppPermissions {
     auditExport,
     sessionsView,
     sessionsRevoke,
-    serverMetricsView,
     systemMaintenance,
     crmLeadsView,
     crmLeadsCreate,

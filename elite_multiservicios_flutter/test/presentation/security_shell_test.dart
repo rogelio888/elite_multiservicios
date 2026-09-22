@@ -227,7 +227,6 @@ void main() {
         expect(find.text('Roles & RBAC'), findsOneWidget);
         expect(find.text('Auditoría'), findsOneWidget);
         expect(find.text('Sesiones'), findsOneWidget);
-        expect(find.text('Métricas'), findsOneWidget);
 
         // Tap en "Seguridad" para contraer el acordeón
         await tester.tap(find.byKey(const Key('nav_accordion_seguridad')));
