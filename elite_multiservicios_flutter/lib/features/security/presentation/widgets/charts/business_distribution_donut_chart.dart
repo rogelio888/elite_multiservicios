@@ -90,9 +90,12 @@ class _BusinessDistributionDonutChartState
 
     if (_showRevenueMode) {
       final totalRev = widget.totalMrr + widget.totalProjectVolume;
-      final mrrPercent = totalRev > 0 ? (widget.totalMrr / totalRev) * 100 : 50.0;
-      final projPercent =
-          totalRev > 0 ? (widget.totalProjectVolume / totalRev) * 100 : 50.0;
+      final mrrPercent = totalRev > 0
+          ? (widget.totalMrr / totalRev) * 100
+          : 50.0;
+      final projPercent = totalRev > 0
+          ? (widget.totalProjectVolume / totalRev) * 100
+          : 50.0;
 
       segments = [
         _DonutSegment(
@@ -115,8 +118,12 @@ class _BusinessDistributionDonutChartState
       centerSubText = 'TOTAL FACTURADO';
     } else {
       final totalCust = widget.totalB2b + widget.totalB2c;
-      final b2bPercent = totalCust > 0 ? (widget.totalB2b / totalCust) * 100 : 50.0;
-      final b2cPercent = totalCust > 0 ? (widget.totalB2c / totalCust) * 100 : 50.0;
+      final b2bPercent = totalCust > 0
+          ? (widget.totalB2b / totalCust) * 100
+          : 50.0;
+      final b2cPercent = totalCust > 0
+          ? (widget.totalB2c / totalCust) * 100
+          : 50.0;
 
       segments = [
         _DonutSegment(
@@ -339,8 +346,8 @@ class _BusinessDistributionDonutChartState
                             decoration: BoxDecoration(
                               color: isHovered
                                   ? (widget.isDark
-                                      ? const Color(0xFF1E293B)
-                                      : const Color(0xFFF1F5F9))
+                                        ? const Color(0xFF1E293B)
+                                        : const Color(0xFFF1F5F9))
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -487,8 +494,8 @@ class _BusinessDistributionDonutChartState
             color: isActive
                 ? (widget.isDark ? Colors.white : const Color(0xFF0F172A))
                 : (widget.isDark
-                    ? const Color(0xFF94A3B8)
-                    : const Color(0xFF64748B)),
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B)),
           ),
         ),
       ),
@@ -560,7 +567,13 @@ class _DonutChartPainter extends CustomPainter {
       final rect = Rect.fromCircle(center: center, radius: radius);
 
       final adjustedSweep = math.max(0.01, sweepAngle - gapAngle);
-      canvas.drawArc(rect, startAngle + (gapAngle / 2), adjustedSweep, false, paint);
+      canvas.drawArc(
+        rect,
+        startAngle + (gapAngle / 2),
+        adjustedSweep,
+        false,
+        paint,
+      );
 
       startAngle += sweepAngle;
     }

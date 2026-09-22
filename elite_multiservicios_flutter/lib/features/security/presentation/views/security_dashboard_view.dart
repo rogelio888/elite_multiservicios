@@ -134,7 +134,8 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView> {
 
   String _humanizeAction(String action) {
     if (action.contains('LOGIN_SUCCESS')) return 'Inicio de sesión exitoso';
-    if (action.contains('LOGIN_FAILED')) return 'Intento fallido de autenticación';
+    if (action.contains('LOGIN_FAILED'))
+      return 'Intento fallido de autenticación';
     if (action.contains('MFA_VERIFIED')) return 'Segundo factor validado (MFA)';
     if (action.contains('MFA_CHALLENGE')) return 'Desafío 2FA emitido';
     if (action.contains('PASSWORD_RESET') ||
@@ -165,7 +166,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView> {
               height: 26,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0F172A),
+                color: isDark
+                    ? const Color(0xFF38BDF8)
+                    : const Color(0xFF0F172A),
               ),
             ),
             const SizedBox(height: 16),
@@ -460,7 +463,8 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView> {
               badgeText: '${_metrics.officeEmployees} oficina',
               icon: Icons.engineering_rounded,
               accentColor: const Color(0xFF10B981),
-              onTap: () => widget.onNavigateToTab?.call(10), // Tab RRHH Personal
+              onTap: () =>
+                  widget.onNavigateToTab?.call(10), // Tab RRHH Personal
             ),
           ],
         );
@@ -637,7 +641,8 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView> {
                   ),
                 ),
                 TextButton(
-                  onPressed: () => widget.onNavigateToTab?.call(3), // Tab Bitácora
+                  onPressed: () =>
+                      widget.onNavigateToTab?.call(3), // Tab Bitácora
                   style: TextButton.styleFrom(
                     foregroundColor: isDark
                         ? const Color(0xFF94A3B8)

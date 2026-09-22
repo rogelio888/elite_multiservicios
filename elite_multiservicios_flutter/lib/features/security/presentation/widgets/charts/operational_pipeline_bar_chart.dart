@@ -33,7 +33,8 @@ class OperationalPipelineBarChart extends StatefulWidget {
       _OperationalPipelineBarChartState();
 }
 
-class _OperationalPipelineBarChartState extends State<OperationalPipelineBarChart>
+class _OperationalPipelineBarChartState
+    extends State<OperationalPipelineBarChart>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _growthAnimation;
@@ -275,8 +276,11 @@ class _OperationalPipelineBarChartState extends State<OperationalPipelineBarChar
                       final normalized = maxCount > 0
                           ? (stage.count / maxCount)
                           : (totalDeals == 0 ? 0.08 : 0.0);
-                      final barHeight = (130 * normalized * _growthAnimation.value)
-                          .clamp(14.0, 130.0);
+                      final barHeight =
+                          (130 * normalized * _growthAnimation.value).clamp(
+                            14.0,
+                            130.0,
+                          );
 
                       return Expanded(
                         child: MouseRegion(
@@ -299,8 +303,8 @@ class _OperationalPipelineBarChartState extends State<OperationalPipelineBarChar
                                     color: isHovered
                                         ? stage.color
                                         : (widget.isDark
-                                            ? const Color(0xFFCBD5E1)
-                                            : const Color(0xFF475569)),
+                                              ? const Color(0xFFCBD5E1)
+                                              : const Color(0xFF475569)),
                                   ),
                                 ),
                                 const SizedBox(height: 6),
@@ -353,11 +357,11 @@ class _OperationalPipelineBarChartState extends State<OperationalPipelineBarChar
                                         : FontWeight.w500,
                                     color: isHovered
                                         ? (widget.isDark
-                                            ? Colors.white
-                                            : const Color(0xFF0F172A))
+                                              ? Colors.white
+                                              : const Color(0xFF0F172A))
                                         : (widget.isDark
-                                            ? const Color(0xFF94A3B8)
-                                            : const Color(0xFF64748B)),
+                                              ? const Color(0xFF94A3B8)
+                                              : const Color(0xFF64748B)),
                                   ),
                                 ),
                               ],
@@ -391,8 +395,8 @@ class _OperationalPipelineBarChartState extends State<OperationalPipelineBarChar
                     _hoveredIndex != null
                         ? 'Etapa: ${stages[_hoveredIndex!].name} — ${stages[_hoveredIndex!].description}'
                         : (totalDeals == 0
-                            ? 'Pipeline inicializado: Todas las oportunidades registradas en CRM impactarán este embudo.'
-                            : '$totalDeals oportunidades activas gestionadas en el pipeline comercial.'),
+                              ? 'Pipeline inicializado: Todas las oportunidades registradas en CRM impactarán este embudo.'
+                              : '$totalDeals oportunidades activas gestionadas en el pipeline comercial.'),
                     style: GoogleFonts.inter(
                       fontSize: 11.5,
                       color: widget.isDark

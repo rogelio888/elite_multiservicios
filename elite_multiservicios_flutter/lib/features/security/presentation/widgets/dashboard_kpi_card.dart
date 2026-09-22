@@ -38,8 +38,7 @@ class _DashboardKpiCardState extends State<DashboardKpiCard> {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveBadgeColor =
-        widget.badgeColor ?? widget.accentColor;
+    final effectiveBadgeColor = widget.badgeColor ?? widget.accentColor;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
@@ -57,8 +56,8 @@ class _DashboardKpiCardState extends State<DashboardKpiCard> {
             color: _isHovered
                 ? widget.accentColor.withValues(alpha: 0.5)
                 : (widget.isDark
-                    ? const Color(0xFF1E293B)
-                    : const Color(0xFFE2E8F0)),
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFE2E8F0)),
           ),
           boxShadow: _isHovered
               ? [
@@ -136,7 +135,9 @@ class _DashboardKpiCardState extends State<DashboardKpiCard> {
                       fontSize: 26,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.8,
-                      color: widget.isDark ? Colors.white : const Color(0xFF0F172A),
+                      color: widget.isDark
+                          ? Colors.white
+                          : const Color(0xFF0F172A),
                     ),
                   ),
                   const SizedBox(height: 8),

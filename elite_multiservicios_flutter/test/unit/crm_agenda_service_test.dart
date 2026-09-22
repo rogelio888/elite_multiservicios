@@ -101,8 +101,6 @@ void main() {
       }
     });
 
-
-
     test(
       'deleteTask removes task from local memory and updates counts',
       () async {
