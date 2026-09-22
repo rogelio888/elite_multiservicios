@@ -134,8 +134,9 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView> {
 
   String _humanizeAction(String action) {
     if (action.contains('LOGIN_SUCCESS')) return 'Inicio de sesión exitoso';
-    if (action.contains('LOGIN_FAILED'))
+    if (action.contains('LOGIN_FAILED')) {
       return 'Intento fallido de autenticación';
+    }
     if (action.contains('MFA_VERIFIED')) return 'Segundo factor validado (MFA)';
     if (action.contains('MFA_CHALLENGE')) return 'Desafío 2FA emitido';
     if (action.contains('PASSWORD_RESET') ||
