@@ -46,6 +46,38 @@ class RrhhStateService extends ChangeNotifier {
           ),
         )
         .toList();
+    _salaryAdjustments = [
+      RrhhSalaryAdjustment(
+        id: 'adj-001',
+        employeeId: 'emp-001',
+        employeeName: 'Juan Carlos Pérez Mendoza',
+        type: 'BONO',
+        amount: 350.0,
+        concept: 'Bono de Puntualidad y Cero Faltas (Septiembre)',
+        authorizedBy: 'Lic. Laura Mendoza (RRHH)',
+        date: DateTime.now().subtract(const Duration(days: 3)),
+      ),
+      RrhhSalaryAdjustment(
+        id: 'adj-002',
+        employeeId: 'emp-002',
+        employeeName: 'María Elena Gómez Rojas',
+        type: 'ANTICIPO',
+        amount: 500.0,
+        concept: 'Anticipo quincenal solicitado por colaborador',
+        authorizedBy: 'Lic. Laura Mendoza (RRHH)',
+        date: DateTime.now().subtract(const Duration(days: 7)),
+      ),
+      RrhhSalaryAdjustment(
+        id: 'adj-003',
+        employeeId: 'emp-003',
+        employeeName: 'Carlos Eduardo Mamani Choque',
+        type: 'DESCUENTO_AUTORIZADO',
+        amount: 120.0,
+        concept: 'Reposición de Credencial institucional dañada',
+        authorizedBy: 'Lic. Laura Mendoza (RRHH)',
+        date: DateTime.now().subtract(const Duration(days: 5)),
+      ),
+    ];
   }
 
   /// Reinicializa el estado con la semilla de mock data para pruebas unitarias
@@ -83,6 +115,18 @@ class RrhhStateService extends ChangeNotifier {
           ),
         )
         .toList();
+    _salaryAdjustments = [
+      RrhhSalaryAdjustment(
+        id: 'adj-001',
+        employeeId: 'emp-001',
+        employeeName: 'Juan Carlos Pérez Mendoza',
+        type: 'BONO',
+        amount: 350.0,
+        concept: 'Bono de Puntualidad y Cero Faltas (Septiembre)',
+        authorizedBy: 'Lic. Laura Mendoza (RRHH)',
+        date: DateTime.now().subtract(const Duration(days: 3)),
+      ),
+    ];
     notifyListeners();
   }
 
@@ -102,6 +146,7 @@ class RrhhStateService extends ChangeNotifier {
   late List<RrhhIncident> _incidents;
   late List<RrhhLaborMovement> _movements;
   late List<RrhhExitRecord> _exits;
+  late List<RrhhSalaryAdjustment> _salaryAdjustments;
 
   // -------------------------------------------------------------
   // GETTERS PÚBLICOS
@@ -121,6 +166,16 @@ class RrhhStateService extends ChangeNotifier {
   List<RrhhIncident> get incidents => List.unmodifiable(_incidents);
   List<RrhhLaborMovement> get movements => List.unmodifiable(_movements);
   List<RrhhExitRecord> get exits => List.unmodifiable(_exits);
+  List<RrhhSalaryAdjustment> get salaryAdjustments =>
+      List.unmodifiable(_salaryAdjustments);
+
+  List<RrhhSalaryAdjustment> getAdjustmentsForEmployee(String employeeId) =>
+      _salaryAdjustments.where((a) => a.employeeId == employeeId).toList();
+
+  void addSalaryAdjustment(RrhhSalaryAdjustment adjustment) {
+    _salaryAdjustments.insert(0, adjustment);
+    notifyListeners();
+  }
 
   // Filtros rápidos
   List<RrhhEmployee> get activeEmployees =>
@@ -337,6 +392,45 @@ class RrhhStateService extends ChangeNotifier {
     final index = _employees.indexWhere((e) => e.id == employee.id);
     if (index != -1) {
       _employees[index] = employee;
+      notifyListeners();
+    }
+  }
+
+  void updateEmployeeDocuments({
+    required String employeeId,
+    required bool hasCiCopy,
+    required bool hasUtilityBill,
+    required bool hasHomeSketch,
+    required bool hasFelccRecord,
+    required bool hasPhoto3x4,
+    required bool hasSusInsurance,
+    String? updatedBy,
+  }) {
+    final index = _employees.indexWhere((e) => e.id == employeeId);
+    if (index != -1) {
+      final emp = _employees[index];
+      final newTimeline = List<RrhhTimelineEvent>.from(emp.timeline);
+      newTimeline.insert(
+        0,
+        RrhhTimelineEvent(
+          id: 'ev-${DateTime.now().millisecondsSinceEpoch}',
+          date: DateTime.now(),
+          title: 'Expediente Físico Actualizado',
+          description:
+              'Se completaron y verificaron documentos físicos en legajo.',
+          category: 'DOCUMENTOS',
+          registeredBy: updatedBy ?? 'Lic. Laura Mendoza (RRHH)',
+        ),
+      );
+      _employees[index] = emp.copyWith(
+        hasCiCopy: hasCiCopy,
+        hasUtilityBill: hasUtilityBill,
+        hasHomeSketch: hasHomeSketch,
+        hasFelccRecord: hasFelccRecord,
+        hasPhoto3x4: hasPhoto3x4,
+        hasSusInsurance: hasSusInsurance,
+        timeline: newTimeline,
+      );
       notifyListeners();
     }
   }
@@ -656,6 +750,11 @@ class RrhhStateService extends ChangeNotifier {
 
   void addSchedule(RrhhWorkSchedule schedule) {
     _schedules.add(schedule);
+    notifyListeners();
+  }
+
+  void addClientCompany(RrhhClientCompany client) {
+    _clients.add(client);
     notifyListeners();
   }
 

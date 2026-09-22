@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/models/rrhh_assignment.dart';
+import '../../data/models/rrhh_employee.dart';
 import '../../data/models/rrhh_schedule.dart';
 import '../../data/services/rrhh_state_service.dart';
 import '../widgets/rrhh_shared_widgets.dart';
@@ -1519,181 +1520,26 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                   const SizedBox(height: 14),
 
                   if (selectedType == 'CAMPO') ...[
-                    // Barra de búsqueda sencilla y predictiva (tipo Google) solo para Empresas
-                    RawAutocomplete<RrhhClientCompany>(
-                      initialValue: TextEditingValue(
-                        text: selectedClient?.name ?? '',
-                      ),
-                      displayStringForOption: (c) => c.name,
-                      optionsBuilder: (TextEditingValue textEditingValue) {
-                        if (textEditingValue.text.isEmpty) {
-                          return clients;
-                        }
-                        final q = textEditingValue.text.toLowerCase();
-                        return clients.where(
-                          (c) =>
-                              c.name.toLowerCase().contains(q) ||
-                              c.services.any(
-                                (s) =>
-                                    s.serviceName.toLowerCase().contains(q) ||
-                                    s.branchLocation.toLowerCase().contains(q),
-                              ),
-                        );
-                      },
-                      onSelected: (RrhhClientCompany c) {
+                    // Selector adaptativo (<=7 normal, >=8 con búsqueda Google)
+                    RrhhAdaptiveSelector<RrhhClientCompany>(
+                      label: 'Empresa Cliente Destino *',
+                      hintText: 'Buscar o escribir empresa...',
+                      initialValue: selectedClient,
+                      items: clients,
+                      itemLabel: (c) => c.name,
+                      itemSubtitle: (c) =>
+                          '${c.services.length} servicio(s) contratado(s)',
+                      itemIcon: Icons.business,
+                      prefixIcon: Icons.location_city,
+                      onChanged: (c) {
                         setDlgState(() {
                           selectedClient = c;
-                          if (c.services.isNotEmpty) {
+                          if (c != null && c.services.isNotEmpty) {
                             selectedService = c.services.first;
                           } else {
                             selectedService = null;
                           }
                         });
-                      },
-                      fieldViewBuilder:
-                          (
-                            context,
-                            textEditingController,
-                            focusNode,
-                            onFieldSubmitted,
-                          ) {
-                            return TextField(
-                              controller: textEditingController,
-                              focusNode: focusNode,
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                color: isDark
-                                    ? Colors.white
-                                    : const Color(0xFF0F172A),
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'Empresa Cliente Destino *',
-                                hintText: 'Buscar o escribir empresa...',
-                                prefixIcon: const Icon(
-                                  Icons.search,
-                                  size: 18,
-                                  color: Color(0xFF3B82F6),
-                                ),
-                                suffixIcon:
-                                    textEditingController.text.isNotEmpty
-                                    ? IconButton(
-                                        icon: const Icon(Icons.clear, size: 16),
-                                        tooltip: 'Limpiar búsqueda',
-                                        onPressed: () {
-                                          textEditingController.clear();
-                                          setDlgState(() {
-                                            selectedClient = null;
-                                            selectedService = null;
-                                          });
-                                        },
-                                      )
-                                    : null,
-                              ),
-                            );
-                          },
-                      optionsViewBuilder: (context, onSelected, options) {
-                        return Align(
-                          alignment: Alignment.topLeft,
-                          child: Material(
-                            elevation: 8,
-                            borderRadius: BorderRadius.circular(8),
-                            color: isDark
-                                ? const Color(0xFF1E293B)
-                                : Colors.white,
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(
-                                maxHeight: 180,
-                                maxWidth: 470,
-                              ),
-                              child: ListView.separated(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 4,
-                                ),
-                                shrinkWrap: true,
-                                itemCount: options.length,
-                                separatorBuilder: (context, index) => Divider(
-                                  height: 1,
-                                  thickness: 0.5,
-                                  color: isDark
-                                      ? const Color(0xFF334155)
-                                      : const Color(0xFFE2E8F0),
-                                ),
-                                itemBuilder: (context, index) {
-                                  final c = options.elementAt(index);
-                                  final isCurr = selectedClient?.id == c.id;
-                                  return InkWell(
-                                    onTap: () => onSelected(c),
-                                    hoverColor: isDark
-                                        ? const Color(0xFF334155)
-                                        : const Color(0xFFF1F5F9),
-                                    child: Container(
-                                      color: isCurr
-                                          ? (isDark
-                                                ? const Color(
-                                                    0xFF3B82F6,
-                                                  ).withValues(alpha: 0.15)
-                                                : const Color(0xFFEFF6FF))
-                                          : Colors.transparent,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 14,
-                                        vertical: 10,
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.business,
-                                            size: 17,
-                                            color: Color(0xFF3B82F6),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  c.name,
-                                                  style: GoogleFonts.inter(
-                                                    fontSize: 13,
-                                                    fontWeight: isCurr
-                                                        ? FontWeight.w700
-                                                        : FontWeight.w600,
-                                                    color: isDark
-                                                        ? Colors.white
-                                                        : const Color(
-                                                            0xFF0F172A,
-                                                          ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 2),
-                                                Text(
-                                                  '${c.services.length} servicio(s) contratado(s)',
-                                                  style: GoogleFonts.inter(
-                                                    fontSize: 11,
-                                                    color: const Color(
-                                                      0xFF94A3B8,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          if (isCurr)
-                                            const Icon(
-                                              Icons.check,
-                                              size: 16,
-                                              color: Color(0xFF10B981),
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        );
                       },
                     ),
                     const SizedBox(height: 12),
@@ -1931,39 +1777,631 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
   }
 
   void _openCreationDialog(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final currentTab = _tabController.index;
+    if (currentTab == 0) {
+      _openNewAssignmentDialog(context);
+    } else if (currentTab == 1) {
+      _openNewClientDialog(context);
+    } else {
+      _openNewScheduleDialog(context);
+    }
+  }
 
-    if (currentTab == 2) {
-      // Nuevo Horario
-      final nameCtrl = TextEditingController();
-      final startCtrl = TextEditingController(text: '08:00');
-      final endCtrl = TextEditingController(text: '16:00');
-      final graceCtrl = TextEditingController(text: '10');
-      String appliesTo = 'CAMPO';
+  void _openNewAssignmentDialog(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final employees = _stateService.employees
+        .where((e) => e.status == 'ACTIVO')
+        .toList();
 
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
-          title: Text(
-            'Crear Plantilla de Horario',
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: isDark ? Colors.white : const Color(0xFF0F172A),
-            ),
+    if (employees.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No hay colaboradores activos disponibles para asignar.',
           ),
-          content: SizedBox(
-            width: 420,
+        ),
+      );
+      return;
+    }
+
+    RrhhEmployee selectedEmp = employees.first;
+
+    // Horarios disponibles
+    final availableScheduleNames = <String>{};
+    for (final s in _stateService.schedules) {
+      availableScheduleNames.add('${s.name} (${s.formattedTimeRange})');
+    }
+    String currentSchedule = availableScheduleNames.isNotEmpty
+        ? availableScheduleNames.first
+        : 'Administrativo Central (08:30 - 17:30)';
+
+    // Tipo de destino (OFICINA o CAMPO)
+    String selectedType = selectedEmp.employeeType == 'OFICINA'
+        ? 'OFICINA'
+        : 'CAMPO';
+
+    // Clientes y Servicios
+    final clients = _stateService.clientCompanies;
+    RrhhClientCompany? selectedClient = clients.isNotEmpty
+        ? clients.first
+        : null;
+    RrhhClientContractedService? selectedService =
+        (selectedClient != null && selectedClient.services.isNotEmpty)
+        ? selectedClient.services.first
+        : null;
+
+    // Áreas de oficina
+    final areas = _stateService.areas;
+    String selectedArea = areas.isNotEmpty ? areas.first.name : 'Operaciones';
+    final positionCtrl = TextEditingController(text: selectedEmp.position);
+    final supervisorCtrl = TextEditingController(
+      text: selectedType == 'OFICINA'
+          ? 'Gerencia General'
+          : 'Ricardo Montaño Justiniano',
+    );
+    final reasonCtrl = TextEditingController();
+    final notesCtrl = TextEditingController();
+
+    const assignmentReasons = [
+      'Asignación operativa de personal',
+      'Rotación periódica por política preventiva',
+      'Reorganización de cuadrilla de campo',
+      'Refuerzo operativo por alta demanda',
+      'Cobertura temporal por baja o vacaciones',
+      'Solicitud formal del cliente',
+      'Ascenso o traslado de área',
+    ];
+    String selectedReason = assignmentReasons.first;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDlgState) {
+          // Asignación activa actual del colaborador si existe
+          RrhhAssignment? activeAsg;
+          for (final a in _stateService.assignments) {
+            if (a.employeeId == selectedEmp.id && a.status == 'ACTIVA') {
+              activeAsg = a;
+              break;
+            }
+          }
+
+          return AlertDialog(
+            backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.assignment_ind,
+                    color: Color(0xFF10B981),
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Nueva Asignación de Personal',
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
+                        ),
+                      ),
+                      Text(
+                        'Asignar destino operativo en Empresa Cliente u Oficina Central',
+                        style: GoogleFonts.inter(
+                          fontSize: 12.5,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            contentPadding: const EdgeInsets.fromLTRB(24, 16, 10, 16),
+            content: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: 530,
+                maxHeight: MediaQuery.sizeOf(ctx).height * 0.78,
+              ),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(right: 14, top: 4, bottom: 4),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Selector de Colaborador
+                    // Selector adaptativo de Colaborador (13 colaboradores >= 8 -> Búsqueda tipo Google)
+                    RrhhAdaptiveSelector<RrhhEmployee>(
+                      label: 'Colaborador a Asignar *',
+                      hintText:
+                          'Buscar colaborador por nombre, código o cargo...',
+                      initialValue: selectedEmp,
+                      items: employees,
+                      itemLabel: (emp) => '${emp.fullName} (${emp.code})',
+                      itemSubtitle: (emp) => emp.position,
+                      itemIcon: Icons.person,
+                      prefixIcon: Icons.badge_outlined,
+                      onChanged: (emp) {
+                        if (emp != null) {
+                          setDlgState(() {
+                            selectedEmp = emp;
+                            positionCtrl.text = emp.position;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Cuadro informativo de Ubicación / Asignación Actual
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF0B1324)
+                            : const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFE2E8F0),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                activeAsg != null
+                                    ? Icons.pin_drop
+                                    : Icons.info_outline,
+                                size: 14,
+                                color: const Color(0xFF3B82F6),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                activeAsg != null
+                                    ? 'ASIGNACIÓN ACTUAL:'
+                                    : 'ESTADO ACTUAL:',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF3B82F6),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            activeAsg != null
+                                ? activeAsg.fullDestinationSummary
+                                : 'Puesto Inicial • ${selectedEmp.workplace}',
+                            style: GoogleFonts.inter(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            activeAsg != null
+                                ? 'Horario: ${activeAsg.scheduleName}  •  Supervisor: ${activeAsg.supervisorName}'
+                                : 'Cargo: ${selectedEmp.position}  •  Supervisor: ${selectedEmp.supervisor}',
+                            style: GoogleFonts.inter(
+                              fontSize: 11.5,
+                              color: isDark
+                                  ? const Color(0xFF94A3B8)
+                                  : const Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Selector de Tipo de Destino (Campo u Oficina)
+                    Text(
+                      'Nuevo Destino a Asignar',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SegmentedButton<String>(
+                      segments: const [
+                        ButtonSegment(
+                          value: 'CAMPO',
+                          label: Text('Empresa Cliente (Campo)'),
+                          icon: Icon(Icons.location_city, size: 16),
+                        ),
+                        ButtonSegment(
+                          value: 'OFICINA',
+                          label: Text('Oficina Central'),
+                          icon: Icon(Icons.business, size: 16),
+                        ),
+                      ],
+                      selected: {selectedType},
+                      onSelectionChanged: (val) {
+                        setDlgState(() {
+                          selectedType = val.first;
+                          if (selectedType == 'OFICINA') {
+                            supervisorCtrl.text = 'Gerencia General';
+                          } else if (selectedService != null) {
+                            supervisorCtrl.text = 'Ricardo Montaño Justiniano';
+                          }
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 14),
+
+                    if (selectedType == 'CAMPO') ...[
+                      // Selector adaptativo de Empresa Cliente (5 empresas <= 7 -> Selector normal; >= 8 -> Búsqueda tipo Google)
+                      RrhhAdaptiveSelector<RrhhClientCompany>(
+                        label: 'Empresa Cliente Destino *',
+                        hintText: 'Buscar o escribir empresa...',
+                        initialValue: selectedClient,
+                        items: clients,
+                        itemLabel: (c) => c.name,
+                        itemSubtitle: (c) =>
+                            '${c.services.length} servicio(s) contratado(s)',
+                        itemIcon: Icons.business,
+                        prefixIcon: Icons.location_city,
+                        onChanged: (c) {
+                          setDlgState(() {
+                            selectedClient = c;
+                            if (c != null && c.services.isNotEmpty) {
+                              selectedService = c.services.first;
+                            } else {
+                              selectedService = null;
+                            }
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      if (selectedClient != null &&
+                          selectedClient!.services.isNotEmpty)
+                        DropdownButtonFormField<RrhhClientContractedService>(
+                          key: ValueKey('service_${selectedClient?.id}'),
+                          initialValue:
+                              selectedClient!.services.contains(
+                                selectedService,
+                              )
+                              ? selectedService
+                              : selectedClient!.services.first,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Servicio Contratado y Sede *',
+                            prefixIcon: Icon(
+                              Icons.room_service_outlined,
+                              size: 18,
+                            ),
+                          ),
+                          items: selectedClient!.services
+                              .map(
+                                (s) => DropdownMenuItem(
+                                  value: s,
+                                  child: Text(
+                                    '${s.serviceName} (${s.branchLocation})',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.inter(fontSize: 13),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (s) {
+                            setDlgState(() => selectedService = s);
+                          },
+                        ),
+                    ] else ...[
+                      // Dropdown simple de Área en Oficina Central
+                      DropdownButtonFormField<String>(
+                        initialValue: areas.any((ar) => ar.name == selectedArea)
+                            ? selectedArea
+                            : (areas.isNotEmpty
+                                  ? areas.first.name
+                                  : 'Operaciones'),
+                        isExpanded: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Área en Oficina Central *',
+                          prefixIcon: Icon(Icons.corporate_fare, size: 18),
+                        ),
+                        items: areas
+                            .map(
+                              (ar) => DropdownMenuItem(
+                                value: ar.name,
+                                child: Text(
+                                  ar.name,
+                                  style: GoogleFonts.inter(fontSize: 13),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (val) {
+                          if (val != null) {
+                            setDlgState(() => selectedArea = val);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: positionCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Cargo o Rol en Oficina *',
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+
+                    // Horario / Turno Asignado
+                    DropdownButtonFormField<String>(
+                      initialValue:
+                          availableScheduleNames.contains(currentSchedule)
+                          ? currentSchedule
+                          : availableScheduleNames.first,
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Horario / Turno Asignado *',
+                        prefixIcon: Icon(Icons.access_time, size: 18),
+                      ),
+                      items: availableScheduleNames
+                          .map(
+                            (name) => DropdownMenuItem(
+                              value: name,
+                              child: Text(
+                                name,
+                                style: GoogleFonts.inter(fontSize: 13),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          setDlgState(() => currentSchedule = val);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Supervisor Asignado
+                    TextField(
+                      controller: supervisorCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Supervisor Inmediato *',
+                        prefixIcon: Icon(Icons.person_pin, size: 18),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Motivo de Asignación
+                    Text(
+                      'Motivo o Causal de la Asignación',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      initialValue: assignmentReasons.contains(selectedReason)
+                          ? selectedReason
+                          : assignmentReasons.first,
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Causal de Asignación *',
+                        prefixIcon: Icon(Icons.info_outline, size: 18),
+                      ),
+                      items: assignmentReasons
+                          .map(
+                            (r) => DropdownMenuItem(
+                              value: r,
+                              child: Text(
+                                r,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.inter(fontSize: 13),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          setDlgState(() => selectedReason = val);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: reasonCtrl,
+                      decoration: const InputDecoration(
+                        labelText:
+                            'Detalle o Justificación Adicional (opcional)',
+                        hintText:
+                            'Ej: Cobertura de apertura de nueva sucursal...',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancelar'),
+              ),
+              FilledButton.icon(
+                icon: const Icon(Icons.check, size: 16),
+                label: const Text('Guardar Asignación'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFF10B981),
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  final fullReason = reasonCtrl.text.trim().isNotEmpty
+                      ? '$selectedReason: ${reasonCtrl.text.trim()}'
+                      : selectedReason;
+
+                  _stateService.rotateEmployee(
+                    employeeId: selectedEmp.id,
+                    employeeName: selectedEmp.fullName,
+                    employeeCode: selectedEmp.code,
+                    type: selectedType,
+                    clientCompanyId: selectedType == 'CAMPO'
+                        ? selectedClient?.id
+                        : null,
+                    clientCompanyName: selectedType == 'CAMPO'
+                        ? selectedClient?.name
+                        : null,
+                    contractedServiceId: selectedType == 'CAMPO'
+                        ? selectedService?.id
+                        : null,
+                    contractedServiceName: selectedType == 'CAMPO'
+                        ? selectedService?.serviceName
+                        : null,
+                    workplaceBranch: selectedType == 'CAMPO'
+                        ? selectedService?.branchLocation
+                        : 'Oficina Central',
+                    officeArea: selectedType == 'OFICINA' ? selectedArea : null,
+                    officeRole: selectedType == 'OFICINA'
+                        ? positionCtrl.text.trim()
+                        : null,
+                    scheduleName: currentSchedule,
+                    supervisorName: supervisorCtrl.text.trim(),
+                    rotationReason: fullReason,
+                    notes: notesCtrl.text.trim().isNotEmpty
+                        ? notesCtrl.text.trim()
+                        : null,
+                  );
+
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Asignación registrada exitosamente para ${selectedEmp.fullName}.',
+                      ),
+                      backgroundColor: const Color(0xFF10B981),
+                    ),
+                  );
+                },
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  void _openNewClientDialog(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final nameCtrl = TextEditingController();
+    final categoryCtrl = TextEditingController(text: 'Retail / Comercial');
+    final addressCtrl = TextEditingController();
+    final contactCtrl = TextEditingController();
+    final phoneCtrl = TextEditingController();
+    final serviceNameCtrl = TextEditingController(text: 'Limpieza Integral');
+    final branchCtrl = TextEditingController(text: 'Sede Principal');
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.add_business,
+                color: Color(0xFF10B981),
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Registrar Nuevo Cliente / Empresa',
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                  ),
+                  Text(
+                    'Alta de empresa contratante y servicio inicial',
+                    style: GoogleFonts.inter(
+                      fontSize: 12.5,
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        content: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: 480,
+            maxHeight: MediaQuery.sizeOf(ctx).height * 0.75,
+          ),
+          child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameCtrl,
                   decoration: const InputDecoration(
-                    labelText:
-                        'Nombre del Turno (ej: Turno Tarde 14:00 - 22:00)',
+                    labelText: 'Nombre de la Empresa Cliente *',
+                    hintText: 'Ej: Hipermaxi S.A., Farmacorp...',
+                    prefixIcon: Icon(Icons.business, size: 18),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: categoryCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Rubro / Categoría *',
+                    hintText: 'Ej: Retail, Salud, Industrial, Logística',
+                    prefixIcon: Icon(Icons.category, size: 18),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: addressCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Dirección o Ubicación Principal',
+                    prefixIcon: Icon(Icons.place, size: 18),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -1971,122 +2409,249 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                   children: [
                     Expanded(
                       child: TextField(
-                        controller: startCtrl,
-                        decoration: const InputDecoration(labelText: 'Entrada'),
+                        controller: contactCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Persona de Contacto',
+                          prefixIcon: Icon(Icons.person, size: 18),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: TextField(
-                        controller: endCtrl,
-                        decoration: const InputDecoration(labelText: 'Salida'),
+                        controller: phoneCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Teléfono de Contacto',
+                          prefixIcon: Icon(Icons.phone, size: 18),
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: graceCtrl,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Tolerancia (minutos)',
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        initialValue: appliesTo,
-                        isExpanded: true,
-                        decoration: const InputDecoration(
-                          labelText: 'Aplica a',
-                        ),
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'CAMPO',
-                            child: Text('Campo'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'OFICINA',
-                            child: Text('Oficina'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'AMBOS',
-                            child: Text('Ambos'),
-                          ),
-                        ],
-                        onChanged: (val) {
-                          if (val != null) appliesTo = val;
-                        },
-                      ),
-                    ),
-                  ],
+                TextField(
+                  controller: serviceNameCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Servicio Contratado Inicial *',
+                    hintText: 'Ej: Limpieza de Áreas Comunes, Mantenimiento...',
+                    prefixIcon: Icon(Icons.room_service, size: 18),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: branchCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Sede Asignada al Servicio *',
+                    hintText: 'Ej: Sede Central, Sucursal Norte...',
+                    prefixIcon: Icon(Icons.store, size: 18),
+                  ),
                 ),
               ],
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancelar'),
-            ),
-            FilledButton(
-              onPressed: () {
-                if (nameCtrl.text.trim().isEmpty) return;
-                final startParts = startCtrl.text.trim().split(':');
-                final endParts = endCtrl.text.trim().split(':');
-                final startH = int.tryParse(startParts.first) ?? 8;
-                final startM = startParts.length > 1
-                    ? (int.tryParse(startParts[1]) ?? 0)
-                    : 0;
-                final endH = int.tryParse(endParts.first) ?? 16;
-                final endM = endParts.length > 1
-                    ? (int.tryParse(endParts[1]) ?? 0)
-                    : 0;
-
-                _stateService.addSchedule(
-                  RrhhWorkSchedule(
-                    id: 'SCH-${DateTime.now().millisecondsSinceEpoch}',
-                    name: nameCtrl.text.trim(),
-                    startTime: TimeOfDay(hour: startH, minute: startM),
-                    endTime: TimeOfDay(hour: endH, minute: endM),
-                    gracePeriodMinutes: int.tryParse(graceCtrl.text) ?? 10,
-                    workingDays: const [
-                      'Lunes',
-                      'Martes',
-                      'Miércoles',
-                      'Jueves',
-                      'Viernes',
-                    ],
-                    employeeTypeScope: appliesTo,
-                    totalWeeklyHours: 40,
-                    observations: 'Horario estándar registrado por RRHH',
-                  ),
-                );
-                Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Horario registrado exitosamente.'),
-                    backgroundColor: Color(0xFF10B981),
-                  ),
-                );
-              },
-              child: const Text('Guardar Horario'),
-            ),
-          ],
         ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Para asignar personal nuevo, utilice el botón "Contratar" en la sección de Personal o seleccione "Reasignar Destino".',
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton.icon(
+            icon: const Icon(Icons.check, size: 16),
+            label: const Text('Guardar Cliente'),
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF10B981),
+            ),
+            onPressed: () {
+              if (nameCtrl.text.trim().isEmpty) return;
+              final newId = 'cli-${DateTime.now().millisecondsSinceEpoch}';
+              final newSvc = RrhhClientContractedService(
+                id: 'svc-${DateTime.now().millisecondsSinceEpoch}',
+                clientId: newId,
+                serviceName: serviceNameCtrl.text.trim().isNotEmpty
+                    ? serviceNameCtrl.text.trim()
+                    : 'Servicio General',
+                branchLocation: branchCtrl.text.trim().isNotEmpty
+                    ? branchCtrl.text.trim()
+                    : 'Sede Principal',
+                requiredStaff: 2,
+                scheduleSummary: '08:00 - 16:00',
+              );
+              _stateService.addClientCompany(
+                RrhhClientCompany(
+                  id: newId,
+                  name: nameCtrl.text.trim(),
+                  businessCategory: categoryCtrl.text.trim(),
+                  address: addressCtrl.text.trim().isNotEmpty
+                      ? addressCtrl.text.trim()
+                      : 'Santa Cruz de la Sierra',
+                  contactPerson: contactCtrl.text.trim().isNotEmpty
+                      ? contactCtrl.text.trim()
+                      : 'Administración',
+                  contactPhone: phoneCtrl.text.trim().isNotEmpty
+                      ? phoneCtrl.text.trim()
+                      : '70000000',
+                  services: [newSvc],
+                ),
+              );
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Cliente "${nameCtrl.text.trim()}" registrado con éxito.',
+                  ),
+                  backgroundColor: const Color(0xFF10B981),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openNewScheduleDialog(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final nameCtrl = TextEditingController();
+    final startCtrl = TextEditingController(text: '08:00');
+    final endCtrl = TextEditingController(text: '16:00');
+    final graceCtrl = TextEditingController(text: '10');
+    String appliesTo = 'CAMPO';
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+        title: Text(
+          'Crear Plantilla de Horario',
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
           ),
         ),
-      );
-    }
+        content: SizedBox(
+          width: 420,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Nombre del Turno (ej: Turno Tarde 14:00 - 22:00)',
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: startCtrl,
+                      decoration: const InputDecoration(labelText: 'Entrada'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: endCtrl,
+                      decoration: const InputDecoration(labelText: 'Salida'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: graceCtrl,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Tolerancia (minutos)',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      initialValue: appliesTo,
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Aplica a',
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'CAMPO',
+                          child: Text('Campo'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'OFICINA',
+                          child: Text('Oficina'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'AMBOS',
+                          child: Text('Ambos'),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) appliesTo = val;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (nameCtrl.text.trim().isEmpty) return;
+              final startParts = startCtrl.text.trim().split(':');
+              final endParts = endCtrl.text.trim().split(':');
+              final startH = int.tryParse(startParts.first) ?? 8;
+              final startM = startParts.length > 1
+                  ? (int.tryParse(startParts[1]) ?? 0)
+                  : 0;
+              final endH = int.tryParse(endParts.first) ?? 16;
+              final endM = endParts.length > 1
+                  ? (int.tryParse(endParts[1]) ?? 0)
+                  : 0;
+
+              _stateService.addSchedule(
+                RrhhWorkSchedule(
+                  id: 'SCH-${DateTime.now().millisecondsSinceEpoch}',
+                  name: nameCtrl.text.trim(),
+                  startTime: TimeOfDay(hour: startH, minute: startM),
+                  endTime: TimeOfDay(hour: endH, minute: endM),
+                  gracePeriodMinutes: int.tryParse(graceCtrl.text) ?? 10,
+                  workingDays: const [
+                    'Lunes',
+                    'Martes',
+                    'Miércoles',
+                    'Jueves',
+                    'Viernes',
+                  ],
+                  employeeTypeScope: appliesTo,
+                  totalWeeklyHours: 40,
+                  observations: 'Horario estándar registrado por RRHH',
+                ),
+              );
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Horario registrado exitosamente.'),
+                  backgroundColor: Color(0xFF10B981),
+                ),
+              );
+            },
+            child: const Text('Guardar Horario'),
+          ),
+        ],
+      ),
+    );
   }
 }

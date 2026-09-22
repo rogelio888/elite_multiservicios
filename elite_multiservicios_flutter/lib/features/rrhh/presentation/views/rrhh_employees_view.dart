@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/rrhh_audit_service.dart';
 import '../../data/rrhh_company_service.dart';
+import '../widgets/rrhh_shared_widgets.dart';
 
 /// Modelo en memoria para Colaborador / Ficha Completa Digital
 /// Mapeado 1:1 con la ficha física de "DATOS DEL PERSONAL" de Elite Multiservicios.
@@ -1953,8 +1954,10 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: DropdownButtonFormField<String>(
+                              child: RrhhAdaptiveSelector<String>(
                                 key: ValueKey(selectedWorkplace),
+                                label: 'Lugar de Trabajo / Empresa *',
+                                hintText: 'Buscar o seleccionar sede...',
                                 initialValue:
                                     _companyService.companyNames.contains(
                                       selectedWorkplace,
@@ -1963,15 +1966,10 @@ class _RrhhEmployeesViewState extends State<RrhhEmployeesView> {
                                     : (_companyService.companyNames.isNotEmpty
                                           ? _companyService.companyNames.first
                                           : null),
-                                decoration: const InputDecoration(
-                                  labelText: 'Lugar de Trabajo / Empresa *',
-                                ),
-                                items: _companyService.companyNames.map((name) {
-                                  return DropdownMenuItem(
-                                    value: name,
-                                    child: Text(name),
-                                  );
-                                }).toList(),
+                                items: _companyService.companyNames,
+                                itemLabel: (name) => name,
+                                itemIcon: Icons.business,
+                                prefixIcon: Icons.location_city,
                                 onChanged: (v) {
                                   if (v != null) {
                                     setModalState(() => selectedWorkplace = v);

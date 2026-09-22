@@ -65,6 +65,7 @@ class _RrhhApplicantModalState extends State<RrhhApplicantModal> {
 
     return Dialog(
       backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
@@ -73,8 +74,8 @@ class _RrhhApplicantModalState extends State<RrhhApplicantModal> {
       ),
       child: Container(
         constraints: BoxConstraints(
-          maxWidth: 600,
-          maxHeight: MediaQuery.of(context).size.height * 0.85,
+          maxWidth: 660,
+          maxHeight: MediaQuery.of(context).size.height * 0.88,
         ),
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -239,8 +240,11 @@ class _RrhhApplicantModalState extends State<RrhhApplicantModal> {
             ),
 
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 12,
+              runSpacing: 10,
               children: [
                 if (_status == 'SELECCIONADO' || _status == 'EN_EVALUACION')
                   FilledButton.tonalIcon(
@@ -248,6 +252,10 @@ class _RrhhApplicantModalState extends State<RrhhApplicantModal> {
                       backgroundColor: const Color(
                         0xFF10B981,
                       ).withValues(alpha: 0.15),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
                     ),
                     icon: const Icon(
                       Icons.handshake_outlined,
@@ -256,21 +264,39 @@ class _RrhhApplicantModalState extends State<RrhhApplicantModal> {
                     ),
                     label: const Text(
                       'Contratar y Crear Expediente',
-                      style: TextStyle(color: Color(0xFF10B981)),
+                      style: TextStyle(
+                        color: Color(0xFF10B981),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
                     ),
                     onPressed: _openHireFlow,
                   )
                 else
-                  const SizedBox(),
+                  const SizedBox.shrink(),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     OutlinedButton(
                       onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
+                      ),
                       child: const Text('Cerrar'),
                     ),
                     const SizedBox(width: 10),
                     FilledButton(
                       onPressed: _saveStatus,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF2563EB),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                      ),
                       child: const Text('Guardar Evaluación'),
                     ),
                   ],

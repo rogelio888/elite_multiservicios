@@ -62,6 +62,14 @@ abstract class AppPermissions {
   static const String crmCatalogView = 'catalog.view';
   static const String crmCatalogManage = 'catalog.manage';
 
+  // --- Módulo RRHH: Recursos Humanos ---
+  static const String rrhhDashboardView = 'rrhh.dashboard.view';
+  static const String rrhhPersonalView = 'rrhh.personal.view';
+  static const String rrhhPersonalManage = 'rrhh.personal.manage';
+  static const String rrhhAssignmentsView = 'rrhh.assignments.view';
+  static const String rrhhLaborView = 'rrhh.labor.view';
+  static const String rrhhReportsView = 'rrhh.reports.view';
+
   /// Catálogo de todos los permisos registrados en el sistema.
   static const List<String> all = [
     usersView,
@@ -103,5 +111,11 @@ abstract class AppPermissions {
     crmAgendaComplete,
     crmCatalogView,
     crmCatalogManage,
+    rrhhDashboardView,
+    rrhhPersonalView,
+    rrhhPersonalManage,
+    rrhhAssignmentsView,
+    rrhhLaborView,
+    rrhhReportsView,
   ];
 }
