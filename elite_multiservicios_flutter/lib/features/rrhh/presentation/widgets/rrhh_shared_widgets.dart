@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -115,7 +114,13 @@ class RrhhStatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveText = label ?? status ?? 'N/A';
+    final rawText = label ?? status ?? 'N/A';
+    final normalized = rawText.replaceAll('_', ' ').trim().toUpperCase();
+    String effectiveText = normalized;
+    if (normalized == 'EN EVALUACION') {
+      effectiveText = 'EN EVALUACIÓN';
+    }
+
     Color bg;
     Color fg;
 
@@ -143,7 +148,7 @@ class RrhhStatusChip extends StatelessWidget {
           break;
       }
     } else {
-      switch (effectiveText.toUpperCase()) {
+      switch (normalized) {
         case 'ACTIVO':
         case 'ACTIVA':
         case 'APROBADO':
@@ -152,7 +157,8 @@ class RrhhStatusChip extends StatelessWidget {
           fg = const Color(0xFF10B981);
           break;
         case 'PENDIENTE':
-        case 'EN_EVALUACION':
+        case 'EN EVALUACION':
+        case 'EN EVALUACIÓN':
         case 'PROGRAMADA':
           bg = const Color(0xFFF59E0B).withValues(alpha: 0.15);
           fg = const Color(0xFFF59E0B);
@@ -178,19 +184,28 @@ class RrhhStatusChip extends StatelessWidget {
       }
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: fg.withValues(alpha: 0.25), width: 1),
-      ),
-      child: Text(
-        effectiveText,
-        style: GoogleFonts.inter(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: fg,
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            effectiveText,
+            maxLines: 1,
+            softWrap: false,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+              color: fg,
+              letterSpacing: 0.2,
+            ),
+          ),
         ),
       ),
     );
@@ -231,12 +246,16 @@ class RrhhEmployeeTypeBadge extends StatelessWidget {
         children: [
           Icon(icon, size: 12, color: color),
           const SizedBox(width: 4),
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: color,
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
             ),
           ),
         ],
@@ -390,526 +409,280 @@ class RrhhEmptyState extends StatelessWidget {
   }
 }
 
-/// Selector desplegable directo (1 solo paso) con barra de búsqueda compacta integrada.
-/// Sin abrir ventanas ni modales adicionales: el menú se despliega directamente debajo
-/// del campo con un buscador rápido y selección en 1 solo clic.
-class RrhhSearchableSelector<T extends Object> extends StatefulWidget {
+/// Selector adaptativo con regla 7/8+:
+/// - Si el catálogo tiene hasta 7 registros activos (items.length <= 7):
+///   Muestra un selector normal limpio y compacto (DropdownButtonFormField).
+/// - Si tiene 8 o más registros activos (items.length >= 8):
+///   Habilita la barra de búsqueda interactiva tipo Google con autocompletado (RawAutocomplete).
+class RrhhAdaptiveSelector<T extends Object> extends StatefulWidget {
   final String label;
   final String hintText;
   final T? initialValue;
   final List<T> items;
   final String Function(T item) itemLabel;
   final String? Function(T item)? itemSubtitle;
+  final IconData? itemIcon;
   final IconData? prefixIcon;
   final ValueChanged<T?> onChanged;
   final bool isRequired;
+  final int searchThreshold;
 
-  const RrhhSearchableSelector({
+  const RrhhAdaptiveSelector({
     super.key,
     required this.label,
-    this.hintText = 'Seleccionar...',
+    this.hintText = 'Buscar o seleccionar...',
     this.initialValue,
     required this.items,
     required this.itemLabel,
     this.itemSubtitle,
+    this.itemIcon,
     this.prefixIcon,
     required this.onChanged,
     this.isRequired = false,
+    this.searchThreshold = 8,
   });
 
   @override
-  State<RrhhSearchableSelector<T>> createState() =>
-      _RrhhSearchableSelectorState<T>();
+  State<RrhhAdaptiveSelector<T>> createState() =>
+      _RrhhAdaptiveSelectorState<T>();
 }
 
-class _RrhhSearchableSelectorState<T extends Object>
-    extends State<RrhhSearchableSelector<T>> {
-  final LayerLink _layerLink = LayerLink();
-  final GlobalKey _triggerKey = GlobalKey();
-  final TextEditingController _searchCtrl = TextEditingController();
-  final FocusNode _searchFocusNode = FocusNode();
-  OverlayEntry? _overlayEntry;
-  bool _isOpen = false;
-  bool _openUpwards = false;
-  String _searchQuery = '';
+class _RrhhAdaptiveSelectorState<T extends Object>
+    extends State<RrhhAdaptiveSelector<T>> {
+  T? _selectedItem;
 
   @override
-  void dispose() {
-    _searchCtrl.dispose();
-    _searchFocusNode.dispose();
-    _closeDropdown();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _selectedItem = widget.initialValue;
   }
 
-  void _toggleDropdown() {
-    if (_isOpen) {
-      _closeDropdown();
-    } else {
-      _openDropdown();
+  @override
+  void didUpdateWidget(covariant RrhhAdaptiveSelector<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue) {
+      _selectedItem = widget.initialValue;
     }
   }
 
-  void _closeDropdown() {
-    if (!_isOpen) return;
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-    if (mounted) {
-      setState(() {
-        _isOpen = false;
-        _searchQuery = '';
-        _searchCtrl.clear();
-      });
-    }
-  }
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-  void _openDropdown() {
-    final renderBox =
-        _triggerKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
-    final triggerSize = renderBox.size;
-    final triggerGlobalOffset = renderBox.localToGlobal(Offset.zero);
+    // Regla de 7 vs 8+:
+    final bool enableSearch = widget.items.length >= widget.searchThreshold;
 
-    final mediaQuery = MediaQuery.of(context);
-    final screenHeight = mediaQuery.size.height;
-    final bottomInset =
-        mediaQuery.viewInsets.bottom + mediaQuery.padding.bottom;
-    final topInset = mediaQuery.padding.top;
+    if (!enableSearch) {
+      // 1. Hasta 7 registros: Selector estándar normal limpio y compacto
+      final currentValue = widget.items.contains(_selectedItem)
+          ? _selectedItem
+          : (widget.items.isNotEmpty ? widget.items.first : null);
 
-    final triggerTop = triggerGlobalOffset.dy;
-    final triggerBottom = triggerTop + triggerSize.height;
-
-    // Espacio vertical disponible real
-    final availableBelow = screenHeight - bottomInset - triggerBottom - 16;
-    final availableAbove = triggerTop - topInset - 16;
-
-    // Abrir hacia arriba si no hay espacio suficiente abajo (< 220px) y arriba hay más espacio
-    final shouldOpenUpwards =
-        availableBelow < 220 && availableAbove > availableBelow;
-    final availableSpace = shouldOpenUpwards ? availableAbove : availableBelow;
-    final computedMaxHeight = math
-        .min(230.0, availableSpace)
-        .clamp(110.0, 260.0);
-
-    setState(() {
-      _openUpwards = shouldOpenUpwards;
-      _isOpen = true;
-      _searchQuery = '';
-      _searchCtrl.clear();
-    });
-
-    _overlayEntry = _createOverlayEntry(
-      triggerSize,
-      shouldOpenUpwards,
-      computedMaxHeight,
-    );
-    Overlay.of(context).insert(_overlayEntry!);
-  }
-
-  OverlayEntry _createOverlayEntry(
-    Size triggerSize,
-    bool openUpwards,
-    double maxMenuHeight,
-  ) {
-    return OverlayEntry(
-      builder: (ctx) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-
-        return Stack(
-          children: [
-            // Cierre automático al pulsar fuera del menú
-            Positioned.fill(
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: _closeDropdown,
-              ),
+      return DropdownButtonFormField<T>(
+        initialValue: currentValue,
+        isExpanded: true,
+        decoration: InputDecoration(
+          labelText: widget.label,
+          prefixIcon: widget.prefixIcon != null
+              ? Icon(widget.prefixIcon, size: 18)
+              : (widget.itemIcon != null
+                    ? Icon(widget.itemIcon, size: 18)
+                    : null),
+        ),
+        items: widget.items.map((item) {
+          final subtitle = widget.itemSubtitle?.call(item);
+          return DropdownMenuItem<T>(
+            value: item,
+            child: Row(
+              children: [
+                if (widget.itemIcon != null) ...[
+                  Icon(
+                    widget.itemIcon,
+                    size: 16,
+                    color: const Color(0xFF3B82F6),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                Expanded(
+                  child: Text(
+                    subtitle != null && subtitle.isNotEmpty
+                        ? '${widget.itemLabel(item)} ($subtitle)'
+                        : widget.itemLabel(item),
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(fontSize: 13),
+                  ),
+                ),
+              ],
             ),
-            CompositedTransformFollower(
-              link: _layerLink,
-              showWhenUnlinked: false,
-              targetAnchor: openUpwards
-                  ? Alignment.topLeft
-                  : Alignment.bottomLeft,
-              followerAnchor: openUpwards
-                  ? Alignment.bottomLeft
-                  : Alignment.topLeft,
-              offset: Offset(0, openUpwards ? -4 : 4),
-              child: StatefulBuilder(
-                builder: (context, setOverlayState) {
-                  final query = _searchQuery.trim().toLowerCase();
-                  final filtered = widget.items.where((item) {
-                    if (query.isEmpty) return true;
-                    final label = widget.itemLabel(item).toLowerCase();
-                    final subtitle =
-                        widget.itemSubtitle?.call(item)?.toLowerCase() ?? '';
-                    return label.contains(query) || subtitle.contains(query);
-                  }).toList();
+          );
+        }).toList(),
+        onChanged: (val) {
+          setState(() => _selectedItem = val);
+          widget.onChanged(val);
+        },
+      );
+    }
 
-                  return Material(
-                    elevation: 16,
-                    shadowColor: Colors.black.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(10),
-                    color: isDark ? const Color(0xFF0F172A) : Colors.white,
+    // 2. 8 o más registros: Buscador interactivo tipo Google con autocompletado
+    return RawAutocomplete<T>(
+      key: ValueKey('autocomplete_${widget.label}_${_selectedItem?.hashCode}'),
+      initialValue: TextEditingValue(
+        text: _selectedItem != null ? widget.itemLabel(_selectedItem!) : '',
+      ),
+      displayStringForOption: widget.itemLabel,
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        if (textEditingValue.text.isEmpty) {
+          return widget.items;
+        }
+        final q = textEditingValue.text.toLowerCase();
+        return widget.items.where((item) {
+          final label = widget.itemLabel(item).toLowerCase();
+          final sub = widget.itemSubtitle?.call(item)?.toLowerCase() ?? '';
+          return label.contains(q) || sub.contains(q);
+        });
+      },
+      onSelected: (T item) {
+        setState(() => _selectedItem = item);
+        widget.onChanged(item);
+      },
+      fieldViewBuilder:
+          (
+            context,
+            textEditingController,
+            focusNode,
+            onFieldSubmitted,
+          ) {
+            return TextField(
+              controller: textEditingController,
+              focusNode: focusNode,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+              ),
+              decoration: InputDecoration(
+                labelText: widget.label,
+                hintText: widget.hintText,
+                prefixIcon: const Icon(
+                  Icons.search,
+                  size: 18,
+                  color: Color(0xFF3B82F6),
+                ),
+                suffixIcon: textEditingController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 16),
+                        tooltip: 'Limpiar búsqueda',
+                        onPressed: () {
+                          textEditingController.clear();
+                          setState(() => _selectedItem = null);
+                          widget.onChanged(null);
+                        },
+                      )
+                    : null,
+              ),
+            );
+          },
+      optionsViewBuilder: (context, onSelected, options) {
+        return Align(
+          alignment: Alignment.topLeft,
+          child: Material(
+            elevation: 8,
+            borderRadius: BorderRadius.circular(8),
+            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxHeight: 200,
+                maxWidth: 480,
+              ),
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                shrinkWrap: true,
+                itemCount: options.length,
+                separatorBuilder: (context, index) => Divider(
+                  height: 1,
+                  thickness: 0.5,
+                  color: isDark
+                      ? const Color(0xFF334155)
+                      : const Color(0xFFE2E8F0),
+                ),
+                itemBuilder: (context, index) {
+                  final item = options.elementAt(index);
+                  final isCurr = _selectedItem == item;
+                  final subtitle = widget.itemSubtitle?.call(item);
+
+                  return InkWell(
+                    onTap: () => onSelected(item),
+                    hoverColor: isDark
+                        ? const Color(0xFF334155)
+                        : const Color(0xFFF1F5F9),
                     child: Container(
-                      width: triggerSize.width,
-                      constraints: BoxConstraints(maxHeight: maxMenuHeight),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: isDark
-                              ? const Color(0xFF334155)
-                              : const Color(0xFFCBD5E1),
-                          width: 1.2,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(
-                              alpha: isDark ? 0.45 : 0.12,
-                            ),
-                            blurRadius: 20,
-                            offset: Offset(0, openUpwards ? -8 : 8),
-                          ),
-                        ],
+                      color: isCurr
+                          ? (isDark
+                                ? const Color(
+                                    0xFF3B82F6,
+                                  ).withValues(alpha: 0.15)
+                                : const Color(0xFFEFF6FF))
+                          : Colors.transparent,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(9),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Buscador integrado (limpio y con botón de borrar rápido)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
-                              child: Container(
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: isDark
-                                      ? const Color(0xFF0B1324)
-                                      : const Color(0xFFF1F5F9),
-                                  borderRadius: BorderRadius.circular(7),
-                                  border: Border.all(
-                                    color: isDark
-                                        ? const Color(0xFF334155)
-                                        : const Color(0xFFE2E8F0),
-                                  ),
-                                ),
-                                child: TextField(
-                                  controller: _searchCtrl,
-                                  focusNode: _searchFocusNode,
-                                  autofocus: true,
+                      child: Row(
+                        children: [
+                          Icon(
+                            widget.itemIcon ?? Icons.business,
+                            size: 17,
+                            color: const Color(0xFF3B82F6),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  widget.itemLabel(item),
                                   style: GoogleFonts.inter(
-                                    fontSize: 12.5,
+                                    fontSize: 13,
+                                    fontWeight: isCurr
+                                        ? FontWeight.w700
+                                        : FontWeight.w600,
                                     color: isDark
                                         ? Colors.white
                                         : const Color(0xFF0F172A),
                                   ),
-                                  decoration: InputDecoration(
-                                    hintText: 'Buscar o escribir...',
-                                    hintStyle: GoogleFonts.inter(
-                                      fontSize: 12,
-                                      color: isDark
-                                          ? const Color(0xFF64748B)
-                                          : const Color(0xFF94A3B8),
-                                    ),
-                                    prefixIcon: const Icon(
-                                      Icons.search,
-                                      size: 16,
-                                      color: Color(0xFF3B82F6),
-                                    ),
-                                    suffixIcon: _searchQuery.isNotEmpty
-                                        ? IconButton(
-                                            icon: const Icon(
-                                              Icons.close,
-                                              size: 14,
-                                            ),
-                                            tooltip: 'Limpiar',
-                                            visualDensity:
-                                                VisualDensity.compact,
-                                            padding: EdgeInsets.zero,
-                                            onPressed: () {
-                                              _searchCtrl.clear();
-                                              setOverlayState(() {
-                                                _searchQuery = '';
-                                              });
-                                            },
-                                          )
-                                        : null,
-                                    isDense: true,
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 8,
-                                      horizontal: 8,
+                                ),
+                                if (subtitle != null &&
+                                    subtitle.isNotEmpty) ...[
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    subtitle,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      color: const Color(0xFF94A3B8),
                                     ),
                                   ),
-                                  onChanged: (val) {
-                                    setOverlayState(() => _searchQuery = val);
-                                  },
-                                ),
-                              ),
+                                ],
+                              ],
                             ),
-                            Divider(
-                              height: 1,
-                              thickness: 1,
-                              color: isDark
-                                  ? const Color(0xFF1E293B)
-                                  : const Color(0xFFE2E8F0),
+                          ),
+                          if (isCurr)
+                            const Icon(
+                              Icons.check,
+                              size: 16,
+                              color: Color(0xFF10B981),
                             ),
-
-                            // Lista de opciones: limpia, sin iconos repetitivos, con checkmark claro para la activa
-                            Flexible(
-                              child: filtered.isEmpty
-                                  ? Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 18,
-                                        horizontal: 16,
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.search_off,
-                                            size: 16,
-                                            color: isDark
-                                                ? const Color(0xFF64748B)
-                                                : const Color(0xFF94A3B8),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            'Sin coincidencias',
-                                            style: GoogleFonts.inter(
-                                              fontSize: 12,
-                                              color: isDark
-                                                  ? const Color(0xFF64748B)
-                                                  : const Color(0xFF94A3B8),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  : ListView.separated(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 4,
-                                      ),
-                                      shrinkWrap: true,
-                                      itemCount: filtered.length,
-                                      separatorBuilder: (context, index) =>
-                                          Divider(
-                                            height: 1,
-                                            thickness: 0.5,
-                                            color: isDark
-                                                ? const Color(
-                                                    0xFF1E293B,
-                                                  ).withValues(alpha: 0.5)
-                                                : const Color(0xFFF1F5F9),
-                                          ),
-                                      itemBuilder: (ctx, index) {
-                                        final item = filtered[index];
-                                        final label = widget.itemLabel(item);
-                                        final subtitle = widget.itemSubtitle
-                                            ?.call(item);
-                                        final isSelected =
-                                            widget.initialValue == item;
-
-                                        return InkWell(
-                                          onTap: () {
-                                            widget.onChanged(item);
-                                            _closeDropdown();
-                                          },
-                                          hoverColor: isDark
-                                              ? const Color(0xFF1E293B)
-                                              : const Color(0xFFF1F5F9),
-                                          child: Container(
-                                            color: isSelected
-                                                ? (isDark
-                                                      ? const Color(0xFF1E293B)
-                                                      : const Color(0xFFEFF6FF))
-                                                : Colors.transparent,
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 14,
-                                              vertical: 9,
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Text(
-                                                        label,
-                                                        style: GoogleFonts.inter(
-                                                          fontSize: 12.5,
-                                                          fontWeight: isSelected
-                                                              ? FontWeight.w600
-                                                              : FontWeight.w400,
-                                                          color: isSelected
-                                                              ? (isDark
-                                                                    ? const Color(
-                                                                        0xFF60A5FA,
-                                                                      )
-                                                                    : const Color(
-                                                                        0xFF1D4ED8,
-                                                                      ))
-                                                              : (isDark
-                                                                    ? Colors
-                                                                          .white
-                                                                    : const Color(
-                                                                        0xFF0F172A,
-                                                                      )),
-                                                        ),
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                      if (subtitle != null &&
-                                                          subtitle
-                                                              .isNotEmpty) ...[
-                                                        const SizedBox(
-                                                          height: 2,
-                                                        ),
-                                                        Text(
-                                                          subtitle,
-                                                          style: GoogleFonts.inter(
-                                                            fontSize: 10.5,
-                                                            color: isDark
-                                                                ? const Color(
-                                                                    0xFF94A3B8,
-                                                                  )
-                                                                : const Color(
-                                                                    0xFF64748B,
-                                                                  ),
-                                                          ),
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-                                                      ],
-                                                    ],
-                                                  ),
-                                                ),
-                                                if (isSelected)
-                                                  const Icon(
-                                                    Icons.check_rounded,
-                                                    size: 16,
-                                                    color: Color(0xFF10B981),
-                                                  ),
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                            ),
-                          ],
-                        ),
+                        ],
                       ),
                     ),
                   );
                 },
               ),
             ),
-          ],
+          ),
         );
       },
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final hasValue = widget.initialValue != null;
-    final displayLabel = hasValue
-        ? widget.itemLabel(widget.initialValue!)
-        : widget.hintText;
-
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: InkWell(
-        key: _triggerKey,
-        borderRadius: BorderRadius.circular(8),
-        onTap: _toggleDropdown,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF0F172A) : Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: _isOpen
-                  ? const Color(0xFF3B82F6)
-                  : (hasValue
-                        ? (isDark
-                              ? const Color(0xFF3B82F6).withValues(alpha: 0.4)
-                              : const Color(0xFF93C5FD))
-                        : (isDark
-                              ? const Color(0xFF334155)
-                              : const Color(0xFFCBD5E1))),
-              width: _isOpen ? 1.5 : 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                widget.prefixIcon ??
-                    (hasValue ? Icons.check_circle_outline : Icons.search),
-                size: 17,
-                color: hasValue
-                    ? const Color(0xFF3B82F6)
-                    : (isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF64748B)),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      widget.label,
-                      style: GoogleFonts.inter(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w600,
-                        color: isDark
-                            ? const Color(0xFF94A3B8)
-                            : const Color(0xFF64748B),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      displayLabel,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: hasValue
-                            ? FontWeight.w600
-                            : FontWeight.w400,
-                        color: hasValue
-                            ? (isDark ? Colors.white : const Color(0xFF0F172A))
-                            : (isDark
-                                  ? const Color(0xFF64748B)
-                                  : const Color(0xFF94A3B8)),
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                _isOpen
-                    ? (_openUpwards
-                          ? Icons.keyboard_arrow_up
-                          : Icons.keyboard_arrow_down)
-                    : Icons.keyboard_arrow_down,
-                size: 18,
-                color: _isOpen
-                    ? const Color(0xFF3B82F6)
-                    : (isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF64748B)),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
+
+typedef RrhhSearchableSelector<T extends Object> = RrhhAdaptiveSelector<T>;
