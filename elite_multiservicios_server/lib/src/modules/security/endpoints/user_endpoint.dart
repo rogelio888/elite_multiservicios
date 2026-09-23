@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
@@ -198,9 +199,18 @@ class UserEndpoint extends Endpoint {
     if (target != null) {
       final rbacRepo = RbacRepository(session);
       final roles = await rbacRepo.getUserRoles(target.id!);
+      final superAdminEmail =
+          (Platform.environment['SEED_ADMIN_EMAIL'] ??
+                  'rogeliovladimir2016@gmail.com')
+              .trim()
+              .toLowerCase();
       final isSuperAdmin =
-          roles.any((r) => r.name.toLowerCase() == 'superadmin') ||
-          target.id == 1;
+          roles.any(
+            (r) =>
+                r.name.toLowerCase() == 'super administrador' ||
+                r.name.toLowerCase() == 'superadmin',
+          ) &&
+          target.email.trim().toLowerCase() == superAdminEmail;
       if (isSuperAdmin && !isActive) {
         throw FormatException(
           'La cuenta SuperAdmin del sistema es inmutable y no puede ser suspendida.',
@@ -240,9 +250,18 @@ class UserEndpoint extends Endpoint {
     if (target != null) {
       final rbacRepo = RbacRepository(session);
       final roles = await rbacRepo.getUserRoles(target.id!);
+      final superAdminEmail =
+          (Platform.environment['SEED_ADMIN_EMAIL'] ??
+                  'rogeliovladimir2016@gmail.com')
+              .trim()
+              .toLowerCase();
       final isSuperAdmin =
-          roles.any((r) => r.name.toLowerCase() == 'superadmin') ||
-          target.id == 1;
+          roles.any(
+            (r) =>
+                r.name.toLowerCase() == 'super administrador' ||
+                r.name.toLowerCase() == 'superadmin',
+          ) &&
+          target.email.trim().toLowerCase() == superAdminEmail;
       if (isSuperAdmin) {
         throw FormatException(
           'La cuenta SuperAdmin del sistema es inmutable y no puede ser eliminada.',

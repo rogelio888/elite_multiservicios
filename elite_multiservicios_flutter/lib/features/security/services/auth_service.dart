@@ -65,6 +65,17 @@ class AuthService extends ChangeNotifier {
     }
     // Suscribirse a cambios reactivos de autenticación en Serverpod
     _client.auth.authInfoListenable.addListener(_onAuthChanged);
+    _initUserEmail();
+  }
+
+  Future<void> _initUserEmail() async {
+    try {
+      final savedEmail = await _secureStorage.read(key: _rememberedEmailKey);
+      if (savedEmail != null && savedEmail.isNotEmpty) {
+        _currentUserEmail = savedEmail;
+        notifyListeners();
+      }
+    } catch (_) {}
   }
 
   void _onAuthChanged() {
@@ -82,6 +93,11 @@ class AuthService extends ChangeNotifier {
   /// Alias de conveniencia para pruebas y vistas que consultan el usuario activo.
   AuthSuccess? get currentUser => currentAuthInfo;
 
+  String? _currentUserEmail;
+
+  /// Correo electrónico del usuario actualmente autenticado.
+  String? get currentUserEmail => _currentUserEmail;
+
   /// Nombre o identificador legible para presentar en la interfaz de usuario.
   String? get currentDisplayName =>
       currentAuthInfo != null ? 'Administrador' : null;
@@ -98,6 +114,7 @@ class AuthService extends ChangeNotifier {
     _isCheckingMfa = true;
     _currentRememberMe = rememberMe;
     _isSessionMfaVerified = false;
+    _currentUserEmail = email.trim();
     try {
       final authSuccess = await _client.emailIdp.login(
         email: email.trim(),

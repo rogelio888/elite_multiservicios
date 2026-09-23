@@ -55,7 +55,7 @@ class RrhhAuditService extends ChangeNotifier {
         employeeName: 'Andrea Soliz Arteaga',
         details:
             'Alta en sistema con ficha digital completa. Sueldo pactado: Bs. 4,000.00. 6/6 documentos físicos verificados (CI, Croquis, Aviso Luz, FELCC, Foto 3x4, SUS).',
-        performedBy: 'admin@elitemultiservicios.com',
+        performedBy: 'rogeliovladimir2016@gmail.com',
         severity: 'INFO',
       ),
       RrhhAuditEvent(
@@ -67,7 +67,7 @@ class RrhhAuditService extends ChangeNotifier {
         employeeName: 'Carlos Mendoza Rios',
         details:
             'Aprobada vacación reglamentaria de 10 días hábiles (05/10/2024 al 15/10/2024). Notificado al módulo de Asistencia para no generar falta en reloj biométrico.',
-        performedBy: 'admin@elitemultiservicios.com',
+        performedBy: 'rogeliovladimir2016@gmail.com',
         severity: 'INFO',
       ),
       RrhhAuditEvent(
@@ -79,7 +79,7 @@ class RrhhAuditService extends ChangeNotifier {
         employeeName: 'Valeria Justiniano Paz',
         details:
             'Reasignación de puesto y sede: De Kolping Central a Ventura Mall para cobertura del turno nocturno de supervisión.',
-        performedBy: 'admin@elitemultiservicios.com',
+        performedBy: 'rogeliovladimir2016@gmail.com',
         severity: 'ADVERTENCIA',
       ),
       RrhhAuditEvent(
@@ -91,7 +91,7 @@ class RrhhAuditService extends ChangeNotifier {
         employeeName: 'Jorge Luis Aguilera',
         details:
             'Contrato a Plazo Fijo próximo a vencer (fecha límite: 09/01/2025). Marcado para decisión: prórroga legal o conversión a contrato por tiempo indefinido.',
-        performedBy: 'admin@elitemultiservicios.com',
+        performedBy: 'rogeliovladimir2016@gmail.com',
         severity: 'CRITICO',
       ),
       RrhhAuditEvent(
@@ -103,7 +103,7 @@ class RrhhAuditService extends ChangeNotifier {
         employeeName: 'Carlos Mendoza Rios',
         details:
             'Recepción y archivo físico de certificado de Antecedentes FELCC actualizado. Checklist de expediente ahora al 100%.',
-        performedBy: 'admin@elitemultiservicios.com',
+        performedBy: 'rogeliovladimir2016@gmail.com',
         severity: 'INFO',
       ),
       RrhhAuditEvent(
@@ -115,7 +115,7 @@ class RrhhAuditService extends ChangeNotifier {
         employeeName: 'Martín Paredes Choque',
         details:
             'Desvinculación formal por Fin de Contrato a Plazo Fijo. Devolución de implementos y EPP completada. Expediente archivado sin eliminación de base de datos.',
-        performedBy: 'admin@elitemultiservicios.com',
+        performedBy: 'rogeliovladimir2016@gmail.com',
         severity: 'CRITICO',
       ),
       RrhhAuditEvent(
@@ -127,7 +127,7 @@ class RrhhAuditService extends ChangeNotifier {
         employeeName: 'Valeria Justiniano Paz',
         details:
             'Ascenso de Técnico Operativo a Supervisora de Servicios. Sueldo pactado actualizado a Bs. 3,800.00 con firma de adenda de contrato.',
-        performedBy: 'admin@elitemultiservicios.com',
+        performedBy: 'rogeliovladimir2016@gmail.com',
         severity: 'INFO',
       ),
     ]);
@@ -141,7 +141,7 @@ class RrhhAuditService extends ChangeNotifier {
     required String employeeName,
     required String details,
     required String severity,
-    String performedBy = 'admin@elitemultiservicios.com',
+    String performedBy = 'rogeliovladimir2016@gmail.com',
   }) {
     final event = RrhhAuditEvent(
       id: 'rrhh-log-${DateTime.now().millisecondsSinceEpoch}',

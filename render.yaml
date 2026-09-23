@@ -68,7 +68,7 @@ services:
       - key: SMTP_FROM_NAME
         value: Elite Multiservicios
       - key: SEED_ADMIN_EMAIL
-        value: admin@elitemultiservicios.com
+        value: rogeliovladimir2016@gmail.com
       - key: SEED_ADMIN_PASSWORD
         sync: false
       - key: SEED_ON_START
