@@ -476,7 +476,7 @@ class _ActiveSessionsViewState extends State<ActiveSessionsView> {
                         const SizedBox(height: 6),
                         _buildDetailKV(
                           'Correo Electrónico',
-                          user?.email ?? 'admin@elitemultiservicios.com',
+                          user?.email ?? 'rogeliovladimir2016@gmail.com',
                           isDark,
                         ),
                         const SizedBox(height: 6),

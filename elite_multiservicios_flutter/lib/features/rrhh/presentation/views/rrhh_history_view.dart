@@ -48,7 +48,7 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
       hireDate: DateTime(2022, 5, 10),
       terminationDate: DateTime(2023, 12, 31),
       reason: 'Fin de Contrato Plazo Fijo',
-      registeredBy: 'admin@elitemultiservicios.com',
+      registeredBy: 'rogeliovladimir2016@gmail.com',
       notes:
           'Culminó periodo acordado para obra hospitalaria. Cumplió con entrega de implementos.',
     ),
@@ -60,7 +60,7 @@ class _RrhhHistoryViewState extends State<RrhhHistoryView> {
       hireDate: DateTime(2023, 1, 15),
       terminationDate: DateTime(2024, 2, 28),
       reason: 'Renuncia Voluntaria',
-      registeredBy: 'admin@elitemultiservicios.com',
+      registeredBy: 'rogeliovladimir2016@gmail.com',
       notes:
           'Renuncia por motivos de estudio universitario. Expediente en orden para recontratación futura.',
     ),

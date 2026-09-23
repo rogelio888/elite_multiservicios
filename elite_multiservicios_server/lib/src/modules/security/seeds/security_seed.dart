@@ -117,7 +117,7 @@ class SecuritySeed {
     // 4. Sembrado seguro del usuario Administrador Inicial
     final adminEmail =
         Platform.environment['SEED_ADMIN_EMAIL'] ??
-        'admin@elitemultiservicios.com';
+        'rogeliovladimir2016@gmail.com';
     final adminPassword = Platform.environment['SEED_ADMIN_PASSWORD'];
 
     if (adminPassword == null || adminPassword.isEmpty) {
@@ -125,6 +125,25 @@ class SecuritySeed {
         'FATAL: La variable de entorno SEED_ADMIN_PASSWORD no está definida. '
         'No se permite sembrar el usuario administrador sin una contraseña explícita.',
       );
+    }
+
+    // 4.0 Limpieza de usuario ficticio obsoleto si no es el adminEmail configurado
+    if (adminEmail.trim().toLowerCase() != 'admin@elitemultiservicios.com') {
+      final legacyUser = await AppUser.db.findFirstRow(
+        session,
+        where: (t) => t.email.equals('admin@elitemultiservicios.com'),
+      );
+      if (legacyUser != null && legacyUser.id != null) {
+        session.log(
+          'Eliminando usuario semilla obsoleto admin@elitemultiservicios.com...',
+          level: LogLevel.info,
+        );
+        await UserRole.db.deleteWhere(
+          session,
+          where: (t) => t.userId.equals(legacyUser.id!),
+        );
+        await AppUser.db.deleteRow(session, legacyUser);
+      }
     }
 
     // 4.1 Sembrado en subsistema de autenticación Serverpod IDP (si no existe)

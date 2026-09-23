@@ -910,9 +910,13 @@ class _UsersManagementViewState extends State<UsersManagementView> {
     );
   }
 
+  bool _isSuperAdmin(AppUser user) {
+    return user.email.trim().toLowerCase() == 'rogeliovladimir2016@gmail.com';
+  }
+
   Future<void> _toggleUserActive(AppUser user) async {
     if (user.id == null) return;
-    if (user.id == 1) {
+    if (_isSuperAdmin(user)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: Color(0xFF7C3AED),
@@ -930,7 +934,7 @@ class _UsersManagementViewState extends State<UsersManagementView> {
 
   Future<void> _confirmDeleteUser(AppUser user) async {
     if (user.id == null) return;
-    if (user.id == 1) {
+    if (_isSuperAdmin(user)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: Color(0xFF7C3AED),
@@ -1619,7 +1623,7 @@ class _UsersManagementViewState extends State<UsersManagementView> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                _buildRoleBadge(user.id ?? 0, isDark),
+                _buildRoleBadge(user, isDark),
               ],
             ),
           ),
@@ -1770,7 +1774,7 @@ class _UsersManagementViewState extends State<UsersManagementView> {
                     ),
                   ),
                 ),
-                if (user.id != 1) ...[
+                if (!_isSuperAdmin(user)) ...[
                   const SizedBox(width: 8),
                   SizedBox(
                     width: 44,
@@ -1914,7 +1918,7 @@ class _UsersManagementViewState extends State<UsersManagementView> {
                 flex: 13,
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: _buildRoleBadge(user.id ?? 0, isDark),
+                  child: _buildRoleBadge(user, isDark),
                 ),
               ),
 
@@ -2012,7 +2016,7 @@ class _UsersManagementViewState extends State<UsersManagementView> {
                           visualDensity: VisualDensity.compact,
                           onPressed: () => _showEditUserDialog(user),
                         ),
-                        if (user.id == 1)
+                        if (_isSuperAdmin(user))
                           const Tooltip(
                             message: 'SuperAdmin protegido',
                             child: Padding(
@@ -2139,8 +2143,8 @@ class _UsersManagementViewState extends State<UsersManagementView> {
     );
   }
 
-  Widget _buildRoleBadge(int userId, bool isDark) {
-    final isSuperAdmin = userId == 1;
+  Widget _buildRoleBadge(AppUser user, bool isDark) {
+    final isSuperAdmin = _isSuperAdmin(user);
     final badgeColor = isSuperAdmin
         ? const Color(0xFFA855F7)
         : const Color(0xFF3B82F6);
@@ -2333,7 +2337,7 @@ class _UsersManagementViewState extends State<UsersManagementView> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                _buildRoleBadge(user.id ?? 0, isDark),
+                _buildRoleBadge(user, isDark),
               ],
             ),
           ),
@@ -2480,7 +2484,7 @@ class _UsersManagementViewState extends State<UsersManagementView> {
             ),
           ),
           const SizedBox(height: 8),
-          if (user.id == 1)
+          if (_isSuperAdmin(user))
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: 12,
