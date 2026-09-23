@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/models/rrhh_applicant.dart';
+import '../../data/models/rrhh_assignment.dart';
 import '../../data/models/rrhh_employee.dart';
 import '../../data/services/rrhh_state_service.dart';
+import 'rrhh_shared_widgets.dart';
 
 /// Diálogo inteligente para contratar a un postulante o registrar un nuevo colaborador
 class RrhhHireDialog extends StatefulWidget {
@@ -1085,30 +1087,29 @@ class _RrhhHireDialogState extends State<RrhhHireDialog> {
                           ),
                         ] else ...[
                           // Campos de Campo
-                          DropdownButtonFormField<String>(
-                            initialValue:
-                                _rrhhService.clients.any(
-                                  (c) => c.name == _selectedClient,
-                                )
-                                ? _selectedClient
-                                : (_rrhhService.clients.isNotEmpty
-                                      ? _rrhhService.clients.first.name
-                                      : null),
-                            decoration: const InputDecoration(
-                              labelText: 'Empresa Cliente Asignada *',
-                              border: OutlineInputBorder(),
-                            ),
-                            items: _rrhhService.clients
-                                .map(
-                                  (c) => DropdownMenuItem(
-                                    value: c.name,
-                                    child: Text(c.name),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (v) => setState(
-                              () => _selectedClient = v ?? _selectedClient,
-                            ),
+                          // Selector adaptativo de Empresa Cliente (5 empresas <= 7 -> Selector normal; >= 8 -> Búsqueda tipo Google)
+                          RrhhAdaptiveSelector<RrhhClientCompany>(
+                            label: 'Empresa Cliente Asignada *',
+                            hintText: 'Buscar o escribir empresa...',
+                            initialValue: _rrhhService.clients
+                                .cast<RrhhClientCompany?>()
+                                .firstWhere(
+                                  (c) => c?.name == _selectedClient,
+                                  orElse: () => _rrhhService.clients.isNotEmpty
+                                      ? _rrhhService.clients.first
+                                      : null,
+                                ),
+                            items: _rrhhService.clients,
+                            itemLabel: (c) => c.name,
+                            itemSubtitle: (c) =>
+                                '${c.services.length} servicio(s) contratado(s)',
+                            itemIcon: Icons.business,
+                            prefixIcon: Icons.location_city,
+                            onChanged: (c) {
+                              if (c != null) {
+                                setState(() => _selectedClient = c.name);
+                              }
+                            },
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(

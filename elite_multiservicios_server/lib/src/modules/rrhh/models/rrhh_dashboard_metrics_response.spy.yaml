@@ -1,0 +1,29 @@
+### Métricas agregadas y KPIs ejecutivos del Dashboard de Recursos Humanos.
+class: RrhhDashboardMetricsResponse
+fields:
+  ### Total de personal activo en planilla.
+  activeEmployeesCount: int
+  ### Total histórico de empleados registrados.
+  totalEmployeesCount: int
+  ### Personal desplegado y asignado en sedes de clientes (Campo).
+  fieldEmployeesCount: int
+  ### Personal administrativo en sede central (Oficina).
+  officeEmployeesCount: int
+  ### Postulantes activos en proceso de evaluación.
+  pendingApplicantsCount: int
+  ### Postulantes seleccionados listos para contrato.
+  selectedApplicantsCount: int
+  ### Cantidad de expedientes con los 6 documentos físicos completos.
+  completeFilesCount: int
+  ### Cantidad de expedientes con documentos pendientes en legajo.
+  pendingFilesCount: int
+  ### Porcentaje de cumplimiento global de expedientes físicos (0.0 - 100.0).
+  expedientesPercentage: double
+  ### Contratos a plazo fijo con vencimiento próximo en los siguientes 30 días.
+  expiringContractsCount: int
+  ### Colaboradores con permisos, licencias o vacaciones activas hoy.
+  activeLeavesCount: int
+  ### Tasa de asistencia del día en campo reportada por APK (0.0 - 100.0).
+  todayAttendanceRate: double
+  ### Incidencias operativas reportadas durante la jornada de hoy.
+  todayIncidentsCount: int

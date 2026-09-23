@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../data/models/rrhh_employee.dart';
 import '../../data/models/rrhh_labor_management.dart';
 import '../../data/services/rrhh_state_service.dart';
 import '../widgets/rrhh_shared_widgets.dart';
@@ -1041,21 +1042,22 @@ class _RrhhLaborViewState extends State<RrhhLaborView>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                DropdownButtonFormField<String>(
-                  initialValue: selectedEmpId,
-                  decoration: const InputDecoration(
-                    labelText: 'Colaborador a Desvincular',
+                RrhhAdaptiveSelector<RrhhEmployee>(
+                  label: 'Colaborador a Desvincular *',
+                  hintText: 'Buscar colaborador...',
+                  initialValue: actives.firstWhere(
+                    (e) => e.id == selectedEmpId,
+                    orElse: () => actives.first,
                   ),
-                  items: actives
-                      .map(
-                        (e) => DropdownMenuItem(
-                          value: e.id,
-                          child: Text('${e.fullName} (${e.code})'),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (val) {
-                    if (val != null) setDlgState(() => selectedEmpId = val);
+                  items: actives,
+                  itemLabel: (e) => '${e.fullName} (${e.code})',
+                  itemSubtitle: (e) => e.position,
+                  itemIcon: Icons.person,
+                  prefixIcon: Icons.badge_outlined,
+                  onChanged: (emp) {
+                    if (emp != null) {
+                      setDlgState(() => selectedEmpId = emp.id);
+                    }
                   },
                 ),
                 const SizedBox(height: 12),
@@ -1167,19 +1169,22 @@ class _RrhhLaborViewState extends State<RrhhLaborView>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                DropdownButtonFormField<String>(
-                  initialValue: selectedEmpId,
-                  decoration: const InputDecoration(labelText: 'Colaborador'),
-                  items: actives
-                      .map(
-                        (e) => DropdownMenuItem(
-                          value: e.id,
-                          child: Text(e.fullName),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (val) {
-                    if (val != null) setDlgState(() => selectedEmpId = val);
+                RrhhAdaptiveSelector<RrhhEmployee>(
+                  label: 'Colaborador *',
+                  hintText: 'Buscar colaborador...',
+                  initialValue: actives.firstWhere(
+                    (e) => e.id == selectedEmpId,
+                    orElse: () => actives.first,
+                  ),
+                  items: actives,
+                  itemLabel: (e) => '${e.fullName} (${e.code})',
+                  itemSubtitle: (e) => e.position,
+                  itemIcon: Icons.person,
+                  prefixIcon: Icons.badge_outlined,
+                  onChanged: (emp) {
+                    if (emp != null) {
+                      setDlgState(() => selectedEmpId = emp.id);
+                    }
                   },
                 ),
                 const SizedBox(height: 12),
@@ -1289,19 +1294,22 @@ class _RrhhLaborViewState extends State<RrhhLaborView>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                DropdownButtonFormField<String>(
-                  initialValue: selectedEmpId,
-                  decoration: const InputDecoration(labelText: 'Colaborador'),
-                  items: actives
-                      .map(
-                        (e) => DropdownMenuItem(
-                          value: e.id,
-                          child: Text(e.fullName),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (val) {
-                    if (val != null) setDlgState(() => selectedEmpId = val);
+                RrhhAdaptiveSelector<RrhhEmployee>(
+                  label: 'Colaborador *',
+                  hintText: 'Buscar colaborador...',
+                  initialValue: actives.firstWhere(
+                    (e) => e.id == selectedEmpId,
+                    orElse: () => actives.first,
+                  ),
+                  items: actives,
+                  itemLabel: (e) => '${e.fullName} (${e.code})',
+                  itemSubtitle: (e) => e.position,
+                  itemIcon: Icons.person,
+                  prefixIcon: Icons.badge_outlined,
+                  onChanged: (emp) {
+                    if (emp != null) {
+                      setDlgState(() => selectedEmpId = emp.id);
+                    }
                   },
                 ),
                 const SizedBox(height: 12),
@@ -1380,19 +1388,22 @@ class _RrhhLaborViewState extends State<RrhhLaborView>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                DropdownButtonFormField<String>(
-                  initialValue: selectedEmpId,
-                  decoration: const InputDecoration(labelText: 'Colaborador'),
-                  items: actives
-                      .map(
-                        (e) => DropdownMenuItem(
-                          value: e.id,
-                          child: Text(e.fullName),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (val) {
-                    if (val != null) setDlgState(() => selectedEmpId = val);
+                RrhhAdaptiveSelector<RrhhEmployee>(
+                  label: 'Colaborador *',
+                  hintText: 'Buscar colaborador...',
+                  initialValue: actives.firstWhere(
+                    (e) => e.id == selectedEmpId,
+                    orElse: () => actives.first,
+                  ),
+                  items: actives,
+                  itemLabel: (e) => '${e.fullName} (${e.code})',
+                  itemSubtitle: (e) => e.position,
+                  itemIcon: Icons.person,
+                  prefixIcon: Icons.badge_outlined,
+                  onChanged: (emp) {
+                    if (emp != null) {
+                      setDlgState(() => selectedEmpId = emp.id);
+                    }
                   },
                 ),
                 const SizedBox(height: 12),

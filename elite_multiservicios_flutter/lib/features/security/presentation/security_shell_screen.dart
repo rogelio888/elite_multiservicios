@@ -673,7 +673,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         currentView = const CrmActivitiesView();
         break;
       case 9:
-        currentView = const RrhhDashboardView();
+        currentView = RrhhDashboardView(
+          onNavigateToTab: _onTabSelected,
+        );
         break;
       case 10:
         currentView = const RrhhPersonalView();

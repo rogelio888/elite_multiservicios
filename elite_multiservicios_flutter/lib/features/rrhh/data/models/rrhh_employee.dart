@@ -50,6 +50,15 @@ class RrhhEmployee {
   final String observations;
   final String status; // 'ACTIVO', 'INACTIVO'
 
+  // Arquitectura Funcional: Integración Operaciones y Contabilidad
+  final List<String> skills; // Habilidades / Capacidades (Operaciones Pág 4.2)
+  final String
+  availabilityStatus; // 'DISPONIBLE', 'ASIGNADO', 'DE_VACACIONES', 'CON_PERMISO', 'SUSPENDIDO'
+  final String
+  paymentModality; // 'MENSUAL', 'JORNAL', 'POR_HORAS', 'POR_PROYECTO' (Contabilidad Pág 6.1)
+  final String
+  workScheduleType; // 'TIEMPO_COMPLETO_48H', 'MEDIO_TIEMPO', 'ROTATIVO_24_48', 'HORARIO_OFICINA'
+
   // Documentos Físicos del Expediente
   final bool hasCiCopy;
   final bool hasUtilityBill;
@@ -96,6 +105,10 @@ class RrhhEmployee {
     this.contractEndDate,
     required this.observations,
     required this.status,
+    this.skills = const [],
+    this.availabilityStatus = 'DISPONIBLE',
+    this.paymentModality = 'MENSUAL',
+    this.workScheduleType = 'TIEMPO_COMPLETO_48H',
     this.hasCiCopy = true,
     this.hasUtilityBill = true,
     this.hasHomeSketch = true,
@@ -161,6 +174,50 @@ class RrhhEmployee {
   String? get clientCompanyName => employeeType == 'CAMPO' ? workplace : null;
   String? get workplaceBranch => workplace;
 
+  String get availabilityLabel {
+    switch (availabilityStatus) {
+      case 'ASIGNADO':
+        return 'Asignado en Campo';
+      case 'DE_VACACIONES':
+        return 'De Vacaciones';
+      case 'CON_PERMISO':
+        return 'Con Permiso';
+      case 'SUSPENDIDO':
+        return 'Suspendido';
+      case 'DISPONIBLE':
+      default:
+        return 'Disponible';
+    }
+  }
+
+  String get paymentModalityLabel {
+    switch (paymentModality) {
+      case 'JORNAL':
+        return 'Jornal / Día';
+      case 'POR_HORAS':
+        return 'Por Horas';
+      case 'POR_PROYECTO':
+        return 'Por Proyecto';
+      case 'MENSUAL':
+      default:
+        return 'Sueldo Fijo Mensual';
+    }
+  }
+
+  String get scheduleTypeLabel {
+    switch (workScheduleType) {
+      case 'MEDIO_TIEMPO':
+        return 'Medio Tiempo (24h)';
+      case 'ROTATIVO_24_48':
+        return 'Turno 24/48';
+      case 'HORARIO_OFICINA':
+        return 'Oficina (08:00 - 17:00)';
+      case 'TIEMPO_COMPLETO_48H':
+      default:
+        return 'Tiempo Completo (48h)';
+    }
+  }
+
   RrhhEmployee copyWith({
     String? id,
     String? code,
@@ -186,6 +243,10 @@ class RrhhEmployee {
     DateTime? contractEndDate,
     String? observations,
     String? status,
+    List<String>? skills,
+    String? availabilityStatus,
+    String? paymentModality,
+    String? workScheduleType,
     bool? hasCiCopy,
     bool? hasUtilityBill,
     bool? hasHomeSketch,
@@ -225,6 +286,10 @@ class RrhhEmployee {
       contractEndDate: contractEndDate ?? this.contractEndDate,
       observations: observations ?? this.observations,
       status: status ?? this.status,
+      skills: skills ?? this.skills,
+      availabilityStatus: availabilityStatus ?? this.availabilityStatus,
+      paymentModality: paymentModality ?? this.paymentModality,
+      workScheduleType: workScheduleType ?? this.workScheduleType,
       hasCiCopy: hasCiCopy ?? this.hasCiCopy,
       hasUtilityBill: hasUtilityBill ?? this.hasUtilityBill,
       hasHomeSketch: hasHomeSketch ?? this.hasHomeSketch,
@@ -240,4 +305,30 @@ class RrhhEmployee {
       timeline: timeline ?? this.timeline,
     );
   }
+}
+
+/// Novedad o ajuste salarial autorizado por RRHH para Contabilidad (Sección 6.1)
+class RrhhSalaryAdjustment {
+  final String id;
+  final String employeeId;
+  final String employeeName;
+  final String
+  type; // 'BONO', 'DESCUENTO_AUTORIZADO', 'ANTICIPO', 'HORAS_EXTRA'
+  final double amount;
+  final String concept;
+  final String authorizedBy;
+  final DateTime date;
+  final String status; // 'AUTORIZADO', 'LIQUIDADO_CONTABILIDAD'
+
+  const RrhhSalaryAdjustment({
+    required this.id,
+    required this.employeeId,
+    required this.employeeName,
+    required this.type,
+    required this.amount,
+    required this.concept,
+    required this.authorizedBy,
+    required this.date,
+    this.status = 'AUTORIZADO',
+  });
 }

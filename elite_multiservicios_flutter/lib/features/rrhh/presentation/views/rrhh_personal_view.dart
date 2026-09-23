@@ -5,11 +5,13 @@ import '../../data/models/rrhh_applicant.dart';
 import '../../data/models/rrhh_employee.dart';
 import '../../data/services/rrhh_state_service.dart';
 import '../widgets/rrhh_applicant_modal.dart';
+import '../widgets/rrhh_edit_employee_dialog.dart';
 import '../widgets/rrhh_employee_modal.dart';
 import '../widgets/rrhh_hire_dialog.dart';
 import '../widgets/rrhh_shared_widgets.dart';
 
-/// Vista núcleo de Personal (Todos, Activos, Inactivos, Postulantes)
+/// Vista núcleo de Personal & Postulantes (Todos, Activos, Inactivos, Postulantes)
+/// Rediseñada con estética ejecutiva, prolija y minimalista (estilo Imagen 1 y 2).
 class RrhhPersonalView extends StatefulWidget {
   const RrhhPersonalView({super.key});
 
@@ -22,8 +24,10 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
   final _rrhhService = RrhhStateService();
   late TabController _tabController;
 
+  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _selectedTypeFilter = 'TODOS'; // 'TODOS', 'OFICINA', 'CAMPO'
+  String _selectedCompany = 'TODAS'; // 'TODAS' o nombre de empresa/sede
 
   late final ScrollController _employeesScrollController;
   late final ScrollController _applicantsScrollController;
@@ -45,12 +49,33 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
     _tabController.dispose();
     _employeesScrollController.dispose();
     _applicantsScrollController.dispose();
+    _searchController.dispose();
     _rrhhService.removeListener(_onStateChange);
     super.dispose();
   }
 
   void _onStateChange() {
     if (mounted) setState(() {});
+  }
+
+  List<String> _getAvailableCompanies() {
+    final set = <String>{};
+    for (final e in _rrhhService.employees) {
+      if (e.workplace.trim().isNotEmpty) {
+        set.add(e.workplace.trim());
+      }
+    }
+    for (final c in _rrhhService.clientCompanies) {
+      if (c.name.trim().isNotEmpty) {
+        set.add(c.name.trim());
+      }
+    }
+    final sorted = set.toList()..sort();
+    if (sorted.contains('Oficina Central Elite')) {
+      sorted.remove('Oficina Central Elite');
+      sorted.insert(0, 'Oficina Central Elite');
+    }
+    return ['TODAS', ...sorted];
   }
 
   List<RrhhEmployee> _getFilteredEmployees(String statusFilter) {
@@ -65,6 +90,14 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
       }
       if (_selectedTypeFilter == 'CAMPO' && emp.employeeType != 'CAMPO') {
         return false;
+      }
+
+      // Filtro por empresa
+      if (_selectedCompany != 'TODAS') {
+        final comp = emp.workplace.trim();
+        if (!comp.toLowerCase().contains(_selectedCompany.toLowerCase())) {
+          return false;
+        }
       }
 
       // Búsqueda
@@ -121,6 +154,13 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
     );
   }
 
+  void _openEditEmployeeDialog(RrhhEmployee emp) {
+    showDialog(
+      context: context,
+      builder: (ctx) => RrhhEditEmployeeDialog(employee: emp),
+    );
+  }
+
   void _openApplicantModal(RrhhApplicant app) {
     showDialog(
       context: context,
@@ -131,29 +171,36 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final availableCompanies = _getAvailableCompanies();
+    if (!availableCompanies.contains(_selectedCompany)) {
+      _selectedCompany = 'TODAS';
+    }
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final isMobile = constraints.maxWidth < 900;
 
         return Padding(
-          padding: EdgeInsets.all(isMobile ? 16 : 24),
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile ? 16 : 24,
+            vertical: isMobile ? 16 : 20,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Encabezado con Botones de Acción
+              // 1. Encabezado Ejecutivo Limpio
               _buildHeader(isDark, isMobile),
               const SizedBox(height: 16),
 
-              // Buscador y Selector de Modalidad (Oficina vs Campo)
-              _buildFiltersBar(isDark, isMobile),
+              // 2. Barra de Filtro Unificada y Prolija (Estilo Imagen 1 con Regla 7/8+)
+              _buildUnifiedFilterBar(isDark, availableCompanies),
               const SizedBox(height: 14),
 
-              // Pestañas: Todos | Activos | Inactivos | Postulantes
+              // 3. Pestañas: Todos | Activos | Inactivos | Postulantes
               _buildTabsBar(isDark),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
 
-              // Contenido Principal
+              // 4. TabBarView con Tablas Ejecutivas
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
@@ -192,93 +239,612 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
     );
   }
 
+  // --- 1. CABECERA EJECUTIVA ---
   Widget _buildHeader(bool isDark, bool isMobile) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Directorio de Personal & Postulantes',
-              style: GoogleFonts.inter(
-                fontSize: isMobile ? 18 : 22,
-                fontWeight: FontWeight.w700,
-                color: isDark ? Colors.white : const Color(0xFF0F172A),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Directorio de Personal & Postulantes',
+                style: GoogleFonts.inter(
+                  fontSize: isMobile ? 20 : 24,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Expedientes digitales, colaboradores activos/inactivos y banco de candidatos.',
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                color: const Color(0xFF64748B),
+              const SizedBox(height: 4),
+              Text(
+                'Expedientes digitales, colaboradores activos/inactivos y banco de candidatos.',
+                style: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-        Wrap(
-          spacing: 10,
-          children: [
-            FilledButton.icon(
-              icon: const Icon(Icons.person_add_alt_1, size: 16),
-              label: const Text('Contratar / Registrar'),
-              onPressed: () => _openHireDialog(),
+        const SizedBox(width: 14),
+        FilledButton.icon(
+          icon: const Icon(Icons.person_add_alt_1, size: 16),
+          label: const Text('Contratar / Registrar'),
+          style: FilledButton.styleFrom(
+            backgroundColor: const Color(0xFF6366F1),
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
             ),
-          ],
+            textStyle: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          onPressed: () => _openHireDialog(),
         ),
       ],
     );
   }
 
-  Widget _buildFiltersBar(bool isDark, bool isMobile) {
-    return Container(
-      padding: const EdgeInsets.all(12),
+  // --- 2. BARRA DE FILTRO UNIFICADA Y PROLIJA (ESTILO IMAGEN 1) ---
+  Widget _buildUnifiedFilterBar(
+    bool isDark,
+    List<String> availableCompanies,
+  ) {
+    final borderColor = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFE2E8F0);
+    final cardBg = isDark ? const Color(0xFF0F172A) : Colors.white;
+
+    final searchField = Container(
+      height: 38,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0F172A) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        color: isDark ? const Color(0xFF0B1120) : const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: borderColor),
+      ),
+      child: TextField(
+        controller: _searchController,
+        onChanged: (v) => setState(() => _searchQuery = v.trim()),
+        style: GoogleFonts.inter(
+          fontSize: 13,
+          color: isDark ? Colors.white : const Color(0xFF0F172A),
+        ),
+        decoration: InputDecoration(
+          hintText: 'Buscar por colaborador, código, C.I., cargo o sede...',
+          hintStyle: GoogleFonts.inter(
+            fontSize: 12.5,
+            color: const Color(0xFF64748B),
+          ),
+          prefixIcon: const Icon(
+            Icons.search,
+            size: 16,
+            color: Color(0xFF64748B),
+          ),
+          suffixIcon: _searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear, size: 14),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() => _searchQuery = '');
+                  },
+                )
+              : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
         ),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: TextField(
-              onChanged: (v) => setState(() => _searchQuery = v.trim()),
-              decoration: InputDecoration(
-                hintText: 'Buscar por nombre, código, CI o cargo...',
-                prefixIcon: const Icon(Icons.search, size: 18),
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
+    );
+
+    final companySelector = _buildAdaptiveCompanySelector(
+      isDark,
+      availableCompanies,
+    );
+
+    final typeFilterGroup = _buildFilterGroup<String>(
+      options: const [
+        (value: 'TODOS', label: 'Todos'),
+        (value: 'OFICINA', label: 'Oficina'),
+        (value: 'CAMPO', label: 'Campo'),
+      ],
+      selectedValue: _selectedTypeFilter,
+      onSelected: (val) => setState(() => _selectedTypeFilter = val),
+      isDark: isDark,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 950;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: cardBg,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: borderColor),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.02),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
+          child: isCompact
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    searchField,
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        companySelector,
+                        typeFilterGroup,
+                      ],
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    Expanded(child: searchField),
+                    const SizedBox(width: 10),
+                    companySelector,
+                    const SizedBox(width: 10),
+                    typeFilterGroup,
+                  ],
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+        );
+      },
+    );
+  }
+
+  // --- REGLA 7 vs 8+: SELECTOR ADAPTATIVO DE EMPRESAS/SEDES ---
+  Widget _buildAdaptiveCompanySelector(
+    bool isDark,
+    List<String> companies,
+  ) {
+    final borderColor = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFE2E8F0);
+
+    // Regla estricta:
+    // Si tiene hasta 7 registros: selector estándar normal limpio.
+    // Si tiene 8 o más registros: habilitar selector con búsqueda/autocompletado interactivo.
+    final bool enableSearch = companies.length >= 8;
+
+    if (!enableSearch) {
+      // 1. Hasta 7 registros: Selector Dropdown estándar normal
+      return Container(
+        height: 38,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF0B1120) : const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: borderColor),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.business_outlined,
+              size: 15,
+              color: Color(0xFF6366F1),
+            ),
+            const SizedBox(width: 8),
+            DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _selectedCompany,
+                dropdownColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                ),
+                icon: const Icon(Icons.arrow_drop_down, size: 18),
+                items: companies.map((comp) {
+                  final isAll = comp == 'TODAS';
+                  final count = isAll
+                      ? _rrhhService.employees.length
+                      : _rrhhService.employees
+                            .where(
+                              (e) =>
+                                  e.workplace.trim().toLowerCase() ==
+                                  comp.trim().toLowerCase(),
+                            )
+                            .length;
+                  return DropdownMenuItem<String>(
+                    value: comp,
+                    child: Text(
+                      isAll ? 'Todas las Empresas ($count)' : '$comp ($count)',
+                    ),
+                  );
+                }).toList(),
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() => _selectedCompany = val);
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // 2. 8 o más registros: Selector interactivo tipo Google con Autocompletado y Búsqueda
+    final selectedCount = _selectedCompany == 'TODAS'
+        ? _rrhhService.employees.length
+        : _rrhhService.employees
+              .where(
+                (e) =>
+                    e.workplace.trim().toLowerCase() ==
+                    _selectedCompany.trim().toLowerCase(),
+              )
+              .length;
+
+    return InkWell(
+      onTap: () => _openCompanySearchModal(context, isDark, companies),
+      borderRadius: BorderRadius.circular(6),
+      child: Container(
+        height: 38,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF0B1120) : const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: borderColor),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.business_outlined,
+              size: 15,
+              color: Color(0xFF6366F1),
+            ),
+            const SizedBox(width: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 190),
+              child: Text(
+                _selectedCompany == 'TODAS'
+                    ? 'Todas las Empresas ($selectedCount)'
+                    : '$_selectedCompany ($selectedCount)',
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+              decoration: BoxDecoration(
+                color: const Color(0xFF6366F1).withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                'Buscar',
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF6366F1),
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 14),
-          // Filtro Tipo: TODOS / OFICINA / CAMPO
-          SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(value: 'TODOS', label: Text('Todos')),
-              ButtonSegment(value: 'OFICINA', label: Text('Oficina')),
-              ButtonSegment(value: 'CAMPO', label: Text('Campo')),
-            ],
-            selected: {_selectedTypeFilter},
-            onSelectionChanged: (set) {
-              setState(() => _selectedTypeFilter = set.first);
-            },
-          ),
-        ],
+            const SizedBox(width: 4),
+            const Icon(Icons.arrow_drop_down, size: 18),
+          ],
+        ),
       ),
     );
   }
 
+  // Diálogo interactivo de autocompletado y búsqueda rápida de empresas
+  void _openCompanySearchModal(
+    BuildContext context,
+    bool isDark,
+    List<String> companies,
+  ) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        String filter = '';
+        return StatefulBuilder(
+          builder: (dialogCtx, setDialogState) {
+            final filtered = companies.where((c) {
+              if (filter.isEmpty) return true;
+              return c.toLowerCase().contains(filter.toLowerCase());
+            }).toList();
+
+            return Dialog(
+              backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+                side: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFE2E8F0),
+                ),
+              ),
+              insetPadding: const EdgeInsets.all(20),
+              child: Container(
+                width: 440,
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.search,
+                          size: 18,
+                          color: Color(0xFF6366F1),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Buscar Empresa o Sede Asignada',
+                          style: GoogleFonts.inter(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w700,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                          ),
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: const Icon(Icons.close, size: 16),
+                          splashRadius: 16,
+                          onPressed: () => Navigator.of(ctx).pop(),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    // Input de búsqueda en vivo con autofocus
+                    Container(
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF0B1120)
+                            : const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFCBD5E1),
+                        ),
+                      ),
+                      child: TextField(
+                        autofocus: true,
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
+                        ),
+                        onChanged: (v) {
+                          setDialogState(() => filter = v.trim());
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Escriba el nombre de la empresa...',
+                          hintStyle: GoogleFonts.inter(
+                            fontSize: 12.5,
+                            color: const Color(0xFF64748B),
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.business_outlined,
+                            size: 16,
+                            color: Color(0xFF64748B),
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      '${filtered.length} empresas encontradas:',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: const Color(0xFF64748B),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // Lista de opciones filtradas
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 280),
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: filtered.length,
+                        separatorBuilder: (sepCtx, i) => Divider(
+                          height: 1,
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFF1F5F9),
+                        ),
+                        itemBuilder: (itemCtx, i) {
+                          final comp = filtered[i];
+                          final isSelected = comp == _selectedCompany;
+                          final isAll = comp == 'TODAS';
+                          final count = isAll
+                              ? _rrhhService.employees.length
+                              : _rrhhService.employees
+                                    .where(
+                                      (e) =>
+                                          e.workplace.trim().toLowerCase() ==
+                                          comp.trim().toLowerCase(),
+                                    )
+                                    .length;
+
+                          return InkWell(
+                            onTap: () {
+                              setState(() => _selectedCompany = comp);
+                              Navigator.of(ctx).pop();
+                            },
+                            borderRadius: BorderRadius.circular(6),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? const Color(
+                                        0xFF6366F1,
+                                      ).withValues(alpha: 0.12)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    isAll
+                                        ? Icons.corporate_fare_outlined
+                                        : Icons.business,
+                                    size: 16,
+                                    color: isSelected
+                                        ? const Color(0xFF6366F1)
+                                        : (isDark
+                                              ? const Color(0xFF94A3B8)
+                                              : const Color(0xFF64748B)),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      isAll ? 'Todas las Empresas' : comp,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12.5,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                        color: isSelected
+                                            ? const Color(0xFF6366F1)
+                                            : (isDark
+                                                  ? Colors.white
+                                                  : const Color(0xFF0F172A)),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 7,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFF1F5F9),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      '$count',
+                                      style: GoogleFonts.jetBrainsMono(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.white70
+                                            : const Color(0xFF334155),
+                                      ),
+                                    ),
+                                  ),
+                                  if (isSelected) ...[
+                                    const SizedBox(width: 8),
+                                    const Icon(
+                                      Icons.check,
+                                      size: 16,
+                                      color: Color(0xFF6366F1),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // Segmented Buttons estilo pastilla compacta (Idéntico a Imagen 1)
+  Widget _buildFilterGroup<T>({
+    required List<({T value, String label})> options,
+    required T selectedValue,
+    required ValueChanged<T> onSelected,
+    required bool isDark,
+  }) {
+    final borderColor = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFE2E8F0);
+
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0B1120) : const Color(0xFFF1F5F9),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: borderColor),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: options.map((opt) {
+          final isSelected = opt.value == selectedValue;
+          return GestureDetector(
+            onTap: () => onSelected(opt.value),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 120),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? (isDark ? const Color(0xFF1E293B) : Colors.white)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(4),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 4,
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Text(
+                opt.label,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  color: isSelected
+                      ? (isDark ? Colors.white : const Color(0xFF0F172A))
+                      : const Color(0xFF64748B),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  // --- 3. BARRA DE PESTAÑAS (TABBAR) ---
   Widget _buildTabsBar(bool isDark) {
     return Container(
       decoration: BoxDecoration(
@@ -292,9 +858,16 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
         controller: _tabController,
         isScrollable: true,
         tabAlignment: TabAlignment.start,
-        labelColor: const Color(0xFF2563EB),
-        unselectedLabelColor: const Color(0xFF64748B),
-        indicatorColor: const Color(0xFF2563EB),
+        labelColor: const Color(0xFF6366F1),
+        unselectedLabelColor: isDark
+            ? const Color(0xFF94A3B8)
+            : const Color(0xFF64748B),
+        indicatorColor: const Color(0xFF6366F1),
+        indicatorWeight: 3,
+        labelStyle: GoogleFonts.inter(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        ),
         tabs: [
           Tab(text: 'Todos (${_rrhhService.totalEmployeesCount})'),
           Tab(text: 'Activos (${_rrhhService.activeEmployeesCount})'),
@@ -307,6 +880,7 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
     );
   }
 
+  // --- 4. TABLA DE COLABORADORES ---
   Widget _buildEmployeesTableTab(
     List<RrhhEmployee> employees,
     bool isDark,
@@ -330,16 +904,16 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
       );
     }
 
-    final tableWidth = max(maxWidth - 48, 1080.0);
+    final tableWidth = max(maxWidth - 48, 1140.0);
     const columnWidths = {
       0: FlexColumnWidth(2.6), // Colaborador
       1: FixedColumnWidth(115), // CI
       2: FlexColumnWidth(2.4), // Cargo & Tipo
       3: FlexColumnWidth(2.2), // Sucursal / Sede
-      4: FixedColumnWidth(125), // Sueldo
-      5: FixedColumnWidth(120), // Expediente
-      6: FixedColumnWidth(105), // Estado
-      7: FixedColumnWidth(125), // Acciones
+      4: FixedColumnWidth(120), // Sueldo
+      5: FixedColumnWidth(115), // Expediente
+      6: FixedColumnWidth(135), // Estado
+      7: FixedColumnWidth(165), // Acciones (Editar + Expediente)
     };
 
     return Container(
@@ -432,7 +1006,7 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                                         CircleAvatar(
                                           radius: 15,
                                           backgroundColor: const Color(
-                                            0xFF2563EB,
+                                            0xFF6366F1,
                                           ).withValues(alpha: 0.15),
                                           child: Text(
                                             emp.fullName.isNotEmpty
@@ -441,7 +1015,7 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                                             style: GoogleFonts.inter(
                                               fontSize: 11,
                                               fontWeight: FontWeight.w700,
-                                              color: const Color(0xFF2563EB),
+                                              color: const Color(0xFF6366F1),
                                             ),
                                           ),
                                         ),
@@ -465,12 +1039,13 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                                               ),
                                               Text(
                                                 emp.code,
-                                                style: GoogleFonts.inter(
-                                                  fontSize: 10,
-                                                  color: const Color(
-                                                    0xFF64748B,
-                                                  ),
-                                                ),
+                                                style:
+                                                    GoogleFonts.jetBrainsMono(
+                                                      fontSize: 10,
+                                                      color: const Color(
+                                                        0xFF64748B,
+                                                      ),
+                                                    ),
                                               ),
                                             ],
                                           ),
@@ -482,7 +1057,7 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                                   _buildBodyCell(
                                     Text(
                                       emp.identityCard,
-                                      style: GoogleFonts.inter(
+                                      style: GoogleFonts.jetBrainsMono(
                                         fontSize: 11,
                                         color: isDark
                                             ? const Color(0xFFCBD5E1)
@@ -524,7 +1099,7 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                                               ? Icons.apartment
                                               : Icons.storefront,
                                           size: 14,
-                                          color: const Color(0xFF2563EB),
+                                          color: const Color(0xFF6366F1),
                                         ),
                                         const SizedBox(width: 6),
                                         Expanded(
@@ -552,7 +1127,7 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                                       children: [
                                         Text(
                                           'Bs. ${emp.agreedSalary.toStringAsFixed(2)}',
-                                          style: GoogleFonts.inter(
+                                          style: GoogleFonts.jetBrainsMono(
                                             fontSize: 11,
                                             fontWeight: FontWeight.w700,
                                             color: const Color(0xFF10B981),
@@ -604,24 +1179,52 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                                   _buildBodyCell(
                                     Align(
                                       alignment: Alignment.centerRight,
-                                      child: FilledButton.tonalIcon(
-                                        style: FilledButton.styleFrom(
-                                          visualDensity: VisualDensity.compact,
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 6,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(
+                                              Icons.edit_outlined,
+                                              size: 16,
+                                            ),
+                                            tooltip:
+                                                'Editar Datos & Documentos',
+                                            onPressed: () =>
+                                                _openEditEmployeeDialog(emp),
                                           ),
-                                        ),
-                                        icon: const Icon(
-                                          Icons.folder_open,
-                                          size: 14,
-                                        ),
-                                        label: const Text(
-                                          'Expediente',
-                                          style: TextStyle(fontSize: 11),
-                                        ),
-                                        onPressed: () =>
-                                            _openEmployeeModal(emp),
+                                          const SizedBox(width: 4),
+                                          FilledButton.tonalIcon(
+                                            style: FilledButton.styleFrom(
+                                              visualDensity:
+                                                  VisualDensity.compact,
+                                              backgroundColor: const Color(
+                                                0xFF6366F1,
+                                              ).withValues(alpha: 0.12),
+                                              foregroundColor: const Color(
+                                                0xFF6366F1,
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 10,
+                                                    vertical: 6,
+                                                  ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                              ),
+                                            ),
+                                            icon: const Icon(
+                                              Icons.folder_open,
+                                              size: 14,
+                                            ),
+                                            label: const Text(
+                                              'Expediente',
+                                              style: TextStyle(fontSize: 11),
+                                            ),
+                                            onPressed: () =>
+                                                _openEmployeeModal(emp),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
@@ -642,6 +1245,7 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
     );
   }
 
+  // --- 5. TABLA DE POSTULANTES ---
   Widget _buildApplicantsTableTab(
     List<RrhhApplicant> applicants,
     bool isDark,
@@ -657,15 +1261,15 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
       );
     }
 
-    final tableWidth = max(maxWidth - 48, 980.0);
+    final tableWidth = max(maxWidth - 48, 1020.0);
     const columnWidths = {
       0: FlexColumnWidth(2.6), // Postulante
-      1: FixedColumnWidth(120), // CI
-      2: FlexColumnWidth(2.5), // Cargo & Especialidad
-      3: FixedColumnWidth(125), // Pretensión
-      4: FixedColumnWidth(130), // Fecha Postulación
-      5: FixedColumnWidth(120), // Estado
-      6: FixedColumnWidth(140), // Acciones
+      1: FixedColumnWidth(115), // CI
+      2: FlexColumnWidth(2.4), // Cargo & Especialidad
+      3: FixedColumnWidth(120), // Pretensión
+      4: FixedColumnWidth(125), // Fecha Postulación
+      5: FixedColumnWidth(155), // Etapa
+      6: FixedColumnWidth(130), // Acciones
     };
 
     return Container(
@@ -789,12 +1393,13 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                                               ),
                                               Text(
                                                 app.code,
-                                                style: GoogleFonts.inter(
-                                                  fontSize: 10,
-                                                  color: const Color(
-                                                    0xFF64748B,
-                                                  ),
-                                                ),
+                                                style:
+                                                    GoogleFonts.jetBrainsMono(
+                                                      fontSize: 10,
+                                                      color: const Color(
+                                                        0xFF64748B,
+                                                      ),
+                                                    ),
                                               ),
                                             ],
                                           ),
@@ -809,7 +1414,7 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                                       children: [
                                         Text(
                                           app.identityCard,
-                                          style: GoogleFonts.inter(
+                                          style: GoogleFonts.jetBrainsMono(
                                             fontSize: 11,
                                             fontWeight: FontWeight.w500,
                                             color: isDark
@@ -857,7 +1462,7 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                                       app.expectedSalary != null
                                           ? 'Bs. ${app.expectedSalary!.toStringAsFixed(2)}'
                                           : 'A convenir',
-                                      style: GoogleFonts.inter(
+                                      style: GoogleFonts.jetBrainsMono(
                                         fontSize: 11,
                                         color: const Color(0xFF10B981),
                                         fontWeight: FontWeight.w600,
@@ -867,7 +1472,7 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                                   _buildBodyCell(
                                     Text(
                                       '${app.applicationDate.day}/${app.applicationDate.month}/${app.applicationDate.year}',
-                                      style: GoogleFonts.inter(
+                                      style: GoogleFonts.jetBrainsMono(
                                         fontSize: 11,
                                         color: const Color(0xFF64748B),
                                       ),
@@ -943,13 +1548,13 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
               CircleAvatar(
                 radius: 14,
                 backgroundColor: const Color(
-                  0xFF2563EB,
+                  0xFF6366F1,
                 ).withValues(alpha: 0.15),
                 child: Text(
                   emp.fullName.isNotEmpty ? emp.fullName[0] : '?',
                   style: const TextStyle(
                     fontSize: 11,
-                    color: Color(0xFF2563EB),
+                    color: Color(0xFF6366F1),
                   ),
                 ),
               ),
@@ -984,12 +1589,20 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
             ),
           ),
           const SizedBox(height: 10),
-          Align(
-            alignment: Alignment.centerRight,
-            child: FilledButton.tonal(
-              onPressed: () => _openEmployeeModal(emp),
-              child: const Text('Expediente', style: TextStyle(fontSize: 11)),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              OutlinedButton.icon(
+                onPressed: () => _openEditEmployeeDialog(emp),
+                icon: const Icon(Icons.edit_outlined, size: 14),
+                label: const Text('Editar', style: TextStyle(fontSize: 11)),
+              ),
+              const SizedBox(width: 8),
+              FilledButton.tonal(
+                onPressed: () => _openEmployeeModal(emp),
+                child: const Text('Expediente', style: TextStyle(fontSize: 11)),
+              ),
+            ],
           ),
         ],
       ),

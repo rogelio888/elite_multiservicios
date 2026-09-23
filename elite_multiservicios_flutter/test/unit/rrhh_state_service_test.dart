@@ -7,6 +7,7 @@ void main() {
 
     setUp(() {
       service = RrhhStateService();
+      service.resetForTesting();
     });
 
     test('Initializes with comprehensive mock data and computed KPIs', () {
@@ -98,6 +99,79 @@ void main() {
         );
         expect(
           newEmployee.effectiveTemporaryPassword.startsWith('Elite.'),
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'getRotationHistory retrieves chronological sequence with origin traceability',
+      () {
+        // Carlos Mendoza Rios (emp-1) has an initial and a rotated assignment in mock data
+        final history = service.getRotationHistory('emp-1');
+        expect(history.length, greaterThanOrEqualTo(2));
+        expect(history.first.status, equals('FINALIZADA'));
+        expect(history.last.status, equals('ACTIVA'));
+        expect(history.first.rotationNumber, equals(0));
+        expect(history.last.rotationNumber, equals(1));
+        expect(history.last.originDescription, isNotNull);
+        expect(
+          history.last.originDescription!.contains('Ventura Mall'),
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'rotateEmployee preserves previous origin, increments rotation number, and updates employee record',
+      () {
+        final emp = service.employees.firstWhere(
+          (e) => e.code == 'EMP-004',
+        ); // Andrea Soliz
+        final initialHistory = service.getRotationHistory(emp.id);
+        final initialRotationsCount = initialHistory.length;
+        final prevAssignment = service.getActiveAssignment(emp.id);
+        expect(prevAssignment, isNotNull);
+        final expectedOrigin = prevAssignment!.fullDestinationSummary;
+
+        service.rotateEmployee(
+          employeeId: emp.id,
+          employeeName: emp.fullName,
+          employeeCode: emp.code,
+          type: 'CAMPO',
+          clientCompanyId: 'cli-1',
+          clientCompanyName: 'Kolping Bolivia',
+          contractedServiceId: 'srv-101',
+          contractedServiceName: 'Mantenimiento Preventivo',
+          workplaceBranch: 'Kolping - Central',
+          scheduleName: 'Operativo Mañana (07:00 - 15:00)',
+          supervisorName: 'Ricardo Montaño Justiniano',
+          rotationReason: 'Reasignación temporal por auditoría de calidad',
+        );
+
+        final updatedHistory = service.getRotationHistory(emp.id);
+        expect(updatedHistory.length, equals(initialRotationsCount + 1));
+
+        final activeNow = service.getActiveAssignment(emp.id);
+        expect(activeNow, isNotNull);
+        expect(activeNow!.status, equals('ACTIVA'));
+        expect(
+          activeNow.rotationNumber,
+          equals(prevAssignment.rotationNumber + 1),
+        );
+        expect(activeNow.originDescription, equals(expectedOrigin));
+        expect(
+          activeNow.rotationReason,
+          equals('Reasignación temporal por auditoría de calidad'),
+        );
+        expect(activeNow.clientCompanyName, equals('Kolping Bolivia'));
+
+        // Verify employee record sync
+        final updatedEmp = service.employees.firstWhere((e) => e.id == emp.id);
+        expect(updatedEmp.supervisor, equals('Ricardo Montaño Justiniano'));
+        expect(updatedEmp.timeline.first.category, equals('ASIGNACION'));
+        expect(
+          updatedEmp.timeline.first.title.contains('Rotación de Personal'),
           isTrue,
         );
       },

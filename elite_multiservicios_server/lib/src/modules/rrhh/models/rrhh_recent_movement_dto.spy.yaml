@@ -1,0 +1,21 @@
+### DTO de evento reciente o novedad laboral para la trazabilidad en el Dashboard de RRHH.
+class: RrhhRecentMovementDto
+fields:
+  ### Identificador único del evento o movimiento.
+  id: String
+  ### Tipo de movimiento: ALTA_PERSONAL, REASIGNACION_SEDE, CAMBIO_CARGO, BAJA_PERSONAL, PERMISO_APROBADO, INCREMENTO_SALARIAL.
+  type: String
+  ### Título descriptivo del movimiento.
+  title: String
+  ### Detalle o motivo del movimiento laboral.
+  description: String
+  ### Código del empleado asociado (ej. EMP-001).
+  employeeCode: String
+  ### Nombre completo del empleado asociado.
+  employeeName: String
+  ### Sede de trabajo asignada o destino del movimiento.
+  workplace: String
+  ### Fecha y hora en que se registró el evento.
+  timestamp: DateTime
+  ### Nombre o cargo de quien autorizó y registró la novedad.
+  registeredBy: String
