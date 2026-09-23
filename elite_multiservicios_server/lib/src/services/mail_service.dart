@@ -6,8 +6,8 @@ import 'package:mailer/smtp_server.dart';
 import 'package:serverpod/serverpod.dart';
 
 /// Servicio para orquestar y despachar correos electrónicos transaccionales.
-/// - Entorno local / desarrollo: Mailtrap vía SMTP.
-/// - Entorno producción: Resend vía API HTTP.
+/// - Entorno producción / staging: Brevo vía HTTP API o Brevo SMTP Relay.
+/// - Entorno local / desarrollo: Mailtrap vía SMTP (o Brevo si MAIL_DRIVER=brevo).
 class MailService {
   /// Envía el código de verificación para el registro de una nueva cuenta.
   static Future<void> sendRegistrationCode(
@@ -142,10 +142,8 @@ class MailService {
   }
 
   /// Despacha el correo según el entorno:
-  /// Despacha el correo según el entorno:
-  /// - En producción (Render / Cloud): Brevo HTTP API (o Resend como alternativa).
-  /// - En local / desarrollo: Mailtrap SMTP Sandbox (los correos quedan en el buzón de prueba).
-  /// - Opcional: Si se desea probar Brevo en local explícitamente, definir MAIL_DRIVER=brevo en .env.
+  /// - En producción / desarrollo con Brevo: Brevo HTTP API (con fallback a Brevo SMTP Relay).
+  /// - En local / desarrollo sin credenciales reales: Mailtrap SMTP Sandbox.
   static Future<void> _send({
     required Session session,
     required String to,
@@ -158,35 +156,50 @@ class MailService {
         runMode == 'production' ||
         Platform.environment['SERVERPOD_ENV'] == 'production';
 
-    final forceBrevoInLocal =
+    final forceBrevo =
         Platform.environment['MAIL_DRIVER'] == 'brevo' ||
-        Platform.environment['FORCE_REAL_MAIL'] == 'true';
+        Platform.environment['FORCE_REAL_MAIL'] == 'true' ||
+        Platform.environment['SMTP_HOST']?.contains('brevo') == true;
 
     final brevoApiKey =
         Platform.environment['BREVO_API_KEY'] ??
-        session.passwords['brevoApiKey'];
+        session.passwords['brevoApiKey'] ??
+        (Platform.environment['MAIL_DRIVER'] == 'brevo' ||
+                Platform.environment['SMTP_HOST']?.contains('brevo') == true ||
+                Platform.environment['SMTP_USERNAME']?.contains('brevo') == true
+            ? Platform.environment['SMTP_PASSWORD']
+            : null);
 
-    if (isProduction || forceBrevoInLocal) {
+    if (isProduction || forceBrevo || brevoApiKey != null) {
       if (brevoApiKey != null && brevoApiKey.isNotEmpty) {
-        await _sendViaBrevo(
-          session: session,
-          apiKey: brevoApiKey,
-          to: to,
-          subject: subject,
-          htmlContent: htmlContent,
-          textFallback: textFallback,
-        );
-      } else {
-        await _sendViaResend(
-          session: session,
-          to: to,
-          subject: subject,
-          htmlContent: htmlContent,
-          textFallback: textFallback,
-        );
+        try {
+          await _sendViaBrevo(
+            session: session,
+            apiKey: brevoApiKey,
+            to: to,
+            subject: subject,
+            htmlContent: htmlContent,
+            textFallback: textFallback,
+          );
+          return;
+        } catch (e) {
+          session.log(
+            '[MailService] Brevo HTTP API falló, reintentando vía SMTP Relay: $e',
+            level: LogLevel.warning,
+          );
+        }
       }
+
+      // Si no hay API key o falló el endpoint HTTP, despachar vía Brevo SMTP Relay
+      await _sendViaSmtp(
+        session: session,
+        to: to,
+        subject: subject,
+        htmlContent: htmlContent,
+        textFallback: textFallback,
+      );
     } else {
-      // Desarrollo local: Siempre Mailtrap SMTP Sandbox
+      // Desarrollo local: Mailtrap SMTP Sandbox
       await _sendViaMailtrap(
         session: session,
         to: to,
@@ -209,7 +222,7 @@ class MailService {
     final fromEmail =
         Platform.environment['SMTP_FROM_EMAIL'] ??
         session.passwords['smtpFromEmail'] ??
-        'soporte@elitemultiservicios.com';
+        'rogeliovladimir2016@gmail.com';
     final fromName =
         Platform.environment['SMTP_FROM_NAME'] ??
         session.passwords['smtpFromName'] ??
@@ -364,87 +377,86 @@ class MailService {
     }
   }
 
-  /// Despacho en producción vía Resend HTTP API.
-  static Future<void> _sendViaResend({
+  /// Despacho vía SMTP (Brevo Relay u otro proveedor SMTP configurado).
+  static Future<void> _sendViaSmtp({
     required Session session,
     required String to,
     required String subject,
     required String htmlContent,
     required String textFallback,
   }) async {
-    final apiKey =
-        Platform.environment['RESEND_API_KEY'] ??
-        session.passwords['resendApiKey'] ??
-        Platform.environment['SMTP_PASSWORD'];
+    final host =
+        Platform.environment['SMTP_HOST'] ??
+        session.passwords['smtpHost'] ??
+        'smtp-relay.brevo.com';
+    final portStr =
+        Platform.environment['SMTP_PORT'] ??
+        session.passwords['smtpPort'] ??
+        '587';
+    final port = int.tryParse(portStr) ?? 587;
+    final username =
+        Platform.environment['SMTP_USERNAME'] ??
+        session.passwords['smtpUsername'] ??
+        '';
+    final password =
+        Platform.environment['SMTP_PASSWORD'] ??
+        session.passwords['smtpPassword'] ??
+        '';
     final fromEmail =
-        Platform.environment['SMTP_FROM_EMAIL'] ?? 'onboarding@resend.dev';
+        Platform.environment['SMTP_FROM_EMAIL'] ??
+        session.passwords['smtpFromEmail'] ??
+        'rogeliovladimir2016@gmail.com';
     final fromName =
-        Platform.environment['SMTP_FROM_NAME'] ?? 'Elite Multiservicios';
+        Platform.environment['SMTP_FROM_NAME'] ??
+        session.passwords['smtpFromName'] ??
+        'Elite Multiservicios';
 
     print(
-      '[MailService] [Producción/Resend] Enviando a $to vía Resend HTTP API. From: $fromEmail',
+      '[MailService] [SMTP Relay] Despachando a $to vía $host:$port (From: $fromEmail)...',
     );
 
-    if (apiKey == null || apiKey.isEmpty) {
+    if (username.isEmpty || password.isEmpty) {
       final msg =
-          '⚠️ [MailService] RESEND_API_KEY no configurada en producción. Email NO enviado a $to.';
+          '⚠️ [MailService] Credenciales SMTP no configuradas. Email NO enviado a $to.';
       print(msg);
       session.log(msg, level: LogLevel.warning);
-      return;
+      throw StateError(msg);
     }
 
-    final payload = {
-      'from': '$fromName <$fromEmail>',
-      'to': [to],
-      'subject': subject,
-      'html': htmlContent,
-      'text': textFallback,
-    };
+    final smtpServer = SmtpServer(
+      host,
+      port: port,
+      username: username,
+      password: password,
+      ssl: port == 465,
+      allowInsecure: false,
+    );
 
-    final client = HttpClient();
+    final message = mailer.Message()
+      ..from = mailer.Address(fromEmail, fromName)
+      ..recipients.add(to)
+      ..subject = subject
+      ..text = textFallback
+      ..html = htmlContent;
+
     try {
-      final request = await client.postUrl(
-        Uri.parse('https://api.resend.com/emails'),
-      );
-      request.headers.set('Authorization', 'Bearer $apiKey');
-      request.headers.set('Content-Type', 'application/json');
-      final bodyBytes = utf8.encode(jsonEncode(payload));
-      request.add(bodyBytes);
-
-      final response = await request.close();
-      final responseBody = await response.transform(utf8.decoder).join();
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        print(
-          '[MailService] [Producción/Resend] ✅ Email enviado a $to. Status: ${response.statusCode}',
-        );
-        session.log(
-          '[MailService] Correo enviado a $to ($subject) vía Resend.',
-          level: LogLevel.info,
-        );
-      } else {
-        print(
-          '[MailService] [Producción/Resend] ❌ Resend error ${response.statusCode}: $responseBody',
-        );
-        session.log(
-          '[MailService] Error enviando a $to: ${response.statusCode} - $responseBody',
-          level: LogLevel.error,
-        );
-        throw Exception('Resend API error: ${response.statusCode}');
-      }
-    } catch (e, stackTrace) {
+      final sendReport = await mailer.send(message, smtpServer);
       print(
-        '[MailService] [Producción/Resend] ❌ Excepción a $to: $e',
+        '[MailService] [SMTP Relay] ✅ Correo enviado exitosamente a $to ($subject). Reporte: $sendReport',
       );
       session.log(
-        '[MailService] Excepción a $to: $e',
+        '[MailService] Correo enviado exitosamente a $to ($subject) vía SMTP Relay.',
+        level: LogLevel.info,
+      );
+    } catch (e, stackTrace) {
+      print('[MailService] [SMTP Relay] ❌ Error despachando a $to: $e');
+      session.log(
+        '[MailService] Error despachando correo a $to vía SMTP: $e',
         level: LogLevel.error,
         exception: e,
         stackTrace: stackTrace,
       );
       rethrow;
-    } finally {
-      client.close();
     }
   }
 }

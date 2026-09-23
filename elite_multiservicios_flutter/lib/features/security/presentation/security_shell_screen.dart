@@ -699,12 +699,16 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         currentView = const Center(child: Text('Vista no encontrada'));
     }
 
-    final userName = _authService.currentDisplayName ?? 'Administrador';
+    final userName = _authService.currentDisplayName ?? 'Super Administrador';
     final userEmail =
         _authService.currentUserEmail ?? 'rogeliovladimir2016@gmail.com';
-    final userInitials = userEmail.isNotEmpty && userEmail.length >= 2
-        ? userEmail.substring(0, 2).toUpperCase()
-        : 'AD';
+    final isSuperAdmin =
+        userEmail.trim().toLowerCase() == 'rogeliovladimir2016@gmail.com';
+    final userInitials = isSuperAdmin
+        ? 'RH'
+        : (userEmail.isNotEmpty && userEmail.length >= 2
+              ? userEmail.substring(0, 2).toUpperCase()
+              : 'AD');
     return LayoutBuilder(
       builder: (context, constraints) {
         final isMobile = constraints.maxWidth < 850;

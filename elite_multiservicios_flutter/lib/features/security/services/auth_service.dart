@@ -99,8 +99,14 @@ class AuthService extends ChangeNotifier {
   String? get currentUserEmail => _currentUserEmail;
 
   /// Nombre o identificador legible para presentar en la interfaz de usuario.
-  String? get currentDisplayName =>
-      currentAuthInfo != null ? 'Administrador' : null;
+  String? get currentDisplayName {
+    if (currentAuthInfo == null && _currentUserEmail == null) return null;
+    final email = _currentUserEmail?.trim().toLowerCase();
+    if (email == 'rogeliovladimir2016@gmail.com') {
+      return 'Super Administrador';
+    }
+    return 'Administrador';
+  }
 
   /// Acceso al servicio de API de seguridad y RBAC.
   SecurityApiService get securityApi => _securityApi;

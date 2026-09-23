@@ -1800,11 +1800,14 @@ class _UsersManagementViewState extends State<UsersManagementView> {
 
   Widget _buildUserRow(AppUser user, bool isDark) {
     final isSelected = _selectedUser?.id == user.id;
-    final initials = user.fullName.isNotEmpty
-        ? (user.fullName.trim().split(' ').length > 1
-              ? '${user.fullName.trim().split(" ")[0][0]}${user.fullName.trim().split(" ")[1][0]}'
-              : user.fullName.substring(0, 1).toUpperCase())
-        : 'US';
+    final isSuperAdmin = _isSuperAdmin(user);
+    final initials = isSuperAdmin
+        ? 'RH'
+        : (user.fullName.isNotEmpty
+              ? (user.fullName.trim().split(' ').length > 1
+                    ? '${user.fullName.trim().split(" ")[0][0]}${user.fullName.trim().split(" ")[1][0]}'
+                    : user.fullName.substring(0, 1).toUpperCase())
+              : 'US');
 
     return Material(
       color: Colors.transparent,
@@ -2148,7 +2151,7 @@ class _UsersManagementViewState extends State<UsersManagementView> {
     final badgeColor = isSuperAdmin
         ? const Color(0xFFA855F7)
         : const Color(0xFF3B82F6);
-    final roleName = isSuperAdmin ? 'SuperAdmin' : 'Administrador';
+    final roleName = isSuperAdmin ? 'Super Administrador' : 'Administrador';
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -2274,11 +2277,14 @@ class _UsersManagementViewState extends State<UsersManagementView> {
   }) {
     final actualLoading = isLoading ?? _isLoadingPermissions;
     final actualPermissions = permissions ?? _userPermissions;
-    final initials = user.fullName.isNotEmpty
-        ? (user.fullName.trim().split(' ').length > 1
-              ? '${user.fullName.trim().split(" ")[0][0]}${user.fullName.trim().split(" ")[1][0]}'
-              : user.fullName.substring(0, 1).toUpperCase())
-        : 'US';
+    final isSuperAdmin = _isSuperAdmin(user);
+    final initials = isSuperAdmin
+        ? 'RH'
+        : (user.fullName.isNotEmpty
+              ? (user.fullName.trim().split(' ').length > 1
+                    ? '${user.fullName.trim().split(" ")[0][0]}${user.fullName.trim().split(" ")[1][0]}'
+                    : user.fullName.substring(0, 1).toUpperCase())
+              : 'US');
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(18),

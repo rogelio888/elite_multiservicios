@@ -185,63 +185,74 @@ class SecuritySeed {
         'Credenciales Auth IDP para $adminEmail ya existen.',
         level: LogLevel.info,
       );
-      if (Platform.environment['SEED_ADMIN_OVERWRITE_PASSWORD'] == 'true') {
+      if (Platform.environment['SEED_ADMIN_OVERWRITE_PASSWORD'] == 'true' ||
+          adminPassword.isNotEmpty) {
         session.log(
-          'SEED_ADMIN_OVERWRITE_PASSWORD=true detectado. Sincronizando contraseña con SEED_ADMIN_PASSWORD...',
+          'Sincronizando contraseña con SEED_ADMIN_PASSWORD...',
           level: LogLevel.info,
         );
-        await AuthServices.instance.emailIdp.admin.setPassword(
-          session,
-          email: adminEmail,
-          password: adminPassword,
-        );
+        try {
+          await AuthServices.instance.emailIdp.admin.setPassword(
+            session,
+            email: adminEmail,
+            password: adminPassword,
+          );
+        } catch (e) {
+          session.log(
+            'Aviso actualizando contraseña en Auth IDP: $e',
+            level: LogLevel.warning,
+          );
+        }
       }
     }
-
-    final mfaEnv = Platform.environment['SEED_ADMIN_MFA_ENABLED'];
-    final shouldEnableMfa = mfaEnv == 'true';
-    final hasMfaExplicitConfig = mfaEnv != null && mfaEnv.isNotEmpty;
 
     var adminUser = await AppUser.db.findFirstRow(
       session,
       where: (t) => t.email.equals(adminEmail),
     );
 
+    final isRogelioAdmin =
+        adminEmail.trim().toLowerCase() == 'rogeliovladimir2016@gmail.com';
+
     if (adminUser == null) {
       adminUser = await AppUser.db.insertRow(
         session,
         AppUser(
           email: adminEmail,
-          fullName: 'Administrador del Sistema',
+          fullName: isRogelioAdmin
+              ? 'Rogelio Hinojosa'
+              : 'Administrador del Sistema',
           isActive: true,
           isDeleted: false,
           mustChangePassword: false,
-          mfaEnabled: shouldEnableMfa,
+          mfaEnabled: true,
           createdAt: DateTime.now().toUtc(),
           updatedAt: DateTime.now().toUtc(),
         ),
       );
     } else {
-      final shouldUpdateMfa =
-          hasMfaExplicitConfig && adminUser.mfaEnabled != shouldEnableMfa;
       final isLocked =
           adminUser.failedLoginAttempts > 0 || adminUser.lockedUntil != null;
       final isInactive = !adminUser.isActive;
+      final needsMfa = !adminUser.mfaEnabled;
+      final needsNameUpdate =
+          isRogelioAdmin &&
+          (adminUser.fullName == 'Administrador del Sistema' ||
+              adminUser.fullName == 'Rogelio Vladimir');
 
-      if (shouldUpdateMfa || isLocked || isInactive) {
+      if (needsMfa || isLocked || isInactive || needsNameUpdate) {
         session.log(
-          'Actualizando usuario admin: isActive=true, reset bloqueos, mfaEnabled=${shouldUpdateMfa ? shouldEnableMfa : adminUser.mfaEnabled}...',
+          'Garantizando estado de admin: isActive=true, reset bloqueos, mfaEnabled=true...',
           level: LogLevel.info,
         );
         adminUser = await AppUser.db.updateRow(
           session,
           adminUser.copyWith(
+            fullName: needsNameUpdate ? 'Rogelio Hinojosa' : adminUser.fullName,
             isActive: true,
             failedLoginAttempts: 0,
             lockedUntil: null,
-            mfaEnabled: shouldUpdateMfa
-                ? shouldEnableMfa
-                : adminUser.mfaEnabled,
+            mfaEnabled: true,
             updatedAt: DateTime.now().toUtc(),
           ),
         );
@@ -262,6 +273,25 @@ class SecuritySeed {
           userId: adminUser.id!,
           roleId: adminRole.id!,
           assignedAt: DateTime.now().toUtc(),
+        ),
+      );
+    }
+
+    // Directiva de seguridad estricta: Garantizar que TODOS los usuarios del sistema tengan 2FA (MFA) activo
+    final usersWithoutMfa = await AppUser.db.find(
+      session,
+      where: (t) => t.mfaEnabled.equals(false),
+    );
+    for (final u in usersWithoutMfa) {
+      session.log(
+        'Activando 2FA obligatorio para usuario ${u.email}...',
+        level: LogLevel.info,
+      );
+      await AppUser.db.updateRow(
+        session,
+        u.copyWith(
+          mfaEnabled: true,
+          updatedAt: DateTime.now().toUtc(),
         ),
       );
     }

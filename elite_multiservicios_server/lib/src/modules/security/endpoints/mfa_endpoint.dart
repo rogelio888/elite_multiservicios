@@ -27,10 +27,15 @@ class MfaEndpoint extends Endpoint {
     // 1. Obtener el usuario autenticado
     final authUserIdStr = session.authenticated?.userIdentifier;
     if (authUserIdStr == null) {
-      throw const UnauthorizedException('Usuario no autenticado.');
+      return null;
     }
 
-    final appUser = await RbacGuard.resolveAppUser(session, authUserIdStr);
+    AppUser appUser;
+    try {
+      appUser = await RbacGuard.resolveAppUser(session, authUserIdStr);
+    } catch (_) {
+      return null;
+    }
 
     // 2. Si MFA no está habilitado → no requiere
     if (!appUser.mfaEnabled) {

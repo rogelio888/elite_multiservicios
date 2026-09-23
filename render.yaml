@@ -55,16 +55,20 @@ services:
         generateValue: true
       - key: SERVERPOD_PASSWORD_jwtRefreshTokenHashPepper
         generateValue: true
-      - key: SMTP_HOST
+      - key: MAIL_DRIVER
+        value: brevo
+      - key: BREVO_API_KEY
         sync: false
+      - key: SMTP_HOST
+        value: smtp-relay.brevo.com
       - key: SMTP_PORT
-        value: "465"
+        value: "587"
       - key: SMTP_USERNAME
-        value: resend
+        sync: false
       - key: SMTP_PASSWORD
         sync: false
       - key: SMTP_FROM_EMAIL
-        value: onboarding@resend.dev
+        value: rogeliovladimir2016@gmail.com
       - key: SMTP_FROM_NAME
         value: Elite Multiservicios
       - key: SEED_ADMIN_EMAIL
@@ -72,7 +76,9 @@ services:
       - key: SEED_ADMIN_PASSWORD
         sync: false
       - key: SEED_ADMIN_MFA_ENABLED
-        value: "false"
+        value: "true"
+      - key: SEED_ADMIN_OVERWRITE_PASSWORD
+        value: "true"
       - key: SEED_ON_START
         value: "true"
 
