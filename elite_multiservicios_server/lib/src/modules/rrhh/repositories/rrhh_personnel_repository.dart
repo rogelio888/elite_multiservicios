@@ -27,22 +27,31 @@ class RrhhPersonnelRepository {
     return await RrhhEmployee.db.find(
       session,
       where: (t) {
-        var expr = includeDeleted ? Constant.bool(true) : t.isDeleted.equals(false);
+        var expr = includeDeleted
+            ? Constant.bool(true)
+            : t.isDeleted.equals(false);
         if (status != null && status.trim().isNotEmpty) {
           expr = expr & t.status.equals(status.trim().toUpperCase());
         }
         if (employeeType != null && employeeType.trim().isNotEmpty) {
-          expr = expr & t.employeeType.equals(employeeType.trim().toUpperCase());
+          expr =
+              expr & t.employeeType.equals(employeeType.trim().toUpperCase());
         }
-        if (availabilityStatus != null && availabilityStatus.trim().isNotEmpty) {
-          expr = expr & t.availabilityStatus.equals(availabilityStatus.trim().toUpperCase());
+        if (availabilityStatus != null &&
+            availabilityStatus.trim().isNotEmpty) {
+          expr =
+              expr &
+              t.availabilityStatus.equals(
+                availabilityStatus.trim().toUpperCase(),
+              );
         }
         if (areaId != null) {
           expr = expr & t.areaId.equals(areaId);
         }
         if (search != null && search.trim().isNotEmpty) {
           final query = '%${search.trim()}%';
-          expr = expr &
+          expr =
+              expr &
               (t.fullName.ilike(query) |
                   t.identityCard.ilike(query) |
                   t.code.ilike(query) |
@@ -120,9 +129,14 @@ class RrhhPersonnelRepository {
     if (finalCode.isEmpty || finalCode == 'AUTO' || finalCode == 'EMP-') {
       finalCode = await generateNextEmployeeCode();
     } else {
-      final duplicate = await getEmployeeByCode(finalCode, includeDeleted: true);
+      final duplicate = await getEmployeeByCode(
+        finalCode,
+        includeDeleted: true,
+      );
       if (duplicate != null) {
-        throw FormatException('El código "$finalCode" ya se encuentra asignado a otro empleado.');
+        throw FormatException(
+          'El código "$finalCode" ya se encuentra asignado a otro empleado.',
+        );
       }
     }
 
@@ -139,7 +153,8 @@ class RrhhPersonnelRepository {
           .replaceAll('ñ', 'n')
           .split(RegExp(r'\s+'));
       if (nameParts.length >= 2) {
-        corporateEmail = '${nameParts.first}.${nameParts.last}@elitemultiservicios.com';
+        corporateEmail =
+            '${nameParts.first}.${nameParts.last}@elitemultiservicios.com';
       } else {
         corporateEmail = '${nameParts.first}@elitemultiservicios.com';
       }
@@ -253,7 +268,8 @@ class RrhhPersonnelRepository {
       agreedSalary: agreedSalary,
       contractType: contractType,
       contractEndDate: contractEndDate,
-      observations: observations ?? 'Contratado desde pipeline de reclutamiento.',
+      observations:
+          observations ?? 'Contratado desde pipeline de reclutamiento.',
       status: 'ACTIVO',
       availabilityStatus: 'DISPONIBLE',
       paymentModality: 'MENSUAL',
@@ -298,7 +314,9 @@ class RrhhPersonnelRepository {
     ];
     final normalized = newAvailabilityStatus.trim().toUpperCase();
     if (!valid.contains(normalized)) {
-      throw FormatException('Estado de disponibilidad no válido: $newAvailabilityStatus');
+      throw FormatException(
+        'Estado de disponibilidad no válido: $newAvailabilityStatus',
+      );
     }
 
     final toUpdate = existing.copyWith(
@@ -384,7 +402,9 @@ class RrhhPersonnelRepository {
   }
 
   /// Agrega un documento digital al expediente.
-  Future<RrhhEmployeeDocument> addDocument(RrhhEmployeeDocument document) async {
+  Future<RrhhEmployeeDocument> addDocument(
+    RrhhEmployeeDocument document,
+  ) async {
     final now = DateTime.now().toUtc();
     return await RrhhEmployeeDocument.db.insertRow(
       session,
@@ -495,7 +515,8 @@ class RrhhPersonnelRepository {
         fiscalStartDate: DateTime.utc(2022, 6, 15),
         agreedSalary: 2800.0,
         contractType: 'Indefinido',
-        observations: 'Especialista en podado artístico y mantenimiento de césped.',
+        observations:
+            'Especialista en podado artístico y mantenimiento de césped.',
         status: 'ACTIVO',
         availabilityStatus: 'ASIGNADO',
         paymentModality: 'MENSUAL',
@@ -610,7 +631,8 @@ class RrhhPersonnelRepository {
         agreedSalary: 2800.0,
         contractType: 'Plazo Fijo',
         contractEndDate: DateTime.utc(2024, 2, 1),
-        observations: 'Conclusión de contrato a plazo fijo con finiquito visado.',
+        observations:
+            'Conclusión de contrato a plazo fijo con finiquito visado.',
         status: 'INACTIVO',
         availabilityStatus: 'SUSPENDIDO',
         paymentModality: 'MENSUAL',
@@ -624,7 +646,8 @@ class RrhhPersonnelRepository {
         corporateEmail: 'hector.baldivieso@elitemultiservicios.com',
         exitDate: DateTime.utc(2024, 2, 1),
         exitReason: 'Conclusión regular de contrato a plazo fijo',
-        exitObservations: 'Entrega de uniforme y liquidación de beneficios sociales cancelada.',
+        exitObservations:
+            'Entrega de uniforme y liquidación de beneficios sociales cancelada.',
         exitRegisteredBy: 'Paola Andrea Torrico Vaca',
         createdAt: now,
         updatedAt: now,
@@ -641,7 +664,8 @@ class RrhhPersonnelRepository {
           employeeId: inserted.id!,
           date: emp.realStartDate,
           title: 'Contratación e incorporación en nómina',
-          description: 'Incorporación formal como ${emp.position} en modalidad ${emp.contractType}.',
+          description:
+              'Incorporación formal como ${emp.position} en modalidad ${emp.contractType}.',
           category: 'CONTRATACION',
           registeredBy: 'Recursos Humanos',
           createdAt: now,
@@ -656,7 +680,9 @@ class RrhhPersonnelRepository {
             employeeId: inserted.id!,
             date: emp.exitDate!,
             title: 'Desvinculación laboral',
-            description: 'Motivo: ${emp.exitReason}. ${emp.exitObservations ?? ""}'.trim(),
+            description:
+                'Motivo: ${emp.exitReason}. ${emp.exitObservations ?? ""}'
+                    .trim(),
             category: 'DESVINCULACION',
             registeredBy: emp.exitRegisteredBy ?? 'Recursos Humanos',
             createdAt: now,

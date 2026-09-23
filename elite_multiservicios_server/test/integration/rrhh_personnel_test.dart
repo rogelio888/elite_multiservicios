@@ -62,7 +62,10 @@ void main() {
           expect(directEmployee.code, startsWith('EMP-'));
           expect(directEmployee.status, equals('ACTIVO'));
           expect(directEmployee.availabilityStatus, equals('DISPONIBLE'));
-          expect(directEmployee.corporateEmail, contains('@elitemultiservicios.com'));
+          expect(
+            directEmployee.corporateEmail,
+            contains('@elitemultiservicios.com'),
+          );
 
           // ===================================================================
           // 2. DOCUMENTOS ADJUNTOS
@@ -72,7 +75,8 @@ void main() {
               employeeId: directEmployee.id!,
               documentType: 'CI',
               title: 'Cédula de Identidad Anverso y Reverso',
-              fileUrl: 'https://storage.elitemultiservicios.com/docs/ci_$timestamp.pdf',
+              fileUrl:
+                  'https://storage.elitemultiservicios.com/docs/ci_$timestamp.pdf',
               fileName: 'ci_$timestamp.pdf',
               fileSizeBytes: 204800,
               mimeType: 'application/pdf',
@@ -83,7 +87,9 @@ void main() {
           );
           expect(doc.id, isNotNull);
 
-          final docsList = await personnelRepo.listDocuments(directEmployee.id!);
+          final docsList = await personnelRepo.listDocuments(
+            directEmployee.id!,
+          );
           expect(docsList.any((d) => d.id == doc.id), isTrue);
 
           // ===================================================================
@@ -125,7 +131,9 @@ void main() {
           expect(hiredEmployee.agreedSalary, equals(2900.0));
 
           // Verificar que el postulante quedó marcado como 'CONTRATADO'
-          final updatedApplicant = await applicantRepo.getApplicantById(applicant.id!);
+          final updatedApplicant = await applicantRepo.getApplicantById(
+            applicant.id!,
+          );
           expect(updatedApplicant!.status, equals('CONTRATADO'));
 
           // ===================================================================
@@ -140,7 +148,9 @@ void main() {
           // ===================================================================
           // 5. LÍNEA DE TIEMPO / HISTORIAL CONSERVADO
           // ===================================================================
-          final timeline = await personnelRepo.listTimelineEvents(hiredEmployee.id!);
+          final timeline = await personnelRepo.listTimelineEvents(
+            hiredEmployee.id!,
+          );
           expect(timeline.isNotEmpty, isTrue);
           expect(timeline.any((e) => e.category == 'CONTRATACION'), isTrue);
 
@@ -160,14 +170,21 @@ void main() {
           expect(terminated.exitReason, contains('Renuncia voluntaria'));
 
           // Verificar que el expediente sigue existiendo y accesible
-          final retrievedInDb = await personnelRepo.getEmployeeById(hiredEmployee.id!);
+          final retrievedInDb = await personnelRepo.getEmployeeById(
+            hiredEmployee.id!,
+          );
           expect(retrievedInDb, isNotNull);
           expect(retrievedInDb!.status, equals('INACTIVO'));
           expect(retrievedInDb.isDeleted, isFalse);
 
           // Verificar que se agregó el evento de desvinculación
-          final timelineAfterExit = await personnelRepo.listTimelineEvents(hiredEmployee.id!);
-          expect(timelineAfterExit.any((e) => e.category == 'DESVINCULACION'), isTrue);
+          final timelineAfterExit = await personnelRepo.listTimelineEvents(
+            hiredEmployee.id!,
+          );
+          expect(
+            timelineAfterExit.any((e) => e.category == 'DESVINCULACION'),
+            isTrue,
+          );
         },
       );
     },

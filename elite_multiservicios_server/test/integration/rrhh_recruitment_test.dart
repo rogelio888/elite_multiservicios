@@ -38,7 +38,8 @@ void main() {
               targetPosition: 'Jardinero',
               specialty: 'Jardinería & Paisajismo',
               education: 'Bachiller',
-              experienceSummary: 'Experiencia previa comprobable en podado y jardines.',
+              experienceSummary:
+                  'Experiencia previa comprobable en podado y jardines.',
               skills: 'Uso de desbrozadora, riego tecnificado',
               referencePerson: 'Carlos Vaca',
               referencePhone: '+591 71111111',
@@ -81,7 +82,8 @@ void main() {
           final selected = await repo.updateApplicantStatus(
             applicant.id!,
             newStatus: 'SELECCIONADO',
-            interviewNotes: 'Entrevista presencial aprobada. Listo para propuesta y contratación.',
+            interviewNotes:
+                'Entrevista presencial aprobada. Listo para propuesta y contratación.',
           );
           expect(selected.status, equals('SELECCIONADO'));
 
@@ -101,11 +103,16 @@ void main() {
           expect(deleted, isTrue);
 
           // Verificar que no aparezca en listado normal
-          final afterDelete = await repo.listApplicants(search: applicant.fullName);
+          final afterDelete = await repo.listApplicants(
+            search: applicant.fullName,
+          );
           expect(afterDelete.any((a) => a.id == applicant.id), isFalse);
 
           // Verificar que se conserve en auditoría
-          final inDb = await repo.getApplicantById(applicant.id!, includeDeleted: true);
+          final inDb = await repo.getApplicantById(
+            applicant.id!,
+            includeDeleted: true,
+          );
           expect(inDb!.isDeleted, isTrue);
           expect(inDb.deletedAt, isNotNull);
         },

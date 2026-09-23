@@ -46,7 +46,10 @@ class RrhhApplicantEndpoint extends Endpoint {
     Session session,
     RrhhApplicant applicant,
   ) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhRecruitmentRepository(session);
     return await repo.createApplicant(applicant);
   }
@@ -56,7 +59,10 @@ class RrhhApplicantEndpoint extends Endpoint {
     Session session,
     RrhhApplicant applicant,
   ) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhRecruitmentRepository(session);
     return await repo.updateApplicant(applicant);
   }
@@ -69,7 +75,10 @@ class RrhhApplicantEndpoint extends Endpoint {
     String? interviewNotes,
     String? discardReason,
   }) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhRecruitmentRepository(session);
     return await repo.updateApplicantStatus(
       id,
@@ -81,14 +90,20 @@ class RrhhApplicantEndpoint extends Endpoint {
 
   /// Soft delete de un postulante del sistema.
   Future<bool> deleteApplicant(Session session, int id) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhRecruitmentRepository(session);
     return await repo.deleteApplicant(id);
   }
 
   /// Sembrado inicial de postulantes si la base de datos está vacía.
   Future<bool> seedInitialData(Session session) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhRecruitmentRepository(session);
     await repo.seedInitialApplicants();
     return true;

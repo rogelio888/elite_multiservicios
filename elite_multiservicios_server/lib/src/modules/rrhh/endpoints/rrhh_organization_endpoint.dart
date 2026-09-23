@@ -34,21 +34,30 @@ class RrhhOrganizationEndpoint extends Endpoint {
 
   /// Crea una nueva área validando código y nombre únicos.
   Future<RrhhArea> createArea(Session session, RrhhArea area) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhOrganizationRepository(session);
     return await repo.createArea(area);
   }
 
   /// Actualiza un área existente.
   Future<RrhhArea> updateArea(Session session, RrhhArea area) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhOrganizationRepository(session);
     return await repo.updateArea(area);
   }
 
   /// Soft delete de un área y desactivación en cascada de sus cargos.
   Future<bool> deleteArea(Session session, int id) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhOrganizationRepository(session);
     return await repo.deleteArea(id);
   }
@@ -87,7 +96,10 @@ class RrhhOrganizationEndpoint extends Endpoint {
     Session session,
     RrhhPosition position,
   ) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhOrganizationRepository(session);
     return await repo.createPosition(position);
   }
@@ -97,14 +109,20 @@ class RrhhOrganizationEndpoint extends Endpoint {
     Session session,
     RrhhPosition position,
   ) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhOrganizationRepository(session);
     return await repo.updatePosition(position);
   }
 
   /// Soft delete de un cargo.
   Future<bool> deletePosition(Session session, int id) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhOrganizationRepository(session);
     return await repo.deletePosition(id);
   }
@@ -139,7 +157,10 @@ class RrhhOrganizationEndpoint extends Endpoint {
     Session session,
     RrhhSpecialty specialty,
   ) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhOrganizationRepository(session);
     return await repo.createSpecialty(specialty);
   }
@@ -149,14 +170,20 @@ class RrhhOrganizationEndpoint extends Endpoint {
     Session session,
     RrhhSpecialty specialty,
   ) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhOrganizationRepository(session);
     return await repo.updateSpecialty(specialty);
   }
 
   /// Soft delete de una especialidad.
   Future<bool> deleteSpecialty(Session session, int id) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhOrganizationRepository(session);
     return await repo.deleteSpecialty(id);
   }
@@ -167,7 +194,10 @@ class RrhhOrganizationEndpoint extends Endpoint {
 
   /// Si las tablas de áreas y especialidades se encuentran vacías, las inicializa con datos estándar.
   Future<bool> seedInitialData(Session session) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhOrganizationRepository(session);
     await repo.seedInitialOrganizationData();
     return true;

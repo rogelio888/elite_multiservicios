@@ -20,7 +20,9 @@ class RrhhRecruitmentRepository {
     return await RrhhApplicant.db.find(
       session,
       where: (t) {
-        var expr = includeDeleted ? Constant.bool(true) : t.isDeleted.equals(false);
+        var expr = includeDeleted
+            ? Constant.bool(true)
+            : t.isDeleted.equals(false);
         if (status != null && status.trim().isNotEmpty) {
           expr = expr & t.status.equals(status.trim().toUpperCase());
         }
@@ -32,7 +34,8 @@ class RrhhRecruitmentRepository {
         }
         if (search != null && search.trim().isNotEmpty) {
           final query = '%${search.trim()}%';
-          expr = expr &
+          expr =
+              expr &
               (t.fullName.ilike(query) |
                   t.identityCard.ilike(query) |
                   t.code.ilike(query) |
@@ -80,7 +83,9 @@ class RrhhRecruitmentRepository {
     final cleanPhone = applicant.phone.trim();
 
     if (cleanFullName.isEmpty) {
-      throw FormatException('El nombre completo del postulante es obligatorio.');
+      throw FormatException(
+        'El nombre completo del postulante es obligatorio.',
+      );
     }
     if (cleanCi.isEmpty) {
       throw FormatException('El documento de identidad (CI) es obligatorio.');
@@ -90,22 +95,35 @@ class RrhhRecruitmentRepository {
     }
 
     String generatedCode = applicant.code.trim().toUpperCase();
-    if (generatedCode.isEmpty || generatedCode == 'AUTO' || generatedCode == 'POST-') {
+    if (generatedCode.isEmpty ||
+        generatedCode == 'AUTO' ||
+        generatedCode == 'POST-') {
       final totalCount = await RrhhApplicant.db.count(session);
       generatedCode = 'POST-${(totalCount + 1).toString().padLeft(3, '0')}';
 
       // Verificar que no colisione
-      var existingWithCode = await getApplicantByCode(generatedCode, includeDeleted: true);
+      var existingWithCode = await getApplicantByCode(
+        generatedCode,
+        includeDeleted: true,
+      );
       int counter = totalCount + 1;
       while (existingWithCode != null) {
         counter++;
         generatedCode = 'POST-${counter.toString().padLeft(3, '0')}';
-        existingWithCode = await getApplicantByCode(generatedCode, includeDeleted: true);
+        existingWithCode = await getApplicantByCode(
+          generatedCode,
+          includeDeleted: true,
+        );
       }
     } else {
-      final duplicate = await getApplicantByCode(generatedCode, includeDeleted: true);
+      final duplicate = await getApplicantByCode(
+        generatedCode,
+        includeDeleted: true,
+      );
       if (duplicate != null) {
-        throw FormatException('El código "$generatedCode" ya se encuentra registrado.');
+        throw FormatException(
+          'El código "$generatedCode" ya se encuentra registrado.',
+        );
       }
     }
 
@@ -225,13 +243,15 @@ class RrhhRecruitmentRepository {
         targetType: 'CAMPO',
         specialty: 'Mantenimiento Electromecánico',
         education: 'Técnico Superior Electromecánico (INFOCAL)',
-        experienceSummary: '2 años en mantenimiento de motobombas y tableros en condominios.',
+        experienceSummary:
+            '2 años en mantenimiento de motobombas y tableros en condominios.',
         skills: 'Electricidad industrial, plomería, bombas sumergibles.',
         referencePerson: 'Ing. Carlos Justiniano (Ex-Jefe)',
         referencePhone: '+591 71329019',
         applicationDate: now.subtract(const Duration(days: 10)),
         status: 'SELECCIONADO',
-        interviewNotes: 'Excelente predisposición técnica, antecedentes FELCC verificados limpios.',
+        interviewNotes:
+            'Excelente predisposición técnica, antecedentes FELCC verificados limpios.',
         expectedSalary: 4500.0,
         hasCvAttached: true,
         hasIdentityCardCopy: true,
@@ -254,13 +274,15 @@ class RrhhRecruitmentRepository {
         targetType: 'OFICINA',
         specialty: 'Comercial & Licitaciones',
         education: 'Lic. en Diseño Gráfico y Marketing (UPSA)',
-        experienceSummary: '1 año en agencia de publicidad y captación de clientes.',
+        experienceSummary:
+            '1 año en agencia de publicidad y captación de clientes.',
         skills: 'Branding B2B, edición de video corto, prospección comercial.',
         referencePerson: 'Lic. Sofía Arteaga',
         referencePhone: '+591 72199001',
         applicationDate: now.subtract(const Duration(days: 8)),
         status: 'EN_EVALUACION',
-        interviewNotes: 'Entrevista técnica completada. Pendiente entrega de portafolio comercial.',
+        interviewNotes:
+            'Entrevista técnica completada. Pendiente entrega de portafolio comercial.',
         expectedSalary: 4200.0,
         hasCvAttached: true,
         hasIdentityCardCopy: true,
@@ -283,13 +305,15 @@ class RrhhRecruitmentRepository {
         targetType: 'CAMPO',
         specialty: 'Jardinería & Paisajismo',
         education: 'Bachiller en Humanidades',
-        experienceSummary: '3 años de experiencia en jardinería residencial y parques.',
+        experienceSummary:
+            '3 años de experiencia en jardinería residencial y parques.',
         skills: 'Manejo de motoguadaña, diseño de setos, poda de palmeras.',
         referencePerson: 'José Luis Flores',
         referencePhone: '+591 76011239',
         applicationDate: now.subtract(const Duration(days: 5)),
         status: 'NUEVO',
-        interviewNotes: 'Postulación recibida. Agendar primera entrevista presencial.',
+        interviewNotes:
+            'Postulación recibida. Agendar primera entrevista presencial.',
         expectedSalary: 3500.0,
         hasCvAttached: true,
         hasIdentityCardCopy: true,
@@ -318,8 +342,10 @@ class RrhhRecruitmentRepository {
         referencePhone: '+591 71099231',
         applicationDate: now.subtract(const Duration(days: 20)),
         status: 'RECHAZADO',
-        interviewNotes: 'No presentó antecedentes FELCC actualizados en el plazo establecido.',
-        discardReason: 'Falta de documentación requerida (antecedentes policiales).',
+        interviewNotes:
+            'No presentó antecedentes FELCC actualizados en el plazo establecido.',
+        discardReason:
+            'Falta de documentación requerida (antecedentes policiales).',
         expectedSalary: 3800.0,
         hasCvAttached: true,
         hasIdentityCardCopy: false,

@@ -181,7 +181,10 @@ class RrhhOrganizationRepository {
   }
 
   /// Obtiene un cargo por su identificador primario.
-  Future<RrhhPosition?> getPositionById(int id, {bool includeDeleted = false}) async {
+  Future<RrhhPosition?> getPositionById(
+    int id, {
+    bool includeDeleted = false,
+  }) async {
     return await RrhhPosition.db.findFirstRow(
       session,
       where: (t) =>
@@ -194,7 +197,9 @@ class RrhhOrganizationRepository {
   Future<RrhhPosition> createPosition(RrhhPosition position) async {
     final area = await getAreaById(position.areaId);
     if (area == null) {
-      throw FormatException('El área especificada no existe o fue dada de baja.');
+      throw FormatException(
+        'El área especificada no existe o fue dada de baja.',
+      );
     }
 
     final cleanCode = position.code.trim().toUpperCase();
@@ -315,7 +320,10 @@ class RrhhOrganizationRepository {
   }
 
   /// Obtiene una especialidad por su identificador primario.
-  Future<RrhhSpecialty?> getSpecialtyById(int id, {bool includeDeleted = false}) async {
+  Future<RrhhSpecialty?> getSpecialtyById(
+    int id, {
+    bool includeDeleted = false,
+  }) async {
     return await RrhhSpecialty.db.findFirstRow(
       session,
       where: (t) =>
@@ -426,7 +434,8 @@ class RrhhOrganizationRepository {
       RrhhArea(
         code: 'AREA-OPER',
         name: 'Operaciones',
-        description: 'Gestión de personal operativo en campo y servicios a clientes.',
+        description:
+            'Gestión de personal operativo en campo y servicios a clientes.',
         colorTag: '#10B981',
         isActive: true,
         isDeleted: false,
@@ -440,7 +449,8 @@ class RrhhOrganizationRepository {
       RrhhArea(
         code: 'AREA-RRHH',
         name: 'Recursos Humanos',
-        description: 'Administración del personal, contrataciones y bienestar laboral.',
+        description:
+            'Administración del personal, contrataciones y bienestar laboral.',
         colorTag: '#6366F1',
         isActive: true,
         isDeleted: false,
@@ -454,7 +464,8 @@ class RrhhOrganizationRepository {
       RrhhArea(
         code: 'AREA-ADM',
         name: 'Administración y Finanzas',
-        description: 'Contabilidad, facturación, compras y finanzas corporativas.',
+        description:
+            'Contabilidad, facturación, compras y finanzas corporativas.',
         colorTag: '#F59E0B',
         isActive: true,
         isDeleted: false,
@@ -468,7 +479,8 @@ class RrhhOrganizationRepository {
       RrhhArea(
         code: 'AREA-COM',
         name: 'Comercial & Marketing',
-        description: 'Prospección, ventas corporativas y relación con clientes CRM.',
+        description:
+            'Prospección, ventas corporativas y relación con clientes CRM.',
         colorTag: '#EC4899',
         isActive: true,
         isDeleted: false,
@@ -487,7 +499,8 @@ class RrhhOrganizationRepository {
         workplaceType: 'Campo',
         suggestedSalary: 2500.0,
         description: 'Mantenimiento de áreas verdes y jardines corporativos.',
-        requirements: 'Experiencia en podado, riego y maquinaria de jardinería.',
+        requirements:
+            'Experiencia en podado, riego y maquinaria de jardinería.',
         isActive: true,
         isDeleted: false,
         createdAt: now,
@@ -499,8 +512,10 @@ class RrhhOrganizationRepository {
         name: 'Operario de Limpieza',
         workplaceType: 'Campo',
         suggestedSalary: 2500.0,
-        description: 'Limpieza institucional, desinfección y mantenimiento de ambientes.',
-        requirements: 'Conocimiento de protocolos de bioseguridad y químicos de limpieza.',
+        description:
+            'Limpieza institucional, desinfección y mantenimiento de ambientes.',
+        requirements:
+            'Conocimiento de protocolos de bioseguridad y químicos de limpieza.',
         isActive: true,
         isDeleted: false,
         createdAt: now,
@@ -512,8 +527,10 @@ class RrhhOrganizationRepository {
         name: 'Guardia de Seguridad',
         workplaceType: 'Campo',
         suggestedSalary: 2800.0,
-        description: 'Vigilancia física, control de accesos y rondas preventivas.',
-        requirements: 'Libreta de servicio militar y certificado de antecedentes.',
+        description:
+            'Vigilancia física, control de accesos y rondas preventivas.',
+        requirements:
+            'Libreta de servicio militar y certificado de antecedentes.',
         isActive: true,
         isDeleted: false,
         createdAt: now,
@@ -525,7 +542,8 @@ class RrhhOrganizationRepository {
         name: 'Técnico de Mantenimiento',
         workplaceType: 'Campo',
         suggestedSalary: 3200.0,
-        description: 'Mantenimiento preventivo y correctivo eléctrico y de bombas.',
+        description:
+            'Mantenimiento preventivo y correctivo eléctrico y de bombas.',
         requirements: 'Formación técnica en electricidad o electromecánica.',
         isActive: true,
         isDeleted: false,
@@ -553,7 +571,8 @@ class RrhhOrganizationRepository {
         name: 'Contador General',
         workplaceType: 'Oficina',
         suggestedSalary: 5000.0,
-        description: 'Libros oficiales, balances contables y liquidación impositiva.',
+        description:
+            'Libros oficiales, balances contables y liquidación impositiva.',
         requirements: 'Título en Provisión Nacional de Contador Público.',
         isActive: true,
         isDeleted: false,
@@ -567,7 +586,8 @@ class RrhhOrganizationRepository {
         name: 'Ejecutivo Comercial',
         workplaceType: 'Oficina',
         suggestedSalary: 3500.0,
-        description: 'Prospección comercial B2B, cotizaciones y cierre de contratos.',
+        description:
+            'Prospección comercial B2B, cotizaciones y cierre de contratos.',
         requirements: 'Experiencia previa en ventas corporativas de servicios.',
         isActive: true,
         isDeleted: false,
@@ -585,7 +605,8 @@ class RrhhOrganizationRepository {
       RrhhSpecialty(
         code: 'ESP-JARD',
         name: 'Jardinería & Paisajismo',
-        description: 'Poda técnica, tratamiento fitosanitario y diseño paisajístico.',
+        description:
+            'Poda técnica, tratamiento fitosanitario y diseño paisajístico.',
         colorTag: '#10B981',
         isActive: true,
         isDeleted: false,
@@ -595,7 +616,8 @@ class RrhhOrganizationRepository {
       RrhhSpecialty(
         code: 'ESP-LIMP',
         name: 'Limpieza e Higiene Hospitalaria/Industrial',
-        description: 'Técnicas de desinfección profunda y manejo de residuos biológicos.',
+        description:
+            'Técnicas de desinfección profunda y manejo de residuos biológicos.',
         colorTag: '#3B82F6',
         isActive: true,
         isDeleted: false,
@@ -605,7 +627,8 @@ class RrhhOrganizationRepository {
       RrhhSpecialty(
         code: 'ESP-SEG',
         name: 'Seguridad Física & CCTV',
-        description: 'Monitoreo de cámaras, control perimetral y primeros auxilios.',
+        description:
+            'Monitoreo de cámaras, control perimetral y primeros auxilios.',
         colorTag: '#EF4444',
         isActive: true,
         isDeleted: false,
@@ -615,7 +638,8 @@ class RrhhOrganizationRepository {
       RrhhSpecialty(
         code: 'ESP-MANT',
         name: 'Mantenimiento Electromecánico',
-        description: 'Instalaciones eléctricas industriales, tableros y sistemas hidroneumáticos.',
+        description:
+            'Instalaciones eléctricas industriales, tableros y sistemas hidroneumáticos.',
         colorTag: '#F59E0B',
         isActive: true,
         isDeleted: false,
@@ -625,7 +649,8 @@ class RrhhOrganizationRepository {
       RrhhSpecialty(
         code: 'ESP-CLIM',
         name: 'Climatización y HVAC',
-        description: 'Mantenimiento preventivo de aires acondicionados centrales y splits.',
+        description:
+            'Mantenimiento preventivo de aires acondicionados centrales y splits.',
         colorTag: '#8B5CF6',
         isActive: true,
         isDeleted: false,

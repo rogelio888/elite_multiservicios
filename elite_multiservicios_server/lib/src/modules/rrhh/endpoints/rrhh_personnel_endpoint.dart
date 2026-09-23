@@ -77,7 +77,10 @@ class RrhhPersonnelEndpoint extends Endpoint {
     Session session,
     RrhhEmployee employee,
   ) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhPersonnelRepository(session);
     return await repo.updateEmployee(employee);
   }
@@ -120,7 +123,10 @@ class RrhhPersonnelEndpoint extends Endpoint {
     required int id,
     required String newAvailabilityStatus,
   }) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhPersonnelRepository(session);
     return await repo.updateAvailabilityStatus(
       id,
@@ -152,7 +158,10 @@ class RrhhPersonnelEndpoint extends Endpoint {
 
   /// Soft delete de un empleado (eliminación lógica).
   Future<bool> deleteEmployee(Session session, int id) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhPersonnelRepository(session);
     return await repo.deleteEmployee(id);
   }
@@ -176,14 +185,20 @@ class RrhhPersonnelEndpoint extends Endpoint {
     Session session,
     RrhhEmployeeDocument document,
   ) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhPersonnelRepository(session);
     return await repo.addDocument(document);
   }
 
   /// Elimina un documento del expediente.
   Future<bool> deleteDocument(Session session, int documentId) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhPersonnelRepository(session);
     return await repo.deleteDocument(documentId);
   }
@@ -207,7 +222,10 @@ class RrhhPersonnelEndpoint extends Endpoint {
     Session session,
     RrhhTimelineEvent event,
   ) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhPersonnelRepository(session);
     return await repo.addTimelineEvent(event);
   }
@@ -218,7 +236,10 @@ class RrhhPersonnelEndpoint extends Endpoint {
 
   /// Sembrado inicial de empleados si la base de datos está vacía.
   Future<bool> seedInitialData(Session session) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
     final repo = RrhhPersonnelRepository(session);
     await repo.seedInitialEmployees();
     return true;

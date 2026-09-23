@@ -25,7 +25,9 @@ class RrhhLaborRepository {
     return await RrhhLeaveRequest.db.find(
       session,
       where: (t) {
-        var expr = includeDeleted ? Constant.bool(true) : t.isDeleted.equals(false);
+        var expr = includeDeleted
+            ? Constant.bool(true)
+            : t.isDeleted.equals(false);
         if (employeeId != null) {
           expr = expr & t.employeeId.equals(employeeId);
         }
@@ -156,9 +158,12 @@ class RrhhLaborRepository {
         employeeId: req.employeeId,
         date: now,
         title: 'Resolución de Licencia ($upperStatus)',
-        description: 'Licencia ${req.code} marcada como $upperStatus. ${resolutionNotes ?? ""}',
+        description:
+            'Licencia ${req.code} marcada como $upperStatus. ${resolutionNotes ?? ""}',
         category: 'PERMISO',
-        registeredBy: resolvedByUserId != null ? 'Usuario #$resolvedByUserId' : 'Administración RRHH',
+        registeredBy: resolvedByUserId != null
+            ? 'Usuario #$resolvedByUserId'
+            : 'Administración RRHH',
         createdAt: now,
       ),
     );
@@ -202,7 +207,9 @@ class RrhhLaborRepository {
     return await RrhhVacation.db.find(
       session,
       where: (t) {
-        var expr = includeDeleted ? Constant.bool(true) : t.isDeleted.equals(false);
+        var expr = includeDeleted
+            ? Constant.bool(true)
+            : t.isDeleted.equals(false);
         if (employeeId != null) {
           expr = expr & t.employeeId.equals(employeeId);
         }
@@ -235,7 +242,10 @@ class RrhhLaborRepository {
       throw ArgumentError('El colaborador con ID $employeeId no existe.');
     }
 
-    final totalAccrued = calculateVacationEntitlement(employee.realStartDate, startDate);
+    final totalAccrued = calculateVacationEntitlement(
+      employee.realStartDate,
+      startDate,
+    );
 
     // Sumar días ya tomados o aprobados en ese período
     final existingVacations = await RrhhVacation.db.find(
@@ -244,7 +254,9 @@ class RrhhLaborRepository {
           t.employeeId.equals(employeeId) &
           t.periodYear.equals(periodYear) &
           t.isDeleted.equals(false) &
-          (t.status.equals('APROBADA') | t.status.equals('COMPLETADA') | t.status.equals('EN_CURSO')),
+          (t.status.equals('APROBADA') |
+              t.status.equals('COMPLETADA') |
+              t.status.equals('EN_CURSO')),
     );
 
     int daysAlreadyUsed = 0;
@@ -290,7 +302,8 @@ class RrhhLaborRepository {
         employeeId: employeeId,
         date: startDate,
         title: 'Solicitud de Vacación',
-        description: 'Solicitud $code por $daysRequested días correspondientes al período $periodYear.',
+        description:
+            'Solicitud $code por $daysRequested días correspondientes al período $periodYear.',
         category: 'PERMISO',
         registeredBy: 'Sistema RRHH',
         createdAt: now,
@@ -322,7 +335,10 @@ class RrhhLaborRepository {
 
     // Si coincide con la fecha actual, actualizar disponibilidad
     if (!now.isBefore(vacation.startDate) && !now.isAfter(vacation.endDate)) {
-      final employee = await RrhhEmployee.db.findById(session, vacation.employeeId);
+      final employee = await RrhhEmployee.db.findById(
+        session,
+        vacation.employeeId,
+      );
       if (employee != null) {
         employee.availabilityStatus = 'DE_VACACIONES';
         employee.updatedAt = now;
@@ -336,9 +352,12 @@ class RrhhLaborRepository {
         employeeId: vacation.employeeId,
         date: now,
         title: 'Vacación Aprobada',
-        description: 'Vacación ${vacation.code} aprobada del ${vacation.startDate.toIso8601String().split("T").first} al ${vacation.endDate.toIso8601String().split("T").first}.',
+        description:
+            'Vacación ${vacation.code} aprobada del ${vacation.startDate.toIso8601String().split("T").first} al ${vacation.endDate.toIso8601String().split("T").first}.',
         category: 'PERMISO',
-        registeredBy: approvedByUserId != null ? 'Usuario #$approvedByUserId' : 'Gerencia RRHH',
+        registeredBy: approvedByUserId != null
+            ? 'Usuario #$approvedByUserId'
+            : 'Gerencia RRHH',
         createdAt: now,
       ),
     );
@@ -362,12 +381,15 @@ class RrhhLaborRepository {
     return await RrhhIncident.db.find(
       session,
       where: (t) {
-        var expr = includeDeleted ? Constant.bool(true) : t.isDeleted.equals(false);
+        var expr = includeDeleted
+            ? Constant.bool(true)
+            : t.isDeleted.equals(false);
         if (employeeId != null) {
           expr = expr & t.employeeId.equals(employeeId);
         }
         if (incidentType != null && incidentType.trim().isNotEmpty) {
-          expr = expr & t.incidentType.equals(incidentType.trim().toUpperCase());
+          expr =
+              expr & t.incidentType.equals(incidentType.trim().toUpperCase());
         }
         if (severity != null && severity.trim().isNotEmpty) {
           expr = expr & t.severity.equals(severity.trim().toUpperCase());
@@ -436,7 +458,9 @@ class RrhhLaborRepository {
         title: '$incidentType: $title',
         description: 'Acción tomada: $actionTaken. $description',
         category: 'INCIDENCIA',
-        registeredBy: recordedByUserId != null ? 'Usuario #$recordedByUserId' : 'Supervisor / RRHH',
+        registeredBy: recordedByUserId != null
+            ? 'Usuario #$recordedByUserId'
+            : 'Supervisor / RRHH',
         createdAt: now,
       ),
     );
@@ -483,7 +507,8 @@ class RrhhLaborRepository {
     );
     final code = 'DESV-$year-${(count + 1).toString().padLeft(3, '0')}';
 
-    final yearsOfService = terminationDate.difference(employee.realStartDate).inDays / 365.25;
+    final yearsOfService =
+        terminationDate.difference(employee.realStartDate).inDays / 365.25;
 
     final termination = RrhhTermination(
       code: code,
@@ -506,7 +531,10 @@ class RrhhLaborRepository {
       createdAt: now,
     );
 
-    final insertedTermination = await RrhhTermination.db.insertRow(session, termination);
+    final insertedTermination = await RrhhTermination.db.insertRow(
+      session,
+      termination,
+    );
 
     // 1. REGLA DE ORO: Marcar INACTIVO preservando todo el expediente
     employee.status = 'INACTIVO';
@@ -514,7 +542,9 @@ class RrhhLaborRepository {
     employee.exitDate = terminationDate;
     employee.exitReason = reason.trim().toUpperCase();
     employee.exitObservations = detailedReason.trim();
-    employee.exitRegisteredBy = processedByUserId != null ? 'Usuario #$processedByUserId' : 'Gerencia RRHH';
+    employee.exitRegisteredBy = processedByUserId != null
+        ? 'Usuario #$processedByUserId'
+        : 'Gerencia RRHH';
     employee.updatedAt = now;
     await RrhhEmployee.db.updateRow(session, employee);
 
@@ -530,7 +560,8 @@ class RrhhLaborRepository {
     for (final asg in activeAssignments) {
       asg.status = 'FINALIZADA';
       asg.endDate = lastWorkingDay;
-      asg.notes = 'Finalizada automáticamente por desvinculación laboral ($reason).';
+      asg.notes =
+          'Finalizada automáticamente por desvinculación laboral ($reason).';
       asg.updatedAt = now;
       await RrhhAssignment.db.updateRow(session, asg);
     }
@@ -547,7 +578,9 @@ class RrhhLaborRepository {
         newValue: 'INACTIVO',
         effectiveDate: terminationDate,
         reason: '$reason: $detailedReason',
-        authorizedBy: processedByUserId != null ? 'Usuario #$processedByUserId' : 'Dirección RRHH',
+        authorizedBy: processedByUserId != null
+            ? 'Usuario #$processedByUserId'
+            : 'Dirección RRHH',
         createdAt: now,
       ),
     );
@@ -559,10 +592,13 @@ class RrhhLaborRepository {
         employeeId: employeeId,
         date: terminationDate,
         title: 'Desvinculación Laboral ($reason)',
-        description: 'Egreso formal registrado ($code). Antigüedad: ${yearsOfService.toStringAsFixed(1)} años. '
+        description:
+            'Egreso formal registrado ($code). Antigüedad: ${yearsOfService.toStringAsFixed(1)} años. '
             'Expediente e historial preservados íntegramente conforme a auditoría.',
         category: 'DESVINCULACION',
-        registeredBy: processedByUserId != null ? 'Usuario #$processedByUserId' : 'RRHH',
+        registeredBy: processedByUserId != null
+            ? 'Usuario #$processedByUserId'
+            : 'RRHH',
         createdAt: now,
       ),
     );
@@ -589,7 +625,8 @@ class RrhhLaborRepository {
           expr = expr & t.employeeId.equals(employeeId);
         }
         if (movementType != null && movementType.trim().isNotEmpty) {
-          expr = expr & t.movementType.equals(movementType.trim().toUpperCase());
+          expr =
+              expr & t.movementType.equals(movementType.trim().toUpperCase());
         }
         return expr;
       },
@@ -702,8 +739,10 @@ class RrhhLaborRepository {
       severity: 'POSITIVA',
       incidentDate: now.subtract(const Duration(days: 20)),
       title: 'Desempeño y Puntualidad Impecable',
-      description: 'Reconocimiento formal por felicitación expresa recibida desde la sede del cliente Kolping Bolivia.',
-      actionTaken: 'Carta de felicitación archivada en expediente con puntuación meritoria.',
+      description:
+          'Reconocimiento formal por felicitación expresa recibida desde la sede del cliente Kolping Bolivia.',
+      actionTaken:
+          'Carta de felicitación archivada en expediente con puntuación meritoria.',
       isJustified: true,
     );
 
@@ -715,7 +754,8 @@ class RrhhLaborRepository {
         severity: 'LEVE',
         incidentDate: now.subtract(const Duration(days: 15)),
         title: 'Atraso Justificado de 20 Minutos',
-        description: 'Demora imprevista en línea de microbús reportada anticipadamente a supervisión.',
+        description:
+            'Demora imprevista en línea de microbús reportada anticipadamente a supervisión.',
         actionTaken: 'Compensación de jornada al cierre de turno.',
         isJustified: true,
       );
@@ -763,11 +803,13 @@ class RrhhLaborRepository {
         terminationDate: DateTime(2025, 12, 31),
         lastWorkingDay: DateTime(2025, 12, 31),
         reason: 'FIN_DE_CONTRATO',
-        detailedReason: 'Conclusión regular del contrato a plazo fijo convenido con entrega formal de dotación y paz y salvo.',
+        detailedReason:
+            'Conclusión regular del contrato a plazo fijo convenido con entrega formal de dotación y paz y salvo.',
         severanceAmount: 2600.0,
         clearanceCompleted: true,
         isEligibleForRehire: true,
-        handoverNotes: 'Entrega completa de credencial, llaves de lockers y uniforme operativo en buen estado.',
+        handoverNotes:
+            'Entrega completa de credencial, llaves de lockers y uniforme operativo en buen estado.',
       );
     }
   }

@@ -48,7 +48,9 @@ void main() {
               specialty: 'Seguridad y Vigilancia',
               workplace: 'Ventura Mall',
               supervisor: 'Ing. Javier Torrico',
-              realStartDate: now.subtract(const Duration(days: 800)), // ~2.2 años
+              realStartDate: now.subtract(
+                const Duration(days: 800),
+              ), // ~2.2 años
               fiscalStartDate: now.subtract(const Duration(days: 800)),
               agreedSalary: 3800.0,
               contractType: 'Indefinido',
@@ -137,7 +139,10 @@ void main() {
           // 2. CONTROL Y CÁLCULO DE VACACIONES SEGÚN LEY BOLIVIANA
           // ===================================================================
           // Con 2.2 años de servicio, le corresponden 15 días hábiles
-          final entitlement = laborRepo.calculateVacationEntitlement(employee.realStartDate, now);
+          final entitlement = laborRepo.calculateVacationEntitlement(
+            employee.realStartDate,
+            now,
+          );
           expect(entitlement, 15);
 
           // Solicitud de 7 días de vacación
@@ -173,8 +178,10 @@ void main() {
             severity: 'POSITIVA',
             incidentDate: now.subtract(const Duration(days: 5)),
             title: 'Intervención Oportuna en Sede',
-            description: 'Prevención de incidente de seguridad en acceso principal del cliente.',
-            actionTaken: 'Felicitación asentada en expediente con nota meritoria.',
+            description:
+                'Prevención de incidente de seguridad en acceso principal del cliente.',
+            actionTaken:
+                'Felicitación asentada en expediente con nota meritoria.',
             isJustified: true,
             recordedByUserId: 1,
           );
@@ -194,12 +201,14 @@ void main() {
             terminationDate: now,
             lastWorkingDay: now,
             reason: 'FIN_DE_CONTRATO',
-            detailedReason: 'Conclusión regular del contrato con entrega satisfactoria de dotación.',
+            detailedReason:
+                'Conclusión regular del contrato con entrega satisfactoria de dotación.',
             severanceAmount: 3800.0,
             clearanceCompleted: true,
             isEligibleForRehire: true,
             processedByUserId: 1,
-            handoverNotes: 'Paz y salvo firmado y entrega total de llaves y uniforme.',
+            handoverNotes:
+                'Paz y salvo firmado y entrega total de llaves y uniforme.',
           );
 
           expect(termination.id, isNotNull);
@@ -231,7 +240,10 @@ void main() {
 
           // Bitácora inmutable de movimientos contiene el egreso
           final movements = await laborRepo.listMovements(employeeId: empId);
-          expect(movements.any((m) => m.movementType == 'DESVINCULACION'), isTrue);
+          expect(
+            movements.any((m) => m.movementType == 'DESVINCULACION'),
+            isTrue,
+          );
 
           // Línea de tiempo contiene el hito de desvinculación
           final timeline = await personnelRepo.listTimelineEvents(empId);

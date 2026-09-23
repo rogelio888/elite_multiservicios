@@ -21,7 +21,10 @@ class RrhhAssignmentEndpoint extends Endpoint {
     int offset = 0,
     bool includeDeleted = false,
   }) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhAssignmentsView);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhAssignmentsView,
+    );
     final repo = RrhhOperationsRepository(session);
     return await repo.listSchedules(
       targetType: targetType,
@@ -35,28 +38,46 @@ class RrhhAssignmentEndpoint extends Endpoint {
 
   /// Obtiene un turno por su ID.
   Future<RrhhSchedule?> getScheduleById(Session session, int id) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhAssignmentsView);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhAssignmentsView,
+    );
     final repo = RrhhOperationsRepository(session);
     return await repo.getScheduleById(id);
   }
 
   /// Registra un nuevo horario/turno corporativo.
-  Future<RrhhSchedule> createSchedule(Session session, RrhhSchedule schedule) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhAssignmentsManage);
+  Future<RrhhSchedule> createSchedule(
+    Session session,
+    RrhhSchedule schedule,
+  ) async {
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhAssignmentsManage,
+    );
     final repo = RrhhOperationsRepository(session);
     return await repo.createSchedule(schedule);
   }
 
   /// Actualiza los parámetros de un horario.
-  Future<RrhhSchedule> updateSchedule(Session session, RrhhSchedule schedule) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhAssignmentsManage);
+  Future<RrhhSchedule> updateSchedule(
+    Session session,
+    RrhhSchedule schedule,
+  ) async {
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhAssignmentsManage,
+    );
     final repo = RrhhOperationsRepository(session);
     return await repo.updateSchedule(schedule);
   }
 
   /// Desactiva (soft-delete) un horario.
   Future<bool> deleteSchedule(Session session, int id) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhAssignmentsManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhAssignmentsManage,
+    );
     final repo = RrhhOperationsRepository(session);
     return await repo.deleteSchedule(id);
   }
@@ -77,7 +98,10 @@ class RrhhAssignmentEndpoint extends Endpoint {
     int offset = 0,
     bool includeDeleted = false,
   }) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhAssignmentsView);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhAssignmentsView,
+    );
     final repo = RrhhOperationsRepository(session);
     return await repo.listAssignments(
       status: status,
@@ -93,28 +117,49 @@ class RrhhAssignmentEndpoint extends Endpoint {
 
   /// Obtiene una asignación por su ID.
   Future<RrhhAssignment?> getAssignmentById(Session session, int id) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhAssignmentsView);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhAssignmentsView,
+    );
     final repo = RrhhOperationsRepository(session);
     return await repo.getAssignmentById(id);
   }
 
   /// Obtiene la asignación activa de un colaborador específico.
-  Future<RrhhAssignment?> getActiveAssignmentByEmployee(Session session, int employeeId) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhAssignmentsView);
+  Future<RrhhAssignment?> getActiveAssignmentByEmployee(
+    Session session,
+    int employeeId,
+  ) async {
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhAssignmentsView,
+    );
     final repo = RrhhOperationsRepository(session);
     return await repo.getActiveAssignmentByEmployee(employeeId);
   }
 
   /// Obtiene el histórico completo de rotaciones de un colaborador (inmutable).
-  Future<List<RrhhAssignment>> getRotationHistory(Session session, int employeeId) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhAssignmentsView);
+  Future<List<RrhhAssignment>> getRotationHistory(
+    Session session,
+    int employeeId,
+  ) async {
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhAssignmentsView,
+    );
     final repo = RrhhOperationsRepository(session);
     return await repo.getRotationHistory(employeeId);
   }
 
   /// Crea una nueva asignación para un colaborador y actualiza su disponibilidad.
-  Future<RrhhAssignment> createAssignment(Session session, RrhhAssignment assignment) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhAssignmentsManage);
+  Future<RrhhAssignment> createAssignment(
+    Session session,
+    RrhhAssignment assignment,
+  ) async {
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhAssignmentsManage,
+    );
     final repo = RrhhOperationsRepository(session);
     return await repo.createAssignment(assignment);
   }
@@ -137,7 +182,10 @@ class RrhhAssignmentEndpoint extends Endpoint {
     required String rotationReason,
     String? notes,
   }) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhAssignmentsManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhAssignmentsManage,
+    );
     final repo = RrhhOperationsRepository(session);
     return await repo.rotateAssignment(
       currentAssignmentId: currentAssignmentId,
@@ -163,7 +211,10 @@ class RrhhAssignmentEndpoint extends Endpoint {
     int id, {
     String? reason,
   }) async {
-    await RbacGuard.requirePermission(session, AppPermissions.rrhhAssignmentsManage);
+    await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhAssignmentsManage,
+    );
     final repo = RrhhOperationsRepository(session);
     return await repo.cancelAssignment(id, reason: reason);
   }

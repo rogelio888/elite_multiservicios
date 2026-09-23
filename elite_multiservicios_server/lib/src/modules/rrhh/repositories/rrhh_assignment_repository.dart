@@ -26,9 +26,16 @@ class RrhhOperationsRepository {
     return await RrhhSchedule.db.find(
       session,
       where: (t) {
-        var expr = includeDeleted ? Constant.bool(true) : t.isDeleted.equals(false);
-        if (targetType != null && targetType.trim().isNotEmpty && targetType != 'TODOS') {
-          expr = expr & (t.targetType.equals(targetType.trim().toUpperCase()) | t.targetType.equals('AMBOS'));
+        var expr = includeDeleted
+            ? Constant.bool(true)
+            : t.isDeleted.equals(false);
+        if (targetType != null &&
+            targetType.trim().isNotEmpty &&
+            targetType != 'TODOS') {
+          expr =
+              expr &
+              (t.targetType.equals(targetType.trim().toUpperCase()) |
+                  t.targetType.equals('AMBOS'));
         }
         if (isActive != null) {
           expr = expr & t.isActive.equals(isActive);
@@ -54,7 +61,8 @@ class RrhhOperationsRepository {
   Future<RrhhSchedule?> getScheduleByCode(String code) async {
     return await RrhhSchedule.db.findFirstRow(
       session,
-      where: (t) => t.code.equals(code.trim().toUpperCase()) & t.isDeleted.equals(false),
+      where: (t) =>
+          t.code.equals(code.trim().toUpperCase()) & t.isDeleted.equals(false),
     );
   }
 
@@ -70,7 +78,9 @@ class RrhhOperationsRepository {
 
     final existing = await getScheduleByCode(code);
     if (existing != null) {
-      throw ArgumentError('Ya existe un horario registrado con el código $code.');
+      throw ArgumentError(
+        'Ya existe un horario registrado con el código $code.',
+      );
     }
 
     final sanitized = schedule.copyWith(
@@ -79,8 +89,12 @@ class RrhhOperationsRepository {
       targetType: schedule.targetType.trim().toUpperCase(),
       startTime: schedule.startTime.trim(),
       endTime: schedule.endTime.trim(),
-      workDays: schedule.workDays.isNotEmpty ? schedule.workDays : [1, 2, 3, 4, 5],
-      toleranceMinutes: schedule.toleranceMinutes > 0 ? schedule.toleranceMinutes : 10,
+      workDays: schedule.workDays.isNotEmpty
+          ? schedule.workDays
+          : [1, 2, 3, 4, 5],
+      toleranceMinutes: schedule.toleranceMinutes > 0
+          ? schedule.toleranceMinutes
+          : 10,
       isNightShift: schedule.isNightShift,
       description: schedule.description?.trim(),
       isActive: schedule.isActive,
@@ -153,12 +167,18 @@ class RrhhOperationsRepository {
     return await RrhhAssignment.db.find(
       session,
       where: (t) {
-        var expr = includeDeleted ? Constant.bool(true) : t.isDeleted.equals(false);
+        var expr = includeDeleted
+            ? Constant.bool(true)
+            : t.isDeleted.equals(false);
         if (status != null && status.trim().isNotEmpty && status != 'TODAS') {
           expr = expr & t.status.equals(status.trim().toUpperCase());
         }
-        if (assignmentType != null && assignmentType.trim().isNotEmpty && assignmentType != 'TODOS') {
-          expr = expr & t.assignmentType.equals(assignmentType.trim().toUpperCase());
+        if (assignmentType != null &&
+            assignmentType.trim().isNotEmpty &&
+            assignmentType != 'TODOS') {
+          expr =
+              expr &
+              t.assignmentType.equals(assignmentType.trim().toUpperCase());
         }
         if (employeeId != null) {
           expr = expr & t.employeeId.equals(employeeId);
@@ -168,7 +188,8 @@ class RrhhOperationsRepository {
         }
         if (search != null && search.trim().isNotEmpty) {
           final query = '%${search.trim()}%';
-          expr = expr &
+          expr =
+              expr &
               (t.employeeName.ilike(query) |
                   t.employeeCode.ilike(query) |
                   t.customerCompanyName.ilike(query) |
@@ -217,16 +238,25 @@ class RrhhOperationsRepository {
     final now = DateTime.now().toUtc();
 
     // 1. Validar que el empleado exista y esté activo
-    final employee = await RrhhEmployee.db.findById(session, assignment.employeeId);
+    final employee = await RrhhEmployee.db.findById(
+      session,
+      assignment.employeeId,
+    );
     if (employee == null || employee.isDeleted) {
-      throw ArgumentError('El empleado con ID ${assignment.employeeId} no existe.');
+      throw ArgumentError(
+        'El empleado con ID ${assignment.employeeId} no existe.',
+      );
     }
     if (employee.status != 'ACTIVO') {
-      throw StateError('No se puede asignar al colaborador ${employee.fullName} porque su estado es ${employee.status}.');
+      throw StateError(
+        'No se puede asignar al colaborador ${employee.fullName} porque su estado es ${employee.status}.',
+      );
     }
 
     // 2. Si ya tiene una asignación activa previa, se finaliza ordenadamente
-    final prevActive = await getActiveAssignmentByEmployee(assignment.employeeId);
+    final prevActive = await getActiveAssignmentByEmployee(
+      assignment.employeeId,
+    );
     if (prevActive != null) {
       await RrhhAssignment.db.updateRow(
         session,
@@ -246,7 +276,10 @@ class RrhhOperationsRepository {
     }
 
     // 4. Validar turno/horario
-    final schedule = await RrhhSchedule.db.findById(session, assignment.scheduleId);
+    final schedule = await RrhhSchedule.db.findById(
+      session,
+      assignment.scheduleId,
+    );
     final scheduleName = schedule?.name ?? assignment.scheduleName;
 
     final sanitized = assignment.copyWith(
@@ -269,7 +302,9 @@ class RrhhOperationsRepository {
       startDate: assignment.startDate,
       endDate: assignment.endDate,
       status: 'ACTIVA',
-      rotationNumber: assignment.rotationNumber >= 0 ? assignment.rotationNumber : 0,
+      rotationNumber: assignment.rotationNumber >= 0
+          ? assignment.rotationNumber
+          : 0,
       originDescription: assignment.originDescription?.trim(),
       rotationReason: assignment.rotationReason?.trim(),
       notes: assignment.notes?.trim(),
@@ -282,7 +317,9 @@ class RrhhOperationsRepository {
 
     // 5. Actualizar estado y sede en el expediente del empleado
     final newWorkplace = inserted.assignmentType == 'OFICINA'
-        ? (inserted.officeAreaName != null ? 'Oficina Central - ${inserted.officeAreaName}' : 'Oficina Central Elite')
+        ? (inserted.officeAreaName != null
+              ? 'Oficina Central - ${inserted.officeAreaName}'
+              : 'Oficina Central Elite')
         : '${inserted.customerCompanyName ?? "Cliente"} (${inserted.workplaceBranch ?? "Principal"})';
 
     await RrhhEmployee.db.updateRow(
@@ -340,7 +377,9 @@ class RrhhOperationsRepository {
     // 1. Obtener la asignación actual
     final current = await getAssignmentById(currentAssignmentId);
     if (current == null) {
-      throw ArgumentError('No se encontró la asignación con ID $currentAssignmentId.');
+      throw ArgumentError(
+        'No se encontró la asignación con ID $currentAssignmentId.',
+      );
     }
 
     final originDestination = current.assignmentType == 'OFICINA'
@@ -397,10 +436,15 @@ class RrhhOperationsRepository {
 
     // 4. Actualizar sede y supervisor en el empleado
     final newWorkplace = inserted.assignmentType == 'OFICINA'
-        ? (inserted.officeAreaName != null ? 'Oficina Central - ${inserted.officeAreaName}' : 'Oficina Central Elite')
+        ? (inserted.officeAreaName != null
+              ? 'Oficina Central - ${inserted.officeAreaName}'
+              : 'Oficina Central Elite')
         : '${inserted.customerCompanyName ?? "Cliente"} (${inserted.workplaceBranch ?? "Principal"})';
 
-    final employee = await RrhhEmployee.db.findById(session, current.employeeId);
+    final employee = await RrhhEmployee.db.findById(
+      session,
+      current.employeeId,
+    );
     if (employee != null) {
       await RrhhEmployee.db.updateRow(
         session,
@@ -418,7 +462,8 @@ class RrhhOperationsRepository {
         RrhhTimelineEvent(
           employeeId: employee.id!,
           title: 'Rotación #$nextRotationNumber: $newWorkplace',
-          description: 'Rotado desde: $originDestination. Turno: $scheduleName. Motivo: $rotationReason',
+          description:
+              'Rotado desde: $originDestination. Turno: $scheduleName. Motivo: $rotationReason',
           date: now,
           category: 'ASIGNACION',
           registeredBy: 'RRHH - Rotaciones',
@@ -441,15 +486,22 @@ class RrhhOperationsRepository {
       assignment.copyWith(
         status: 'CANCELADA',
         endDate: now,
-        notes: reason != null ? '${assignment.notes ?? ""}\nCancelada: $reason'.trim() : assignment.notes,
+        notes: reason != null
+            ? '${assignment.notes ?? ""}\nCancelada: $reason'.trim()
+            : assignment.notes,
         updatedAt: now,
       ),
     );
 
     // Actualizar empleado a DISPONIBLE si no tiene otra asignación activa
-    final otherActive = await getActiveAssignmentByEmployee(assignment.employeeId);
+    final otherActive = await getActiveAssignmentByEmployee(
+      assignment.employeeId,
+    );
     if (otherActive == null) {
-      final employee = await RrhhEmployee.db.findById(session, assignment.employeeId);
+      final employee = await RrhhEmployee.db.findById(
+        session,
+        assignment.employeeId,
+      );
       if (employee != null) {
         await RrhhEmployee.db.updateRow(
           session,
@@ -484,7 +536,8 @@ class RrhhOperationsRepository {
           workDays: [1, 2, 3, 4, 5],
           toleranceMinutes: 15,
           isNightShift: false,
-          description: 'Horario corporativo estándar de lunes a viernes con 15 minutos de tolerancia.',
+          description:
+              'Horario corporativo estándar de lunes a viernes con 15 minutos de tolerancia.',
           isActive: true,
           isDeleted: false,
           createdAt: now,
@@ -499,7 +552,8 @@ class RrhhOperationsRepository {
           workDays: [1, 2, 3, 4, 5, 6],
           toleranceMinutes: 10,
           isNightShift: false,
-          description: 'Turno matutino de servicios generales en sedes de clientes de lunes a sábado.',
+          description:
+              'Turno matutino de servicios generales en sedes de clientes de lunes a sábado.',
           isActive: true,
           isDeleted: false,
           createdAt: now,
@@ -514,7 +568,8 @@ class RrhhOperationsRepository {
           workDays: [1, 2, 3, 4, 5, 6],
           toleranceMinutes: 10,
           isNightShift: false,
-          description: 'Turno vespertino para centros comerciales, retail y limpieza de food courts.',
+          description:
+              'Turno vespertino para centros comerciales, retail y limpieza de food courts.',
           isActive: true,
           isDeleted: false,
           createdAt: now,
@@ -529,7 +584,8 @@ class RrhhOperationsRepository {
           workDays: [1, 2, 3, 4, 5, 6],
           toleranceMinutes: 5,
           isNightShift: true,
-          description: 'Turno nocturno con recargo legal para vigilancia perimetral y plantas industriales.',
+          description:
+              'Turno nocturno con recargo legal para vigilancia perimetral y plantas industriales.',
           isActive: true,
           isDeleted: false,
           createdAt: now,
@@ -550,10 +606,22 @@ class RrhhOperationsRepository {
       final nocSchedule = await getScheduleByCode('SCH-SEG-NOC');
 
       // Buscar empleados existentes
-      final emp1 = await RrhhEmployee.db.findFirstRow(session, where: (t) => t.code.equals('EMP-001'));
-      final emp2 = await RrhhEmployee.db.findFirstRow(session, where: (t) => t.code.equals('EMP-002'));
-      final emp3 = await RrhhEmployee.db.findFirstRow(session, where: (t) => t.code.equals('EMP-003'));
-      final emp4 = await RrhhEmployee.db.findFirstRow(session, where: (t) => t.code.equals('EMP-004'));
+      final emp1 = await RrhhEmployee.db.findFirstRow(
+        session,
+        where: (t) => t.code.equals('EMP-001'),
+      );
+      final emp2 = await RrhhEmployee.db.findFirstRow(
+        session,
+        where: (t) => t.code.equals('EMP-002'),
+      );
+      final emp3 = await RrhhEmployee.db.findFirstRow(
+        session,
+        where: (t) => t.code.equals('EMP-003'),
+      );
+      final emp4 = await RrhhEmployee.db.findFirstRow(
+        session,
+        where: (t) => t.code.equals('EMP-004'),
+      );
 
       if (emp1 != null && emp2 != null && emp3 != null && emp4 != null) {
         final initialAssignments = [
@@ -575,7 +643,8 @@ class RrhhOperationsRepository {
             status: 'ACTIVA',
             rotationNumber: 1,
             originDescription: 'Ventura Mall - Mantenimiento General',
-            rotationReason: 'Refuerzo de cuadrilla técnica especializada para Kolping.',
+            rotationReason:
+                'Refuerzo de cuadrilla técnica especializada para Kolping.',
             isDeleted: false,
             createdAt: now,
             updatedAt: now,

@@ -125,7 +125,9 @@ void main() {
           expect(initialAssignment.rotationNumber, 0);
 
           // Verificar que el empleado se actualizó a 'ASIGNADO'
-          final updatedEmployee1 = await personnelRepo.getEmployeeById(employee.id!);
+          final updatedEmployee1 = await personnelRepo.getEmployeeById(
+            employee.id!,
+          );
           expect(updatedEmployee1?.availabilityStatus, 'ASIGNADO');
           expect(updatedEmployee1?.workplace, contains('Empresa Test Alfa'));
 
@@ -147,10 +149,15 @@ void main() {
           expect(rotatedAssignment.id, isNotNull);
           expect(rotatedAssignment.rotationNumber, 1);
           expect(rotatedAssignment.status, 'ACTIVA');
-          expect(rotatedAssignment.originDescription, contains('Empresa Test Alfa'));
+          expect(
+            rotatedAssignment.originDescription,
+            contains('Empresa Test Alfa'),
+          );
 
           // Verificar que la asignación anterior quedó FINALIZADA
-          final previousAssignment = await operationsRepo.getAssignmentById(initialAssignment.id!);
+          final previousAssignment = await operationsRepo.getAssignmentById(
+            initialAssignment.id!,
+          );
           expect(previousAssignment?.status, 'FINALIZADA');
           expect(previousAssignment?.endDate, isNotNull);
 
@@ -163,9 +170,24 @@ void main() {
           expect(history.last.rotationNumber, 0);
 
           // Verificar eventos en la línea de tiempo del empleado
-          final timelineEvents = await personnelRepo.listTimelineEvents(employee.id!);
-          expect(timelineEvents.any((e) => e.category == 'ASIGNACION' && e.title.contains('Asignación Inicial')), isTrue);
-          expect(timelineEvents.any((e) => e.category == 'ASIGNACION' && e.title.contains('Rotación #1')), isTrue);
+          final timelineEvents = await personnelRepo.listTimelineEvents(
+            employee.id!,
+          );
+          expect(
+            timelineEvents.any(
+              (e) =>
+                  e.category == 'ASIGNACION' &&
+                  e.title.contains('Asignación Inicial'),
+            ),
+            isTrue,
+          );
+          expect(
+            timelineEvents.any(
+              (e) =>
+                  e.category == 'ASIGNACION' && e.title.contains('Rotación #1'),
+            ),
+            isTrue,
+          );
 
           // ===================================================================
           // 6. CANCELACIÓN DE ASIGNACIÓN Y LIBERACIÓN DE DISPONIBILIDAD
@@ -176,10 +198,14 @@ void main() {
           );
           expect(cancelled, isTrue);
 
-          final cancelledAssignment = await operationsRepo.getAssignmentById(rotatedAssignment.id!);
+          final cancelledAssignment = await operationsRepo.getAssignmentById(
+            rotatedAssignment.id!,
+          );
           expect(cancelledAssignment?.status, 'CANCELADA');
 
-          final finalEmployee = await personnelRepo.getEmployeeById(employee.id!);
+          final finalEmployee = await personnelRepo.getEmployeeById(
+            employee.id!,
+          );
           expect(finalEmployee?.availabilityStatus, 'DISPONIBLE');
         },
       );

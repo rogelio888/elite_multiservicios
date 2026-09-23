@@ -55,7 +55,8 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
         // 1. Calcular sedes y empresas disponibles para el selector adaptativo
         final allCompanies = <String>{'TODAS', 'Oficina Central Elite'};
         for (final a in _stateService.assignments) {
-          if (a.clientCompanyName != null && a.clientCompanyName!.trim().isNotEmpty) {
+          if (a.clientCompanyName != null &&
+              a.clientCompanyName!.trim().isNotEmpty) {
             allCompanies.add(a.clientCompanyName!.trim());
           }
         }
@@ -64,11 +65,12 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
             allCompanies.add(c.name.trim());
           }
         }
-        final availableCompanies = allCompanies.toList()..sort((a, b) {
-          if (a == 'TODAS') return -1;
-          if (b == 'TODAS') return 1;
-          return a.compareTo(b);
-        });
+        final availableCompanies = allCompanies.toList()
+          ..sort((a, b) {
+            if (a == 'TODAS') return -1;
+            if (b == 'TODAS') return 1;
+            return a.compareTo(b);
+          });
 
         // 2. Filtrar Asignaciones
         final assignments = _stateService.assignments.where((a) {
@@ -101,7 +103,8 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
         // 3. Filtrar Clientes
         final clients = _stateService.clientCompanies.where((c) {
           if (_selectedCompany != 'TODAS') {
-            if (c.name.trim().toLowerCase() != _selectedCompany.trim().toLowerCase()) {
+            if (c.name.trim().toLowerCase() !=
+                _selectedCompany.trim().toLowerCase()) {
               return false;
             }
           }
@@ -145,7 +148,11 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                     const SizedBox(height: 16),
 
                     // 2. Barra de Filtro Unificada y Prolija (Estilo Imagen 2)
-                    _buildUnifiedFilterBar(isDark, availableCompanies, isMobile),
+                    _buildUnifiedFilterBar(
+                      isDark,
+                      availableCompanies,
+                      isMobile,
+                    ),
                     const SizedBox(height: 14),
 
                     // 3. Pestañas: Asignaciones de Personal | Clientes & Servicios | Horarios & Turnos
@@ -246,9 +253,7 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
           FilledButton.icon(
             icon: const Icon(Icons.add, size: 16),
             label: Text(
-              _tabController.index == 0
-                  ? 'Nueva Asignación'
-                  : 'Nuevo Horario',
+              _tabController.index == 0 ? 'Nueva Asignación' : 'Nuevo Horario',
             ),
             style: FilledButton.styleFrom(
               backgroundColor: const Color(0xFF6366F1),
@@ -361,7 +366,9 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
               backgroundColor: _isTableView
                   ? (isDark ? const Color(0xFF1E293B) : Colors.white)
                   : Colors.transparent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
             ),
             onPressed: () => setState(() => _isTableView = true),
           ),
@@ -381,7 +388,9 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
               backgroundColor: !_isTableView
                   ? (isDark ? const Color(0xFF1E293B) : Colors.white)
                   : Colors.transparent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
             ),
             onPressed: () => setState(() => _isTableView = false),
           ),
@@ -484,10 +493,27 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                 items: companies.map((comp) {
                   final isAll = comp == 'TODAS';
                   final count = isAll
-                      ? _stateService.assignments.where((a) => a.status == 'ACTIVA').length
+                      ? _stateService.assignments
+                            .where((a) => a.status == 'ACTIVA')
+                            .length
                       : (comp == 'Oficina Central Elite'
-                          ? _stateService.assignments.where((a) => a.status == 'ACTIVA' && a.type == 'OFICINA').length
-                          : _stateService.assignments.where((a) => a.status == 'ACTIVA' && a.clientCompanyName?.trim().toLowerCase() == comp.trim().toLowerCase()).length);
+                            ? _stateService.assignments
+                                  .where(
+                                    (a) =>
+                                        a.status == 'ACTIVA' &&
+                                        a.type == 'OFICINA',
+                                  )
+                                  .length
+                            : _stateService.assignments
+                                  .where(
+                                    (a) =>
+                                        a.status == 'ACTIVA' &&
+                                        a.clientCompanyName
+                                                ?.trim()
+                                                .toLowerCase() ==
+                                            comp.trim().toLowerCase(),
+                                  )
+                                  .length);
 
                   return DropdownMenuItem<String>(
                     value: comp,
@@ -512,8 +538,17 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
     final selectedCount = _selectedCompany == 'TODAS'
         ? _stateService.assignments.where((a) => a.status == 'ACTIVA').length
         : (_selectedCompany == 'Oficina Central Elite'
-            ? _stateService.assignments.where((a) => a.status == 'ACTIVA' && a.type == 'OFICINA').length
-            : _stateService.assignments.where((a) => a.status == 'ACTIVA' && a.clientCompanyName?.trim().toLowerCase() == _selectedCompany.trim().toLowerCase()).length);
+              ? _stateService.assignments
+                    .where((a) => a.status == 'ACTIVA' && a.type == 'OFICINA')
+                    .length
+              : _stateService.assignments
+                    .where(
+                      (a) =>
+                          a.status == 'ACTIVA' &&
+                          a.clientCompanyName?.trim().toLowerCase() ==
+                              _selectedCompany.trim().toLowerCase(),
+                    )
+                    .length);
 
     return InkWell(
       onTap: () => _openCompanySearchModal(context, isDark, companies),
@@ -616,7 +651,9 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                           style: GoogleFonts.inter(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
-                            color: isDark ? Colors.white : const Color(0xFF0F172A),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
                           ),
                         ),
                         IconButton(
@@ -689,10 +726,27 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                           final isSelected = comp == _selectedCompany;
                           final isAll = comp == 'TODAS';
                           final count = isAll
-                              ? _stateService.assignments.where((a) => a.status == 'ACTIVA').length
+                              ? _stateService.assignments
+                                    .where((a) => a.status == 'ACTIVA')
+                                    .length
                               : (comp == 'Oficina Central Elite'
-                                  ? _stateService.assignments.where((a) => a.status == 'ACTIVA' && a.type == 'OFICINA').length
-                                  : _stateService.assignments.where((a) => a.status == 'ACTIVA' && a.clientCompanyName?.trim().toLowerCase() == comp.trim().toLowerCase()).length);
+                                    ? _stateService.assignments
+                                          .where(
+                                            (a) =>
+                                                a.status == 'ACTIVA' &&
+                                                a.type == 'OFICINA',
+                                          )
+                                          .length
+                                    : _stateService.assignments
+                                          .where(
+                                            (a) =>
+                                                a.status == 'ACTIVA' &&
+                                                a.clientCompanyName
+                                                        ?.trim()
+                                                        .toLowerCase() ==
+                                                    comp.trim().toLowerCase(),
+                                          )
+                                          .length);
 
                           return InkWell(
                             onTap: () {
@@ -707,7 +761,9 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                               ),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? const Color(0xFF6366F1).withValues(alpha: 0.12)
+                                    ? const Color(
+                                        0xFF6366F1,
+                                      ).withValues(alpha: 0.12)
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(6),
                               ),
@@ -721,8 +777,8 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                                     color: isSelected
                                         ? const Color(0xFF6366F1)
                                         : (isDark
-                                            ? const Color(0xFF94A3B8)
-                                            : const Color(0xFF64748B)),
+                                              ? const Color(0xFF94A3B8)
+                                              : const Color(0xFF64748B)),
                                   ),
                                   const SizedBox(width: 10),
                                   Expanded(
@@ -736,8 +792,8 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                                         color: isSelected
                                             ? const Color(0xFF6366F1)
                                             : (isDark
-                                                ? Colors.white
-                                                : const Color(0xFF0F172A)),
+                                                  ? Colors.white
+                                                  : const Color(0xFF0F172A)),
                                       ),
                                     ),
                                   ),
@@ -907,7 +963,8 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
         padding: const EdgeInsets.only(top: 6, bottom: 20),
         itemCount: assignments.length,
         separatorBuilder: (ctx, i) => const SizedBox(height: 10),
-        itemBuilder: (ctx, i) => _buildAssignmentMobileCard(assignments[i], isDark),
+        itemBuilder: (ctx, i) =>
+            _buildAssignmentMobileCard(assignments[i], isDark),
       );
     }
 
@@ -1010,459 +1067,515 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                       Expanded(
                         child: Scrollbar(
                           controller: _assignmentsScrollController,
-                        thumbVisibility: true,
-                        interactive: true,
-                        child: SingleChildScrollView(
-                          controller: _assignmentsScrollController,
-                          scrollDirection: Axis.vertical,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: Table(
-                            columnWidths: columnWidths,
-                            defaultVerticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            children: assignments.map((a) {
-                              final isOficina = a.type == 'OFICINA';
-                              final historyCount = _stateService
-                                  .getRotationHistory(a.employeeId)
-                                  .length;
+                          thumbVisibility: true,
+                          interactive: true,
+                          child: SingleChildScrollView(
+                            controller: _assignmentsScrollController,
+                            scrollDirection: Axis.vertical,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: Table(
+                              columnWidths: columnWidths,
+                              defaultVerticalAlignment:
+                                  TableCellVerticalAlignment.middle,
+                              children: assignments.map((a) {
+                                final isOficina = a.type == 'OFICINA';
+                                final historyCount = _stateService
+                                    .getRotationHistory(a.employeeId)
+                                    .length;
 
-                              return TableRow(
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: isDark
-                                          ? const Color(0xFF1E293B)
-                                          : const Color(0xFFE2E8F0),
+                                return TableRow(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: isDark
+                                            ? const Color(0xFF1E293B)
+                                            : const Color(0xFFE2E8F0),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                children: [
-                                  // 0: Colaborador
-                                  _buildBodyCell(
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 15,
-                                          backgroundColor: isOficina
-                                              ? const Color(0xFF8B5CF6)
-                                                  .withValues(alpha: 0.15)
-                                              : const Color(0xFF10B981)
-                                                  .withValues(alpha: 0.15),
-                                          child: Text(
-                                            a.employeeName.isNotEmpty
-                                                ? a.employeeName.substring(0, 1)
-                                                : '?',
-                                            style: GoogleFonts.inter(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w700,
-                                              color: isOficina
-                                                  ? const Color(0xFF8B5CF6)
-                                                  : const Color(0xFF10B981),
+                                  children: [
+                                    // 0: Colaborador
+                                    _buildBodyCell(
+                                      Row(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 15,
+                                            backgroundColor: isOficina
+                                                ? const Color(
+                                                    0xFF8B5CF6,
+                                                  ).withValues(alpha: 0.15)
+                                                : const Color(
+                                                    0xFF10B981,
+                                                  ).withValues(alpha: 0.15),
+                                            child: Text(
+                                              a.employeeName.isNotEmpty
+                                                  ? a.employeeName.substring(
+                                                      0,
+                                                      1,
+                                                    )
+                                                  : '?',
+                                              style: GoogleFonts.inter(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w700,
+                                                color: isOficina
+                                                    ? const Color(0xFF8B5CF6)
+                                                    : const Color(0xFF10B981),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                a.employeeName,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: GoogleFonts.inter(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12,
-                                                  color: isDark
-                                                      ? Colors.white
-                                                      : const Color(0xFF0F172A),
-                                                ),
-                                              ),
-                                              Text(
-                                                a.employeeCode,
-                                                style: GoogleFonts.jetBrainsMono(
-                                                  fontSize: 10,
-                                                  color: const Color(0xFF64748B),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // 1: Cargo / Función & Modalidad (Vertical Unificado)
-                                  _buildBodyCell(
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          isOficina
-                                              ? (a.officeRole ?? 'Operativo')
-                                              : (a.contractedServiceName ??
-                                                  'Servicio General'),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: GoogleFonts.inter(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 11.5,
-                                            color: isDark
-                                                ? Colors.white
-                                                : const Color(0xFF0F172A),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 3),
-                                        RrhhEmployeeTypeBadge(type: a.type),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // 2: Destino / Sede
-                                  _buildBodyCell(
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          isOficina
-                                              ? Icons.apartment
-                                              : Icons.location_city_outlined,
-                                          size: 14,
-                                          color: isOficina
-                                              ? const Color(0xFF8B5CF6)
-                                              : const Color(0xFF06B6D4),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                isOficina
-                                                    ? 'Oficina Central Elite'
-                                                    : (a.clientCompanyName ??
-                                                        'Empresa Cliente'),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: GoogleFonts.inter(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 11.5,
-                                                  color: isDark
-                                                      ? Colors.white
-                                                      : const Color(0xFF0F172A),
-                                                ),
-                                              ),
-                                              Text(
-                                                isOficina
-                                                    ? 'Área: ${a.officeArea ?? "General"}'
-                                                    : 'Sede: ${a.workplaceBranch ?? "Principal"}',
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: GoogleFonts.inter(
-                                                  fontSize: 10,
-                                                  color: const Color(0xFF64748B),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // 3: Horario / Turno
-                                  _buildBodyCell(
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.schedule,
-                                          size: 13,
-                                          color: isDark
-                                              ? const Color(0xFF94A3B8)
-                                              : const Color(0xFF64748B),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                a.scheduleName,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: GoogleFonts.inter(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 11.5,
-                                                  color: isDark
-                                                      ? Colors.white
-                                                      : const Color(0xFF0F172A),
-                                                ),
-                                              ),
-                                              Text(
-                                                isOficina
-                                                    ? '08:30 - 18:30 • Lun-Vie'
-                                                    : 'Turno Operativo',
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: GoogleFonts.inter(
-                                                  fontSize: 10,
-                                                  color: const Color(0xFF64748B),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // 4: Supervisor
-                                  _buildBodyCell(
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.supervisor_account,
-                                          size: 13,
-                                          color: isDark
-                                              ? const Color(0xFF94A3B8)
-                                              : const Color(0xFF64748B),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Expanded(
-                                          child: Text(
-                                            a.supervisorName,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.inter(
-                                              fontSize: 11,
-                                              color: isDark
-                                                  ? const Color(0xFF94A3B8)
-                                                  : const Color(0xFF64748B),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // 5: Rotación
-                                  _buildBodyCell(
-                                    Center(
-                                      child: FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        child: a.rotationNumber > 0
-                                            ? Tooltip(
-                                                message:
-                                                    'Rotó desde: ${a.originDescription ?? "Anterior"}${a.rotationReason != null && a.rotationReason!.isNotEmpty ? "\nMotivo: ${a.rotationReason}" : ""}',
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                    vertical: 3,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: const Color(0xFFF59E0B)
-                                                        .withValues(alpha: 0.12),
-                                                    borderRadius:
-                                                        BorderRadius.circular(6),
-                                                    border: Border.all(
-                                                      color: const Color(0xFFF59E0B)
-                                                          .withValues(alpha: 0.35),
-                                                    ),
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      const Icon(
-                                                        Icons.sync_alt,
-                                                        size: 11,
-                                                        color: Color(0xFFF59E0B),
-                                                      ),
-                                                      const SizedBox(width: 4),
-                                                      Text(
-                                                        'Rotación #${a.rotationNumber}',
-                                                        style: GoogleFonts.inter(
-                                                          fontSize: 10.5,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          color: const Color(
-                                                            0xFFF59E0B,
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  a.employeeName,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: GoogleFonts.inter(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 12,
+                                                    color: isDark
+                                                        ? Colors.white
+                                                        : const Color(
+                                                            0xFF0F172A,
                                                           ),
-                                                        ),
-                                                      ),
-                                                    ],
                                                   ),
                                                 ),
-                                              )
-                                            : Container(
-                                                padding: const EdgeInsets.symmetric(
-                                                  horizontal: 8,
-                                                  vertical: 3,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: const Color(0xFF64748B)
-                                                      .withValues(alpha: 0.12),
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
-                                                  border: Border.all(
-                                                    color: const Color(0xFF64748B)
-                                                        .withValues(alpha: 0.35),
-                                                  ),
-                                                ),
-                                                child: Row(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    const Icon(
-                                                      Icons.flag_outlined,
-                                                      size: 11,
-                                                      color: Color(0xFF64748B),
-                                                    ),
-                                                    const SizedBox(width: 4),
-                                                    Text(
-                                                      'Puesto Inicial',
-                                                      style: GoogleFonts.inter(
-                                                        fontSize: 10.5,
-                                                        fontWeight:
-                                                            FontWeight.w600,
+                                                Text(
+                                                  a.employeeCode,
+                                                  style:
+                                                      GoogleFonts.jetBrainsMono(
+                                                        fontSize: 10,
                                                         color: const Color(
                                                           0xFF64748B,
                                                         ),
                                                       ),
-                                                    ),
-                                                  ],
                                                 ),
-                                              ),
-                                      ),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 4,
-                                      vertical: 8,
-                                    ),
-                                  ),
-
-                                  // 6: Estado
-                                  _buildBodyCell(
-                                    Center(
-                                      child: FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        child: RrhhStatusChip(
-                                          label: a.status,
-                                          statusType: a.status == 'ACTIVA'
-                                              ? StatusType.success
-                                              : StatusType.neutral,
-                                        ),
-                                      ),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 4,
-                                      vertical: 8,
-                                    ),
-                                  ),
-
-                                  // 7: Acciones
-                                  _buildBodyCell(
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          IconButton(
-                                            tooltip: historyCount > 1
-                                                ? 'Historial ($historyCount)'
-                                                : 'Historial',
-                                            icon: Badge(
-                                              isLabelVisible: historyCount > 1,
-                                              label: Text(
-                                                '$historyCount',
-                                                style: const TextStyle(
-                                                    fontSize: 9),
-                                              ),
-                                              child: const Icon(
-                                                Icons.history,
-                                                size: 15,
-                                                color: Color(0xFF3B82F6),
-                                              ),
-                                            ),
-                                            onPressed: () =>
-                                                _openRotationHistoryDialog(
-                                              context,
-                                              a,
-                                            ),
-                                            style: IconButton.styleFrom(
-                                              visualDensity:
-                                                  VisualDensity.compact,
-                                              padding: const EdgeInsets.all(6),
-                                              backgroundColor:
-                                                  const Color(0xFF3B82F6)
-                                                      .withValues(alpha: 0.1),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
-                                              ),
+                                              ],
                                             ),
                                           ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // 1: Cargo / Función & Modalidad (Vertical Unificado)
+                                    _buildBodyCell(
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            isOficina
+                                                ? (a.officeRole ?? 'Operativo')
+                                                : (a.contractedServiceName ??
+                                                      'Servicio General'),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: GoogleFonts.inter(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 11.5,
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : const Color(0xFF0F172A),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 3),
+                                          RrhhEmployeeTypeBadge(type: a.type),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // 2: Destino / Sede
+                                    _buildBodyCell(
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            isOficina
+                                                ? Icons.apartment
+                                                : Icons.location_city_outlined,
+                                            size: 14,
+                                            color: isOficina
+                                                ? const Color(0xFF8B5CF6)
+                                                : const Color(0xFF06B6D4),
+                                          ),
                                           const SizedBox(width: 6),
-                                          FilledButton.tonalIcon(
-                                            onPressed: () =>
-                                                _openReassignDialog(context, a),
-                                            icon: const Icon(
-                                              Icons.swap_horiz,
-                                              size: 14,
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  isOficina
+                                                      ? 'Oficina Central Elite'
+                                                      : (a.clientCompanyName ??
+                                                            'Empresa Cliente'),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: GoogleFonts.inter(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 11.5,
+                                                    color: isDark
+                                                        ? Colors.white
+                                                        : const Color(
+                                                            0xFF0F172A,
+                                                          ),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  isOficina
+                                                      ? 'Área: ${a.officeArea ?? "General"}'
+                                                      : 'Sede: ${a.workplaceBranch ?? "Principal"}',
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 10,
+                                                    color: const Color(
+                                                      0xFF64748B,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            label: const Text(
-                                              'Rotar',
-                                              style: TextStyle(
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // 3: Horario / Turno
+                                    _buildBodyCell(
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.schedule,
+                                            size: 13,
+                                            color: isDark
+                                                ? const Color(0xFF94A3B8)
+                                                : const Color(0xFF64748B),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  a.scheduleName,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: GoogleFonts.inter(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 11.5,
+                                                    color: isDark
+                                                        ? Colors.white
+                                                        : const Color(
+                                                            0xFF0F172A,
+                                                          ),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  isOficina
+                                                      ? '08:30 - 18:30 • Lun-Vie'
+                                                      : 'Turno Operativo',
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 10,
+                                                    color: const Color(
+                                                      0xFF64748B,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // 4: Supervisor
+                                    _buildBodyCell(
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.supervisor_account,
+                                            size: 13,
+                                            color: isDark
+                                                ? const Color(0xFF94A3B8)
+                                                : const Color(0xFF64748B),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Expanded(
+                                            child: Text(
+                                              a.supervisorName,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: GoogleFonts.inter(
                                                 fontSize: 11,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                            style: FilledButton.styleFrom(
-                                              visualDensity:
-                                                  VisualDensity.compact,
-                                              backgroundColor: const Color(
-                                                0xFF6366F1,
-                                              ).withValues(alpha: 0.14),
-                                              foregroundColor: const Color(
-                                                0xFF6366F1,
-                                              ),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 10,
-                                                vertical: 7,
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
+                                                color: isDark
+                                                    ? const Color(0xFF94A3B8)
+                                                    : const Color(0xFF64748B),
                                               ),
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 6,
-                                      vertical: 8,
+
+                                    // 5: Rotación
+                                    _buildBodyCell(
+                                      Center(
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: a.rotationNumber > 0
+                                              ? Tooltip(
+                                                  message:
+                                                      'Rotó desde: ${a.originDescription ?? "Anterior"}${a.rotationReason != null && a.rotationReason!.isNotEmpty ? "\nMotivo: ${a.rotationReason}" : ""}',
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 3,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      color: const Color(
+                                                        0xFFF59E0B,
+                                                      ).withValues(alpha: 0.12),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            6,
+                                                          ),
+                                                      border: Border.all(
+                                                        color:
+                                                            const Color(
+                                                              0xFFF59E0B,
+                                                            ).withValues(
+                                                              alpha: 0.35,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        const Icon(
+                                                          Icons.sync_alt,
+                                                          size: 11,
+                                                          color: Color(
+                                                            0xFFF59E0B,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 4,
+                                                        ),
+                                                        Text(
+                                                          'Rotación #${a.rotationNumber}',
+                                                          style:
+                                                              GoogleFonts.inter(
+                                                                fontSize: 10.5,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                                color:
+                                                                    const Color(
+                                                                      0xFFF59E0B,
+                                                                    ),
+                                                              ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                )
+                                              : Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 3,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(
+                                                      0xFF64748B,
+                                                    ).withValues(alpha: 0.12),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          6,
+                                                        ),
+                                                    border: Border.all(
+                                                      color: const Color(
+                                                        0xFF64748B,
+                                                      ).withValues(alpha: 0.35),
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.flag_outlined,
+                                                        size: 11,
+                                                        color: Color(
+                                                          0xFF64748B,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 4),
+                                                      Text(
+                                                        'Puesto Inicial',
+                                                        style:
+                                                            GoogleFonts.inter(
+                                                              fontSize: 10.5,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color:
+                                                                  const Color(
+                                                                    0xFF64748B,
+                                                                  ),
+                                                            ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                        ),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 4,
+                                        vertical: 8,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              );
-                            }).toList(),
+
+                                    // 6: Estado
+                                    _buildBodyCell(
+                                      Center(
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: RrhhStatusChip(
+                                            label: a.status,
+                                            statusType: a.status == 'ACTIVA'
+                                                ? StatusType.success
+                                                : StatusType.neutral,
+                                          ),
+                                        ),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 4,
+                                        vertical: 8,
+                                      ),
+                                    ),
+
+                                    // 7: Acciones
+                                    _buildBodyCell(
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              tooltip: historyCount > 1
+                                                  ? 'Historial ($historyCount)'
+                                                  : 'Historial',
+                                              icon: Badge(
+                                                isLabelVisible:
+                                                    historyCount > 1,
+                                                label: Text(
+                                                  '$historyCount',
+                                                  style: const TextStyle(
+                                                    fontSize: 9,
+                                                  ),
+                                                ),
+                                                child: const Icon(
+                                                  Icons.history,
+                                                  size: 15,
+                                                  color: Color(0xFF3B82F6),
+                                                ),
+                                              ),
+                                              onPressed: () =>
+                                                  _openRotationHistoryDialog(
+                                                    context,
+                                                    a,
+                                                  ),
+                                              style: IconButton.styleFrom(
+                                                visualDensity:
+                                                    VisualDensity.compact,
+                                                padding: const EdgeInsets.all(
+                                                  6,
+                                                ),
+                                                backgroundColor: const Color(
+                                                  0xFF3B82F6,
+                                                ).withValues(alpha: 0.1),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 6),
+                                            FilledButton.tonalIcon(
+                                              onPressed: () =>
+                                                  _openReassignDialog(
+                                                    context,
+                                                    a,
+                                                  ),
+                                              icon: const Icon(
+                                                Icons.swap_horiz,
+                                                size: 14,
+                                              ),
+                                              label: const Text(
+                                                'Rotar',
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                              style: FilledButton.styleFrom(
+                                                visualDensity:
+                                                    VisualDensity.compact,
+                                                backgroundColor: const Color(
+                                                  0xFF6366F1,
+                                                ).withValues(alpha: 0.14),
+                                                foregroundColor: const Color(
+                                                  0xFF6366F1,
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 7,
+                                                    ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 8,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
-    ),
-  );
+    );
   }
 
   // --- TARJETAS MÓVILES (RESPONSIVE) ---
@@ -1567,7 +1680,9 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF0B1120) : const Color(0xFFF1F5F9),
+                color: isDark
+                    ? const Color(0xFF0B1120)
+                    : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
                   color: isDark
@@ -1577,7 +1692,11 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.alt_route, size: 13, color: Color(0xFF3B82F6)),
+                  const Icon(
+                    Icons.alt_route,
+                    size: 13,
+                    color: Color(0xFF3B82F6),
+                  ),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
@@ -1622,10 +1741,17 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
             children: [
               OutlinedButton.icon(
                 onPressed: () => _openRotationHistoryDialog(context, a),
-                icon: const Icon(Icons.history, size: 13, color: Color(0xFF3B82F6)),
+                icon: const Icon(
+                  Icons.history,
+                  size: 13,
+                  color: Color(0xFF3B82F6),
+                ),
                 label: Text(
                   historyCount > 1 ? 'Historial ($historyCount)' : 'Historial',
-                  style: const TextStyle(color: Color(0xFF3B82F6), fontSize: 11),
+                  style: const TextStyle(
+                    color: Color(0xFF3B82F6),
+                    fontSize: 11,
+                  ),
                 ),
                 style: OutlinedButton.styleFrom(
                   visualDensity: VisualDensity.compact,
@@ -1639,10 +1765,15 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
               FilledButton.tonalIcon(
                 onPressed: () => _openReassignDialog(context, a),
                 icon: const Icon(Icons.swap_horiz, size: 13),
-                label: const Text('Rotar Destino', style: TextStyle(fontSize: 11)),
+                label: const Text(
+                  'Rotar Destino',
+                  style: TextStyle(fontSize: 11),
+                ),
                 style: FilledButton.styleFrom(
                   visualDensity: VisualDensity.compact,
-                  backgroundColor: const Color(0xFF6366F1).withValues(alpha: 0.14),
+                  backgroundColor: const Color(
+                    0xFF6366F1,
+                  ).withValues(alpha: 0.14),
                   foregroundColor: const Color(0xFF6366F1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
@@ -1695,7 +1826,8 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
 
   Widget _buildBodyCell(Widget child, {EdgeInsetsGeometry? padding}) {
     return Container(
-      padding: padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding:
+          padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: child,
     );
   }
@@ -1914,7 +2046,8 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
     if (schedules.isEmpty) {
       return RrhhEmptyState(
         title: 'No hay horarios configurados',
-        message: 'No se encontraron horarios que coincidan con los criterios de búsqueda.',
+        message:
+            'No se encontraron horarios que coincidan con los criterios de búsqueda.',
         icon: Icons.schedule_outlined,
         isDark: isDark,
       );
@@ -3421,7 +3554,6 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
       ),
     );
   }
-
 
   void _openNewScheduleDialog(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
