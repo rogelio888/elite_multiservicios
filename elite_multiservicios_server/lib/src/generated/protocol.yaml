@@ -85,6 +85,19 @@ rrhhApplicant:
   - updateApplicantStatus:
   - deleteApplicant:
   - seedInitialData:
+rrhhAssignment:
+  - listSchedules:
+  - getScheduleById:
+  - createSchedule:
+  - updateSchedule:
+  - deleteSchedule:
+  - listAssignments:
+  - getAssignmentById:
+  - getActiveAssignmentByEmployee:
+  - getRotationHistory:
+  - createAssignment:
+  - rotateAssignment:
+  - cancelAssignment:
 rrhhDashboard:
   - getMetrics:
   - getRecentMovements:

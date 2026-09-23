@@ -117,21 +117,27 @@ El plan de construcción e integración backend se ejecuta en **7 Fases Secuenci
 
 ---
 
-### **FASE 4: Asignaciones Operativas y Horarios**
-*Objetivo:* Definición de turnos, jornadas y asignación de personal a sedes de clientes (CRM) o áreas internas.
-- [ ] **Modelos Serverpod:**
-  - `rrhh_schedule.spy.yaml`: Nombre de turno, hora entrada, hora salida, días laborales (`List<int>`), tolerancia.
+### **FASE 4: Asignaciones Operativas y Horarios (COMPLETADA CON ÉXITO ✅)**
+*Objetivo:* Definición de turnos, jornadas y asignación de personal a sedes de clientes (CRM) o áreas internas con inmutabilidad de rotaciones.
+- [x] **Modelos Serverpod:**
+  - `rrhh_schedule.spy.yaml`: `code`, `name`, `targetType` ('OFICINA' | 'CAMPO' | 'AMBOS'), `startTime`, `endTime`, `workDays` (`List<int>`), `toleranceMinutes`, `isNightShift`, `isActive`, soft delete y auditoría.
   - `rrhh_assignment.spy.yaml`:
-    - Personal: `employeeId` (FK).
-    - Modalidad Oficina: `departmentAreaId` (FK opcional), `supervisorId` (FK opcional).
-    - Modalidad Campo: `customerId` (FK referencia a CRM), `customerBranchId` (FK referencia a CRM), `serviceCatalogId` (FK referencia a Catálogo), `supervisorEmployeeId` (FK opcional).
-    - Vigencia: `startDate`, `endDate`, `status` ('Activa' | 'Finalizada' | 'Cancelada'), `scheduleId` (FK).
-- [ ] **Reglas de Integración:**
-  - No sobrescribir asignaciones pasadas: cada cambio finaliza la asignación previa y crea una nueva, preservando el histórico de rotación.
-  - Al activar una asignación de campo, actualizar el estado de disponibilidad del empleado para que Operaciones conozca su destino actual.
-- [ ] **Repositorio & Endpoint:**
-  - `RrhhAssignmentRepository` y `RrhhAssignmentEndpoint`.
-- ⏸️ **PUNTO DE CONTROL 4: Verificación de asignaciones de campo con referencias cruzadas a CRM.**
+    - Personal: `code` ('ASG-001'), `employeeId` (FK), `employeeCode`, `employeeName`, `assignmentType` ('OFICINA' | 'CAMPO').
+    - Modalidad Oficina: `officeAreaId` (FK), `officeAreaName`, `officeRole`.
+    - Modalidad Campo: `customerId` (ref CRM), `customerCompanyName`, `workplaceBranch`, `contractedServiceName`.
+    - Supervisor & Horario: `supervisorName`, `supervisorEmployeeId` (FK), `scheduleId` (FK), `scheduleName`.
+    - Vigencia & Rotación: `startDate`, `endDate`, `status` ('ACTIVA', 'FINALIZADA', 'CANCELADA'), `rotationNumber` (0=Puesto Inicial, 1, 2...), `originDescription`, `rotationReason`.
+- [x] **Reglas de Integración Cumplidas:**
+  - Inmutabilidad estricta: al rotar, la asignación previa pasa a `FINALIZADA` con su fecha de egreso y se crea una nueva asignación incrementando `rotationNumber` e indicando el destino de origen.
+  - Actualización automática de `availabilityStatus = 'ASIGNADO'` y trazabilidad en la línea de tiempo del colaborador (`RrhhTimelineEvent`).
+  - Al cancelar, se libera al colaborador a `availabilityStatus = 'DISPONIBLE'`.
+- [x] **Repositorio & Endpoint:**
+  - `RrhhOperationsRepository` y `RrhhAssignmentEndpoint` con protección RBAC (`AppPermissions.rrhhAssignmentsView` y `AppPermissions.rrhhAssignmentsManage`).
+- [x] **Migración & Seed Data:**
+  - Migración SQL `20260923150108714` generada y aplicada en PostgreSQL.
+  - Seeder de 4 turnos oficiales y 4 asignaciones activas (con rotaciones históricas) integrado en arranque de servidor.
+  - Suite de integración `rrhh_assignment_test.dart` ejecutada y pasando al 100% (4 suites de RRHH validadas en verde).
+- ⏸️ **PUNTO DE CONTROL 4 ALCANZADO: FASE 4 completada y validada en PostgreSQL con cero errores de análisis estático.**
 
 ---
 

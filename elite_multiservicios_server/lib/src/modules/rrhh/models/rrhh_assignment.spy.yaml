@@ -1,0 +1,62 @@
+### Asignación de Personal a Sede de Cliente (Campo) o Área Corporativa (Oficina).
+class: RrhhAssignment
+table: rrhh_assignment
+fields:
+  ### Código institucional de la asignación (ej: ASG-001).
+  code: String
+
+  ### Colaborador asignado
+  employeeId: int, relation(parent=rrhh_employee)
+  employeeCode: String
+  employeeName: String
+
+  ### Modalidad de la asignación: 'OFICINA' o 'CAMPO'
+  assignmentType: String
+
+  ### Modalidad Oficina: Área y Rol Interno
+  officeAreaId: int?, relation(parent=rrhh_area)
+  officeAreaName: String?
+  officeRole: String?
+
+  ### Modalidad Campo: Referencias a CRM y Sedes de Clientes
+  customerId: int?
+  customerCompanyName: String?
+  workplaceBranch: String?
+  contractedServiceName: String?
+
+  ### Supervisión y Turno
+  supervisorName: String
+  supervisorEmployeeId: int?, relation(parent=rrhh_employee)
+  scheduleId: int, relation(parent=rrhh_schedule)
+  scheduleName: String
+
+  ### Fechas y Vigencia
+  startDate: DateTime
+  endDate: DateTime?
+  ### Estado de la asignación: 'ACTIVA', 'FINALIZADA', 'CANCELADA'
+  status: String, default='ACTIVA'
+
+  ### Rotación Histórica Inmutable (Prohibido sobreescribir)
+  ### Número de rotación (0 = Puesto Inicial, 1 = Rotación #1, etc.)
+  rotationNumber: int, default=0
+  ### Descripción del destino anterior antes de rotar
+  originDescription: String?
+  ### Motivo o justificación de la rotación
+  rotationReason: String?
+  notes: String?
+
+  ### Eliminación lógica y auditoría
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  rrhh_assignment_code_unique_idx:
+    fields: code
+    unique: true
+  rrhh_assignment_employee_status_idx:
+    fields: employeeId, status
+  rrhh_assignment_type_idx:
+    fields: assignmentType
+  rrhh_assignment_status_idx:
+    fields: status
