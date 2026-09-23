@@ -4,7 +4,8 @@ class AccountingInvoicesScreen extends StatefulWidget {
   const AccountingInvoicesScreen({super.key});
 
   @override
-  State<AccountingInvoicesScreen> createState() => _AccountingInvoicesScreenState();
+  State<AccountingInvoicesScreen> createState() =>
+      _AccountingInvoicesScreenState();
 }
 
 class _AccountingInvoicesScreenState extends State<AccountingInvoicesScreen> {
@@ -24,9 +25,24 @@ class _AccountingInvoicesScreenState extends State<AccountingInvoicesScreen> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          _buildInvoiceTile('INV-2026-001', 'Condominio Las Palmas', 1200.00, 'Paid'),
-          _buildInvoiceTile('INV-2026-002', 'Empresa TechCorp', 3450.00, 'Pending'),
-          _buildInvoiceTile('INV-2026-003', 'Colegio San Jorge', 890.00, 'Overdue'),
+          _buildInvoiceTile(
+            'INV-2026-001',
+            'Condominio Las Palmas',
+            1200.00,
+            'Paid',
+          ),
+          _buildInvoiceTile(
+            'INV-2026-002',
+            'Empresa TechCorp',
+            3450.00,
+            'Pending',
+          ),
+          _buildInvoiceTile(
+            'INV-2026-003',
+            'Colegio San Jorge',
+            890.00,
+            'Overdue',
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -39,7 +55,12 @@ class _AccountingInvoicesScreenState extends State<AccountingInvoicesScreen> {
     );
   }
 
-  Widget _buildInvoiceTile(String number, String client, double amount, String status) {
+  Widget _buildInvoiceTile(
+    String number,
+    String client,
+    double amount,
+    String status,
+  ) {
     Color statusColor;
     switch (status) {
       case 'Paid':
@@ -62,13 +83,19 @@ class _AccountingInvoicesScreenState extends State<AccountingInvoicesScreen> {
           backgroundColor: statusColor.withValues(alpha: 0.2),
           child: Icon(Icons.receipt, color: statusColor),
         ),
-        title: Text(number, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          number,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         subtitle: Text(client),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text('\$${amount.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              '\$${amount.toStringAsFixed(2)}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             Text(status, style: TextStyle(color: statusColor, fontSize: 12)),
           ],
         ),

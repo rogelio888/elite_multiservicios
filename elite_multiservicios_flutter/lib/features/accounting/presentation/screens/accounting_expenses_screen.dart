@@ -4,7 +4,8 @@ class AccountingExpensesScreen extends StatefulWidget {
   const AccountingExpensesScreen({super.key});
 
   @override
-  State<AccountingExpensesScreen> createState() => _AccountingExpensesScreenState();
+  State<AccountingExpensesScreen> createState() =>
+      _AccountingExpensesScreenState();
 }
 
 class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
@@ -24,9 +25,19 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          _buildExpenseTile('Ferretería El Maestro', 'Insumos Jardinería', 250.00, 'Paid'),
+          _buildExpenseTile(
+            'Ferretería El Maestro',
+            'Insumos Jardinería',
+            250.00,
+            'Paid',
+          ),
           _buildExpenseTile('Juan Pérez', 'Nómina', 1200.00, 'Pending'),
-          _buildExpenseTile('Estación de Servicio', 'Combustible', 45.00, 'Paid'),
+          _buildExpenseTile(
+            'Estación de Servicio',
+            'Combustible',
+            45.00,
+            'Paid',
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -39,7 +50,12 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
     );
   }
 
-  Widget _buildExpenseTile(String supplier, String category, double amount, String status) {
+  Widget _buildExpenseTile(
+    String supplier,
+    String category,
+    double amount,
+    String status,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
@@ -47,14 +63,29 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
           backgroundColor: Colors.red.withValues(alpha: 0.1),
           child: const Icon(Icons.outbound, color: Colors.red),
         ),
-        title: Text(supplier, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          supplier,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         subtitle: Text(category),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text('-\$${amount.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
-            Text(status, style: TextStyle(color: status == 'Paid' ? Colors.green : Colors.orange, fontSize: 12)),
+            Text(
+              '-\$${amount.toStringAsFixed(2)}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+            ),
+            Text(
+              status,
+              style: TextStyle(
+                color: status == 'Paid' ? Colors.green : Colors.orange,
+                fontSize: 12,
+              ),
+            ),
           ],
         ),
         onTap: () {

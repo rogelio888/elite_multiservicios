@@ -2046,7 +2046,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                     ),
                   ),
                 const SizedBox(height: 6),
-                
+
                 // 8. Acordeón Colapsable "Contabilidad"
                 Material(
                   color: Colors.transparent,
@@ -2071,7 +2071,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                                   : const Color(0xFFEEF2FF))
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
-                        border: (isAnyAccountingActive && !_isAccountingExpanded)
+                        border:
+                            (isAnyAccountingActive && !_isAccountingExpanded)
                             ? const Border(
                                 left: BorderSide(
                                   color: Color(0xFF6366F1),
@@ -2289,4 +2290,3 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     );
   }
 }
-

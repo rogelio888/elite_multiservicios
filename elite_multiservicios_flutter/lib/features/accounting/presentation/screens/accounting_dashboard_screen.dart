@@ -5,7 +5,8 @@ class AccountingDashboardScreen extends StatefulWidget {
   const AccountingDashboardScreen({super.key});
 
   @override
-  State<AccountingDashboardScreen> createState() => _AccountingDashboardScreenState();
+  State<AccountingDashboardScreen> createState() =>
+      _AccountingDashboardScreenState();
 }
 
 class _AccountingDashboardScreenState extends State<AccountingDashboardScreen> {
@@ -33,7 +34,7 @@ class _AccountingDashboardScreenState extends State<AccountingDashboardScreen> {
       //   _totalExpenses = summary.totalExpenses;
       //   _balance = summary.balance;
       // });
-      
+
       // Mock data temporal para visualizar:
       await Future.delayed(const Duration(seconds: 1));
       if (!mounted) return;
@@ -80,11 +81,29 @@ class _AccountingDashboardScreenState extends State<AccountingDashboardScreen> {
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      Expanded(child: _buildSummaryCard('Ingresos', _totalIncome, Colors.green)),
+                      Expanded(
+                        child: _buildSummaryCard(
+                          'Ingresos',
+                          _totalIncome,
+                          Colors.green,
+                        ),
+                      ),
                       const SizedBox(width: 16),
-                      Expanded(child: _buildSummaryCard('Egresos', _totalExpenses, Colors.red)),
+                      Expanded(
+                        child: _buildSummaryCard(
+                          'Egresos',
+                          _totalExpenses,
+                          Colors.red,
+                        ),
+                      ),
                       const SizedBox(width: 16),
-                      Expanded(child: _buildSummaryCard('Balance', _balance, Colors.blue)),
+                      Expanded(
+                        child: _buildSummaryCard(
+                          'Balance',
+                          _balance,
+                          Colors.blue,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 40),
@@ -134,7 +153,11 @@ class _AccountingDashboardScreenState extends State<AccountingDashboardScreen> {
             const SizedBox(height: 8),
             Text(
               '\$${amount.toStringAsFixed(2)}',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: color),
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
           ],
         ),
