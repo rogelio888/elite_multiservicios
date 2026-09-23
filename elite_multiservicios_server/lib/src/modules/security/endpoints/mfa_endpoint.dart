@@ -2,9 +2,8 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as auth_idp;
 import '../../../generated/protocol.dart';
+import '../../../authorization/rbac_guard.dart';
 import '../../../audit/audit_event.dart';
 import '../../../audit/audit_service.dart';
 import '../../../exceptions/app_exception.dart';
@@ -31,7 +30,7 @@ class MfaEndpoint extends Endpoint {
       throw const UnauthorizedException('Usuario no autenticado.');
     }
 
-    final appUser = await _resolveAuthenticatedAppUser(session, authUserIdStr);
+    final appUser = await RbacGuard.resolveAppUser(session, authUserIdStr);
 
     // 2. Si MFA no está habilitado → no requiere
     if (!appUser.mfaEnabled) {
@@ -135,8 +134,17 @@ class MfaEndpoint extends Endpoint {
       ),
     );
 
-    // 5. Enviar email con el código de 6 dígitos
-    await MailService.sendMfaCode(session, email: appUser.email, code: code);
+    // 5. Enviar email con el código de 6 dígitos (con tolerancia a fallas del proveedor)
+    try {
+      await MailService.sendMfaCode(session, email: appUser.email, code: code);
+    } catch (e, stackTrace) {
+      session.log(
+        '⚠️ [MfaEndpoint] No se pudo enviar email MFA a ${appUser.email}: $e. Código temporal de respaldo: $code',
+        level: LogLevel.warning,
+        exception: e,
+        stackTrace: stackTrace,
+      );
+    }
 
     // 6. Registrar en auditoría
     await _auditService.logEvent(
@@ -180,7 +188,7 @@ class MfaEndpoint extends Endpoint {
       throw const UnauthorizedException('Usuario no autenticado.');
     }
 
-    final appUser = await _resolveAuthenticatedAppUser(session, authUserIdStr);
+    final appUser = await RbacGuard.resolveAppUser(session, authUserIdStr);
 
     // 2. Buscar challenge
     final challenge = await MfaChallenge.db.findFirstRow(
@@ -353,7 +361,7 @@ class MfaEndpoint extends Endpoint {
       throw const UnauthorizedException('Usuario no autenticado.');
     }
 
-    final appUser = await _resolveAuthenticatedAppUser(session, authUserIdStr);
+    final appUser = await RbacGuard.resolveAppUser(session, authUserIdStr);
 
     // 2. Buscar challenge
     final challenge = await MfaChallenge.db.findFirstRow(
@@ -397,8 +405,21 @@ class MfaEndpoint extends Endpoint {
       ),
     );
 
-    // 6. Reenviar email
-    await MailService.sendMfaCode(session, email: appUser.email, code: newCode);
+    // 6. Reenviar email (con tolerancia a fallas del proveedor)
+    try {
+      await MailService.sendMfaCode(
+        session,
+        email: appUser.email,
+        code: newCode,
+      );
+    } catch (e, stackTrace) {
+      session.log(
+        '⚠️ [MfaEndpoint] No se pudo reenviar email MFA a ${appUser.email}: $e. Código temporal de respaldo: $newCode',
+        level: LogLevel.warning,
+        exception: e,
+        stackTrace: stackTrace,
+      );
+    }
 
     // 7. Registrar en auditoría
     await _auditService.logEvent(
@@ -442,56 +463,13 @@ class MfaEndpoint extends Endpoint {
     return '$first$masked$last@$domain';
   }
 
-  /// Resuelve la entidad AppUser vinculada a las credenciales autenticadas en la sesión.
-  Future<AppUser> _resolveAuthenticatedAppUser(
-    Session session,
-    String authUserIdStr,
-  ) async {
-    AppUser? appUser;
-    UuidValue? authUuid;
-    try {
-      authUuid = UuidValue.fromString(authUserIdStr);
-    } catch (_) {
-      // No es un UUID
-    }
-
-    if (authUuid != null) {
-      final emailAccount = await auth_idp.EmailAccount.db.findFirstRow(
-        session,
-        where: (t) => t.authUserId.equals(authUuid),
-      );
-      if (emailAccount != null) {
-        appUser = await AppUser.db.findFirstRow(
-          session,
-          where: (t) => t.email.equals(emailAccount.email),
-        );
-      }
-    } else {
-      final id = int.tryParse(authUserIdStr);
-      if (id != null) {
-        appUser = await AppUser.db.findFirstRow(
-          session,
-          where: (t) => t.id.equals(id) | t.userInfoId.equals(id),
-        );
-      }
-    }
-
-    if (appUser == null || appUser.id == null) {
-      throw const UnauthorizedException(
-        'AppUser no encontrado para el usuario autenticado.',
-      );
-    }
-
-    return appUser;
-  }
-
   /// Comprueba si la sesión activa del usuario actual ya está verificada con MFA en PostgreSQL.
   Future<bool> isSessionVerified(Session session) async {
     final authUserIdStr = session.authenticated?.userIdentifier;
     if (authUserIdStr == null) return false;
 
     try {
-      final appUser = await _resolveAuthenticatedAppUser(
+      final appUser = await RbacGuard.resolveAppUser(
         session,
         authUserIdStr,
       );

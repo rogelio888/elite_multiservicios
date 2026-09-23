@@ -142,10 +142,17 @@ class AuthService extends ChangeNotifier {
       }
 
       // Verificar inmediatamente si MFA es requerido para este usuario
-      final mfaChallenge = await checkMfaRequired(rememberMe: rememberMe);
-      if (mfaChallenge != null) {
-        setMfaPending(mfaChallenge, rememberMe: rememberMe);
-      } else {
+      try {
+        final mfaChallenge = await checkMfaRequired(rememberMe: rememberMe);
+        if (mfaChallenge != null) {
+          setMfaPending(mfaChallenge, rememberMe: rememberMe);
+        } else {
+          clearMfaPending();
+        }
+      } catch (mfaError) {
+        if (kDebugMode) {
+          print('Advertencia al verificar MFA en login: $mfaError');
+        }
         clearMfaPending();
       }
 

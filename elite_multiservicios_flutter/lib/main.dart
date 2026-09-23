@@ -43,6 +43,8 @@ class EliteMultiserviciosApp extends StatefulWidget {
 class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
   ThemeMode _themeMode = ThemeMode.system;
   late final AuthService _authService;
+  Future<_UserAuthState>? _authStateFuture;
+  bool _lastSignedIn = false;
 
   @override
   void initState() {
@@ -50,6 +52,10 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
     _authService = AuthService();
     _authService.addListener(_onAuthChanged);
     client.auth.authInfoListenable.addListener(_onAuthChanged);
+    _lastSignedIn = client.auth.isAuthenticated;
+    if (_lastSignedIn) {
+      _authStateFuture = _resolveAuthState();
+    }
   }
 
   @override
@@ -61,7 +67,27 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
   }
 
   void _onAuthChanged() {
+    final currentSignedIn = client.auth.isAuthenticated;
+    if (currentSignedIn != _lastSignedIn ||
+        (currentSignedIn && _authStateFuture == null)) {
+      _lastSignedIn = currentSignedIn;
+      if (currentSignedIn) {
+        _authStateFuture = _resolveAuthState();
+      } else {
+        _authStateFuture = null;
+      }
+    }
     setState(() {});
+  }
+
+  void _refreshAuthState() {
+    setState(() {
+      if (client.auth.isAuthenticated) {
+        _authStateFuture = _resolveAuthState();
+      } else {
+        _authStateFuture = null;
+      }
+    });
   }
 
   void _toggleTheme() {
@@ -131,10 +157,14 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
 
     // La sesión activa NO tiene MFA verificado. Recuperar o emitir challenge.
     MfaChallengeResponse? challenge = _authService.currentMfaChallenge;
-    challenge ??= await _authService.checkMfaRequired(
-      rememberMe: _authService.currentRememberMe,
-      notify: false,
-    );
+    try {
+      challenge ??= await _authService.checkMfaRequired(
+        rememberMe: _authService.currentRememberMe,
+        notify: false,
+      );
+    } catch (_) {
+      // Tolerar errores de red durante la comprobación de MFA
+    }
 
     return _UserAuthState(
       user: user,
@@ -149,11 +179,12 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
         authService: _authService,
         isDarkMode: isDark,
         onToggleTheme: _toggleTheme,
-        onLoginSuccess: () => setState(() {}),
+        onLoginSuccess: _refreshAuthState,
       );
     }
+    _authStateFuture ??= _resolveAuthState();
     return FutureBuilder<_UserAuthState>(
-      future: _resolveAuthState(),
+      future: _authStateFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
@@ -166,7 +197,7 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
             authService: _authService,
             isDarkMode: isDark,
             onToggleTheme: _toggleTheme,
-            onLoginSuccess: () => setState(() {}),
+            onLoginSuccess: _refreshAuthState,
           );
         }
         final authState = snapshot.data!;
@@ -184,7 +215,7 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
               rememberMe: _authService.currentRememberMe,
               onMfaSuccess: () {
                 _authService.markSessionMfaVerified();
-                setState(() {});
+                _refreshAuthState();
               },
             );
           }
@@ -194,7 +225,7 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
         if (user.mustChangePassword) {
           return ForcePasswordChangeScreen(
             authService: _authService,
-            onPasswordChanged: () => setState(() {}),
+            onPasswordChanged: _refreshAuthState,
           );
         }
 

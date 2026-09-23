@@ -303,7 +303,7 @@ class UserEndpoint extends Endpoint {
     if (authUserIdStr == null) {
       throw const UnauthorizedException('Usuario no autenticado');
     }
-    return await _resolveAuthenticatedAppUser(session, authUserIdStr);
+    return await RbacGuard.resolveAppUser(session, authUserIdStr);
   }
 
   /// Cambia la contraseña del usuario autenticado.
@@ -318,7 +318,7 @@ class UserEndpoint extends Endpoint {
     if (authUserIdStr == null) {
       throw const UnauthorizedException('Usuario no autenticado');
     }
-    final appUser = await _resolveAuthenticatedAppUser(session, authUserIdStr);
+    final appUser = await RbacGuard.resolveAppUser(session, authUserIdStr);
 
     // 2. Validar la contraseña actual usando Serverpod Auth IDP
     final authUuid = UuidValue.fromString(authUserIdStr);
@@ -376,44 +376,5 @@ class UserEndpoint extends Endpoint {
         metadata: {'changedAt': now.toIso8601String()},
       ),
     );
-  }
-
-  /// Resuelve la entidad AppUser vinculada a las credenciales autenticadas en la sesión.
-  Future<AppUser> _resolveAuthenticatedAppUser(
-    Session session,
-    String authUserIdStr,
-  ) async {
-    AppUser? appUser;
-    UuidValue? authUuid;
-    try {
-      authUuid = UuidValue.fromString(authUserIdStr);
-    } catch (_) {}
-
-    if (authUuid != null) {
-      final emailAccount = await auth_idp.EmailAccount.db.findFirstRow(
-        session,
-        where: (t) => t.authUserId.equals(authUuid),
-      );
-      if (emailAccount != null) {
-        appUser = await AppUser.db.findFirstRow(
-          session,
-          where: (t) => t.email.equals(emailAccount.email),
-        );
-      }
-    } else {
-      final id = int.tryParse(authUserIdStr);
-      if (id != null) {
-        appUser = await AppUser.db.findFirstRow(
-          session,
-          where: (t) => t.id.equals(id) | t.userInfoId.equals(id),
-        );
-      }
-    }
-
-    if (appUser == null || appUser.id == null) {
-      throw Exception('AppUser no encontrado para el usuario autenticado');
-    }
-
-    return appUser;
   }
 }
