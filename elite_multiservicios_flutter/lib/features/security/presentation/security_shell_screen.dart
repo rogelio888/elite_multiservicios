@@ -702,10 +702,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     final userName = _authService.currentDisplayName ?? 'Administrador';
     final userEmail =
         _authService.currentUserEmail ?? 'rogeliovladimir2016@gmail.com';
-    final userInitials =
-        userEmail.isNotEmpty && userEmail.length >= 2
-            ? userEmail.substring(0, 2).toUpperCase()
-            : 'AD';
+    final userInitials = userEmail.isNotEmpty && userEmail.length >= 2
+        ? userEmail.substring(0, 2).toUpperCase()
+        : 'AD';
     return LayoutBuilder(
       builder: (context, constraints) {
         final isMobile = constraints.maxWidth < 850;
