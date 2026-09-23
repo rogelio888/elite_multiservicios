@@ -80,6 +80,23 @@ crmPipeline:
 rrhhDashboard:
   - getMetrics:
   - getRecentMovements:
+rrhhOrganization:
+  - listAreas:
+  - getAreaById:
+  - createArea:
+  - updateArea:
+  - deleteArea:
+  - listPositions:
+  - getPositionById:
+  - createPosition:
+  - updatePosition:
+  - deletePosition:
+  - listSpecialties:
+  - getSpecialtyById:
+  - createSpecialty:
+  - updateSpecialty:
+  - deleteSpecialty:
+  - seedInitialData:
 audit:
   - listLogs:
   - listLogsPaged:

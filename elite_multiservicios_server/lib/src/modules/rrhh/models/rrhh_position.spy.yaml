@@ -1,0 +1,32 @@
+### Cargo o Puesto de Trabajo dentro de un Área Organizacional.
+class: RrhhPosition
+table: rrhh_position
+fields:
+  ### Código identificador del puesto (ej: CARGO-JARD, CARGO-EJEC-VENTAS).
+  code: String
+  ### Área a la que pertenece el cargo.
+  areaId: int, relation(parent=rrhh_area, onDelete=Cascade)
+  ### Título del cargo (ej: Jardinero, Ejecutivo de Ventas, Guardia de Seguridad).
+  name: String
+  ### Tipo de entorno laboral principal: 'Oficina' o 'Campo'.
+  workplaceType: String
+  ### Salario base de referencia sugerido en Bolivianos (Bs.).
+  suggestedSalary: double?, default=0.0
+  ### Perfil o responsabilidades del puesto.
+  description: String?
+  ### Requisitos mínimos de contratación o formación requerida.
+  requirements: String?
+  ### Estado operativo.
+  isActive: bool, default=true
+  ### Eliminación lógica y auditoría temporal.
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  rrhh_position_code_unique_idx:
+    fields: code
+    unique: true
+  rrhh_position_area_name_unique_idx:
+    fields: areaId, name
+    unique: true

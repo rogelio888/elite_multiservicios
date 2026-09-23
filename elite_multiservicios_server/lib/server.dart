@@ -8,6 +8,7 @@ import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
 import 'src/modules/security/seeds/security_seed.dart';
 import 'src/modules/crm/seeds/crm_catalog_seed.dart';
+import 'src/modules/rrhh/seeds/rrhh_organization_seed.dart';
 import 'src/modules/security/services/password_policy_validator.dart';
 import 'src/services/mail_service.dart';
 import 'src/web/routes/app_config_route.dart';
@@ -92,6 +93,7 @@ void run(List<String> args) async {
     try {
       await SecuritySeed.seed(session);
       await CrmCatalogSeed.seed(session);
+      await RrhhOrganizationSeed.seed(session);
     } catch (e, stackTrace) {
       session.log(
         'Error ejecutando seed: $e',

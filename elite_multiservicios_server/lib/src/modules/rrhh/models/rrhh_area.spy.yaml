@@ -1,0 +1,26 @@
+### Área o Departamento Organizacional de la Empresa (ej: Operaciones, RRHH, Administración, Comercial).
+class: RrhhArea
+table: rrhh_area
+fields:
+  ### Código identificador único (ej: AREA-OPER, AREA-RRHH, AREA-ADM).
+  code: String
+  ### Nombre oficial del departamento o área.
+  name: String
+  ### Descripción de responsabilidades y alcance funcional.
+  description: String?
+  ### Color distintivo para visualización y badges (#HEX).
+  colorTag: String?
+  ### Estado operativo.
+  isActive: bool, default=true
+  ### Eliminación lógica y auditoría temporal.
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  rrhh_area_code_unique_idx:
+    fields: code
+    unique: true
+  rrhh_area_name_unique_idx:
+    fields: name
+    unique: true

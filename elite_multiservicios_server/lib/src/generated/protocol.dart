@@ -35,52 +35,61 @@ import 'modules/crm/models/crm_quote_item.dart' as _i19;
 import 'modules/crm/models/crm_sector.dart' as _i20;
 import 'modules/crm/models/crm_service_line.dart' as _i21;
 import 'modules/crm/models/crm_task.dart' as _i22;
-import 'modules/rrhh/models/rrhh_dashboard_metrics_response.dart' as _i23;
-import 'modules/rrhh/models/rrhh_recent_movement_dto.dart' as _i24;
-import 'modules/security/models/app_permission.dart' as _i25;
-import 'modules/security/models/app_role.dart' as _i26;
-import 'modules/security/models/app_user.dart' as _i27;
-import 'modules/security/models/audit_log.dart' as _i28;
-import 'modules/security/models/audit_log_page_response.dart' as _i29;
-import 'modules/security/models/mfa_challenge.dart' as _i30;
-import 'modules/security/models/mfa_challenge_response.dart' as _i31;
-import 'modules/security/models/mfa_verify_response.dart' as _i32;
-import 'modules/security/models/role_permission.dart' as _i33;
-import 'modules/security/models/trusted_device.dart' as _i34;
-import 'modules/security/models/user_role.dart' as _i35;
-import 'modules/security/models/user_session.dart' as _i36;
+import 'modules/rrhh/models/rrhh_area.dart' as _i23;
+import 'modules/rrhh/models/rrhh_dashboard_metrics_response.dart' as _i24;
+import 'modules/rrhh/models/rrhh_position.dart' as _i25;
+import 'modules/rrhh/models/rrhh_recent_movement_dto.dart' as _i26;
+import 'modules/rrhh/models/rrhh_specialty.dart' as _i27;
+import 'modules/security/models/app_permission.dart' as _i28;
+import 'modules/security/models/app_role.dart' as _i29;
+import 'modules/security/models/app_user.dart' as _i30;
+import 'modules/security/models/audit_log.dart' as _i31;
+import 'modules/security/models/audit_log_page_response.dart' as _i32;
+import 'modules/security/models/mfa_challenge.dart' as _i33;
+import 'modules/security/models/mfa_challenge_response.dart' as _i34;
+import 'modules/security/models/mfa_verify_response.dart' as _i35;
+import 'modules/security/models/role_permission.dart' as _i36;
+import 'modules/security/models/trusted_device.dart' as _i37;
+import 'modules/security/models/user_role.dart' as _i38;
+import 'modules/security/models/user_session.dart' as _i39;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_task.dart'
-    as _i37;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
-    as _i38;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
-    as _i39;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
     as _i40;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
     as _i41;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
     as _i42;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
     as _i43;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
     as _i44;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
     as _i45;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
     as _i46;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_recent_movement_dto.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
     as _i47;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
     as _i48;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
     as _i49;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_recent_movement_dto.dart'
     as _i50;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_area.dart'
     as _i51;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_position.dart'
     as _i52;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_specialty.dart'
+    as _i53;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
+    as _i54;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
+    as _i55;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
+    as _i56;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
+    as _i57;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
+    as _i58;
 export 'greetings/greeting.dart';
 export 'modules/crm/models/crm_agenda_metrics_response.dart';
 export 'modules/crm/models/crm_catalog_item.dart';
@@ -99,8 +108,11 @@ export 'modules/crm/models/crm_quote_item.dart';
 export 'modules/crm/models/crm_sector.dart';
 export 'modules/crm/models/crm_service_line.dart';
 export 'modules/crm/models/crm_task.dart';
+export 'modules/rrhh/models/rrhh_area.dart';
 export 'modules/rrhh/models/rrhh_dashboard_metrics_response.dart';
+export 'modules/rrhh/models/rrhh_position.dart';
 export 'modules/rrhh/models/rrhh_recent_movement_dto.dart';
+export 'modules/rrhh/models/rrhh_specialty.dart';
 export 'modules/security/models/app_permission.dart';
 export 'modules/security/models/app_role.dart';
 export 'modules/security/models/app_user.dart';
@@ -2946,6 +2958,382 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'rrhh_area',
+      dartName: 'RrhhArea',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'rrhh_area_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'code',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'description',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'colorTag',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isActive',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'true',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDeleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'rrhh_area_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'rrhh_area_code_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'code',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'rrhh_area_name_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'name',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'rrhh_position',
+      dartName: 'RrhhPosition',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'rrhh_position_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'code',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'areaId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'workplaceType',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'suggestedSalary',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: true,
+          dartType: 'double?',
+          columnDefault: '0.0',
+        ),
+        _i2.ColumnDefinition(
+          name: 'description',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'requirements',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isActive',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'true',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDeleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'rrhh_position_fk_0',
+          columns: ['areaId'],
+          referenceTable: 'rrhh_area',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'rrhh_position_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'rrhh_position_code_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'code',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'rrhh_position_area_name_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'areaId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'name',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'rrhh_specialty',
+      dartName: 'RrhhSpecialty',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'rrhh_specialty_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'code',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'description',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'colorTag',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isActive',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'true',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDeleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'rrhh_specialty_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'rrhh_specialty_code_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'code',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'rrhh_specialty_name_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'name',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'trusted_device',
       dartName: 'TrustedDevice',
       schema: 'public',
@@ -3380,47 +3768,56 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i22.CrmTask) {
       return _i22.CrmTask.fromJson(data) as T;
     }
-    if (t == _i23.RrhhDashboardMetricsResponse) {
-      return _i23.RrhhDashboardMetricsResponse.fromJson(data) as T;
+    if (t == _i23.RrhhArea) {
+      return _i23.RrhhArea.fromJson(data) as T;
     }
-    if (t == _i24.RrhhRecentMovementDto) {
-      return _i24.RrhhRecentMovementDto.fromJson(data) as T;
+    if (t == _i24.RrhhDashboardMetricsResponse) {
+      return _i24.RrhhDashboardMetricsResponse.fromJson(data) as T;
     }
-    if (t == _i25.AppPermission) {
-      return _i25.AppPermission.fromJson(data) as T;
+    if (t == _i25.RrhhPosition) {
+      return _i25.RrhhPosition.fromJson(data) as T;
     }
-    if (t == _i26.AppRole) {
-      return _i26.AppRole.fromJson(data) as T;
+    if (t == _i26.RrhhRecentMovementDto) {
+      return _i26.RrhhRecentMovementDto.fromJson(data) as T;
     }
-    if (t == _i27.AppUser) {
-      return _i27.AppUser.fromJson(data) as T;
+    if (t == _i27.RrhhSpecialty) {
+      return _i27.RrhhSpecialty.fromJson(data) as T;
     }
-    if (t == _i28.AuditLog) {
-      return _i28.AuditLog.fromJson(data) as T;
+    if (t == _i28.AppPermission) {
+      return _i28.AppPermission.fromJson(data) as T;
     }
-    if (t == _i29.AuditLogPageResponse) {
-      return _i29.AuditLogPageResponse.fromJson(data) as T;
+    if (t == _i29.AppRole) {
+      return _i29.AppRole.fromJson(data) as T;
     }
-    if (t == _i30.MfaChallenge) {
-      return _i30.MfaChallenge.fromJson(data) as T;
+    if (t == _i30.AppUser) {
+      return _i30.AppUser.fromJson(data) as T;
     }
-    if (t == _i31.MfaChallengeResponse) {
-      return _i31.MfaChallengeResponse.fromJson(data) as T;
+    if (t == _i31.AuditLog) {
+      return _i31.AuditLog.fromJson(data) as T;
     }
-    if (t == _i32.MfaVerifyResponse) {
-      return _i32.MfaVerifyResponse.fromJson(data) as T;
+    if (t == _i32.AuditLogPageResponse) {
+      return _i32.AuditLogPageResponse.fromJson(data) as T;
     }
-    if (t == _i33.RolePermission) {
-      return _i33.RolePermission.fromJson(data) as T;
+    if (t == _i33.MfaChallenge) {
+      return _i33.MfaChallenge.fromJson(data) as T;
     }
-    if (t == _i34.TrustedDevice) {
-      return _i34.TrustedDevice.fromJson(data) as T;
+    if (t == _i34.MfaChallengeResponse) {
+      return _i34.MfaChallengeResponse.fromJson(data) as T;
     }
-    if (t == _i35.UserRole) {
-      return _i35.UserRole.fromJson(data) as T;
+    if (t == _i35.MfaVerifyResponse) {
+      return _i35.MfaVerifyResponse.fromJson(data) as T;
     }
-    if (t == _i36.UserSession) {
-      return _i36.UserSession.fromJson(data) as T;
+    if (t == _i36.RolePermission) {
+      return _i36.RolePermission.fromJson(data) as T;
+    }
+    if (t == _i37.TrustedDevice) {
+      return _i37.TrustedDevice.fromJson(data) as T;
+    }
+    if (t == _i38.UserRole) {
+      return _i38.UserRole.fromJson(data) as T;
+    }
+    if (t == _i39.UserSession) {
+      return _i39.UserSession.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.Greeting?>()) {
       return (data != null ? _i5.Greeting.fromJson(data) : null) as T;
@@ -3490,53 +3887,62 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i22.CrmTask?>()) {
       return (data != null ? _i22.CrmTask.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i23.RrhhDashboardMetricsResponse?>()) {
+    if (t == _i1.getType<_i23.RrhhArea?>()) {
+      return (data != null ? _i23.RrhhArea.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i24.RrhhDashboardMetricsResponse?>()) {
       return (data != null
-              ? _i23.RrhhDashboardMetricsResponse.fromJson(data)
+              ? _i24.RrhhDashboardMetricsResponse.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i24.RrhhRecentMovementDto?>()) {
-      return (data != null ? _i24.RrhhRecentMovementDto.fromJson(data) : null)
+    if (t == _i1.getType<_i25.RrhhPosition?>()) {
+      return (data != null ? _i25.RrhhPosition.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i26.RrhhRecentMovementDto?>()) {
+      return (data != null ? _i26.RrhhRecentMovementDto.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i25.AppPermission?>()) {
-      return (data != null ? _i25.AppPermission.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i27.RrhhSpecialty?>()) {
+      return (data != null ? _i27.RrhhSpecialty.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i26.AppRole?>()) {
-      return (data != null ? _i26.AppRole.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i28.AppPermission?>()) {
+      return (data != null ? _i28.AppPermission.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i27.AppUser?>()) {
-      return (data != null ? _i27.AppUser.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i29.AppRole?>()) {
+      return (data != null ? _i29.AppRole.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i28.AuditLog?>()) {
-      return (data != null ? _i28.AuditLog.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i30.AppUser?>()) {
+      return (data != null ? _i30.AppUser.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i29.AuditLogPageResponse?>()) {
-      return (data != null ? _i29.AuditLogPageResponse.fromJson(data) : null)
+    if (t == _i1.getType<_i31.AuditLog?>()) {
+      return (data != null ? _i31.AuditLog.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i32.AuditLogPageResponse?>()) {
+      return (data != null ? _i32.AuditLogPageResponse.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i30.MfaChallenge?>()) {
-      return (data != null ? _i30.MfaChallenge.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i33.MfaChallenge?>()) {
+      return (data != null ? _i33.MfaChallenge.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i31.MfaChallengeResponse?>()) {
-      return (data != null ? _i31.MfaChallengeResponse.fromJson(data) : null)
+    if (t == _i1.getType<_i34.MfaChallengeResponse?>()) {
+      return (data != null ? _i34.MfaChallengeResponse.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i32.MfaVerifyResponse?>()) {
-      return (data != null ? _i32.MfaVerifyResponse.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i35.MfaVerifyResponse?>()) {
+      return (data != null ? _i35.MfaVerifyResponse.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i33.RolePermission?>()) {
-      return (data != null ? _i33.RolePermission.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i36.RolePermission?>()) {
+      return (data != null ? _i36.RolePermission.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i34.TrustedDevice?>()) {
-      return (data != null ? _i34.TrustedDevice.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i37.TrustedDevice?>()) {
+      return (data != null ? _i37.TrustedDevice.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i35.UserRole?>()) {
-      return (data != null ? _i35.UserRole.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i38.UserRole?>()) {
+      return (data != null ? _i38.UserRole.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i36.UserSession?>()) {
-      return (data != null ? _i36.UserSession.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i39.UserSession?>()) {
+      return (data != null ? _i39.UserSession.fromJson(data) : null) as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
@@ -3559,97 +3965,113 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
-    if (t == List<_i28.AuditLog>) {
-      return (data as List).map((e) => deserialize<_i28.AuditLog>(e)).toList()
+    if (t == List<_i31.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i31.AuditLog>(e)).toList()
           as T;
     }
-    if (t == List<_i37.CrmTask>) {
-      return (data as List).map((e) => deserialize<_i37.CrmTask>(e)).toList()
+    if (t == List<_i40.CrmTask>) {
+      return (data as List).map((e) => deserialize<_i40.CrmTask>(e)).toList()
           as T;
     }
-    if (t == List<_i38.CrmSector>) {
-      return (data as List).map((e) => deserialize<_i38.CrmSector>(e)).toList()
+    if (t == List<_i41.CrmSector>) {
+      return (data as List).map((e) => deserialize<_i41.CrmSector>(e)).toList()
           as T;
     }
-    if (t == List<_i39.CrmServiceLine>) {
+    if (t == List<_i42.CrmServiceLine>) {
       return (data as List)
-              .map((e) => deserialize<_i39.CrmServiceLine>(e))
+              .map((e) => deserialize<_i42.CrmServiceLine>(e))
               .toList()
           as T;
     }
-    if (t == List<_i40.CrmCatalogItem>) {
+    if (t == List<_i43.CrmCatalogItem>) {
       return (data as List)
-              .map((e) => deserialize<_i40.CrmCatalogItem>(e))
+              .map((e) => deserialize<_i43.CrmCatalogItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i41.CrmCatalogItemScope>) {
+    if (t == List<_i44.CrmCatalogItemScope>) {
       return (data as List)
-              .map((e) => deserialize<_i41.CrmCatalogItemScope>(e))
+              .map((e) => deserialize<_i44.CrmCatalogItemScope>(e))
               .toList()
           as T;
     }
-    if (t == List<_i42.CrmCustomer>) {
+    if (t == List<_i45.CrmCustomer>) {
       return (data as List)
-              .map((e) => deserialize<_i42.CrmCustomer>(e))
+              .map((e) => deserialize<_i45.CrmCustomer>(e))
               .toList()
           as T;
     }
-    if (t == List<_i43.CrmContractBudgetItem>) {
+    if (t == List<_i46.CrmContractBudgetItem>) {
       return (data as List)
-              .map((e) => deserialize<_i43.CrmContractBudgetItem>(e))
+              .map((e) => deserialize<_i46.CrmContractBudgetItem>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i43.CrmContractBudgetItem>?>()) {
+    if (t == _i1.getType<List<_i46.CrmContractBudgetItem>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i43.CrmContractBudgetItem>(e))
+                    .map((e) => deserialize<_i46.CrmContractBudgetItem>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i44.CrmLead>) {
-      return (data as List).map((e) => deserialize<_i44.CrmLead>(e)).toList()
+    if (t == List<_i47.CrmLead>) {
+      return (data as List).map((e) => deserialize<_i47.CrmLead>(e)).toList()
           as T;
     }
-    if (t == List<_i45.CrmOpportunity>) {
+    if (t == List<_i48.CrmOpportunity>) {
       return (data as List)
-              .map((e) => deserialize<_i45.CrmOpportunity>(e))
+              .map((e) => deserialize<_i48.CrmOpportunity>(e))
               .toList()
           as T;
     }
-    if (t == List<_i46.CrmQuoteItem>) {
+    if (t == List<_i49.CrmQuoteItem>) {
       return (data as List)
-              .map((e) => deserialize<_i46.CrmQuoteItem>(e))
+              .map((e) => deserialize<_i49.CrmQuoteItem>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i46.CrmQuoteItem>?>()) {
+    if (t == _i1.getType<List<_i49.CrmQuoteItem>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i46.CrmQuoteItem>(e))
+                    .map((e) => deserialize<_i49.CrmQuoteItem>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i47.RrhhRecentMovementDto>) {
+    if (t == List<_i50.RrhhRecentMovementDto>) {
       return (data as List)
-              .map((e) => deserialize<_i47.RrhhRecentMovementDto>(e))
+              .map((e) => deserialize<_i50.RrhhRecentMovementDto>(e))
               .toList()
           as T;
     }
-    if (t == List<_i48.AuditLog>) {
-      return (data as List).map((e) => deserialize<_i48.AuditLog>(e)).toList()
+    if (t == List<_i51.RrhhArea>) {
+      return (data as List).map((e) => deserialize<_i51.RrhhArea>(e)).toList()
           as T;
     }
-    if (t == List<_i49.AppRole>) {
-      return (data as List).map((e) => deserialize<_i49.AppRole>(e)).toList()
-          as T;
-    }
-    if (t == List<_i50.AppPermission>) {
+    if (t == List<_i52.RrhhPosition>) {
       return (data as List)
-              .map((e) => deserialize<_i50.AppPermission>(e))
+              .map((e) => deserialize<_i52.RrhhPosition>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i53.RrhhSpecialty>) {
+      return (data as List)
+              .map((e) => deserialize<_i53.RrhhSpecialty>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i54.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i54.AuditLog>(e)).toList()
+          as T;
+    }
+    if (t == List<_i55.AppRole>) {
+      return (data as List).map((e) => deserialize<_i55.AppRole>(e)).toList()
+          as T;
+    }
+    if (t == List<_i56.AppPermission>) {
+      return (data as List)
+              .map((e) => deserialize<_i56.AppPermission>(e))
               .toList()
           as T;
     }
@@ -3659,14 +4081,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
-    if (t == List<_i51.UserSession>) {
+    if (t == List<_i57.UserSession>) {
       return (data as List)
-              .map((e) => deserialize<_i51.UserSession>(e))
+              .map((e) => deserialize<_i57.UserSession>(e))
               .toList()
           as T;
     }
-    if (t == List<_i52.AppUser>) {
-      return (data as List).map((e) => deserialize<_i52.AppUser>(e)).toList()
+    if (t == List<_i58.AppUser>) {
+      return (data as List).map((e) => deserialize<_i58.AppUser>(e)).toList()
           as T;
     }
     try {
@@ -3701,20 +4123,23 @@ class Protocol extends _i1.SerializationManagerServer {
       _i20.CrmSector => 'CrmSector',
       _i21.CrmServiceLine => 'CrmServiceLine',
       _i22.CrmTask => 'CrmTask',
-      _i23.RrhhDashboardMetricsResponse => 'RrhhDashboardMetricsResponse',
-      _i24.RrhhRecentMovementDto => 'RrhhRecentMovementDto',
-      _i25.AppPermission => 'AppPermission',
-      _i26.AppRole => 'AppRole',
-      _i27.AppUser => 'AppUser',
-      _i28.AuditLog => 'AuditLog',
-      _i29.AuditLogPageResponse => 'AuditLogPageResponse',
-      _i30.MfaChallenge => 'MfaChallenge',
-      _i31.MfaChallengeResponse => 'MfaChallengeResponse',
-      _i32.MfaVerifyResponse => 'MfaVerifyResponse',
-      _i33.RolePermission => 'RolePermission',
-      _i34.TrustedDevice => 'TrustedDevice',
-      _i35.UserRole => 'UserRole',
-      _i36.UserSession => 'UserSession',
+      _i23.RrhhArea => 'RrhhArea',
+      _i24.RrhhDashboardMetricsResponse => 'RrhhDashboardMetricsResponse',
+      _i25.RrhhPosition => 'RrhhPosition',
+      _i26.RrhhRecentMovementDto => 'RrhhRecentMovementDto',
+      _i27.RrhhSpecialty => 'RrhhSpecialty',
+      _i28.AppPermission => 'AppPermission',
+      _i29.AppRole => 'AppRole',
+      _i30.AppUser => 'AppUser',
+      _i31.AuditLog => 'AuditLog',
+      _i32.AuditLogPageResponse => 'AuditLogPageResponse',
+      _i33.MfaChallenge => 'MfaChallenge',
+      _i34.MfaChallengeResponse => 'MfaChallengeResponse',
+      _i35.MfaVerifyResponse => 'MfaVerifyResponse',
+      _i36.RolePermission => 'RolePermission',
+      _i37.TrustedDevice => 'TrustedDevice',
+      _i38.UserRole => 'UserRole',
+      _i39.UserSession => 'UserSession',
       _ => null,
     };
   }
@@ -3768,33 +4193,39 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'CrmServiceLine';
       case _i22.CrmTask():
         return 'CrmTask';
-      case _i23.RrhhDashboardMetricsResponse():
+      case _i23.RrhhArea():
+        return 'RrhhArea';
+      case _i24.RrhhDashboardMetricsResponse():
         return 'RrhhDashboardMetricsResponse';
-      case _i24.RrhhRecentMovementDto():
+      case _i25.RrhhPosition():
+        return 'RrhhPosition';
+      case _i26.RrhhRecentMovementDto():
         return 'RrhhRecentMovementDto';
-      case _i25.AppPermission():
+      case _i27.RrhhSpecialty():
+        return 'RrhhSpecialty';
+      case _i28.AppPermission():
         return 'AppPermission';
-      case _i26.AppRole():
+      case _i29.AppRole():
         return 'AppRole';
-      case _i27.AppUser():
+      case _i30.AppUser():
         return 'AppUser';
-      case _i28.AuditLog():
+      case _i31.AuditLog():
         return 'AuditLog';
-      case _i29.AuditLogPageResponse():
+      case _i32.AuditLogPageResponse():
         return 'AuditLogPageResponse';
-      case _i30.MfaChallenge():
+      case _i33.MfaChallenge():
         return 'MfaChallenge';
-      case _i31.MfaChallengeResponse():
+      case _i34.MfaChallengeResponse():
         return 'MfaChallengeResponse';
-      case _i32.MfaVerifyResponse():
+      case _i35.MfaVerifyResponse():
         return 'MfaVerifyResponse';
-      case _i33.RolePermission():
+      case _i36.RolePermission():
         return 'RolePermission';
-      case _i34.TrustedDevice():
+      case _i37.TrustedDevice():
         return 'TrustedDevice';
-      case _i35.UserRole():
+      case _i38.UserRole():
         return 'UserRole';
-      case _i36.UserSession():
+      case _i39.UserSession():
         return 'UserSession';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -3872,47 +4303,56 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'CrmTask') {
       return deserialize<_i22.CrmTask>(data['data']);
     }
+    if (dataClassName == 'RrhhArea') {
+      return deserialize<_i23.RrhhArea>(data['data']);
+    }
     if (dataClassName == 'RrhhDashboardMetricsResponse') {
-      return deserialize<_i23.RrhhDashboardMetricsResponse>(data['data']);
+      return deserialize<_i24.RrhhDashboardMetricsResponse>(data['data']);
+    }
+    if (dataClassName == 'RrhhPosition') {
+      return deserialize<_i25.RrhhPosition>(data['data']);
     }
     if (dataClassName == 'RrhhRecentMovementDto') {
-      return deserialize<_i24.RrhhRecentMovementDto>(data['data']);
+      return deserialize<_i26.RrhhRecentMovementDto>(data['data']);
+    }
+    if (dataClassName == 'RrhhSpecialty') {
+      return deserialize<_i27.RrhhSpecialty>(data['data']);
     }
     if (dataClassName == 'AppPermission') {
-      return deserialize<_i25.AppPermission>(data['data']);
+      return deserialize<_i28.AppPermission>(data['data']);
     }
     if (dataClassName == 'AppRole') {
-      return deserialize<_i26.AppRole>(data['data']);
+      return deserialize<_i29.AppRole>(data['data']);
     }
     if (dataClassName == 'AppUser') {
-      return deserialize<_i27.AppUser>(data['data']);
+      return deserialize<_i30.AppUser>(data['data']);
     }
     if (dataClassName == 'AuditLog') {
-      return deserialize<_i28.AuditLog>(data['data']);
+      return deserialize<_i31.AuditLog>(data['data']);
     }
     if (dataClassName == 'AuditLogPageResponse') {
-      return deserialize<_i29.AuditLogPageResponse>(data['data']);
+      return deserialize<_i32.AuditLogPageResponse>(data['data']);
     }
     if (dataClassName == 'MfaChallenge') {
-      return deserialize<_i30.MfaChallenge>(data['data']);
+      return deserialize<_i33.MfaChallenge>(data['data']);
     }
     if (dataClassName == 'MfaChallengeResponse') {
-      return deserialize<_i31.MfaChallengeResponse>(data['data']);
+      return deserialize<_i34.MfaChallengeResponse>(data['data']);
     }
     if (dataClassName == 'MfaVerifyResponse') {
-      return deserialize<_i32.MfaVerifyResponse>(data['data']);
+      return deserialize<_i35.MfaVerifyResponse>(data['data']);
     }
     if (dataClassName == 'RolePermission') {
-      return deserialize<_i33.RolePermission>(data['data']);
+      return deserialize<_i36.RolePermission>(data['data']);
     }
     if (dataClassName == 'TrustedDevice') {
-      return deserialize<_i34.TrustedDevice>(data['data']);
+      return deserialize<_i37.TrustedDevice>(data['data']);
     }
     if (dataClassName == 'UserRole') {
-      return deserialize<_i35.UserRole>(data['data']);
+      return deserialize<_i38.UserRole>(data['data']);
     }
     if (dataClassName == 'UserSession') {
-      return deserialize<_i36.UserSession>(data['data']);
+      return deserialize<_i39.UserSession>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -3974,24 +4414,30 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i21.CrmServiceLine.t;
       case _i22.CrmTask:
         return _i22.CrmTask.t;
-      case _i25.AppPermission:
-        return _i25.AppPermission.t;
-      case _i26.AppRole:
-        return _i26.AppRole.t;
-      case _i27.AppUser:
-        return _i27.AppUser.t;
-      case _i28.AuditLog:
-        return _i28.AuditLog.t;
-      case _i30.MfaChallenge:
-        return _i30.MfaChallenge.t;
-      case _i33.RolePermission:
-        return _i33.RolePermission.t;
-      case _i34.TrustedDevice:
-        return _i34.TrustedDevice.t;
-      case _i35.UserRole:
-        return _i35.UserRole.t;
-      case _i36.UserSession:
-        return _i36.UserSession.t;
+      case _i23.RrhhArea:
+        return _i23.RrhhArea.t;
+      case _i25.RrhhPosition:
+        return _i25.RrhhPosition.t;
+      case _i27.RrhhSpecialty:
+        return _i27.RrhhSpecialty.t;
+      case _i28.AppPermission:
+        return _i28.AppPermission.t;
+      case _i29.AppRole:
+        return _i29.AppRole.t;
+      case _i30.AppUser:
+        return _i30.AppUser.t;
+      case _i31.AuditLog:
+        return _i31.AuditLog.t;
+      case _i33.MfaChallenge:
+        return _i33.MfaChallenge.t;
+      case _i36.RolePermission:
+        return _i36.RolePermission.t;
+      case _i37.TrustedDevice:
+        return _i37.TrustedDevice.t;
+      case _i38.UserRole:
+        return _i38.UserRole.t;
+      case _i39.UserSession:
+        return _i39.UserSession.t;
     }
     return null;
   }
