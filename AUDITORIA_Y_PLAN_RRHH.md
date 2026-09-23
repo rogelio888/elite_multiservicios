@@ -74,18 +74,23 @@ El plan de construcción e integración backend se ejecuta en **7 Fases Secuenci
 
 ---
 
-### **FASE 2: Postulantes y Pipeline de Selección (Reclutamiento)**
+### **FASE 2: Postulantes y Pipeline de Selección (Reclutamiento) (COMPLETADA CON ÉXITO ✅)**
 *Objetivo:* Gestionar el ciclo de vida del candidato antes de convertirse en empleado formal.
-- [ ] **Modelos Serverpod:**
+- [x] **Modelos Serverpod:**
   - `rrhh_applicant.spy.yaml`:
-    - Datos personales: `firstName`, `lastName`, `ci`, `phone`, `email`, `address`, `birthDate`.
-    - Perfil: `specialtyId` (FK), `experienceYears`, `educationLevel`, `skills: List<String>`.
-    - Proceso: `status` ('Nuevo' | 'En Evaluacion' | 'Entrevistado' | 'Seleccionado' | 'Rechazado' | 'Contratado'), `cvUrl`, `notes`.
-- [ ] **Lógica & Repositorios:**
-  - `RrhhApplicantRepository`: Búsqueda, filtrado por estado/especialidad, cambio de fase y descarte justificado.
-  - `RrhhApplicantEndpoint`: Métodos RPC tipados para listado, creación y avance de fase.
-- [ ] **Migración SQL y pruebas de persistencia.**
-- ⏸️ **PUNTO DE CONTROL 2: Verificación de candidatos y compuertas de selección.**
+    - Identificación: `code` (ej: POST-001 con auto-generación), `fullName`, `identityCard` (CI), `phone`, `email`, `address`, `birthDate`.
+    - Contacto de emergencia: `emergencyContact`, `emergencyPhone`.
+    - Perfil: `targetArea`, `areaId` (FK), `targetPosition`, `positionId` (FK), `targetType` ('OFICINA' | 'CAMPO'), `specialty`, `specialtyId` (FK), `education`, `experienceSummary`, `skills`, referencias.
+    - Embudo y compuertas: `status` ('NUEVO', 'EN_EVALUACION', 'ENTREVISTADO', 'SELECCIONADO', 'RECHAZADO', 'CONTRATADO'), `interviewNotes`, `expectedSalary`, `hasCvAttached`, `hasIdentityCardCopy`, `cvUrl`, `discardReason`.
+    - Índices y auditoría: `code_unique_idx`, `ci_idx`, `status_idx`, soft delete con `isDeleted` y `deletedAt`.
+- [x] **Lógica & Repositorios:**
+  - `RrhhRecruitmentRepository`: Búsqueda, paginación, filtros por estado/entorno/especialidad, auto-generación de código secuencial, compuertas de entrevista/evaluación y soft delete.
+  - `RrhhApplicantEndpoint`: Endpoints protegidos mediante `RbacGuard` con permisos `AppPermissions.rrhhPersonalView` y `AppPermissions.rrhhPersonalManage`.
+- [x] **Migración & Seed Data:**
+  - Migración SQL `20260923132810894` aplicada en desarrollo y test.
+  - Seeder de 4 postulantes representativos en diferentes etapas del pipeline (POST-001 SELECCIONADO, POST-002 EN_EVALUACION, POST-003 NUEVO, POST-004 RECHAZADO) persistidos en PostgreSQL.
+  - Test de integración `rrhh_recruitment_test.dart` ejecutado y pasando al 100%.
+- ⏸️ **PUNTO DE CONTROL 2 ALCANZADO: FASE 2 completada y validada en PostgreSQL con cero errores de análisis estático.**
 
 ---
 

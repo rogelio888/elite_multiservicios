@@ -1,0 +1,71 @@
+### Postulante o candidato en proceso de selección y reclutamiento laboral.
+class: RrhhApplicant
+table: rrhh_applicant
+fields:
+  ### Código identificador del postulante (ej: POST-001).
+  code: String
+  ### Nombre completo del postulante.
+  fullName: String
+  ### Documento de identidad (CI).
+  identityCard: String
+  ### Teléfono o celular de contacto.
+  phone: String
+  ### Correo electrónico de contacto.
+  email: String?
+  ### Dirección de domicilio.
+  address: String?
+  ### Fecha de nacimiento.
+  birthDate: DateTime?
+  ### Contacto de emergencia (nombre y parentesco).
+  emergencyContact: String?
+  ### Teléfono del contacto de emergencia.
+  emergencyPhone: String?
+  ### Área objetivo o departamento al que postula.
+  targetArea: String?
+  areaId: int?, relation(parent=rrhh_area)
+  ### Cargo objetivo al que aspira.
+  targetPosition: String?
+  positionId: int?, relation(parent=rrhh_position)
+  ### Tipo de entorno laboral deseado: 'OFICINA' o 'CAMPO'.
+  targetType: String
+  ### Especialidad técnica (ej: Jardinería, Limpieza, Climatización).
+  specialty: String?
+  specialtyId: int?, relation(parent=rrhh_specialty)
+  ### Nivel de formación o educación alcanzada.
+  education: String?
+  ### Resumen de experiencia laboral previa.
+  experienceSummary: String?
+  ### Habilidades técnicas y competencias.
+  skills: String?
+  ### Persona de referencia laboral o personal.
+  referencePerson: String?
+  ### Teléfono de la persona de referencia.
+  referencePhone: String?
+  ### Fecha de postulación o recepción de hoja de vida.
+  applicationDate: DateTime
+  ### Estado en el embudo de selección: 'NUEVO', 'EN_EVALUACION', 'SELECCIONADO', 'RECHAZADO', 'CONTRATADO'.
+  status: String, default='NUEVO'
+  ### Notas y observaciones de entrevista / evaluación.
+  interviewNotes: String?
+  ### Pretensión salarial en Bolivianos (Bs.).
+  expectedSalary: double?, default=0.0
+  ### Indicadores de documentación preliminar adjunta.
+  hasCvAttached: bool, default=true
+  hasIdentityCardCopy: bool, default=true
+  ### Enlace a currículum digital si existe.
+  cvUrl: String?
+  ### Motivo de descarte en caso de rechazo.
+  discardReason: String?
+  ### Eliminación lógica y auditoría.
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  rrhh_applicant_code_unique_idx:
+    fields: code
+    unique: true
+  rrhh_applicant_ci_idx:
+    fields: identityCard
+  rrhh_applicant_status_idx:
+    fields: status

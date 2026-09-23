@@ -77,6 +77,14 @@ crmPipeline:
   - promoteToCustomer:
   - deleteOpportunity:
   - getMetrics:
+rrhhApplicant:
+  - listApplicants:
+  - getApplicantById:
+  - createApplicant:
+  - updateApplicant:
+  - updateApplicantStatus:
+  - deleteApplicant:
+  - seedInitialData:
 rrhhDashboard:
   - getMetrics:
   - getRecentMovements:
