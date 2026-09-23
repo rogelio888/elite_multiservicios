@@ -407,7 +407,11 @@ class MfaEndpoint extends Endpoint {
 
     // 6. Reenviar email (con tolerancia a fallas del proveedor)
     try {
-      await MailService.sendMfaCode(session, email: appUser.email, code: newCode);
+      await MailService.sendMfaCode(
+        session,
+        email: appUser.email,
+        code: newCode,
+      );
     } catch (e, stackTrace) {
       session.log(
         '⚠️ [MfaEndpoint] No se pudo reenviar email MFA a ${appUser.email}: $e. Código temporal de respaldo: $newCode',

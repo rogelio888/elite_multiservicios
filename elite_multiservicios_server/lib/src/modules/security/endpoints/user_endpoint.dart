@@ -377,5 +377,4 @@ class UserEndpoint extends Endpoint {
       ),
     );
   }
-
 }

@@ -239,8 +239,9 @@ class SecuritySeed {
             isActive: true,
             failedLoginAttempts: 0,
             lockedUntil: null,
-            mfaEnabled:
-                shouldUpdateMfa ? shouldEnableMfa : adminUser.mfaEnabled,
+            mfaEnabled: shouldUpdateMfa
+                ? shouldEnableMfa
+                : adminUser.mfaEnabled,
             updatedAt: DateTime.now().toUtc(),
           ),
         );

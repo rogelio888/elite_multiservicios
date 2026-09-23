@@ -68,7 +68,8 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
 
   void _onAuthChanged() {
     final currentSignedIn = client.auth.isAuthenticated;
-    if (currentSignedIn != _lastSignedIn || (currentSignedIn && _authStateFuture == null)) {
+    if (currentSignedIn != _lastSignedIn ||
+        (currentSignedIn && _authStateFuture == null)) {
       _lastSignedIn = currentSignedIn;
       if (currentSignedIn) {
         _authStateFuture = _resolveAuthState();
