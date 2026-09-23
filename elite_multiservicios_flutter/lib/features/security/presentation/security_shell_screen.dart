@@ -15,6 +15,9 @@ import 'views/users_management_view.dart';
 import 'views/roles_rbac_view.dart';
 import 'views/audit_log_view.dart';
 import 'views/active_sessions_view.dart';
+import '../../accounting/presentation/screens/accounting_dashboard_screen.dart';
+import '../../accounting/presentation/screens/accounting_invoices_screen.dart';
+import '../../accounting/presentation/screens/accounting_expenses_screen.dart';
 
 /// Shell principal de navegación para el módulo de seguridad de Elite Multiservicios.
 /// Diseñado con estética minimalista ejecutiva, contención visual y escala suiza.
@@ -53,7 +56,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'rrhh-asistencia',
     'rrhh-reportes',
     'crm-catalogo',
-    'rrhh-catalogos',
+    'accounting-dashboard',
+    'accounting-invoices',
+    'accounting-expenses',
   ];
 
   static int _indexFromRouteOrHash(String raw) {
@@ -174,6 +179,15 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 'tarifario':
       case 'partidas':
         return 15;
+      case 'accounting-dashboard':
+      case 'contabilidad':
+        return 16;
+      case 'accounting-invoices':
+      case 'facturas':
+        return 17;
+      case 'accounting-expenses':
+      case 'gastos':
+        return 18;
       case 'dashboard':
       default:
         return 0;
@@ -189,6 +203,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
   bool _isSecurityExpanded = true;
   bool _isCrmExpanded = true;
   bool _isRrhhExpanded = true;
+  bool _isAccountingExpanded = true;
 
   @override
   void initState() {
@@ -222,6 +237,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     } else if ((initialIndex >= 9 && initialIndex <= 14) ||
         initialIndex == 16) {
       _isRrhhExpanded = true;
+    } else if (initialIndex >= 16 && initialIndex <= 18) {
+      _isAccountingExpanded = true;
     }
 
     // Sincronizar URL del navegador con el slug activo
@@ -238,9 +255,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
             if ((newIndex >= 5 && newIndex <= 8) || newIndex == 15) {
               _isCrmExpanded = true;
             }
-            if ((newIndex >= 9 && newIndex <= 14) || newIndex == 16) {
-              _isRrhhExpanded = true;
-            }
+            if (newIndex >= 9 && newIndex <= 14) _isRrhhExpanded = true;
+            if (newIndex >= 1 && newIndex <= 5) _isSecurityExpanded = true;
+            if (newIndex >= 6 && newIndex <= 9) _isCrmExpanded = true;
+            if (newIndex >= 10 && newIndex <= 15) _isRrhhExpanded = true;
+            if (newIndex >= 16 && newIndex <= 18) _isAccountingExpanded = true;
           });
           _loadSidebarMetrics();
         }
@@ -274,6 +293,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
           _isCrmExpanded = true;
         } else if (index >= 9 && index <= 14) {
           _isRrhhExpanded = true;
+        } else if (index >= 16 && index <= 18) {
+          _isAccountingExpanded = true;
         }
       });
       // Sincronizar URL visible en la barra de direcciones del navegador
@@ -392,6 +413,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'RRHH: Asistencia de Campo',
     'RRHH: Reportes y Auditoría',
     'CRM: Catálogo & Tarifario',
+    'Contabilidad: Dashboard',
+    'Contabilidad: Facturación',
+    'Contabilidad: Egresos',
   ];
 
   Widget _buildNavItem({
@@ -696,6 +720,31 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       ),
     ];
 
+    final isAnyAccountingActive = _selectedIndex >= 16 && _selectedIndex <= 18;
+    final accountingItems = [
+      (
+        icon: Icons.account_balance_wallet_outlined,
+        selectedIcon: Icons.account_balance_wallet,
+        label: 'Dashboard',
+        badge: null,
+        index: 16,
+      ),
+      (
+        icon: Icons.receipt_long_outlined,
+        selectedIcon: Icons.receipt_long,
+        label: 'Facturación',
+        badge: null,
+        index: 17,
+      ),
+      (
+        icon: Icons.money_off_outlined,
+        selectedIcon: Icons.money_off,
+        label: 'Egresos',
+        badge: null,
+        index: 18,
+      ),
+    ];
+
     Widget currentView;
     switch (_selectedIndex) {
       case 0:
@@ -767,6 +816,14 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         break;
       case 15:
         currentView = const CrmCatalogManagementView();
+      case 16:
+        currentView = const AccountingDashboardScreen();
+        break;
+      case 17:
+        currentView = const AccountingInvoicesScreen();
+        break;
+      case 18:
+        currentView = const AccountingExpensesScreen();
         break;
       case 16:
         currentView = RrhhRoutes.buildTopLevelView(
@@ -1300,6 +1357,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       isAnyCrmActive: isAnyCrmActive,
                       rrhhItems: rrhhItems,
                       isAnyRrhhActive: isAnyRrhhActive,
+                      accountingItems: accountingItems,
+                      isAnyAccountingActive: isAnyAccountingActive,
                     ),
                   ),
                 )
@@ -1322,6 +1381,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       isAnyCrmActive: isAnyCrmActive,
                       rrhhItems: rrhhItems,
                       isAnyRrhhActive: isAnyRrhhActive,
+                      accountingItems: accountingItems,
+                      isAnyAccountingActive: isAnyAccountingActive,
                     ),
                     Expanded(
                       child: Column(
@@ -1376,6 +1437,17 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     rrhhItems,
 
     required bool isAnyRrhhActive,
+    required List<
+      ({
+        IconData icon,
+        IconData selectedIcon,
+        String label,
+        String? badge,
+        int index,
+      })
+    >
+    accountingItems,
+    required bool isAnyAccountingActive,
   }) {
     final collapsed = !isDrawer && _isSidebarCollapsed;
 
@@ -1973,6 +2045,143 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       ),
                     ),
                   ),
+                const SizedBox(height: 6),
+                
+                // 8. Acordeón Colapsable "Contabilidad"
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    key: const Key('nav_accordion_accounting'),
+                    onTap: () {
+                      setState(() {
+                        _isAccountingExpanded = !_isAccountingExpanded;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 140),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 9,
+                      ),
+                      decoration: BoxDecoration(
+                        color: (isAnyAccountingActive && !_isAccountingExpanded)
+                            ? (isDark
+                                  ? const Color(0xFF1E1B4B)
+                                  : const Color(0xFFEEF2FF))
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(8),
+                        border: (isAnyAccountingActive && !_isAccountingExpanded)
+                            ? const Border(
+                                left: BorderSide(
+                                  color: Color(0xFF6366F1),
+                                  width: 2.5,
+                                ),
+                              )
+                            : null,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: collapsed
+                            ? MainAxisAlignment.center
+                            : MainAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.monetization_on_outlined,
+                            color: isAnyAccountingActive
+                                ? (isDark
+                                      ? const Color(0xFF818CF8)
+                                      : const Color(0xFF4F46E5))
+                                : (isDark
+                                      ? const Color(0xFF94A3B8)
+                                      : const Color(0xFF64748B)),
+                            size: 18,
+                          ),
+                          if (!collapsed) ...[
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      'Contabilidad',
+                                      style: GoogleFonts.inter(
+                                        color: isAnyAccountingActive
+                                            ? (isDark
+                                                  ? Colors.white
+                                                  : const Color(0xFF0F172A))
+                                            : (isDark
+                                                  ? const Color(0xFF94A3B8)
+                                                  : const Color(0xFF64748B)),
+                                        fontWeight: isAnyAccountingActive
+                                            ? FontWeight.w600
+                                            : FontWeight.w500,
+                                        fontSize: 13,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            AnimatedRotation(
+                              turns: _isAccountingExpanded ? 0.5 : 0.0,
+                              duration: const Duration(milliseconds: 180),
+                              curve: Curves.easeOutCubic,
+                              child: Icon(
+                                Icons.keyboard_arrow_down,
+                                size: 16,
+                                color: isDark
+                                    ? const Color(0xFF64748B)
+                                    : const Color(0xFF94A3B8),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                if (_isAccountingExpanded)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: collapsed ? 0 : 10,
+                      top: 2,
+                    ),
+                    child: Container(
+                      decoration: collapsed
+                          ? null
+                          : BoxDecoration(
+                              border: Border(
+                                left: BorderSide(
+                                  color: isDark
+                                      ? const Color(0xFF1E293B)
+                                      : const Color(0xFFE2E8F0),
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                      padding: EdgeInsets.only(
+                        left: collapsed ? 0 : 6,
+                      ),
+                      child: Column(
+                        children: accountingItems.map((item) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: item.icon,
+                              selectedIcon: item.selectedIcon,
+                              label: item.label,
+                              index: item.index,
+                              badge: item.badge,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -2080,3 +2289,4 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     );
   }
 }
+

@@ -1,0 +1,26 @@
+### Transacciones financieras (Ingresos y Egresos reales en banco o caja).
+class: AccountingTransaction
+table: accounting_transaction
+fields:
+  ### Fecha de la transacción.
+  date: DateTime
+  ### Monto de la transacción.
+  amount: double
+  ### Tipo de transacción: Income (Ingreso), Expense (Egreso).
+  type: String
+  ### Referencia a ID de Factura (si es ingreso) o Gasto (si es egreso).
+  referenceId: int?
+  ### Origen/Destino de los fondos (ej. Cuenta Bancaria, Caja Chica).
+  account: String?
+  ### Notas adicionales.
+  notes: String?
+  ### Eliminación lógica (Soft Delete).
+  isDeleted: bool, default=false
+  ### Fechas de auditoría.
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  acc_tx_type_idx:
+    fields: type
+  acc_tx_reference_idx:
+    fields: referenceId

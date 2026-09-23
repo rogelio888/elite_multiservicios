@@ -1,0 +1,5 @@
+class: AccountingFinancialSummary
+fields:
+  totalIncome: double
+  totalExpenses: double
+  balance: double

@@ -1,0 +1,22 @@
+### Centro de Costo (Cost Center) para medir rentabilidad por contrato o unidad.
+class: AccountingCostCenter
+table: accounting_cost_center
+fields:
+  ### Nombre del centro de costo (ej. 'Condominio Las Palmas - Jardinería').
+  name: String
+  ### ID del contrato asociado en el CRM (opcional, si es para un contrato específico).
+  contractId: int?
+  ### Estado operativo: Activo, Cerrado.
+  status: String, default='Activo'
+  ### Descripción detallada del centro de costo.
+  description: String?
+  ### Eliminación lógica (Soft Delete).
+  isDeleted: bool, default=false
+  ### Fechas de auditoría.
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  acc_cost_center_status_idx:
+    fields: status
+  acc_cost_center_contract_idx:
+    fields: contractId

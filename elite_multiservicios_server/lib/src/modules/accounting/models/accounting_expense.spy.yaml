@@ -1,0 +1,28 @@
+### Gastos operativos y facturas de proveedores (Cuentas por Pagar).
+class: AccountingExpense
+table: accounting_expense
+fields:
+  ### Nombre del proveedor.
+  supplierName: String
+  ### Fecha del gasto.
+  date: DateTime
+  ### Monto del gasto.
+  amount: double
+  ### ID del centro de costo al que se asigna (opcional).
+  costCenterId: int?
+  ### Categoría del gasto: Insumos, Nómina, Servicios, Transporte, etc.
+  category: String
+  ### Estado: Pending, Paid.
+  status: String, default='Pending'
+  ### Notas o descripción.
+  description: String?
+  ### Eliminación lógica (Soft Delete).
+  isDeleted: bool, default=false
+  ### Fechas de auditoría.
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  acc_expense_cost_center_idx:
+    fields: costCenterId
+  acc_expense_status_idx:
+    fields: status

@@ -11,6 +11,15 @@ jwtRefresh:
   - refreshAccessToken:
 greeting:
   - hello:
+accounting:
+  - getCostCenters:
+  - createCostCenter:
+  - getInvoices:
+  - createInvoice:
+  - updateInvoiceStatus:
+  - getExpenses:
+  - createExpense:
+  - getFinancialSummary:
 crmAgenda:
   - listTasks:
   - getTask:

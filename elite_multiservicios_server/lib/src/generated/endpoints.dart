@@ -15,77 +15,54 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../auth/email_idp_endpoint.dart' as _i2;
 import '../auth/jwt_refresh_endpoint.dart' as _i3;
 import '../greetings/greeting_endpoint.dart' as _i4;
-import '../modules/crm/endpoints/crm_agenda_endpoint.dart' as _i5;
-import '../modules/crm/endpoints/crm_catalog_endpoint.dart' as _i6;
-import '../modules/crm/endpoints/crm_customers_endpoint.dart' as _i7;
-import '../modules/crm/endpoints/crm_leads_endpoint.dart' as _i8;
-import '../modules/crm/endpoints/crm_pipeline_endpoint.dart' as _i9;
-import '../modules/rrhh/endpoints/rrhh_applicant_endpoint.dart' as _i10;
-import '../modules/rrhh/endpoints/rrhh_assignment_endpoint.dart' as _i11;
-import '../modules/rrhh/endpoints/rrhh_dashboard_endpoint.dart' as _i12;
-import '../modules/rrhh/endpoints/rrhh_hiring_endpoint.dart' as _i13;
-import '../modules/rrhh/endpoints/rrhh_labor_endpoint.dart' as _i14;
-import '../modules/rrhh/endpoints/rrhh_organization_endpoint.dart' as _i15;
-import '../modules/rrhh/endpoints/rrhh_personnel_endpoint.dart' as _i16;
-import '../modules/security/endpoints/audit_endpoint.dart' as _i17;
-import '../modules/security/endpoints/mfa_endpoint.dart' as _i18;
-import '../modules/security/endpoints/rbac_endpoint.dart' as _i19;
-import '../modules/security/endpoints/session_management_endpoint.dart' as _i20;
-import '../modules/security/endpoints/user_endpoint.dart' as _i21;
+import '../modules/accounting/endpoints/accounting_endpoint.dart' as _i5;
+import '../modules/crm/endpoints/crm_agenda_endpoint.dart' as _i6;
+import '../modules/crm/endpoints/crm_catalog_endpoint.dart' as _i7;
+import '../modules/crm/endpoints/crm_customers_endpoint.dart' as _i8;
+import '../modules/crm/endpoints/crm_leads_endpoint.dart' as _i9;
+import '../modules/crm/endpoints/crm_pipeline_endpoint.dart' as _i10;
+import '../modules/rrhh/endpoints/rrhh_dashboard_endpoint.dart' as _i11;
+import '../modules/security/endpoints/audit_endpoint.dart' as _i12;
+import '../modules/security/endpoints/mfa_endpoint.dart' as _i13;
+import '../modules/security/endpoints/rbac_endpoint.dart' as _i14;
+import '../modules/security/endpoints/session_management_endpoint.dart' as _i15;
+import '../modules/security/endpoints/user_endpoint.dart' as _i16;
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_cost_center.dart'
+    as _i17;
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_invoice.dart'
+    as _i18;
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_expense.dart'
+    as _i19;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_task.dart'
-    as _i22;
+    as _i20;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
-    as _i23;
+    as _i21;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
-    as _i24;
+    as _i22;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
-    as _i25;
+    as _i23;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
-    as _i26;
+    as _i24;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
-    as _i27;
+    as _i25;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_branch.dart'
-    as _i28;
+    as _i26;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_contract.dart'
-    as _i29;
+    as _i27;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
-    as _i30;
+    as _i28;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
-    as _i31;
+    as _i29;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
-    as _i32;
+    as _i30;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
-    as _i33;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_applicant.dart'
-    as _i34;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_schedule.dart'
-    as _i35;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_assignment.dart'
-    as _i36;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_dossier_document.dart'
-    as _i37;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_bonus.dart'
-    as _i38;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_deduction.dart'
-    as _i39;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_area.dart'
-    as _i40;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_position.dart'
-    as _i41;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_specialty.dart'
-    as _i42;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee.dart'
-    as _i43;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_document.dart'
-    as _i44;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_timeline_event.dart'
-    as _i45;
+    as _i31;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
-    as _i46;
+    as _i32;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i47;
+    as _i33;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i48;
+    as _i34;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -109,103 +86,73 @@ class Endpoints extends _i1.EndpointDispatch {
           'greeting',
           null,
         ),
-      'crmAgenda': _i5.CrmAgendaEndpoint()
+      'accounting': _i5.AccountingEndpoint()
+        ..initialize(
+          server,
+          'accounting',
+          null,
+        ),
+      'crmAgenda': _i6.CrmAgendaEndpoint()
         ..initialize(
           server,
           'crmAgenda',
           null,
         ),
-      'crmCatalog': _i6.CrmCatalogEndpoint()
+      'crmCatalog': _i7.CrmCatalogEndpoint()
         ..initialize(
           server,
           'crmCatalog',
           null,
         ),
-      'crmCustomers': _i7.CrmCustomersEndpoint()
+      'crmCustomers': _i8.CrmCustomersEndpoint()
         ..initialize(
           server,
           'crmCustomers',
           null,
         ),
-      'crmLeads': _i8.CrmLeadsEndpoint()
+      'crmLeads': _i9.CrmLeadsEndpoint()
         ..initialize(
           server,
           'crmLeads',
           null,
         ),
-      'crmPipeline': _i9.CrmPipelineEndpoint()
+      'crmPipeline': _i10.CrmPipelineEndpoint()
         ..initialize(
           server,
           'crmPipeline',
           null,
         ),
-      'rrhhApplicant': _i10.RrhhApplicantEndpoint()
-        ..initialize(
-          server,
-          'rrhhApplicant',
-          null,
-        ),
-      'rrhhAssignment': _i11.RrhhAssignmentEndpoint()
-        ..initialize(
-          server,
-          'rrhhAssignment',
-          null,
-        ),
-      'rrhhDashboard': _i12.RrhhDashboardEndpoint()
+      'rrhhDashboard': _i11.RrhhDashboardEndpoint()
         ..initialize(
           server,
           'rrhhDashboard',
           null,
         ),
-      'rrhhHiring': _i13.RrhhHiringEndpoint()
-        ..initialize(
-          server,
-          'rrhhHiring',
-          null,
-        ),
-      'rrhhLabor': _i14.RrhhLaborEndpoint()
-        ..initialize(
-          server,
-          'rrhhLabor',
-          null,
-        ),
-      'rrhhOrganization': _i15.RrhhOrganizationEndpoint()
-        ..initialize(
-          server,
-          'rrhhOrganization',
-          null,
-        ),
-      'rrhhPersonnel': _i16.RrhhPersonnelEndpoint()
-        ..initialize(
-          server,
-          'rrhhPersonnel',
-          null,
-        ),
-      'audit': _i17.AuditEndpoint()
+      'audit': _i12.AuditEndpoint()
         ..initialize(
           server,
           'audit',
           null,
         ),
-      'mfa': _i18.MfaEndpoint()
+      'mfa': _i13.MfaEndpoint()
         ..initialize(
           server,
           'mfa',
           null,
         ),
-      'rbac': _i19.RbacEndpoint()
+      'rbac': _i14.RbacEndpoint()
         ..initialize(
           server,
           'rbac',
           null,
         ),
-      'sessionManagement': _i20.SessionManagementEndpoint()
+      'sessionManagement': _i15.SessionManagementEndpoint()
         ..initialize(
           server,
           'sessionManagement',
           null,
         ),
-      'user': _i21.UserEndpoint()
+      'user': _i16.UserEndpoint()
         ..initialize(
           server,
           'user',
@@ -440,6 +387,134 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['accounting'] = _i1.EndpointConnector(
+      name: 'accounting',
+      endpoint: endpoints['accounting']!,
+      methodConnectors: {
+        'getCostCenters': _i1.MethodConnector(
+          name: 'getCostCenters',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .getCostCenters(session),
+        ),
+        'createCostCenter': _i1.MethodConnector(
+          name: 'createCostCenter',
+          params: {
+            'costCenter': _i1.ParameterDescription(
+              name: 'costCenter',
+              type: _i1.getType<_i17.AccountingCostCenter>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .createCostCenter(
+                    session,
+                    params['costCenter'],
+                  ),
+        ),
+        'getInvoices': _i1.MethodConnector(
+          name: 'getInvoices',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .getInvoices(session),
+        ),
+        'createInvoice': _i1.MethodConnector(
+          name: 'createInvoice',
+          params: {
+            'invoice': _i1.ParameterDescription(
+              name: 'invoice',
+              type: _i1.getType<_i18.AccountingInvoice>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .createInvoice(
+                    session,
+                    params['invoice'],
+                  ),
+        ),
+        'updateInvoiceStatus': _i1.MethodConnector(
+          name: 'updateInvoiceStatus',
+          params: {
+            'invoiceId': _i1.ParameterDescription(
+              name: 'invoiceId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'status': _i1.ParameterDescription(
+              name: 'status',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .updateInvoiceStatus(
+                    session,
+                    params['invoiceId'],
+                    params['status'],
+                  ),
+        ),
+        'getExpenses': _i1.MethodConnector(
+          name: 'getExpenses',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .getExpenses(session),
+        ),
+        'createExpense': _i1.MethodConnector(
+          name: 'createExpense',
+          params: {
+            'expense': _i1.ParameterDescription(
+              name: 'expense',
+              type: _i1.getType<_i19.AccountingExpense>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .createExpense(
+                    session,
+                    params['expense'],
+                  ),
+        ),
+        'getFinancialSummary': _i1.MethodConnector(
+          name: 'getFinancialSummary',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .getFinancialSummary(session),
+        ),
+      },
+    );
     connectors['crmAgenda'] = _i1.EndpointConnector(
       name: 'crmAgenda',
       endpoint: endpoints['crmAgenda']!,
@@ -498,7 +573,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['crmAgenda'] as _i5.CrmAgendaEndpoint).listTasks(
+                  (endpoints['crmAgenda'] as _i6.CrmAgendaEndpoint).listTasks(
                     session,
                     limit: params['limit'],
                     offset: params['offset'],
@@ -525,7 +600,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['crmAgenda'] as _i5.CrmAgendaEndpoint).getTask(
+                  (endpoints['crmAgenda'] as _i6.CrmAgendaEndpoint).getTask(
                     session,
                     params['id'],
                   ),
@@ -543,7 +618,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmAgenda'] as _i5.CrmAgendaEndpoint)
+              ) async => (endpoints['crmAgenda'] as _i6.CrmAgendaEndpoint)
                   .getTasksForDate(
                     session,
                     params['date'],
@@ -556,7 +631,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmAgenda'] as _i5.CrmAgendaEndpoint)
+              ) async => (endpoints['crmAgenda'] as _i6.CrmAgendaEndpoint)
                   .getTodayTasks(session),
         ),
         'getOverdueTasks': _i1.MethodConnector(
@@ -566,7 +641,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmAgenda'] as _i5.CrmAgendaEndpoint)
+              ) async => (endpoints['crmAgenda'] as _i6.CrmAgendaEndpoint)
                   .getOverdueTasks(session),
         ),
         'createTask': _i1.MethodConnector(
@@ -574,7 +649,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'task': _i1.ParameterDescription(
               name: 'task',
-              type: _i1.getType<_i22.CrmTask>(),
+              type: _i1.getType<_i20.CrmTask>(),
               nullable: false,
             ),
           },
@@ -583,7 +658,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['crmAgenda'] as _i5.CrmAgendaEndpoint).createTask(
+                  (endpoints['crmAgenda'] as _i6.CrmAgendaEndpoint).createTask(
                     session,
                     params['task'],
                   ),
@@ -593,7 +668,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'task': _i1.ParameterDescription(
               name: 'task',
-              type: _i1.getType<_i22.CrmTask>(),
+              type: _i1.getType<_i20.CrmTask>(),
               nullable: false,
             ),
           },
@@ -602,7 +677,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['crmAgenda'] as _i5.CrmAgendaEndpoint).updateTask(
+                  (endpoints['crmAgenda'] as _i6.CrmAgendaEndpoint).updateTask(
                     session,
                     params['task'],
                   ),
@@ -625,7 +700,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmAgenda'] as _i5.CrmAgendaEndpoint)
+              ) async => (endpoints['crmAgenda'] as _i6.CrmAgendaEndpoint)
                   .completeTask(
                     session,
                     params['id'],
@@ -660,7 +735,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmAgenda'] as _i5.CrmAgendaEndpoint)
+              ) async => (endpoints['crmAgenda'] as _i6.CrmAgendaEndpoint)
                   .postponeTask(
                     session,
                     params['id'],
@@ -683,7 +758,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['crmAgenda'] as _i5.CrmAgendaEndpoint).deleteTask(
+                  (endpoints['crmAgenda'] as _i6.CrmAgendaEndpoint).deleteTask(
                     session,
                     params['id'],
                   ),
@@ -726,7 +801,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmAgenda'] as _i5.CrmAgendaEndpoint)
+              ) async => (endpoints['crmAgenda'] as _i6.CrmAgendaEndpoint)
                   .scheduleQualityCheck(
                     session,
                     clientName: params['clientName'],
@@ -780,7 +855,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmAgenda'] as _i5.CrmAgendaEndpoint)
+              ) async => (endpoints['crmAgenda'] as _i6.CrmAgendaEndpoint)
                   .scheduleRenewal(
                     session,
                     clientName: params['clientName'],
@@ -799,7 +874,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmAgenda'] as _i5.CrmAgendaEndpoint)
+              ) async => (endpoints['crmAgenda'] as _i6.CrmAgendaEndpoint)
                   .getMetrics(session),
         ),
       },
@@ -821,7 +896,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .listSectors(
                     session,
                     includeInactive: params['includeInactive'],
@@ -832,7 +907,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'sector': _i1.ParameterDescription(
               name: 'sector',
-              type: _i1.getType<_i23.CrmSector>(),
+              type: _i1.getType<_i21.CrmSector>(),
               nullable: false,
             ),
           },
@@ -840,7 +915,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .createSector(
                     session,
                     params['sector'],
@@ -851,7 +926,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'sector': _i1.ParameterDescription(
               name: 'sector',
-              type: _i1.getType<_i23.CrmSector>(),
+              type: _i1.getType<_i21.CrmSector>(),
               nullable: false,
             ),
           },
@@ -859,7 +934,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .updateSector(
                     session,
                     params['sector'],
@@ -878,7 +953,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .deleteSector(
                     session,
                     params['id'],
@@ -902,7 +977,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .listServiceLines(
                     session,
                     category: params['category'],
@@ -914,7 +989,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'line': _i1.ParameterDescription(
               name: 'line',
-              type: _i1.getType<_i24.CrmServiceLine>(),
+              type: _i1.getType<_i22.CrmServiceLine>(),
               nullable: false,
             ),
           },
@@ -922,7 +997,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .createServiceLine(
                     session,
                     params['line'],
@@ -933,7 +1008,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'line': _i1.ParameterDescription(
               name: 'line',
-              type: _i1.getType<_i24.CrmServiceLine>(),
+              type: _i1.getType<_i22.CrmServiceLine>(),
               nullable: false,
             ),
           },
@@ -941,7 +1016,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .updateServiceLine(
                     session,
                     params['line'],
@@ -960,7 +1035,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .deleteServiceLine(
                     session,
                     params['id'],
@@ -994,7 +1069,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .listCatalogItems(
                     session,
                     category: params['category'],
@@ -1016,7 +1091,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .getCatalogItem(
                     session,
                     params['id'],
@@ -1027,7 +1102,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'item': _i1.ParameterDescription(
               name: 'item',
-              type: _i1.getType<_i25.CrmCatalogItem>(),
+              type: _i1.getType<_i23.CrmCatalogItem>(),
               nullable: false,
             ),
           },
@@ -1035,7 +1110,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .createCatalogItem(
                     session,
                     params['item'],
@@ -1046,7 +1121,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'item': _i1.ParameterDescription(
               name: 'item',
-              type: _i1.getType<_i25.CrmCatalogItem>(),
+              type: _i1.getType<_i23.CrmCatalogItem>(),
               nullable: false,
             ),
           },
@@ -1054,7 +1129,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .updateCatalogItem(
                     session,
                     params['item'],
@@ -1073,7 +1148,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .deleteCatalogItem(
                     session,
                     params['id'],
@@ -1092,7 +1167,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .listScopesForItem(
                     session,
                     params['catalogItemId'],
@@ -1103,7 +1178,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'scope': _i1.ParameterDescription(
               name: 'scope',
-              type: _i1.getType<_i26.CrmCatalogItemScope>(),
+              type: _i1.getType<_i24.CrmCatalogItemScope>(),
               nullable: false,
             ),
           },
@@ -1111,7 +1186,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCatalog'] as _i6.CrmCatalogEndpoint)
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
                   .setCatalogItemScope(
                     session,
                     params['scope'],
@@ -1156,7 +1231,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .listCustomers(
                     session,
                     limit: params['limit'],
@@ -1179,7 +1254,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .getCustomerDetail(
                     session,
                     params['id'],
@@ -1198,7 +1273,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .getCustomer(
                     session,
                     params['id'],
@@ -1209,17 +1284,17 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'customer': _i1.ParameterDescription(
               name: 'customer',
-              type: _i1.getType<_i27.CrmCustomer>(),
+              type: _i1.getType<_i25.CrmCustomer>(),
               nullable: false,
             ),
             'initialBranch': _i1.ParameterDescription(
               name: 'initialBranch',
-              type: _i1.getType<_i28.CrmCustomerBranch?>(),
+              type: _i1.getType<_i26.CrmCustomerBranch?>(),
               nullable: true,
             ),
             'initialContract': _i1.ParameterDescription(
               name: 'initialContract',
-              type: _i1.getType<_i29.CrmCustomerContract?>(),
+              type: _i1.getType<_i27.CrmCustomerContract?>(),
               nullable: true,
             ),
           },
@@ -1227,7 +1302,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .createCustomer(
                     session,
                     params['customer'],
@@ -1240,7 +1315,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'customer': _i1.ParameterDescription(
               name: 'customer',
-              type: _i1.getType<_i27.CrmCustomer>(),
+              type: _i1.getType<_i25.CrmCustomer>(),
               nullable: false,
             ),
           },
@@ -1248,7 +1323,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .updateCustomer(
                     session,
                     params['customer'],
@@ -1267,7 +1342,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .deleteCustomer(
                     session,
                     params['id'],
@@ -1278,7 +1353,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'branch': _i1.ParameterDescription(
               name: 'branch',
-              type: _i1.getType<_i28.CrmCustomerBranch>(),
+              type: _i1.getType<_i26.CrmCustomerBranch>(),
               nullable: false,
             ),
           },
@@ -1286,7 +1361,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .addBranch(
                     session,
                     params['branch'],
@@ -1297,7 +1372,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'branch': _i1.ParameterDescription(
               name: 'branch',
-              type: _i1.getType<_i28.CrmCustomerBranch>(),
+              type: _i1.getType<_i26.CrmCustomerBranch>(),
               nullable: false,
             ),
           },
@@ -1305,7 +1380,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .updateBranch(
                     session,
                     params['branch'],
@@ -1324,7 +1399,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .deleteBranch(
                     session,
                     params['branchId'],
@@ -1335,12 +1410,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'contract': _i1.ParameterDescription(
               name: 'contract',
-              type: _i1.getType<_i29.CrmCustomerContract>(),
+              type: _i1.getType<_i27.CrmCustomerContract>(),
               nullable: false,
             ),
             'budgetItems': _i1.ParameterDescription(
               name: 'budgetItems',
-              type: _i1.getType<List<_i30.CrmContractBudgetItem>?>(),
+              type: _i1.getType<List<_i28.CrmContractBudgetItem>?>(),
               nullable: true,
             ),
           },
@@ -1348,7 +1423,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .addContract(
                     session,
                     params['contract'],
@@ -1360,7 +1435,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'contract': _i1.ParameterDescription(
               name: 'contract',
-              type: _i1.getType<_i29.CrmCustomerContract>(),
+              type: _i1.getType<_i27.CrmCustomerContract>(),
               nullable: false,
             ),
           },
@@ -1368,7 +1443,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .updateContract(
                     session,
                     params['contract'],
@@ -1407,7 +1482,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .completeContract(
                     session,
                     params['contractId'],
@@ -1445,7 +1520,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .renewContract(
                     session,
                     params['contractId'],
@@ -1472,7 +1547,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .updateContractStatus(
                     session,
                     params['contractId'],
@@ -1486,7 +1561,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmCustomers'] as _i7.CrmCustomersEndpoint)
+              ) async => (endpoints['crmCustomers'] as _i8.CrmCustomersEndpoint)
                   .getMetrics(session),
         ),
       },
@@ -1549,7 +1624,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['crmLeads'] as _i8.CrmLeadsEndpoint).listLeads(
+                  (endpoints['crmLeads'] as _i9.CrmLeadsEndpoint).listLeads(
                     session,
                     limit: params['limit'],
                     offset: params['offset'],
@@ -1576,7 +1651,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['crmLeads'] as _i8.CrmLeadsEndpoint).getLead(
+                  (endpoints['crmLeads'] as _i9.CrmLeadsEndpoint).getLead(
                     session,
                     params['id'],
                   ),
@@ -1586,7 +1661,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'lead': _i1.ParameterDescription(
               name: 'lead',
-              type: _i1.getType<_i31.CrmLead>(),
+              type: _i1.getType<_i29.CrmLead>(),
               nullable: false,
             ),
           },
@@ -1595,7 +1670,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['crmLeads'] as _i8.CrmLeadsEndpoint).createLead(
+                  (endpoints['crmLeads'] as _i9.CrmLeadsEndpoint).createLead(
                     session,
                     params['lead'],
                   ),
@@ -1605,7 +1680,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'lead': _i1.ParameterDescription(
               name: 'lead',
-              type: _i1.getType<_i31.CrmLead>(),
+              type: _i1.getType<_i29.CrmLead>(),
               nullable: false,
             ),
           },
@@ -1614,7 +1689,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['crmLeads'] as _i8.CrmLeadsEndpoint).updateLead(
+                  (endpoints['crmLeads'] as _i9.CrmLeadsEndpoint).updateLead(
                     session,
                     params['lead'],
                   ),
@@ -1638,7 +1713,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['crmLeads'] as _i8.CrmLeadsEndpoint).updateStatus(
+                  (endpoints['crmLeads'] as _i9.CrmLeadsEndpoint).updateStatus(
                     session,
                     params['id'],
                     params['status'],
@@ -1662,7 +1737,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmLeads'] as _i8.CrmLeadsEndpoint)
+              ) async => (endpoints['crmLeads'] as _i9.CrmLeadsEndpoint)
                   .updateTemperature(
                     session,
                     params['id'],
@@ -1688,7 +1763,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['crmLeads'] as _i8.CrmLeadsEndpoint).markPromoted(
+                  (endpoints['crmLeads'] as _i9.CrmLeadsEndpoint).markPromoted(
                     session,
                     params['id'],
                     params['opportunityId'],
@@ -1708,7 +1783,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['crmLeads'] as _i8.CrmLeadsEndpoint).deleteLead(
+                  (endpoints['crmLeads'] as _i9.CrmLeadsEndpoint).deleteLead(
                     session,
                     params['id'],
                   ),
@@ -1720,7 +1795,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmLeads'] as _i8.CrmLeadsEndpoint)
+              ) async => (endpoints['crmLeads'] as _i9.CrmLeadsEndpoint)
                   .getMetrics(session),
         ),
       },
@@ -1767,7 +1842,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmPipeline'] as _i9.CrmPipelineEndpoint)
+              ) async => (endpoints['crmPipeline'] as _i10.CrmPipelineEndpoint)
                   .listOpportunities(
                     session,
                     limit: params['limit'],
@@ -1791,7 +1866,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmPipeline'] as _i9.CrmPipelineEndpoint)
+              ) async => (endpoints['crmPipeline'] as _i10.CrmPipelineEndpoint)
                   .getOpportunity(
                     session,
                     params['id'],
@@ -1810,7 +1885,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmPipeline'] as _i9.CrmPipelineEndpoint)
+              ) async => (endpoints['crmPipeline'] as _i10.CrmPipelineEndpoint)
                   .getQuoteItems(
                     session,
                     params['opportunityId'],
@@ -1821,12 +1896,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'opp': _i1.ParameterDescription(
               name: 'opp',
-              type: _i1.getType<_i32.CrmOpportunity>(),
+              type: _i1.getType<_i30.CrmOpportunity>(),
               nullable: false,
             ),
             'quoteItems': _i1.ParameterDescription(
               name: 'quoteItems',
-              type: _i1.getType<List<_i33.CrmQuoteItem>?>(),
+              type: _i1.getType<List<_i31.CrmQuoteItem>?>(),
               nullable: true,
             ),
           },
@@ -1834,7 +1909,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmPipeline'] as _i9.CrmPipelineEndpoint)
+              ) async => (endpoints['crmPipeline'] as _i10.CrmPipelineEndpoint)
                   .createOpportunity(
                     session,
                     params['opp'],
@@ -1846,12 +1921,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'opp': _i1.ParameterDescription(
               name: 'opp',
-              type: _i1.getType<_i32.CrmOpportunity>(),
+              type: _i1.getType<_i30.CrmOpportunity>(),
               nullable: false,
             ),
             'quoteItems': _i1.ParameterDescription(
               name: 'quoteItems',
-              type: _i1.getType<List<_i33.CrmQuoteItem>?>(),
+              type: _i1.getType<List<_i31.CrmQuoteItem>?>(),
               nullable: true,
             ),
           },
@@ -1859,7 +1934,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmPipeline'] as _i9.CrmPipelineEndpoint)
+              ) async => (endpoints['crmPipeline'] as _i10.CrmPipelineEndpoint)
                   .updateOpportunity(
                     session,
                     params['opp'],
@@ -1884,7 +1959,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmPipeline'] as _i9.CrmPipelineEndpoint)
+              ) async => (endpoints['crmPipeline'] as _i10.CrmPipelineEndpoint)
                   .updateStage(
                     session,
                     params['id'],
@@ -1904,7 +1979,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmPipeline'] as _i9.CrmPipelineEndpoint)
+              ) async => (endpoints['crmPipeline'] as _i10.CrmPipelineEndpoint)
                   .promoteToCustomer(
                     session,
                     params['opportunityId'],
@@ -1923,7 +1998,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmPipeline'] as _i9.CrmPipelineEndpoint)
+              ) async => (endpoints['crmPipeline'] as _i10.CrmPipelineEndpoint)
                   .deleteOpportunity(
                     session,
                     params['id'],
@@ -1936,7 +2011,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['crmPipeline'] as _i9.CrmPipelineEndpoint)
+              ) async => (endpoints['crmPipeline'] as _i10.CrmPipelineEndpoint)
                   .getMetrics(session),
         ),
       },
@@ -2555,7 +2630,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhDashboard'] as _i12.RrhhDashboardEndpoint)
+                  (endpoints['rrhhDashboard'] as _i11.RrhhDashboardEndpoint)
                       .getMetrics(session),
         ),
         'getRecentMovements': _i1.MethodConnector(
@@ -2572,7 +2647,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhDashboard'] as _i12.RrhhDashboardEndpoint)
+                  (endpoints['rrhhDashboard'] as _i11.RrhhDashboardEndpoint)
                       .getRecentMovements(
                         session,
                         limit: params['limit'],
@@ -4973,7 +5048,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['audit'] as _i17.AuditEndpoint).listLogs(
+              ) async => (endpoints['audit'] as _i12.AuditEndpoint).listLogs(
                 session,
                 limit: params['limit'],
                 offset: params['offset'],
@@ -5030,7 +5105,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['audit'] as _i17.AuditEndpoint).listLogsPaged(
+                  (endpoints['audit'] as _i12.AuditEndpoint).listLogsPaged(
                     session,
                     page: params['page'],
                     pageSize: params['pageSize'],
@@ -5066,7 +5141,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['mfa'] as _i18.MfaEndpoint).checkRequired(
+              ) async => (endpoints['mfa'] as _i13.MfaEndpoint).checkRequired(
                 session,
                 rememberMe: params['rememberMe'],
                 trustedDeviceToken: params['trustedDeviceToken'],
@@ -5095,7 +5170,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['mfa'] as _i18.MfaEndpoint).verifyMfa(
+              ) async => (endpoints['mfa'] as _i13.MfaEndpoint).verifyMfa(
                 session,
                 challengeId: params['challengeId'],
                 code: params['code'],
@@ -5115,7 +5190,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['mfa'] as _i18.MfaEndpoint).resendMfaCode(
+              ) async => (endpoints['mfa'] as _i13.MfaEndpoint).resendMfaCode(
                 session,
                 challengeId: params['challengeId'],
               ),
@@ -5127,7 +5202,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['mfa'] as _i18.MfaEndpoint)
+              ) async => (endpoints['mfa'] as _i13.MfaEndpoint)
                   .isSessionVerified(session),
         ),
       },
@@ -5144,7 +5219,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rbac'] as _i19.RbacEndpoint).listRoles(session),
+                  (endpoints['rbac'] as _i14.RbacEndpoint).listRoles(session),
         ),
         'listPermissions': _i1.MethodConnector(
           name: 'listPermissions',
@@ -5153,7 +5228,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i19.RbacEndpoint)
+              ) async => (endpoints['rbac'] as _i14.RbacEndpoint)
                   .listPermissions(session),
         ),
         'assignRoleToUser': _i1.MethodConnector(
@@ -5175,7 +5250,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rbac'] as _i19.RbacEndpoint).assignRoleToUser(
+                  (endpoints['rbac'] as _i14.RbacEndpoint).assignRoleToUser(
                     session,
                     userId: params['userId'],
                     roleId: params['roleId'],
@@ -5200,7 +5275,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rbac'] as _i19.RbacEndpoint).removeRoleFromUser(
+                  (endpoints['rbac'] as _i14.RbacEndpoint).removeRoleFromUser(
                     session,
                     userId: params['userId'],
                     roleId: params['roleId'],
@@ -5224,7 +5299,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i19.RbacEndpoint)
+              ) async => (endpoints['rbac'] as _i14.RbacEndpoint)
                   .assignPermissionToRole(
                     session,
                     roleId: params['roleId'],
@@ -5244,7 +5319,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i19.RbacEndpoint)
+              ) async => (endpoints['rbac'] as _i14.RbacEndpoint)
                   .getUserEffectivePermissions(
                     session,
                     params['userId'],
@@ -5255,7 +5330,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'role': _i1.ParameterDescription(
               name: 'role',
-              type: _i1.getType<_i46.AppRole>(),
+              type: _i1.getType<_i32.AppRole>(),
               nullable: false,
             ),
           },
@@ -5263,7 +5338,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i19.RbacEndpoint).createRole(
+              ) async => (endpoints['rbac'] as _i14.RbacEndpoint).createRole(
                 session,
                 params['role'],
               ),
@@ -5273,7 +5348,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'role': _i1.ParameterDescription(
               name: 'role',
-              type: _i1.getType<_i46.AppRole>(),
+              type: _i1.getType<_i32.AppRole>(),
               nullable: false,
             ),
           },
@@ -5281,7 +5356,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i19.RbacEndpoint).updateRole(
+              ) async => (endpoints['rbac'] as _i14.RbacEndpoint).updateRole(
                 session,
                 params['role'],
               ),
@@ -5299,7 +5374,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i19.RbacEndpoint).deleteRole(
+              ) async => (endpoints['rbac'] as _i14.RbacEndpoint).deleteRole(
                 session,
                 params['roleId'],
               ),
@@ -5318,7 +5393,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rbac'] as _i19.RbacEndpoint).getRolePermissions(
+                  (endpoints['rbac'] as _i14.RbacEndpoint).getRolePermissions(
                     session,
                     params['roleId'],
                   ),
@@ -5342,7 +5417,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rbac'] as _i19.RbacEndpoint).syncRolePermissions(
+                  (endpoints['rbac'] as _i14.RbacEndpoint).syncRolePermissions(
                     session,
                     roleId: params['roleId'],
                     permissionIds: params['permissionIds'],
@@ -5369,7 +5444,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i20.SessionManagementEndpoint)
+                          as _i15.SessionManagementEndpoint)
                       .registerSession(
                         session,
                         mfaVerified: params['mfaVerified'],
@@ -5390,7 +5465,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i20.SessionManagementEndpoint)
+                          as _i15.SessionManagementEndpoint)
                       .listUserSessions(
                         session,
                         params['userId'],
@@ -5411,7 +5486,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i20.SessionManagementEndpoint)
+                          as _i15.SessionManagementEndpoint)
                       .revokeSession(
                         session,
                         params['sessionId'],
@@ -5426,7 +5501,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i20.SessionManagementEndpoint)
+                          as _i15.SessionManagementEndpoint)
                       .logout(session),
         ),
         'markMfaVerified': _i1.MethodConnector(
@@ -5438,7 +5513,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i20.SessionManagementEndpoint)
+                          as _i15.SessionManagementEndpoint)
                       .markMfaVerified(session),
         ),
       },
@@ -5470,7 +5545,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i21.UserEndpoint).listUsers(
+              ) async => (endpoints['user'] as _i16.UserEndpoint).listUsers(
                 session,
                 limit: params['limit'],
                 offset: params['offset'],
@@ -5490,7 +5565,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i21.UserEndpoint).getUser(
+              ) async => (endpoints['user'] as _i16.UserEndpoint).getUser(
                 session,
                 params['id'],
               ),
@@ -5518,7 +5593,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i21.UserEndpoint).createUser(
+              ) async => (endpoints['user'] as _i16.UserEndpoint).createUser(
                 session,
                 email: params['email'],
                 fullName: params['fullName'],
@@ -5543,7 +5618,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i21.UserEndpoint).updateUser(
+              ) async => (endpoints['user'] as _i16.UserEndpoint).updateUser(
                 session,
                 id: params['id'],
                 fullName: params['fullName'],
@@ -5567,7 +5642,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i21.UserEndpoint).setUserActive(
+              ) async => (endpoints['user'] as _i16.UserEndpoint).setUserActive(
                 session,
                 id: params['id'],
                 isActive: params['isActive'],
@@ -5586,7 +5661,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i21.UserEndpoint).deleteUser(
+              ) async => (endpoints['user'] as _i16.UserEndpoint).deleteUser(
                 session,
                 params['id'],
               ),
@@ -5598,7 +5673,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i21.UserEndpoint)
+              ) async => (endpoints['user'] as _i16.UserEndpoint)
                   .getCurrentUser(session),
         ),
         'changePassword': _i1.MethodConnector(
@@ -5620,7 +5695,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['user'] as _i21.UserEndpoint).changePassword(
+                  (endpoints['user'] as _i16.UserEndpoint).changePassword(
                     session,
                     currentPassword: params['currentPassword'],
                     newPassword: params['newPassword'],
@@ -5628,9 +5703,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i47.Endpoints()
+    modules['serverpod_auth_idp'] = _i33.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i48.Endpoints()
+    modules['serverpod_auth_core'] = _i34.Endpoints()
       ..initializeEndpoints(server);
   }
 }

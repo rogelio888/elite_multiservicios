@@ -1,0 +1,31 @@
+### Factura emitida a clientes (Cuentas por Cobrar).
+class: AccountingInvoice
+table: accounting_invoice
+fields:
+  ### Número de factura.
+  invoiceNumber: String
+  ### Referencia al cliente en el módulo CRM.
+  customerId: int
+  ### Fecha de emisión.
+  issueDate: DateTime
+  ### Fecha de vencimiento.
+  dueDate: DateTime
+  ### Monto total de la factura.
+  totalAmount: double
+  ### Estado: Pending, Paid, Cancelled, Overdue.
+  status: String, default='Pending'
+  ### Notas adicionales.
+  notes: String?
+  ### Eliminación lógica (Soft Delete).
+  isDeleted: bool, default=false
+  ### Fechas de auditoría.
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  acc_invoice_number_idx:
+    fields: invoiceNumber
+    unique: true
+  acc_invoice_customer_idx:
+    fields: customerId
+  acc_invoice_status_idx:
+    fields: status

@@ -18,126 +18,86 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i4;
 import 'greetings/greeting.dart' as _i5;
-import 'modules/crm/models/crm_agenda_metrics_response.dart' as _i6;
-import 'modules/crm/models/crm_catalog_item.dart' as _i7;
-import 'modules/crm/models/crm_catalog_item_scope.dart' as _i8;
-import 'modules/crm/models/crm_contract_budget_item.dart' as _i9;
-import 'modules/crm/models/crm_customer.dart' as _i10;
-import 'modules/crm/models/crm_customer_branch.dart' as _i11;
-import 'modules/crm/models/crm_customer_contract.dart' as _i12;
-import 'modules/crm/models/crm_customer_detail_response.dart' as _i13;
-import 'modules/crm/models/crm_customer_metrics_response.dart' as _i14;
-import 'modules/crm/models/crm_lead.dart' as _i15;
-import 'modules/crm/models/crm_lead_metrics_response.dart' as _i16;
-import 'modules/crm/models/crm_opportunity.dart' as _i17;
-import 'modules/crm/models/crm_pipeline_metrics_response.dart' as _i18;
-import 'modules/crm/models/crm_quote_item.dart' as _i19;
-import 'modules/crm/models/crm_sector.dart' as _i20;
-import 'modules/crm/models/crm_service_line.dart' as _i21;
-import 'modules/crm/models/crm_task.dart' as _i22;
-import 'modules/rrhh/models/rrhh_applicant.dart' as _i23;
-import 'modules/rrhh/models/rrhh_area.dart' as _i24;
-import 'modules/rrhh/models/rrhh_assignment.dart' as _i25;
-import 'modules/rrhh/models/rrhh_dashboard_metrics_response.dart' as _i26;
-import 'modules/rrhh/models/rrhh_dossier_document.dart' as _i27;
-import 'modules/rrhh/models/rrhh_employee.dart' as _i28;
-import 'modules/rrhh/models/rrhh_employee_bonus.dart' as _i29;
-import 'modules/rrhh/models/rrhh_employee_contract_data.dart' as _i30;
-import 'modules/rrhh/models/rrhh_employee_deduction.dart' as _i31;
-import 'modules/rrhh/models/rrhh_employee_document.dart' as _i32;
-import 'modules/rrhh/models/rrhh_employee_summary_dto.dart' as _i33;
-import 'modules/rrhh/models/rrhh_hiring_dossier.dart' as _i34;
-import 'modules/rrhh/models/rrhh_incident.dart' as _i35;
-import 'modules/rrhh/models/rrhh_leave_request.dart' as _i36;
-import 'modules/rrhh/models/rrhh_movement_history.dart' as _i37;
-import 'modules/rrhh/models/rrhh_position.dart' as _i38;
-import 'modules/rrhh/models/rrhh_recent_movement_dto.dart' as _i39;
-import 'modules/rrhh/models/rrhh_schedule.dart' as _i40;
-import 'modules/rrhh/models/rrhh_specialty.dart' as _i41;
-import 'modules/rrhh/models/rrhh_termination.dart' as _i42;
-import 'modules/rrhh/models/rrhh_timeline_event.dart' as _i43;
-import 'modules/rrhh/models/rrhh_vacation.dart' as _i44;
-import 'modules/security/models/app_permission.dart' as _i45;
-import 'modules/security/models/app_role.dart' as _i46;
-import 'modules/security/models/app_user.dart' as _i47;
-import 'modules/security/models/audit_log.dart' as _i48;
-import 'modules/security/models/audit_log_page_response.dart' as _i49;
-import 'modules/security/models/mfa_challenge.dart' as _i50;
-import 'modules/security/models/mfa_challenge_response.dart' as _i51;
-import 'modules/security/models/mfa_verify_response.dart' as _i52;
-import 'modules/security/models/role_permission.dart' as _i53;
-import 'modules/security/models/trusted_device.dart' as _i54;
-import 'modules/security/models/user_role.dart' as _i55;
-import 'modules/security/models/user_session.dart' as _i56;
+import 'modules/accounting/models/accounting_cost_center.dart' as _i6;
+import 'modules/accounting/models/accounting_expense.dart' as _i7;
+import 'modules/accounting/models/accounting_financial_summary.dart' as _i8;
+import 'modules/accounting/models/accounting_invoice.dart' as _i9;
+import 'modules/accounting/models/accounting_transaction.dart' as _i10;
+import 'modules/crm/models/crm_agenda_metrics_response.dart' as _i11;
+import 'modules/crm/models/crm_catalog_item.dart' as _i12;
+import 'modules/crm/models/crm_catalog_item_scope.dart' as _i13;
+import 'modules/crm/models/crm_contract_budget_item.dart' as _i14;
+import 'modules/crm/models/crm_customer.dart' as _i15;
+import 'modules/crm/models/crm_customer_branch.dart' as _i16;
+import 'modules/crm/models/crm_customer_contract.dart' as _i17;
+import 'modules/crm/models/crm_customer_detail_response.dart' as _i18;
+import 'modules/crm/models/crm_customer_metrics_response.dart' as _i19;
+import 'modules/crm/models/crm_lead.dart' as _i20;
+import 'modules/crm/models/crm_lead_metrics_response.dart' as _i21;
+import 'modules/crm/models/crm_opportunity.dart' as _i22;
+import 'modules/crm/models/crm_pipeline_metrics_response.dart' as _i23;
+import 'modules/crm/models/crm_quote_item.dart' as _i24;
+import 'modules/crm/models/crm_sector.dart' as _i25;
+import 'modules/crm/models/crm_service_line.dart' as _i26;
+import 'modules/crm/models/crm_task.dart' as _i27;
+import 'modules/rrhh/models/rrhh_dashboard_metrics_response.dart' as _i28;
+import 'modules/rrhh/models/rrhh_recent_movement_dto.dart' as _i29;
+import 'modules/security/models/app_permission.dart' as _i30;
+import 'modules/security/models/app_role.dart' as _i31;
+import 'modules/security/models/app_user.dart' as _i32;
+import 'modules/security/models/audit_log.dart' as _i33;
+import 'modules/security/models/audit_log_page_response.dart' as _i34;
+import 'modules/security/models/mfa_challenge.dart' as _i35;
+import 'modules/security/models/mfa_challenge_response.dart' as _i36;
+import 'modules/security/models/mfa_verify_response.dart' as _i37;
+import 'modules/security/models/role_permission.dart' as _i38;
+import 'modules/security/models/trusted_device.dart' as _i39;
+import 'modules/security/models/user_role.dart' as _i40;
+import 'modules/security/models/user_session.dart' as _i41;
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_cost_center.dart'
+    as _i42;
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_invoice.dart'
+    as _i43;
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_expense.dart'
+    as _i44;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_task.dart'
-    as _i57;
+    as _i45;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
-    as _i58;
+    as _i46;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
-    as _i59;
+    as _i47;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
-    as _i60;
+    as _i48;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
-    as _i61;
+    as _i49;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
-    as _i62;
+    as _i50;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
-    as _i63;
+    as _i51;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
-    as _i64;
+    as _i52;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
-    as _i65;
+    as _i53;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
-    as _i66;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_applicant.dart'
-    as _i67;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_schedule.dart'
-    as _i68;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_assignment.dart'
-    as _i69;
+    as _i54;
 import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_recent_movement_dto.dart'
-    as _i70;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_hiring_dossier.dart'
-    as _i71;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_dossier_document.dart'
-    as _i72;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_bonus.dart'
-    as _i73;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_deduction.dart'
-    as _i74;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_leave_request.dart'
-    as _i75;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_vacation.dart'
-    as _i76;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_incident.dart'
-    as _i77;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_movement_history.dart'
-    as _i78;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_area.dart'
-    as _i79;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_position.dart'
-    as _i80;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_specialty.dart'
-    as _i81;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee.dart'
-    as _i82;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_summary_dto.dart'
-    as _i83;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_document.dart'
-    as _i84;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_timeline_event.dart'
-    as _i85;
+    as _i55;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
-    as _i86;
+    as _i56;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
-    as _i87;
+    as _i57;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
-    as _i88;
+    as _i58;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
-    as _i89;
+    as _i59;
 import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
-    as _i90;
+    as _i60;
 export 'greetings/greeting.dart';
+export 'modules/accounting/models/accounting_cost_center.dart';
+export 'modules/accounting/models/accounting_expense.dart';
+export 'modules/accounting/models/accounting_financial_summary.dart';
+export 'modules/accounting/models/accounting_invoice.dart';
+export 'modules/accounting/models/accounting_transaction.dart';
 export 'modules/crm/models/crm_agenda_metrics_response.dart';
 export 'modules/crm/models/crm_catalog_item.dart';
 export 'modules/crm/models/crm_catalog_item_scope.dart';
@@ -198,6 +158,474 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
+    _i2.TableDefinition(
+      name: 'accounting_cost_center',
+      dartName: 'AccountingCostCenter',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'accounting_cost_center_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'contractId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'Activo\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'description',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDeleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'accounting_cost_center_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'acc_cost_center_status_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'status',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'acc_cost_center_contract_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'contractId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'accounting_expense',
+      dartName: 'AccountingExpense',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'accounting_expense_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'supplierName',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'date',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'amount',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'costCenterId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'category',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'Pending\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'description',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDeleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'accounting_expense_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'acc_expense_cost_center_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'costCenterId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'acc_expense_status_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'status',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'accounting_invoice',
+      dartName: 'AccountingInvoice',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'accounting_invoice_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'invoiceNumber',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'customerId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'issueDate',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'dueDate',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'totalAmount',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'Pending\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'notes',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDeleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'accounting_invoice_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'acc_invoice_number_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'invoiceNumber',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'acc_invoice_customer_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'customerId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'acc_invoice_status_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'status',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'accounting_transaction',
+      dartName: 'AccountingTransaction',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'accounting_transaction_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'date',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'amount',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: false,
+          dartType: 'double',
+        ),
+        _i2.ColumnDefinition(
+          name: 'type',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'referenceId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'account',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'notes',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDeleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'accounting_transaction_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'acc_tx_type_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'type',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'acc_tx_reference_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'referenceId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
     _i2.TableDefinition(
       name: 'app_permission',
       dartName: 'AppPermission',
@@ -6655,628 +7083,382 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i5.Greeting) {
       return _i5.Greeting.fromJson(data) as T;
     }
-    if (t == _i6.CrmAgendaMetricsResponse) {
-      return _i6.CrmAgendaMetricsResponse.fromJson(data) as T;
+    if (t == _i6.AccountingCostCenter) {
+      return _i6.AccountingCostCenter.fromJson(data) as T;
     }
-    if (t == _i7.CrmCatalogItem) {
-      return _i7.CrmCatalogItem.fromJson(data) as T;
+    if (t == _i7.AccountingExpense) {
+      return _i7.AccountingExpense.fromJson(data) as T;
     }
-    if (t == _i8.CrmCatalogItemScope) {
-      return _i8.CrmCatalogItemScope.fromJson(data) as T;
+    if (t == _i8.AccountingFinancialSummary) {
+      return _i8.AccountingFinancialSummary.fromJson(data) as T;
     }
-    if (t == _i9.CrmContractBudgetItem) {
-      return _i9.CrmContractBudgetItem.fromJson(data) as T;
+    if (t == _i9.AccountingInvoice) {
+      return _i9.AccountingInvoice.fromJson(data) as T;
     }
-    if (t == _i10.CrmCustomer) {
-      return _i10.CrmCustomer.fromJson(data) as T;
+    if (t == _i10.AccountingTransaction) {
+      return _i10.AccountingTransaction.fromJson(data) as T;
     }
-    if (t == _i11.CrmCustomerBranch) {
-      return _i11.CrmCustomerBranch.fromJson(data) as T;
+    if (t == _i11.CrmAgendaMetricsResponse) {
+      return _i11.CrmAgendaMetricsResponse.fromJson(data) as T;
     }
-    if (t == _i12.CrmCustomerContract) {
-      return _i12.CrmCustomerContract.fromJson(data) as T;
+    if (t == _i12.CrmCatalogItem) {
+      return _i12.CrmCatalogItem.fromJson(data) as T;
     }
-    if (t == _i13.CrmCustomerDetailResponse) {
-      return _i13.CrmCustomerDetailResponse.fromJson(data) as T;
+    if (t == _i13.CrmCatalogItemScope) {
+      return _i13.CrmCatalogItemScope.fromJson(data) as T;
     }
-    if (t == _i14.CrmCustomerMetricsResponse) {
-      return _i14.CrmCustomerMetricsResponse.fromJson(data) as T;
+    if (t == _i14.CrmContractBudgetItem) {
+      return _i14.CrmContractBudgetItem.fromJson(data) as T;
     }
-    if (t == _i15.CrmLead) {
-      return _i15.CrmLead.fromJson(data) as T;
+    if (t == _i15.CrmCustomer) {
+      return _i15.CrmCustomer.fromJson(data) as T;
     }
-    if (t == _i16.CrmLeadMetricsResponse) {
-      return _i16.CrmLeadMetricsResponse.fromJson(data) as T;
+    if (t == _i16.CrmCustomerBranch) {
+      return _i16.CrmCustomerBranch.fromJson(data) as T;
     }
-    if (t == _i17.CrmOpportunity) {
-      return _i17.CrmOpportunity.fromJson(data) as T;
+    if (t == _i17.CrmCustomerContract) {
+      return _i17.CrmCustomerContract.fromJson(data) as T;
     }
-    if (t == _i18.CrmPipelineMetricsResponse) {
-      return _i18.CrmPipelineMetricsResponse.fromJson(data) as T;
+    if (t == _i18.CrmCustomerDetailResponse) {
+      return _i18.CrmCustomerDetailResponse.fromJson(data) as T;
     }
-    if (t == _i19.CrmQuoteItem) {
-      return _i19.CrmQuoteItem.fromJson(data) as T;
+    if (t == _i19.CrmCustomerMetricsResponse) {
+      return _i19.CrmCustomerMetricsResponse.fromJson(data) as T;
     }
-    if (t == _i20.CrmSector) {
-      return _i20.CrmSector.fromJson(data) as T;
+    if (t == _i20.CrmLead) {
+      return _i20.CrmLead.fromJson(data) as T;
     }
-    if (t == _i21.CrmServiceLine) {
-      return _i21.CrmServiceLine.fromJson(data) as T;
+    if (t == _i21.CrmLeadMetricsResponse) {
+      return _i21.CrmLeadMetricsResponse.fromJson(data) as T;
     }
-    if (t == _i22.CrmTask) {
-      return _i22.CrmTask.fromJson(data) as T;
+    if (t == _i22.CrmOpportunity) {
+      return _i22.CrmOpportunity.fromJson(data) as T;
     }
-    if (t == _i23.RrhhApplicant) {
-      return _i23.RrhhApplicant.fromJson(data) as T;
+    if (t == _i23.CrmPipelineMetricsResponse) {
+      return _i23.CrmPipelineMetricsResponse.fromJson(data) as T;
     }
-    if (t == _i24.RrhhArea) {
-      return _i24.RrhhArea.fromJson(data) as T;
+    if (t == _i24.CrmQuoteItem) {
+      return _i24.CrmQuoteItem.fromJson(data) as T;
     }
-    if (t == _i25.RrhhAssignment) {
-      return _i25.RrhhAssignment.fromJson(data) as T;
+    if (t == _i25.CrmSector) {
+      return _i25.CrmSector.fromJson(data) as T;
     }
-    if (t == _i26.RrhhDashboardMetricsResponse) {
-      return _i26.RrhhDashboardMetricsResponse.fromJson(data) as T;
+    if (t == _i26.CrmServiceLine) {
+      return _i26.CrmServiceLine.fromJson(data) as T;
     }
-    if (t == _i27.RrhhDossierDocument) {
-      return _i27.RrhhDossierDocument.fromJson(data) as T;
+    if (t == _i27.CrmTask) {
+      return _i27.CrmTask.fromJson(data) as T;
     }
-    if (t == _i28.RrhhEmployee) {
-      return _i28.RrhhEmployee.fromJson(data) as T;
+    if (t == _i28.RrhhDashboardMetricsResponse) {
+      return _i28.RrhhDashboardMetricsResponse.fromJson(data) as T;
     }
-    if (t == _i29.RrhhEmployeeBonus) {
-      return _i29.RrhhEmployeeBonus.fromJson(data) as T;
+    if (t == _i29.RrhhRecentMovementDto) {
+      return _i29.RrhhRecentMovementDto.fromJson(data) as T;
     }
-    if (t == _i30.RrhhEmployeeContractData) {
-      return _i30.RrhhEmployeeContractData.fromJson(data) as T;
+    if (t == _i30.AppPermission) {
+      return _i30.AppPermission.fromJson(data) as T;
     }
-    if (t == _i31.RrhhEmployeeDeduction) {
-      return _i31.RrhhEmployeeDeduction.fromJson(data) as T;
+    if (t == _i31.AppRole) {
+      return _i31.AppRole.fromJson(data) as T;
     }
-    if (t == _i32.RrhhEmployeeDocument) {
-      return _i32.RrhhEmployeeDocument.fromJson(data) as T;
+    if (t == _i32.AppUser) {
+      return _i32.AppUser.fromJson(data) as T;
     }
-    if (t == _i33.RrhhEmployeeSummaryDto) {
-      return _i33.RrhhEmployeeSummaryDto.fromJson(data) as T;
+    if (t == _i33.AuditLog) {
+      return _i33.AuditLog.fromJson(data) as T;
     }
-    if (t == _i34.RrhhHiringDossier) {
-      return _i34.RrhhHiringDossier.fromJson(data) as T;
+    if (t == _i34.AuditLogPageResponse) {
+      return _i34.AuditLogPageResponse.fromJson(data) as T;
     }
-    if (t == _i35.RrhhIncident) {
-      return _i35.RrhhIncident.fromJson(data) as T;
+    if (t == _i35.MfaChallenge) {
+      return _i35.MfaChallenge.fromJson(data) as T;
     }
-    if (t == _i36.RrhhLeaveRequest) {
-      return _i36.RrhhLeaveRequest.fromJson(data) as T;
+    if (t == _i36.MfaChallengeResponse) {
+      return _i36.MfaChallengeResponse.fromJson(data) as T;
     }
-    if (t == _i37.RrhhMovementHistory) {
-      return _i37.RrhhMovementHistory.fromJson(data) as T;
+    if (t == _i37.MfaVerifyResponse) {
+      return _i37.MfaVerifyResponse.fromJson(data) as T;
     }
-    if (t == _i38.RrhhPosition) {
-      return _i38.RrhhPosition.fromJson(data) as T;
+    if (t == _i38.RolePermission) {
+      return _i38.RolePermission.fromJson(data) as T;
     }
-    if (t == _i39.RrhhRecentMovementDto) {
-      return _i39.RrhhRecentMovementDto.fromJson(data) as T;
+    if (t == _i39.TrustedDevice) {
+      return _i39.TrustedDevice.fromJson(data) as T;
     }
-    if (t == _i40.RrhhSchedule) {
-      return _i40.RrhhSchedule.fromJson(data) as T;
+    if (t == _i40.UserRole) {
+      return _i40.UserRole.fromJson(data) as T;
     }
-    if (t == _i41.RrhhSpecialty) {
-      return _i41.RrhhSpecialty.fromJson(data) as T;
-    }
-    if (t == _i42.RrhhTermination) {
-      return _i42.RrhhTermination.fromJson(data) as T;
-    }
-    if (t == _i43.RrhhTimelineEvent) {
-      return _i43.RrhhTimelineEvent.fromJson(data) as T;
-    }
-    if (t == _i44.RrhhVacation) {
-      return _i44.RrhhVacation.fromJson(data) as T;
-    }
-    if (t == _i45.AppPermission) {
-      return _i45.AppPermission.fromJson(data) as T;
-    }
-    if (t == _i46.AppRole) {
-      return _i46.AppRole.fromJson(data) as T;
-    }
-    if (t == _i47.AppUser) {
-      return _i47.AppUser.fromJson(data) as T;
-    }
-    if (t == _i48.AuditLog) {
-      return _i48.AuditLog.fromJson(data) as T;
-    }
-    if (t == _i49.AuditLogPageResponse) {
-      return _i49.AuditLogPageResponse.fromJson(data) as T;
-    }
-    if (t == _i50.MfaChallenge) {
-      return _i50.MfaChallenge.fromJson(data) as T;
-    }
-    if (t == _i51.MfaChallengeResponse) {
-      return _i51.MfaChallengeResponse.fromJson(data) as T;
-    }
-    if (t == _i52.MfaVerifyResponse) {
-      return _i52.MfaVerifyResponse.fromJson(data) as T;
-    }
-    if (t == _i53.RolePermission) {
-      return _i53.RolePermission.fromJson(data) as T;
-    }
-    if (t == _i54.TrustedDevice) {
-      return _i54.TrustedDevice.fromJson(data) as T;
-    }
-    if (t == _i55.UserRole) {
-      return _i55.UserRole.fromJson(data) as T;
-    }
-    if (t == _i56.UserSession) {
-      return _i56.UserSession.fromJson(data) as T;
+    if (t == _i41.UserSession) {
+      return _i41.UserSession.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.Greeting?>()) {
       return (data != null ? _i5.Greeting.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.CrmAgendaMetricsResponse?>()) {
-      return (data != null ? _i6.CrmAgendaMetricsResponse.fromJson(data) : null)
+    if (t == _i1.getType<_i6.AccountingCostCenter?>()) {
+      return (data != null ? _i6.AccountingCostCenter.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i7.CrmCatalogItem?>()) {
-      return (data != null ? _i7.CrmCatalogItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i7.AccountingExpense?>()) {
+      return (data != null ? _i7.AccountingExpense.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i8.CrmCatalogItemScope?>()) {
-      return (data != null ? _i8.CrmCatalogItemScope.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i9.CrmContractBudgetItem?>()) {
-      return (data != null ? _i9.CrmContractBudgetItem.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i10.CrmCustomer?>()) {
-      return (data != null ? _i10.CrmCustomer.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.CrmCustomerBranch?>()) {
-      return (data != null ? _i11.CrmCustomerBranch.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i12.CrmCustomerContract?>()) {
-      return (data != null ? _i12.CrmCustomerContract.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i13.CrmCustomerDetailResponse?>()) {
+    if (t == _i1.getType<_i8.AccountingFinancialSummary?>()) {
       return (data != null
-              ? _i13.CrmCustomerDetailResponse.fromJson(data)
+              ? _i8.AccountingFinancialSummary.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i14.CrmCustomerMetricsResponse?>()) {
+    if (t == _i1.getType<_i9.AccountingInvoice?>()) {
+      return (data != null ? _i9.AccountingInvoice.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i10.AccountingTransaction?>()) {
+      return (data != null ? _i10.AccountingTransaction.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i11.CrmAgendaMetricsResponse?>()) {
       return (data != null
-              ? _i14.CrmCustomerMetricsResponse.fromJson(data)
+              ? _i11.CrmAgendaMetricsResponse.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i15.CrmLead?>()) {
-      return (data != null ? _i15.CrmLead.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i12.CrmCatalogItem?>()) {
+      return (data != null ? _i12.CrmCatalogItem.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.CrmLeadMetricsResponse?>()) {
-      return (data != null ? _i16.CrmLeadMetricsResponse.fromJson(data) : null)
+    if (t == _i1.getType<_i13.CrmCatalogItemScope?>()) {
+      return (data != null ? _i13.CrmCatalogItemScope.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i17.CrmOpportunity?>()) {
-      return (data != null ? _i17.CrmOpportunity.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.CrmContractBudgetItem?>()) {
+      return (data != null ? _i14.CrmContractBudgetItem.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i18.CrmPipelineMetricsResponse?>()) {
+    if (t == _i1.getType<_i15.CrmCustomer?>()) {
+      return (data != null ? _i15.CrmCustomer.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i16.CrmCustomerBranch?>()) {
+      return (data != null ? _i16.CrmCustomerBranch.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i17.CrmCustomerContract?>()) {
+      return (data != null ? _i17.CrmCustomerContract.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i18.CrmCustomerDetailResponse?>()) {
       return (data != null
-              ? _i18.CrmPipelineMetricsResponse.fromJson(data)
+              ? _i18.CrmCustomerDetailResponse.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i19.CrmQuoteItem?>()) {
-      return (data != null ? _i19.CrmQuoteItem.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i20.CrmSector?>()) {
-      return (data != null ? _i20.CrmSector.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i21.CrmServiceLine?>()) {
-      return (data != null ? _i21.CrmServiceLine.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i22.CrmTask?>()) {
-      return (data != null ? _i22.CrmTask.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i23.RrhhApplicant?>()) {
-      return (data != null ? _i23.RrhhApplicant.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i24.RrhhArea?>()) {
-      return (data != null ? _i24.RrhhArea.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i25.RrhhAssignment?>()) {
-      return (data != null ? _i25.RrhhAssignment.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i26.RrhhDashboardMetricsResponse?>()) {
+    if (t == _i1.getType<_i19.CrmCustomerMetricsResponse?>()) {
       return (data != null
-              ? _i26.RrhhDashboardMetricsResponse.fromJson(data)
+              ? _i19.CrmCustomerMetricsResponse.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i27.RrhhDossierDocument?>()) {
-      return (data != null ? _i27.RrhhDossierDocument.fromJson(data) : null)
+    if (t == _i1.getType<_i20.CrmLead?>()) {
+      return (data != null ? _i20.CrmLead.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i21.CrmLeadMetricsResponse?>()) {
+      return (data != null ? _i21.CrmLeadMetricsResponse.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i28.RrhhEmployee?>()) {
-      return (data != null ? _i28.RrhhEmployee.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i22.CrmOpportunity?>()) {
+      return (data != null ? _i22.CrmOpportunity.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i29.RrhhEmployeeBonus?>()) {
-      return (data != null ? _i29.RrhhEmployeeBonus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i30.RrhhEmployeeContractData?>()) {
+    if (t == _i1.getType<_i23.CrmPipelineMetricsResponse?>()) {
       return (data != null
-              ? _i30.RrhhEmployeeContractData.fromJson(data)
+              ? _i23.CrmPipelineMetricsResponse.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i31.RrhhEmployeeDeduction?>()) {
-      return (data != null ? _i31.RrhhEmployeeDeduction.fromJson(data) : null)
+    if (t == _i1.getType<_i24.CrmQuoteItem?>()) {
+      return (data != null ? _i24.CrmQuoteItem.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i25.CrmSector?>()) {
+      return (data != null ? _i25.CrmSector.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i26.CrmServiceLine?>()) {
+      return (data != null ? _i26.CrmServiceLine.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i27.CrmTask?>()) {
+      return (data != null ? _i27.CrmTask.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i28.RrhhDashboardMetricsResponse?>()) {
+      return (data != null
+              ? _i28.RrhhDashboardMetricsResponse.fromJson(data)
+              : null)
           as T;
     }
-    if (t == _i1.getType<_i32.RrhhEmployeeDocument?>()) {
-      return (data != null ? _i32.RrhhEmployeeDocument.fromJson(data) : null)
+    if (t == _i1.getType<_i29.RrhhRecentMovementDto?>()) {
+      return (data != null ? _i29.RrhhRecentMovementDto.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i33.RrhhEmployeeSummaryDto?>()) {
-      return (data != null ? _i33.RrhhEmployeeSummaryDto.fromJson(data) : null)
+    if (t == _i1.getType<_i30.AppPermission?>()) {
+      return (data != null ? _i30.AppPermission.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i31.AppRole?>()) {
+      return (data != null ? _i31.AppRole.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i32.AppUser?>()) {
+      return (data != null ? _i32.AppUser.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i33.AuditLog?>()) {
+      return (data != null ? _i33.AuditLog.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i34.AuditLogPageResponse?>()) {
+      return (data != null ? _i34.AuditLogPageResponse.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i34.RrhhHiringDossier?>()) {
-      return (data != null ? _i34.RrhhHiringDossier.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i35.MfaChallenge?>()) {
+      return (data != null ? _i35.MfaChallenge.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i35.RrhhIncident?>()) {
-      return (data != null ? _i35.RrhhIncident.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i36.RrhhLeaveRequest?>()) {
-      return (data != null ? _i36.RrhhLeaveRequest.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i37.RrhhMovementHistory?>()) {
-      return (data != null ? _i37.RrhhMovementHistory.fromJson(data) : null)
+    if (t == _i1.getType<_i36.MfaChallengeResponse?>()) {
+      return (data != null ? _i36.MfaChallengeResponse.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i38.RrhhPosition?>()) {
-      return (data != null ? _i38.RrhhPosition.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i37.MfaVerifyResponse?>()) {
+      return (data != null ? _i37.MfaVerifyResponse.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i39.RrhhRecentMovementDto?>()) {
-      return (data != null ? _i39.RrhhRecentMovementDto.fromJson(data) : null)
-          as T;
+    if (t == _i1.getType<_i38.RolePermission?>()) {
+      return (data != null ? _i38.RolePermission.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i40.RrhhSchedule?>()) {
-      return (data != null ? _i40.RrhhSchedule.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i39.TrustedDevice?>()) {
+      return (data != null ? _i39.TrustedDevice.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i41.RrhhSpecialty?>()) {
-      return (data != null ? _i41.RrhhSpecialty.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i40.UserRole?>()) {
+      return (data != null ? _i40.UserRole.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i42.RrhhTermination?>()) {
-      return (data != null ? _i42.RrhhTermination.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i43.RrhhTimelineEvent?>()) {
-      return (data != null ? _i43.RrhhTimelineEvent.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i44.RrhhVacation?>()) {
-      return (data != null ? _i44.RrhhVacation.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i45.AppPermission?>()) {
-      return (data != null ? _i45.AppPermission.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i46.AppRole?>()) {
-      return (data != null ? _i46.AppRole.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i47.AppUser?>()) {
-      return (data != null ? _i47.AppUser.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i48.AuditLog?>()) {
-      return (data != null ? _i48.AuditLog.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i49.AuditLogPageResponse?>()) {
-      return (data != null ? _i49.AuditLogPageResponse.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i50.MfaChallenge?>()) {
-      return (data != null ? _i50.MfaChallenge.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i51.MfaChallengeResponse?>()) {
-      return (data != null ? _i51.MfaChallengeResponse.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i52.MfaVerifyResponse?>()) {
-      return (data != null ? _i52.MfaVerifyResponse.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i53.RolePermission?>()) {
-      return (data != null ? _i53.RolePermission.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i54.TrustedDevice?>()) {
-      return (data != null ? _i54.TrustedDevice.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i55.UserRole?>()) {
-      return (data != null ? _i55.UserRole.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i56.UserSession?>()) {
-      return (data != null ? _i56.UserSession.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i41.UserSession?>()) {
+      return (data != null ? _i41.UserSession.fromJson(data) : null) as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i11.CrmCustomerBranch>) {
+    if (t == List<_i16.CrmCustomerBranch>) {
       return (data as List)
-              .map((e) => deserialize<_i11.CrmCustomerBranch>(e))
+              .map((e) => deserialize<_i16.CrmCustomerBranch>(e))
               .toList()
           as T;
     }
-    if (t == List<_i12.CrmCustomerContract>) {
+    if (t == List<_i17.CrmCustomerContract>) {
       return (data as List)
-              .map((e) => deserialize<_i12.CrmCustomerContract>(e))
+              .map((e) => deserialize<_i17.CrmCustomerContract>(e))
               .toList()
           as T;
     }
-    if (t == List<_i9.CrmContractBudgetItem>) {
+    if (t == List<_i14.CrmContractBudgetItem>) {
       return (data as List)
-              .map((e) => deserialize<_i9.CrmContractBudgetItem>(e))
+              .map((e) => deserialize<_i14.CrmContractBudgetItem>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<String>?>()) {
-      return (data != null
-              ? (data as List).map((e) => deserialize<String>(e)).toList()
-              : null)
+    if (t == List<_i33.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i33.AuditLog>(e)).toList()
           as T;
     }
-    if (t == List<_i29.RrhhEmployeeBonus>) {
+    if (t == List<_i42.AccountingCostCenter>) {
       return (data as List)
-              .map((e) => deserialize<_i29.RrhhEmployeeBonus>(e))
+              .map((e) => deserialize<_i42.AccountingCostCenter>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i29.RrhhEmployeeBonus>?>()) {
+    if (t == List<_i43.AccountingInvoice>) {
+      return (data as List)
+              .map((e) => deserialize<_i43.AccountingInvoice>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i44.AccountingExpense>) {
+      return (data as List)
+              .map((e) => deserialize<_i44.AccountingExpense>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i45.CrmTask>) {
+      return (data as List).map((e) => deserialize<_i45.CrmTask>(e)).toList()
+          as T;
+    }
+    if (t == List<_i46.CrmSector>) {
+      return (data as List).map((e) => deserialize<_i46.CrmSector>(e)).toList()
+          as T;
+    }
+    if (t == List<_i47.CrmServiceLine>) {
+      return (data as List)
+              .map((e) => deserialize<_i47.CrmServiceLine>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i48.CrmCatalogItem>) {
+      return (data as List)
+              .map((e) => deserialize<_i48.CrmCatalogItem>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i49.CrmCatalogItemScope>) {
+      return (data as List)
+              .map((e) => deserialize<_i49.CrmCatalogItemScope>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i50.CrmCustomer>) {
+      return (data as List)
+              .map((e) => deserialize<_i50.CrmCustomer>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i51.CrmContractBudgetItem>) {
+      return (data as List)
+              .map((e) => deserialize<_i51.CrmContractBudgetItem>(e))
+              .toList()
+          as T;
+    }
+    if (t == _i1.getType<List<_i51.CrmContractBudgetItem>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i29.RrhhEmployeeBonus>(e))
+                    .map((e) => deserialize<_i51.CrmContractBudgetItem>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i31.RrhhEmployeeDeduction>) {
+    if (t == List<_i52.CrmLead>) {
+      return (data as List).map((e) => deserialize<_i52.CrmLead>(e)).toList()
+          as T;
+    }
+    if (t == List<_i53.CrmOpportunity>) {
       return (data as List)
-              .map((e) => deserialize<_i31.RrhhEmployeeDeduction>(e))
+              .map((e) => deserialize<_i53.CrmOpportunity>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i31.RrhhEmployeeDeduction>?>()) {
+    if (t == List<_i54.CrmQuoteItem>) {
+      return (data as List)
+              .map((e) => deserialize<_i54.CrmQuoteItem>(e))
+              .toList()
+          as T;
+    }
+    if (t == _i1.getType<List<_i54.CrmQuoteItem>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i31.RrhhEmployeeDeduction>(e))
+                    .map((e) => deserialize<_i54.CrmQuoteItem>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i27.RrhhDossierDocument>) {
+    if (t == List<_i55.RrhhRecentMovementDto>) {
       return (data as List)
-              .map((e) => deserialize<_i27.RrhhDossierDocument>(e))
+              .map((e) => deserialize<_i55.RrhhRecentMovementDto>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i27.RrhhDossierDocument>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i27.RrhhDossierDocument>(e))
-                    .toList()
-              : null)
+    if (t == List<_i56.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i56.AuditLog>(e)).toList()
           as T;
     }
-    if (t == List<int>) {
-      return (data as List).map((e) => deserialize<int>(e)).toList() as T;
-    }
-    if (t == List<_i48.AuditLog>) {
-      return (data as List).map((e) => deserialize<_i48.AuditLog>(e)).toList()
+    if (t == List<_i57.AppRole>) {
+      return (data as List).map((e) => deserialize<_i57.AppRole>(e)).toList()
           as T;
     }
-    if (t == List<_i57.CrmTask>) {
-      return (data as List).map((e) => deserialize<_i57.CrmTask>(e)).toList()
-          as T;
-    }
-    if (t == List<_i58.CrmSector>) {
-      return (data as List).map((e) => deserialize<_i58.CrmSector>(e)).toList()
-          as T;
-    }
-    if (t == List<_i59.CrmServiceLine>) {
+    if (t == List<_i58.AppPermission>) {
       return (data as List)
-              .map((e) => deserialize<_i59.CrmServiceLine>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i60.CrmCatalogItem>) {
-      return (data as List)
-              .map((e) => deserialize<_i60.CrmCatalogItem>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i61.CrmCatalogItemScope>) {
-      return (data as List)
-              .map((e) => deserialize<_i61.CrmCatalogItemScope>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i62.CrmCustomer>) {
-      return (data as List)
-              .map((e) => deserialize<_i62.CrmCustomer>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i63.CrmContractBudgetItem>) {
-      return (data as List)
-              .map((e) => deserialize<_i63.CrmContractBudgetItem>(e))
-              .toList()
-          as T;
-    }
-    if (t == _i1.getType<List<_i63.CrmContractBudgetItem>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i63.CrmContractBudgetItem>(e))
-                    .toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i64.CrmLead>) {
-      return (data as List).map((e) => deserialize<_i64.CrmLead>(e)).toList()
-          as T;
-    }
-    if (t == List<_i65.CrmOpportunity>) {
-      return (data as List)
-              .map((e) => deserialize<_i65.CrmOpportunity>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i66.CrmQuoteItem>) {
-      return (data as List)
-              .map((e) => deserialize<_i66.CrmQuoteItem>(e))
-              .toList()
-          as T;
-    }
-    if (t == _i1.getType<List<_i66.CrmQuoteItem>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i66.CrmQuoteItem>(e))
-                    .toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i67.RrhhApplicant>) {
-      return (data as List)
-              .map((e) => deserialize<_i67.RrhhApplicant>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i68.RrhhSchedule>) {
-      return (data as List)
-              .map((e) => deserialize<_i68.RrhhSchedule>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i69.RrhhAssignment>) {
-      return (data as List)
-              .map((e) => deserialize<_i69.RrhhAssignment>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i70.RrhhRecentMovementDto>) {
-      return (data as List)
-              .map((e) => deserialize<_i70.RrhhRecentMovementDto>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i71.RrhhHiringDossier>) {
-      return (data as List)
-              .map((e) => deserialize<_i71.RrhhHiringDossier>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i72.RrhhDossierDocument>) {
-      return (data as List)
-              .map((e) => deserialize<_i72.RrhhDossierDocument>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i73.RrhhEmployeeBonus>) {
-      return (data as List)
-              .map((e) => deserialize<_i73.RrhhEmployeeBonus>(e))
-              .toList()
-          as T;
-    }
-    if (t == _i1.getType<List<_i73.RrhhEmployeeBonus>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i73.RrhhEmployeeBonus>(e))
-                    .toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i74.RrhhEmployeeDeduction>) {
-      return (data as List)
-              .map((e) => deserialize<_i74.RrhhEmployeeDeduction>(e))
-              .toList()
-          as T;
-    }
-    if (t == _i1.getType<List<_i74.RrhhEmployeeDeduction>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i74.RrhhEmployeeDeduction>(e))
-                    .toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i75.RrhhLeaveRequest>) {
-      return (data as List)
-              .map((e) => deserialize<_i75.RrhhLeaveRequest>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i76.RrhhVacation>) {
-      return (data as List)
-              .map((e) => deserialize<_i76.RrhhVacation>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i77.RrhhIncident>) {
-      return (data as List)
-              .map((e) => deserialize<_i77.RrhhIncident>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i78.RrhhMovementHistory>) {
-      return (data as List)
-              .map((e) => deserialize<_i78.RrhhMovementHistory>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i79.RrhhArea>) {
-      return (data as List).map((e) => deserialize<_i79.RrhhArea>(e)).toList()
-          as T;
-    }
-    if (t == List<_i80.RrhhPosition>) {
-      return (data as List)
-              .map((e) => deserialize<_i80.RrhhPosition>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i81.RrhhSpecialty>) {
-      return (data as List)
-              .map((e) => deserialize<_i81.RrhhSpecialty>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i82.RrhhEmployee>) {
-      return (data as List)
-              .map((e) => deserialize<_i82.RrhhEmployee>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i83.RrhhEmployeeSummaryDto>) {
-      return (data as List)
-              .map((e) => deserialize<_i83.RrhhEmployeeSummaryDto>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i84.RrhhEmployeeDocument>) {
-      return (data as List)
-              .map((e) => deserialize<_i84.RrhhEmployeeDocument>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i85.RrhhTimelineEvent>) {
-      return (data as List)
-              .map((e) => deserialize<_i85.RrhhTimelineEvent>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<_i86.AuditLog>) {
-      return (data as List).map((e) => deserialize<_i86.AuditLog>(e)).toList()
-          as T;
-    }
-    if (t == List<_i87.AppRole>) {
-      return (data as List).map((e) => deserialize<_i87.AppRole>(e)).toList()
-          as T;
-    }
-    if (t == List<_i88.AppPermission>) {
-      return (data as List)
-              .map((e) => deserialize<_i88.AppPermission>(e))
+              .map((e) => deserialize<_i58.AppPermission>(e))
               .toList()
           as T;
     }
@@ -7286,14 +7468,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
-    if (t == List<_i89.UserSession>) {
+    if (t == List<_i59.UserSession>) {
       return (data as List)
-              .map((e) => deserialize<_i89.UserSession>(e))
+              .map((e) => deserialize<_i59.UserSession>(e))
               .toList()
           as T;
     }
-    if (t == List<_i90.AppUser>) {
-      return (data as List).map((e) => deserialize<_i90.AppUser>(e)).toList()
+    if (t == List<_i60.AppUser>) {
+      return (data as List).map((e) => deserialize<_i60.AppUser>(e)).toList()
           as T;
     }
     try {
@@ -7311,57 +7493,42 @@ class Protocol extends _i1.SerializationManagerServer {
   static String? getClassNameForType(Type type) {
     return switch (type) {
       _i5.Greeting => 'Greeting',
-      _i6.CrmAgendaMetricsResponse => 'CrmAgendaMetricsResponse',
-      _i7.CrmCatalogItem => 'CrmCatalogItem',
-      _i8.CrmCatalogItemScope => 'CrmCatalogItemScope',
-      _i9.CrmContractBudgetItem => 'CrmContractBudgetItem',
-      _i10.CrmCustomer => 'CrmCustomer',
-      _i11.CrmCustomerBranch => 'CrmCustomerBranch',
-      _i12.CrmCustomerContract => 'CrmCustomerContract',
-      _i13.CrmCustomerDetailResponse => 'CrmCustomerDetailResponse',
-      _i14.CrmCustomerMetricsResponse => 'CrmCustomerMetricsResponse',
-      _i15.CrmLead => 'CrmLead',
-      _i16.CrmLeadMetricsResponse => 'CrmLeadMetricsResponse',
-      _i17.CrmOpportunity => 'CrmOpportunity',
-      _i18.CrmPipelineMetricsResponse => 'CrmPipelineMetricsResponse',
-      _i19.CrmQuoteItem => 'CrmQuoteItem',
-      _i20.CrmSector => 'CrmSector',
-      _i21.CrmServiceLine => 'CrmServiceLine',
-      _i22.CrmTask => 'CrmTask',
-      _i23.RrhhApplicant => 'RrhhApplicant',
-      _i24.RrhhArea => 'RrhhArea',
-      _i25.RrhhAssignment => 'RrhhAssignment',
-      _i26.RrhhDashboardMetricsResponse => 'RrhhDashboardMetricsResponse',
-      _i27.RrhhDossierDocument => 'RrhhDossierDocument',
-      _i28.RrhhEmployee => 'RrhhEmployee',
-      _i29.RrhhEmployeeBonus => 'RrhhEmployeeBonus',
-      _i30.RrhhEmployeeContractData => 'RrhhEmployeeContractData',
-      _i31.RrhhEmployeeDeduction => 'RrhhEmployeeDeduction',
-      _i32.RrhhEmployeeDocument => 'RrhhEmployeeDocument',
-      _i33.RrhhEmployeeSummaryDto => 'RrhhEmployeeSummaryDto',
-      _i34.RrhhHiringDossier => 'RrhhHiringDossier',
-      _i35.RrhhIncident => 'RrhhIncident',
-      _i36.RrhhLeaveRequest => 'RrhhLeaveRequest',
-      _i37.RrhhMovementHistory => 'RrhhMovementHistory',
-      _i38.RrhhPosition => 'RrhhPosition',
-      _i39.RrhhRecentMovementDto => 'RrhhRecentMovementDto',
-      _i40.RrhhSchedule => 'RrhhSchedule',
-      _i41.RrhhSpecialty => 'RrhhSpecialty',
-      _i42.RrhhTermination => 'RrhhTermination',
-      _i43.RrhhTimelineEvent => 'RrhhTimelineEvent',
-      _i44.RrhhVacation => 'RrhhVacation',
-      _i45.AppPermission => 'AppPermission',
-      _i46.AppRole => 'AppRole',
-      _i47.AppUser => 'AppUser',
-      _i48.AuditLog => 'AuditLog',
-      _i49.AuditLogPageResponse => 'AuditLogPageResponse',
-      _i50.MfaChallenge => 'MfaChallenge',
-      _i51.MfaChallengeResponse => 'MfaChallengeResponse',
-      _i52.MfaVerifyResponse => 'MfaVerifyResponse',
-      _i53.RolePermission => 'RolePermission',
-      _i54.TrustedDevice => 'TrustedDevice',
-      _i55.UserRole => 'UserRole',
-      _i56.UserSession => 'UserSession',
+      _i6.AccountingCostCenter => 'AccountingCostCenter',
+      _i7.AccountingExpense => 'AccountingExpense',
+      _i8.AccountingFinancialSummary => 'AccountingFinancialSummary',
+      _i9.AccountingInvoice => 'AccountingInvoice',
+      _i10.AccountingTransaction => 'AccountingTransaction',
+      _i11.CrmAgendaMetricsResponse => 'CrmAgendaMetricsResponse',
+      _i12.CrmCatalogItem => 'CrmCatalogItem',
+      _i13.CrmCatalogItemScope => 'CrmCatalogItemScope',
+      _i14.CrmContractBudgetItem => 'CrmContractBudgetItem',
+      _i15.CrmCustomer => 'CrmCustomer',
+      _i16.CrmCustomerBranch => 'CrmCustomerBranch',
+      _i17.CrmCustomerContract => 'CrmCustomerContract',
+      _i18.CrmCustomerDetailResponse => 'CrmCustomerDetailResponse',
+      _i19.CrmCustomerMetricsResponse => 'CrmCustomerMetricsResponse',
+      _i20.CrmLead => 'CrmLead',
+      _i21.CrmLeadMetricsResponse => 'CrmLeadMetricsResponse',
+      _i22.CrmOpportunity => 'CrmOpportunity',
+      _i23.CrmPipelineMetricsResponse => 'CrmPipelineMetricsResponse',
+      _i24.CrmQuoteItem => 'CrmQuoteItem',
+      _i25.CrmSector => 'CrmSector',
+      _i26.CrmServiceLine => 'CrmServiceLine',
+      _i27.CrmTask => 'CrmTask',
+      _i28.RrhhDashboardMetricsResponse => 'RrhhDashboardMetricsResponse',
+      _i29.RrhhRecentMovementDto => 'RrhhRecentMovementDto',
+      _i30.AppPermission => 'AppPermission',
+      _i31.AppRole => 'AppRole',
+      _i32.AppUser => 'AppUser',
+      _i33.AuditLog => 'AuditLog',
+      _i34.AuditLogPageResponse => 'AuditLogPageResponse',
+      _i35.MfaChallenge => 'MfaChallenge',
+      _i36.MfaChallengeResponse => 'MfaChallengeResponse',
+      _i37.MfaVerifyResponse => 'MfaVerifyResponse',
+      _i38.RolePermission => 'RolePermission',
+      _i39.TrustedDevice => 'TrustedDevice',
+      _i40.UserRole => 'UserRole',
+      _i41.UserSession => 'UserSession',
       _ => null,
     };
   }
@@ -7381,107 +7548,77 @@ class Protocol extends _i1.SerializationManagerServer {
     switch (data) {
       case _i5.Greeting():
         return 'Greeting';
-      case _i6.CrmAgendaMetricsResponse():
+      case _i6.AccountingCostCenter():
+        return 'AccountingCostCenter';
+      case _i7.AccountingExpense():
+        return 'AccountingExpense';
+      case _i8.AccountingFinancialSummary():
+        return 'AccountingFinancialSummary';
+      case _i9.AccountingInvoice():
+        return 'AccountingInvoice';
+      case _i10.AccountingTransaction():
+        return 'AccountingTransaction';
+      case _i11.CrmAgendaMetricsResponse():
         return 'CrmAgendaMetricsResponse';
-      case _i7.CrmCatalogItem():
+      case _i12.CrmCatalogItem():
         return 'CrmCatalogItem';
-      case _i8.CrmCatalogItemScope():
+      case _i13.CrmCatalogItemScope():
         return 'CrmCatalogItemScope';
-      case _i9.CrmContractBudgetItem():
+      case _i14.CrmContractBudgetItem():
         return 'CrmContractBudgetItem';
-      case _i10.CrmCustomer():
+      case _i15.CrmCustomer():
         return 'CrmCustomer';
-      case _i11.CrmCustomerBranch():
+      case _i16.CrmCustomerBranch():
         return 'CrmCustomerBranch';
-      case _i12.CrmCustomerContract():
+      case _i17.CrmCustomerContract():
         return 'CrmCustomerContract';
-      case _i13.CrmCustomerDetailResponse():
+      case _i18.CrmCustomerDetailResponse():
         return 'CrmCustomerDetailResponse';
-      case _i14.CrmCustomerMetricsResponse():
+      case _i19.CrmCustomerMetricsResponse():
         return 'CrmCustomerMetricsResponse';
-      case _i15.CrmLead():
+      case _i20.CrmLead():
         return 'CrmLead';
-      case _i16.CrmLeadMetricsResponse():
+      case _i21.CrmLeadMetricsResponse():
         return 'CrmLeadMetricsResponse';
-      case _i17.CrmOpportunity():
+      case _i22.CrmOpportunity():
         return 'CrmOpportunity';
-      case _i18.CrmPipelineMetricsResponse():
+      case _i23.CrmPipelineMetricsResponse():
         return 'CrmPipelineMetricsResponse';
-      case _i19.CrmQuoteItem():
+      case _i24.CrmQuoteItem():
         return 'CrmQuoteItem';
-      case _i20.CrmSector():
+      case _i25.CrmSector():
         return 'CrmSector';
-      case _i21.CrmServiceLine():
+      case _i26.CrmServiceLine():
         return 'CrmServiceLine';
-      case _i22.CrmTask():
+      case _i27.CrmTask():
         return 'CrmTask';
-      case _i23.RrhhApplicant():
-        return 'RrhhApplicant';
-      case _i24.RrhhArea():
-        return 'RrhhArea';
-      case _i25.RrhhAssignment():
-        return 'RrhhAssignment';
-      case _i26.RrhhDashboardMetricsResponse():
+      case _i28.RrhhDashboardMetricsResponse():
         return 'RrhhDashboardMetricsResponse';
-      case _i27.RrhhDossierDocument():
-        return 'RrhhDossierDocument';
-      case _i28.RrhhEmployee():
-        return 'RrhhEmployee';
-      case _i29.RrhhEmployeeBonus():
-        return 'RrhhEmployeeBonus';
-      case _i30.RrhhEmployeeContractData():
-        return 'RrhhEmployeeContractData';
-      case _i31.RrhhEmployeeDeduction():
-        return 'RrhhEmployeeDeduction';
-      case _i32.RrhhEmployeeDocument():
-        return 'RrhhEmployeeDocument';
-      case _i33.RrhhEmployeeSummaryDto():
-        return 'RrhhEmployeeSummaryDto';
-      case _i34.RrhhHiringDossier():
-        return 'RrhhHiringDossier';
-      case _i35.RrhhIncident():
-        return 'RrhhIncident';
-      case _i36.RrhhLeaveRequest():
-        return 'RrhhLeaveRequest';
-      case _i37.RrhhMovementHistory():
-        return 'RrhhMovementHistory';
-      case _i38.RrhhPosition():
-        return 'RrhhPosition';
-      case _i39.RrhhRecentMovementDto():
+      case _i29.RrhhRecentMovementDto():
         return 'RrhhRecentMovementDto';
-      case _i40.RrhhSchedule():
-        return 'RrhhSchedule';
-      case _i41.RrhhSpecialty():
-        return 'RrhhSpecialty';
-      case _i42.RrhhTermination():
-        return 'RrhhTermination';
-      case _i43.RrhhTimelineEvent():
-        return 'RrhhTimelineEvent';
-      case _i44.RrhhVacation():
-        return 'RrhhVacation';
-      case _i45.AppPermission():
+      case _i30.AppPermission():
         return 'AppPermission';
-      case _i46.AppRole():
+      case _i31.AppRole():
         return 'AppRole';
-      case _i47.AppUser():
+      case _i32.AppUser():
         return 'AppUser';
-      case _i48.AuditLog():
+      case _i33.AuditLog():
         return 'AuditLog';
-      case _i49.AuditLogPageResponse():
+      case _i34.AuditLogPageResponse():
         return 'AuditLogPageResponse';
-      case _i50.MfaChallenge():
+      case _i35.MfaChallenge():
         return 'MfaChallenge';
-      case _i51.MfaChallengeResponse():
+      case _i36.MfaChallengeResponse():
         return 'MfaChallengeResponse';
-      case _i52.MfaVerifyResponse():
+      case _i37.MfaVerifyResponse():
         return 'MfaVerifyResponse';
-      case _i53.RolePermission():
+      case _i38.RolePermission():
         return 'RolePermission';
-      case _i54.TrustedDevice():
+      case _i39.TrustedDevice():
         return 'TrustedDevice';
-      case _i55.UserRole():
+      case _i40.UserRole():
         return 'UserRole';
-      case _i56.UserSession():
+      case _i41.UserSession():
         return 'UserSession';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -7508,56 +7645,71 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'Greeting') {
       return deserialize<_i5.Greeting>(data['data']);
     }
+    if (dataClassName == 'AccountingCostCenter') {
+      return deserialize<_i6.AccountingCostCenter>(data['data']);
+    }
+    if (dataClassName == 'AccountingExpense') {
+      return deserialize<_i7.AccountingExpense>(data['data']);
+    }
+    if (dataClassName == 'AccountingFinancialSummary') {
+      return deserialize<_i8.AccountingFinancialSummary>(data['data']);
+    }
+    if (dataClassName == 'AccountingInvoice') {
+      return deserialize<_i9.AccountingInvoice>(data['data']);
+    }
+    if (dataClassName == 'AccountingTransaction') {
+      return deserialize<_i10.AccountingTransaction>(data['data']);
+    }
     if (dataClassName == 'CrmAgendaMetricsResponse') {
-      return deserialize<_i6.CrmAgendaMetricsResponse>(data['data']);
+      return deserialize<_i11.CrmAgendaMetricsResponse>(data['data']);
     }
     if (dataClassName == 'CrmCatalogItem') {
-      return deserialize<_i7.CrmCatalogItem>(data['data']);
+      return deserialize<_i12.CrmCatalogItem>(data['data']);
     }
     if (dataClassName == 'CrmCatalogItemScope') {
-      return deserialize<_i8.CrmCatalogItemScope>(data['data']);
+      return deserialize<_i13.CrmCatalogItemScope>(data['data']);
     }
     if (dataClassName == 'CrmContractBudgetItem') {
-      return deserialize<_i9.CrmContractBudgetItem>(data['data']);
+      return deserialize<_i14.CrmContractBudgetItem>(data['data']);
     }
     if (dataClassName == 'CrmCustomer') {
-      return deserialize<_i10.CrmCustomer>(data['data']);
+      return deserialize<_i15.CrmCustomer>(data['data']);
     }
     if (dataClassName == 'CrmCustomerBranch') {
-      return deserialize<_i11.CrmCustomerBranch>(data['data']);
+      return deserialize<_i16.CrmCustomerBranch>(data['data']);
     }
     if (dataClassName == 'CrmCustomerContract') {
-      return deserialize<_i12.CrmCustomerContract>(data['data']);
+      return deserialize<_i17.CrmCustomerContract>(data['data']);
     }
     if (dataClassName == 'CrmCustomerDetailResponse') {
-      return deserialize<_i13.CrmCustomerDetailResponse>(data['data']);
+      return deserialize<_i18.CrmCustomerDetailResponse>(data['data']);
     }
     if (dataClassName == 'CrmCustomerMetricsResponse') {
-      return deserialize<_i14.CrmCustomerMetricsResponse>(data['data']);
+      return deserialize<_i19.CrmCustomerMetricsResponse>(data['data']);
     }
     if (dataClassName == 'CrmLead') {
-      return deserialize<_i15.CrmLead>(data['data']);
+      return deserialize<_i20.CrmLead>(data['data']);
     }
     if (dataClassName == 'CrmLeadMetricsResponse') {
-      return deserialize<_i16.CrmLeadMetricsResponse>(data['data']);
+      return deserialize<_i21.CrmLeadMetricsResponse>(data['data']);
     }
     if (dataClassName == 'CrmOpportunity') {
-      return deserialize<_i17.CrmOpportunity>(data['data']);
+      return deserialize<_i22.CrmOpportunity>(data['data']);
     }
     if (dataClassName == 'CrmPipelineMetricsResponse') {
-      return deserialize<_i18.CrmPipelineMetricsResponse>(data['data']);
+      return deserialize<_i23.CrmPipelineMetricsResponse>(data['data']);
     }
     if (dataClassName == 'CrmQuoteItem') {
-      return deserialize<_i19.CrmQuoteItem>(data['data']);
+      return deserialize<_i24.CrmQuoteItem>(data['data']);
     }
     if (dataClassName == 'CrmSector') {
-      return deserialize<_i20.CrmSector>(data['data']);
+      return deserialize<_i25.CrmSector>(data['data']);
     }
     if (dataClassName == 'CrmServiceLine') {
-      return deserialize<_i21.CrmServiceLine>(data['data']);
+      return deserialize<_i26.CrmServiceLine>(data['data']);
     }
     if (dataClassName == 'CrmTask') {
-      return deserialize<_i22.CrmTask>(data['data']);
+      return deserialize<_i27.CrmTask>(data['data']);
     }
     if (dataClassName == 'RrhhApplicant') {
       return deserialize<_i23.RrhhApplicant>(data['data']);
@@ -7569,97 +7721,46 @@ class Protocol extends _i1.SerializationManagerServer {
       return deserialize<_i25.RrhhAssignment>(data['data']);
     }
     if (dataClassName == 'RrhhDashboardMetricsResponse') {
-      return deserialize<_i26.RrhhDashboardMetricsResponse>(data['data']);
-    }
-    if (dataClassName == 'RrhhDossierDocument') {
-      return deserialize<_i27.RrhhDossierDocument>(data['data']);
-    }
-    if (dataClassName == 'RrhhEmployee') {
-      return deserialize<_i28.RrhhEmployee>(data['data']);
-    }
-    if (dataClassName == 'RrhhEmployeeBonus') {
-      return deserialize<_i29.RrhhEmployeeBonus>(data['data']);
-    }
-    if (dataClassName == 'RrhhEmployeeContractData') {
-      return deserialize<_i30.RrhhEmployeeContractData>(data['data']);
-    }
-    if (dataClassName == 'RrhhEmployeeDeduction') {
-      return deserialize<_i31.RrhhEmployeeDeduction>(data['data']);
-    }
-    if (dataClassName == 'RrhhEmployeeDocument') {
-      return deserialize<_i32.RrhhEmployeeDocument>(data['data']);
-    }
-    if (dataClassName == 'RrhhEmployeeSummaryDto') {
-      return deserialize<_i33.RrhhEmployeeSummaryDto>(data['data']);
-    }
-    if (dataClassName == 'RrhhHiringDossier') {
-      return deserialize<_i34.RrhhHiringDossier>(data['data']);
-    }
-    if (dataClassName == 'RrhhIncident') {
-      return deserialize<_i35.RrhhIncident>(data['data']);
-    }
-    if (dataClassName == 'RrhhLeaveRequest') {
-      return deserialize<_i36.RrhhLeaveRequest>(data['data']);
-    }
-    if (dataClassName == 'RrhhMovementHistory') {
-      return deserialize<_i37.RrhhMovementHistory>(data['data']);
-    }
-    if (dataClassName == 'RrhhPosition') {
-      return deserialize<_i38.RrhhPosition>(data['data']);
+      return deserialize<_i28.RrhhDashboardMetricsResponse>(data['data']);
     }
     if (dataClassName == 'RrhhRecentMovementDto') {
-      return deserialize<_i39.RrhhRecentMovementDto>(data['data']);
-    }
-    if (dataClassName == 'RrhhSchedule') {
-      return deserialize<_i40.RrhhSchedule>(data['data']);
-    }
-    if (dataClassName == 'RrhhSpecialty') {
-      return deserialize<_i41.RrhhSpecialty>(data['data']);
-    }
-    if (dataClassName == 'RrhhTermination') {
-      return deserialize<_i42.RrhhTermination>(data['data']);
-    }
-    if (dataClassName == 'RrhhTimelineEvent') {
-      return deserialize<_i43.RrhhTimelineEvent>(data['data']);
-    }
-    if (dataClassName == 'RrhhVacation') {
-      return deserialize<_i44.RrhhVacation>(data['data']);
+      return deserialize<_i29.RrhhRecentMovementDto>(data['data']);
     }
     if (dataClassName == 'AppPermission') {
-      return deserialize<_i45.AppPermission>(data['data']);
+      return deserialize<_i30.AppPermission>(data['data']);
     }
     if (dataClassName == 'AppRole') {
-      return deserialize<_i46.AppRole>(data['data']);
+      return deserialize<_i31.AppRole>(data['data']);
     }
     if (dataClassName == 'AppUser') {
-      return deserialize<_i47.AppUser>(data['data']);
+      return deserialize<_i32.AppUser>(data['data']);
     }
     if (dataClassName == 'AuditLog') {
-      return deserialize<_i48.AuditLog>(data['data']);
+      return deserialize<_i33.AuditLog>(data['data']);
     }
     if (dataClassName == 'AuditLogPageResponse') {
-      return deserialize<_i49.AuditLogPageResponse>(data['data']);
+      return deserialize<_i34.AuditLogPageResponse>(data['data']);
     }
     if (dataClassName == 'MfaChallenge') {
-      return deserialize<_i50.MfaChallenge>(data['data']);
+      return deserialize<_i35.MfaChallenge>(data['data']);
     }
     if (dataClassName == 'MfaChallengeResponse') {
-      return deserialize<_i51.MfaChallengeResponse>(data['data']);
+      return deserialize<_i36.MfaChallengeResponse>(data['data']);
     }
     if (dataClassName == 'MfaVerifyResponse') {
-      return deserialize<_i52.MfaVerifyResponse>(data['data']);
+      return deserialize<_i37.MfaVerifyResponse>(data['data']);
     }
     if (dataClassName == 'RolePermission') {
-      return deserialize<_i53.RolePermission>(data['data']);
+      return deserialize<_i38.RolePermission>(data['data']);
     }
     if (dataClassName == 'TrustedDevice') {
-      return deserialize<_i54.TrustedDevice>(data['data']);
+      return deserialize<_i39.TrustedDevice>(data['data']);
     }
     if (dataClassName == 'UserRole') {
-      return deserialize<_i55.UserRole>(data['data']);
+      return deserialize<_i40.UserRole>(data['data']);
     }
     if (dataClassName == 'UserSession') {
-      return deserialize<_i56.UserSession>(data['data']);
+      return deserialize<_i41.UserSession>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -7697,78 +7798,56 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
     switch (t) {
-      case _i7.CrmCatalogItem:
-        return _i7.CrmCatalogItem.t;
-      case _i8.CrmCatalogItemScope:
-        return _i8.CrmCatalogItemScope.t;
-      case _i9.CrmContractBudgetItem:
-        return _i9.CrmContractBudgetItem.t;
-      case _i10.CrmCustomer:
-        return _i10.CrmCustomer.t;
-      case _i11.CrmCustomerBranch:
-        return _i11.CrmCustomerBranch.t;
-      case _i12.CrmCustomerContract:
-        return _i12.CrmCustomerContract.t;
-      case _i15.CrmLead:
-        return _i15.CrmLead.t;
-      case _i17.CrmOpportunity:
-        return _i17.CrmOpportunity.t;
-      case _i19.CrmQuoteItem:
-        return _i19.CrmQuoteItem.t;
-      case _i20.CrmSector:
-        return _i20.CrmSector.t;
-      case _i21.CrmServiceLine:
-        return _i21.CrmServiceLine.t;
-      case _i22.CrmTask:
-        return _i22.CrmTask.t;
-      case _i23.RrhhApplicant:
-        return _i23.RrhhApplicant.t;
-      case _i24.RrhhArea:
-        return _i24.RrhhArea.t;
-      case _i25.RrhhAssignment:
-        return _i25.RrhhAssignment.t;
-      case _i28.RrhhEmployee:
-        return _i28.RrhhEmployee.t;
-      case _i32.RrhhEmployeeDocument:
-        return _i32.RrhhEmployeeDocument.t;
-      case _i34.RrhhHiringDossier:
-        return _i34.RrhhHiringDossier.t;
-      case _i35.RrhhIncident:
-        return _i35.RrhhIncident.t;
-      case _i36.RrhhLeaveRequest:
-        return _i36.RrhhLeaveRequest.t;
-      case _i37.RrhhMovementHistory:
-        return _i37.RrhhMovementHistory.t;
-      case _i38.RrhhPosition:
-        return _i38.RrhhPosition.t;
-      case _i40.RrhhSchedule:
-        return _i40.RrhhSchedule.t;
-      case _i41.RrhhSpecialty:
-        return _i41.RrhhSpecialty.t;
-      case _i42.RrhhTermination:
-        return _i42.RrhhTermination.t;
-      case _i43.RrhhTimelineEvent:
-        return _i43.RrhhTimelineEvent.t;
-      case _i44.RrhhVacation:
-        return _i44.RrhhVacation.t;
-      case _i45.AppPermission:
-        return _i45.AppPermission.t;
-      case _i46.AppRole:
-        return _i46.AppRole.t;
-      case _i47.AppUser:
-        return _i47.AppUser.t;
-      case _i48.AuditLog:
-        return _i48.AuditLog.t;
-      case _i50.MfaChallenge:
-        return _i50.MfaChallenge.t;
-      case _i53.RolePermission:
-        return _i53.RolePermission.t;
-      case _i54.TrustedDevice:
-        return _i54.TrustedDevice.t;
-      case _i55.UserRole:
-        return _i55.UserRole.t;
-      case _i56.UserSession:
-        return _i56.UserSession.t;
+      case _i6.AccountingCostCenter:
+        return _i6.AccountingCostCenter.t;
+      case _i7.AccountingExpense:
+        return _i7.AccountingExpense.t;
+      case _i9.AccountingInvoice:
+        return _i9.AccountingInvoice.t;
+      case _i10.AccountingTransaction:
+        return _i10.AccountingTransaction.t;
+      case _i12.CrmCatalogItem:
+        return _i12.CrmCatalogItem.t;
+      case _i13.CrmCatalogItemScope:
+        return _i13.CrmCatalogItemScope.t;
+      case _i14.CrmContractBudgetItem:
+        return _i14.CrmContractBudgetItem.t;
+      case _i15.CrmCustomer:
+        return _i15.CrmCustomer.t;
+      case _i16.CrmCustomerBranch:
+        return _i16.CrmCustomerBranch.t;
+      case _i17.CrmCustomerContract:
+        return _i17.CrmCustomerContract.t;
+      case _i20.CrmLead:
+        return _i20.CrmLead.t;
+      case _i22.CrmOpportunity:
+        return _i22.CrmOpportunity.t;
+      case _i24.CrmQuoteItem:
+        return _i24.CrmQuoteItem.t;
+      case _i25.CrmSector:
+        return _i25.CrmSector.t;
+      case _i26.CrmServiceLine:
+        return _i26.CrmServiceLine.t;
+      case _i27.CrmTask:
+        return _i27.CrmTask.t;
+      case _i30.AppPermission:
+        return _i30.AppPermission.t;
+      case _i31.AppRole:
+        return _i31.AppRole.t;
+      case _i32.AppUser:
+        return _i32.AppUser.t;
+      case _i33.AuditLog:
+        return _i33.AuditLog.t;
+      case _i35.MfaChallenge:
+        return _i35.MfaChallenge.t;
+      case _i38.RolePermission:
+        return _i38.RolePermission.t;
+      case _i39.TrustedDevice:
+        return _i39.TrustedDevice.t;
+      case _i40.UserRole:
+        return _i40.UserRole.t;
+      case _i41.UserSession:
+        return _i41.UserSession.t;
     }
     return null;
   }
