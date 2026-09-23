@@ -65,27 +65,33 @@ import 'package:elite_multiservicios_client/src/protocol/modules/rrhh/models/rrh
     as _i27;
 import 'package:elite_multiservicios_client/src/protocol/modules/rrhh/models/rrhh_specialty.dart'
     as _i28;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/rrhh/models/rrhh_employee.dart'
     as _i29;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log_page_response.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/rrhh/models/rrhh_employee_document.dart'
     as _i30;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_challenge_response.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/rrhh/models/rrhh_timeline_event.dart'
     as _i31;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_verify_response.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log.dart'
     as _i32;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_role.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/audit_log_page_response.dart'
     as _i33;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_permission.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_challenge_response.dart'
     as _i34;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_role.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/mfa_verify_response.dart'
     as _i35;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/role_permission.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_role.dart'
     as _i36;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_session.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_permission.dart'
     as _i37;
-import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_user.dart'
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_role.dart'
     as _i38;
-import 'protocol.dart' as _i39;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/role_permission.dart'
+    as _i39;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/user_session.dart'
+    as _i40;
+import 'package:elite_multiservicios_client/src/protocol/modules/security/models/app_user.dart'
+    as _i41;
+import 'protocol.dart' as _i42;
 
 /// Endpoint de autenticación mediante correo y contraseña.
 /// Extiende [EmailIdpBaseEndpoint] para incorporar auditoría de login fallido
@@ -1310,6 +1316,196 @@ class EndpointRrhhOrganization extends _i2.EndpointRef {
   );
 }
 
+/// Endpoint RPC para la administración integral del Expediente de Empleados,
+/// Contratación transaccional desde postulantes, Documentos Digitales e Historial.
+/// {@category Endpoint}
+class EndpointRrhhPersonnel extends _i2.EndpointRef {
+  EndpointRrhhPersonnel(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'rrhhPersonnel';
+
+  /// Lista los colaboradores con filtros opcionales de estado, tipo Oficina/Campo y búsqueda.
+  _i3.Future<List<_i29.RrhhEmployee>> listEmployees({
+    String? status,
+    String? employeeType,
+    String? availabilityStatus,
+    int? areaId,
+    String? search,
+    required int limit,
+    required int offset,
+    required bool includeDeleted,
+  }) => caller.callServerEndpoint<List<_i29.RrhhEmployee>>(
+    'rrhhPersonnel',
+    'listEmployees',
+    {
+      'status': status,
+      'employeeType': employeeType,
+      'availabilityStatus': availabilityStatus,
+      'areaId': areaId,
+      'search': search,
+      'limit': limit,
+      'offset': offset,
+      'includeDeleted': includeDeleted,
+    },
+  );
+
+  /// Obtiene un colaborador por su ID.
+  _i3.Future<_i29.RrhhEmployee?> getEmployeeById(
+    int id, {
+    required bool includeDeleted,
+  }) => caller.callServerEndpoint<_i29.RrhhEmployee?>(
+    'rrhhPersonnel',
+    'getEmployeeById',
+    {
+      'id': id,
+      'includeDeleted': includeDeleted,
+    },
+  );
+
+  /// Obtiene un colaborador por su código institucional (EMP-001).
+  _i3.Future<_i29.RrhhEmployee?> getEmployeeByCode(
+    String code, {
+    required bool includeDeleted,
+  }) => caller.callServerEndpoint<_i29.RrhhEmployee?>(
+    'rrhhPersonnel',
+    'getEmployeeByCode',
+    {
+      'code': code,
+      'includeDeleted': includeDeleted,
+    },
+  );
+
+  /// Registra un nuevo colaborador directamente en nómina.
+  _i3.Future<_i29.RrhhEmployee> createEmployee(_i29.RrhhEmployee employee) =>
+      caller.callServerEndpoint<_i29.RrhhEmployee>(
+        'rrhhPersonnel',
+        'createEmployee',
+        {'employee': employee},
+      );
+
+  /// Actualiza los datos laborales de un empleado.
+  _i3.Future<_i29.RrhhEmployee> updateEmployee(_i29.RrhhEmployee employee) =>
+      caller.callServerEndpoint<_i29.RrhhEmployee>(
+        'rrhhPersonnel',
+        'updateEmployee',
+        {'employee': employee},
+      );
+
+  /// Contrata formalmente a un postulante seleccionado, promoviéndolo a empleado.
+  _i3.Future<_i29.RrhhEmployee> hireApplicant({
+    required int applicantId,
+    required DateTime realStartDate,
+    required DateTime fiscalStartDate,
+    required double agreedSalary,
+    required String contractType,
+    DateTime? contractEndDate,
+    String? observations,
+    String? workplace,
+    String? supervisor,
+  }) => caller.callServerEndpoint<_i29.RrhhEmployee>(
+    'rrhhPersonnel',
+    'hireApplicant',
+    {
+      'applicantId': applicantId,
+      'realStartDate': realStartDate,
+      'fiscalStartDate': fiscalStartDate,
+      'agreedSalary': agreedSalary,
+      'contractType': contractType,
+      'contractEndDate': contractEndDate,
+      'observations': observations,
+      'workplace': workplace,
+      'supervisor': supervisor,
+    },
+  );
+
+  /// Modifica el estado de disponibilidad operativa del empleado.
+  _i3.Future<_i29.RrhhEmployee> updateAvailabilityStatus({
+    required int id,
+    required String newAvailabilityStatus,
+  }) => caller.callServerEndpoint<_i29.RrhhEmployee>(
+    'rrhhPersonnel',
+    'updateAvailabilityStatus',
+    {
+      'id': id,
+      'newAvailabilityStatus': newAvailabilityStatus,
+    },
+  );
+
+  /// Desvincula a un empleado pasando a INACTIVO y conservando todo su historial.
+  _i3.Future<_i29.RrhhEmployee> terminateEmployee({
+    required int id,
+    required DateTime exitDate,
+    required String exitReason,
+    String? exitObservations,
+  }) => caller.callServerEndpoint<_i29.RrhhEmployee>(
+    'rrhhPersonnel',
+    'terminateEmployee',
+    {
+      'id': id,
+      'exitDate': exitDate,
+      'exitReason': exitReason,
+      'exitObservations': exitObservations,
+    },
+  );
+
+  /// Soft delete de un empleado (eliminación lógica).
+  _i3.Future<bool> deleteEmployee(int id) => caller.callServerEndpoint<bool>(
+    'rrhhPersonnel',
+    'deleteEmployee',
+    {'id': id},
+  );
+
+  /// Lista los documentos del expediente digital del empleado.
+  _i3.Future<List<_i30.RrhhEmployeeDocument>> listDocuments(int employeeId) =>
+      caller.callServerEndpoint<List<_i30.RrhhEmployeeDocument>>(
+        'rrhhPersonnel',
+        'listDocuments',
+        {'employeeId': employeeId},
+      );
+
+  /// Registra un documento en el expediente.
+  _i3.Future<_i30.RrhhEmployeeDocument> addDocument(
+    _i30.RrhhEmployeeDocument document,
+  ) => caller.callServerEndpoint<_i30.RrhhEmployeeDocument>(
+    'rrhhPersonnel',
+    'addDocument',
+    {'document': document},
+  );
+
+  /// Elimina un documento del expediente.
+  _i3.Future<bool> deleteDocument(int documentId) =>
+      caller.callServerEndpoint<bool>(
+        'rrhhPersonnel',
+        'deleteDocument',
+        {'documentId': documentId},
+      );
+
+  /// Consulta la línea de tiempo de un colaborador.
+  _i3.Future<List<_i31.RrhhTimelineEvent>> listTimelineEvents(int employeeId) =>
+      caller.callServerEndpoint<List<_i31.RrhhTimelineEvent>>(
+        'rrhhPersonnel',
+        'listTimelineEvents',
+        {'employeeId': employeeId},
+      );
+
+  /// Agrega un hito a la línea de tiempo del empleado.
+  _i3.Future<_i31.RrhhTimelineEvent> addTimelineEvent(
+    _i31.RrhhTimelineEvent event,
+  ) => caller.callServerEndpoint<_i31.RrhhTimelineEvent>(
+    'rrhhPersonnel',
+    'addTimelineEvent',
+    {'event': event},
+  );
+
+  /// Sembrado inicial de empleados si la base de datos está vacía.
+  _i3.Future<bool> seedInitialData() => caller.callServerEndpoint<bool>(
+    'rrhhPersonnel',
+    'seedInitialData',
+    {},
+  );
+}
+
 /// Endpoint RPC para consulta de la bitácora de eventos y auditoría del sistema.
 /// {@category Endpoint}
 class EndpointAudit extends _i2.EndpointRef {
@@ -1319,12 +1515,12 @@ class EndpointAudit extends _i2.EndpointRef {
   String get name => 'audit';
 
   /// Lista los registros de bitácora paginados con filtros opcionales. Requiere audit.view.
-  _i3.Future<List<_i29.AuditLog>> listLogs({
+  _i3.Future<List<_i32.AuditLog>> listLogs({
     required int limit,
     required int offset,
     int? userId,
     String? action,
-  }) => caller.callServerEndpoint<List<_i29.AuditLog>>(
+  }) => caller.callServerEndpoint<List<_i32.AuditLog>>(
     'audit',
     'listLogs',
     {
@@ -1336,7 +1532,7 @@ class EndpointAudit extends _i2.EndpointRef {
   );
 
   /// Lista los registros de auditoría de forma paginada con filtros avanzados. Requiere audit.view.
-  _i3.Future<_i30.AuditLogPageResponse> listLogsPaged({
+  _i3.Future<_i33.AuditLogPageResponse> listLogsPaged({
     required int page,
     required int pageSize,
     String? action,
@@ -1345,7 +1541,7 @@ class EndpointAudit extends _i2.EndpointRef {
     DateTime? fromDate,
     DateTime? toDate,
     String? search,
-  }) => caller.callServerEndpoint<_i30.AuditLogPageResponse>(
+  }) => caller.callServerEndpoint<_i33.AuditLogPageResponse>(
     'audit',
     'listLogsPaged',
     {
@@ -1372,10 +1568,10 @@ class EndpointMfa extends _i2.EndpointRef {
   /// Verifica si el usuario autenticado requiere MFA.
   /// Si sí, genera un challenge, envía el email y devuelve el challengeId.
   /// Si no, devuelve null.
-  _i3.Future<_i31.MfaChallengeResponse?> checkRequired({
+  _i3.Future<_i34.MfaChallengeResponse?> checkRequired({
     required bool rememberMe,
     String? trustedDeviceToken,
-  }) => caller.callServerEndpoint<_i31.MfaChallengeResponse?>(
+  }) => caller.callServerEndpoint<_i34.MfaChallengeResponse?>(
     'mfa',
     'checkRequired',
     {
@@ -1389,11 +1585,11 @@ class EndpointMfa extends _i2.EndpointRef {
   /// - Si rememberMe, crea un TrustedDevice y devuelve el token.
   /// - Devuelve true si OK.
   /// Si es incorrecto, incrementa attempts y devuelve error.
-  _i3.Future<_i32.MfaVerifyResponse> verifyMfa({
+  _i3.Future<_i35.MfaVerifyResponse> verifyMfa({
     required String challengeId,
     required String code,
     required bool rememberMe,
-  }) => caller.callServerEndpoint<_i32.MfaVerifyResponse>(
+  }) => caller.callServerEndpoint<_i35.MfaVerifyResponse>(
     'mfa',
     'verifyMfa',
     {
@@ -1429,26 +1625,26 @@ class EndpointRbac extends _i2.EndpointRef {
   String get name => 'rbac';
 
   /// Lista los roles registrados en el sistema. Requiere roles.view.
-  _i3.Future<List<_i33.AppRole>> listRoles() =>
-      caller.callServerEndpoint<List<_i33.AppRole>>(
+  _i3.Future<List<_i36.AppRole>> listRoles() =>
+      caller.callServerEndpoint<List<_i36.AppRole>>(
         'rbac',
         'listRoles',
         {},
       );
 
   /// Lista el catálogo de permisos granulares. Requiere permissions.view.
-  _i3.Future<List<_i34.AppPermission>> listPermissions() =>
-      caller.callServerEndpoint<List<_i34.AppPermission>>(
+  _i3.Future<List<_i37.AppPermission>> listPermissions() =>
+      caller.callServerEndpoint<List<_i37.AppPermission>>(
         'rbac',
         'listPermissions',
         {},
       );
 
   /// Asigna un rol a un usuario. Requiere roles.manage.
-  _i3.Future<_i35.UserRole> assignRoleToUser({
+  _i3.Future<_i38.UserRole> assignRoleToUser({
     required int userId,
     required int roleId,
-  }) => caller.callServerEndpoint<_i35.UserRole>(
+  }) => caller.callServerEndpoint<_i38.UserRole>(
     'rbac',
     'assignRoleToUser',
     {
@@ -1471,10 +1667,10 @@ class EndpointRbac extends _i2.EndpointRef {
   );
 
   /// Asigna un permiso granular a un rol. Requiere permissions.assign.
-  _i3.Future<_i36.RolePermission> assignPermissionToRole({
+  _i3.Future<_i39.RolePermission> assignPermissionToRole({
     required int roleId,
     required int permissionId,
-  }) => caller.callServerEndpoint<_i36.RolePermission>(
+  }) => caller.callServerEndpoint<_i39.RolePermission>(
     'rbac',
     'assignPermissionToRole',
     {
@@ -1492,16 +1688,16 @@ class EndpointRbac extends _i2.EndpointRef {
       );
 
   /// Crea un nuevo rol empresarial. Requiere roles.manage.
-  _i3.Future<_i33.AppRole> createRole(_i33.AppRole role) =>
-      caller.callServerEndpoint<_i33.AppRole>(
+  _i3.Future<_i36.AppRole> createRole(_i36.AppRole role) =>
+      caller.callServerEndpoint<_i36.AppRole>(
         'rbac',
         'createRole',
         {'role': role},
       );
 
   /// Actualiza un rol existente. Requiere roles.manage.
-  _i3.Future<_i33.AppRole> updateRole(_i33.AppRole role) =>
-      caller.callServerEndpoint<_i33.AppRole>(
+  _i3.Future<_i36.AppRole> updateRole(_i36.AppRole role) =>
+      caller.callServerEndpoint<_i36.AppRole>(
         'rbac',
         'updateRole',
         {'role': role},
@@ -1562,8 +1758,8 @@ class EndpointSessionManagement extends _i2.EndpointRef {
   );
 
   /// Lista las sesiones activas asociadas a un usuario. Requiere sessions.view.
-  _i3.Future<List<_i37.UserSession>> listUserSessions(int userId) =>
-      caller.callServerEndpoint<List<_i37.UserSession>>(
+  _i3.Future<List<_i40.UserSession>> listUserSessions(int userId) =>
+      caller.callServerEndpoint<List<_i40.UserSession>>(
         'sessionManagement',
         'listUserSessions',
         {'userId': userId},
@@ -1604,11 +1800,11 @@ class EndpointUser extends _i2.EndpointRef {
   String get name => 'user';
 
   /// Lista usuarios paginados. Requiere permiso users.view.
-  _i3.Future<List<_i38.AppUser>> listUsers({
+  _i3.Future<List<_i41.AppUser>> listUsers({
     required int limit,
     required int offset,
     required bool includeDeleted,
-  }) => caller.callServerEndpoint<List<_i38.AppUser>>(
+  }) => caller.callServerEndpoint<List<_i41.AppUser>>(
     'user',
     'listUsers',
     {
@@ -1619,19 +1815,19 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Obtiene el detalle de un usuario por ID. Requiere permiso users.view.
-  _i3.Future<_i38.AppUser?> getUser(int id) =>
-      caller.callServerEndpoint<_i38.AppUser?>(
+  _i3.Future<_i41.AppUser?> getUser(int id) =>
+      caller.callServerEndpoint<_i41.AppUser?>(
         'user',
         'getUser',
         {'id': id},
       );
 
   /// Crea un nuevo usuario empresarial y le asocia sus roles iniciales. Requiere users.create.
-  _i3.Future<_i38.AppUser> createUser({
+  _i3.Future<_i41.AppUser> createUser({
     required String email,
     required String fullName,
     required List<int> roleIds,
-  }) => caller.callServerEndpoint<_i38.AppUser>(
+  }) => caller.callServerEndpoint<_i41.AppUser>(
     'user',
     'createUser',
     {
@@ -1642,10 +1838,10 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Actualiza información de un usuario. Requiere users.update.
-  _i3.Future<_i38.AppUser?> updateUser({
+  _i3.Future<_i41.AppUser?> updateUser({
     required int id,
     required String fullName,
-  }) => caller.callServerEndpoint<_i38.AppUser?>(
+  }) => caller.callServerEndpoint<_i41.AppUser?>(
     'user',
     'updateUser',
     {
@@ -1675,8 +1871,8 @@ class EndpointUser extends _i2.EndpointRef {
   );
 
   /// Retorna el AppUser asociado a la sesión autenticada actual.
-  _i3.Future<_i38.AppUser> getCurrentUser() =>
-      caller.callServerEndpoint<_i38.AppUser>(
+  _i3.Future<_i41.AppUser> getCurrentUser() =>
+      caller.callServerEndpoint<_i41.AppUser>(
         'user',
         'getCurrentUser',
         {},
@@ -1727,7 +1923,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i39.Protocol(),
+         _i42.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -1747,6 +1943,7 @@ class Client extends _i2.ServerpodClientShared {
     rrhhApplicant = EndpointRrhhApplicant(this);
     rrhhDashboard = EndpointRrhhDashboard(this);
     rrhhOrganization = EndpointRrhhOrganization(this);
+    rrhhPersonnel = EndpointRrhhPersonnel(this);
     audit = EndpointAudit(this);
     mfa = EndpointMfa(this);
     rbac = EndpointRbac(this);
@@ -1777,6 +1974,8 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointRrhhOrganization rrhhOrganization;
 
+  late final EndpointRrhhPersonnel rrhhPersonnel;
+
   late final EndpointAudit audit;
 
   late final EndpointMfa mfa;
@@ -1802,6 +2001,7 @@ class Client extends _i2.ServerpodClientShared {
     'rrhhApplicant': rrhhApplicant,
     'rrhhDashboard': rrhhDashboard,
     'rrhhOrganization': rrhhOrganization,
+    'rrhhPersonnel': rrhhPersonnel,
     'audit': audit,
     'mfa': mfa,
     'rbac': rbac,

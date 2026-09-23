@@ -94,22 +94,26 @@ El plan de construcción e integración backend se ejecuta en **7 Fases Secuenci
 
 ---
 
-### **FASE 3: Expediente del Empleado y Contratación**
+### **FASE 3: Expediente del Empleado y Contratación (COMPLETADA CON ÉXITO ✅)**
 *Objetivo:* Núcleo principal de información laboral, legal y contractual del trabajador.
-- [ ] **Modelos Serverpod:**
+- [x] **Modelos Serverpod:**
   - `rrhh_employee.spy.yaml`:
-    - Identificación: `code` (ej. EMP-001), `firstName`, `lastName`, `ci`, `phone`, `email`, `address`, `photoUrl`.
-    - Laboral: `areaId` (FK), `positionId` (FK), `specialtyId` (FK opcional), `workplaceType` ('Oficina' | 'Campo').
-    - Estado: `employmentStatus` ('Activo' | 'Inactivo' | 'Suspendido'), `hireDate`, `contractType` ('Indefinido' | 'Plazo Fijo' | 'Pasantia').
-    - Salarial: `baseSalary`, `paymentModality` ('Mensual' | 'Quincenal' | 'Por Jornal').
-    - Disponibilidad Operativa: `isAvailableForOperations` (bool), `currentAssignmentSummary` (string?).
-  - `rrhh_employee_document.spy.yaml`:
-    - Documentos adjuntos: CI escaneado, certificado de antecedentes, contrato firmado, finiquito, etc.
-- [ ] **Lógica de Conversión:**
-  - Método transaccional `hireApplicant(applicantId, employmentData)`: Promueve al postulante a `RrhhEmployee`, genera su código institucional y marca al postulante como 'Contratado'.
-- [ ] **Repositorio & Endpoint:**
-  - `RrhhEmployeeRepository` y `RrhhEmployeeEndpoint` con paginación, filtros reactivos y control RBAC.
-- ⏸️ **PUNTO DE CONTROL 3: Verificación de contratación, expediente digital y estados de disponibilidad.**
+    - Identificación: `code` (ej. EMP-001 con auto-generación), `fullName`, `birthDate`, `birthPlace`, `identityCard` (CI), `phone`, `address`, `occupation`, referencias.
+    - Clasificación: `employeeType` ('OFICINA' | 'CAMPO'), `area`, `areaId` (FK), `position`, `positionId` (FK), `specialty`, `specialtyId` (FK), `workplace`, `supervisor`, `supervisorId` (FK).
+    - Contrato y Salarios: `realStartDate`, `fiscalStartDate`, `agreedSalary`, `contractType` ('Indefinido', 'Plazo Fijo', 'Servicios'), `contractEndDate`, `paymentModality` ('MENSUAL', 'JORNAL', 'POR_HORAS'), `workScheduleType`.
+    - Disponibilidad Operativa: `availabilityStatus` ('DISPONIBLE', 'ASIGNADO', 'DE_VACACIONES', 'CON_PERMISO', 'SUSPENDIDO') publicado a Operaciones.
+    - Expediente físico e institucional: flags de CI, luz/agua, croquis, FELCC, foto, seguro SUS, `corporateEmail`, `applicantId` (FK).
+    - Desvinculación laboral: `exitDate`, `exitReason`, `exitObservations`, `exitRegisteredBy` (preservando registro inactivo).
+  - `rrhh_employee_document.spy.yaml`: Adjuntos digitales del expediente (CI, croquis, finiquito, certificados) con verificación.
+  - `rrhh_timeline_event.spy.yaml`: Hitos históricos inmutables de la trayectoria laboral ('CONTRATACION', 'DESVINCULACION', 'ASIGNACION', etc.).
+- [x] **Lógica de Conversión & Repositorio:**
+  - `RrhhPersonnelRepository`: Creación directa con código correlativo (`EMP-001`, `EMP-002`), método transaccional `hireApplicant` que contrata al postulante seleccionado creando su expediente y marcando al candidato como 'CONTRATADO', actualización de disponibilidad, desvinculación `terminateEmployee` sin borrado físico y gestión de documentos/timeline.
+  - `RrhhPersonnelEndpoint`: Endpoints protegidos mediante `RbacGuard` con permisos `AppPermissions.rrhhPersonalView` y `AppPermissions.rrhhPersonalManage`.
+- [x] **Migración & Seed Data:**
+  - Migración SQL `20260923135115883` aplicada en PostgreSQL de desarrollo y testing.
+  - Seeder de 5 empleados iniciales (4 activos de campo/oficina y 1 inactivo desvinculado con finiquito) persistidos en PostgreSQL.
+  - Test de integración `rrhh_personnel_test.dart` ejecutado y pasando al 100%.
+- ⏸️ **PUNTO DE CONTROL 3 ALCANZADO: FASE 3 completada y validada en PostgreSQL con cero errores de análisis estático.**
 
 ---
 

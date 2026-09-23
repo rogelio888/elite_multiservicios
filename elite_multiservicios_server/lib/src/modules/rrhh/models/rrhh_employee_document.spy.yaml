@@ -1,0 +1,29 @@
+### Documento adjunto al expediente digital del empleado (CI, Finiquito, Contrato, etc.).
+class: RrhhEmployeeDocument
+table: rrhh_employee_document
+fields:
+  ### Empleado al que pertenece el documento.
+  employeeId: int, relation(parent=rrhh_employee, onDelete=Cascade)
+  ### Tipo de documento: 'CI', 'AVISO_LUZ_AGUA', 'CROQUIS', 'FELCC', 'FOTO', 'SEGURO_SUS', 'CONTRATO_FIRMADO', 'FINIQUITO', 'OTRO'.
+  documentType: String
+  ### Título descriptivo del documento.
+  title: String
+  ### Ruta o URL de almacenamiento del archivo.
+  fileUrl: String
+  ### Nombre original del archivo.
+  fileName: String
+  ### Tamaño del archivo en bytes.
+  fileSizeBytes: int?, default=0
+  ### Tipo MIME del archivo (ej: application/pdf, image/jpeg).
+  mimeType: String?
+  ### Estado de verificación por parte de RRHH.
+  isVerified: bool, default=true
+  ### Usuario que verificó el documento.
+  verifiedBy: String?
+  ### Fecha de verificación.
+  verifiedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  rrhh_emp_doc_emp_type_idx:
+    fields: employeeId, documentType

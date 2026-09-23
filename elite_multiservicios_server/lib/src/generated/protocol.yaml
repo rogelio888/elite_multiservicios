@@ -105,6 +105,22 @@ rrhhOrganization:
   - updateSpecialty:
   - deleteSpecialty:
   - seedInitialData:
+rrhhPersonnel:
+  - listEmployees:
+  - getEmployeeById:
+  - getEmployeeByCode:
+  - createEmployee:
+  - updateEmployee:
+  - hireApplicant:
+  - updateAvailabilityStatus:
+  - terminateEmployee:
+  - deleteEmployee:
+  - listDocuments:
+  - addDocument:
+  - deleteDocument:
+  - listTimelineEvents:
+  - addTimelineEvent:
+  - seedInitialData:
 audit:
   - listLogs:
   - listLogsPaged:
