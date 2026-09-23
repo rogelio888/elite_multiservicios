@@ -71,6 +71,8 @@ services:
         value: rogeliovladimir2016@gmail.com
       - key: SEED_ADMIN_PASSWORD
         sync: false
+      - key: SEED_ADMIN_MFA_ENABLED
+        value: "false"
       - key: SEED_ON_START
         value: "true"
 

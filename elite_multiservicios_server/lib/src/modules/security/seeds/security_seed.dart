@@ -182,14 +182,25 @@ class SecuritySeed {
       );
     } else {
       session.log(
-        'Credenciales Auth IDP para $adminEmail ya existen. Sincronizando contraseña con SEED_ADMIN_PASSWORD...',
+        'Credenciales Auth IDP para $adminEmail ya existen.',
+        level: LogLevel.info,
       );
-      await AuthServices.instance.emailIdp.admin.setPassword(
-        session,
-        email: adminEmail,
-        password: adminPassword,
-      );
+      if (Platform.environment['SEED_ADMIN_OVERWRITE_PASSWORD'] == 'true') {
+        session.log(
+          'SEED_ADMIN_OVERWRITE_PASSWORD=true detectado. Sincronizando contraseña con SEED_ADMIN_PASSWORD...',
+          level: LogLevel.info,
+        );
+        await AuthServices.instance.emailIdp.admin.setPassword(
+          session,
+          email: adminEmail,
+          password: adminPassword,
+        );
+      }
     }
+
+    final mfaEnv = Platform.environment['SEED_ADMIN_MFA_ENABLED'];
+    final shouldEnableMfa = mfaEnv == 'true';
+    final hasMfaExplicitConfig = mfaEnv != null && mfaEnv.isNotEmpty;
 
     var adminUser = await AppUser.db.findFirstRow(
       session,
@@ -204,24 +215,36 @@ class SecuritySeed {
           fullName: 'Administrador del Sistema',
           isActive: true,
           isDeleted: false,
-          mustChangePassword: true,
-          mfaEnabled: true,
+          mustChangePassword: false,
+          mfaEnabled: shouldEnableMfa,
           createdAt: DateTime.now().toUtc(),
           updatedAt: DateTime.now().toUtc(),
         ),
       );
-    } else if (!adminUser.mfaEnabled ||
-        adminUser.failedLoginAttempts > 0 ||
-        adminUser.lockedUntil != null) {
-      adminUser = await AppUser.db.updateRow(
-        session,
-        adminUser.copyWith(
-          mfaEnabled: true,
-          failedLoginAttempts: 0,
-          lockedUntil: null,
-          updatedAt: DateTime.now().toUtc(),
-        ),
-      );
+    } else {
+      final shouldUpdateMfa =
+          hasMfaExplicitConfig && adminUser.mfaEnabled != shouldEnableMfa;
+      final isLocked =
+          adminUser.failedLoginAttempts > 0 || adminUser.lockedUntil != null;
+      final isInactive = !adminUser.isActive;
+
+      if (shouldUpdateMfa || isLocked || isInactive) {
+        session.log(
+          'Actualizando usuario admin: isActive=true, reset bloqueos, mfaEnabled=${shouldUpdateMfa ? shouldEnableMfa : adminUser.mfaEnabled}...',
+          level: LogLevel.info,
+        );
+        adminUser = await AppUser.db.updateRow(
+          session,
+          adminUser.copyWith(
+            isActive: true,
+            failedLoginAttempts: 0,
+            lockedUntil: null,
+            mfaEnabled:
+                shouldUpdateMfa ? shouldEnableMfa : adminUser.mfaEnabled,
+            updatedAt: DateTime.now().toUtc(),
+          ),
+        );
+      }
     }
 
     // Vincular rol Super Administrador al usuario creado

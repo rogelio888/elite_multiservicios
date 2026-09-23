@@ -137,12 +137,16 @@ class RbacGuard {
         where: (t) => t.authUserId.equals(authUuid),
       );
       if (emailAccount != null) {
+        final emailRaw = emailAccount.email.trim();
+        final emailLower = emailRaw.toLowerCase();
         appUser = await AppUser.db.findFirstRow(
           session,
-          where: (t) => t.email.equals(emailAccount.email),
+          where: (t) => t.email.equals(emailRaw) | t.email.equals(emailLower),
         );
       }
-    } else {
+    }
+
+    if (appUser == null) {
       final id = int.tryParse(authUserIdStr);
       if (id != null) {
         appUser = await AppUser.db.findFirstRow(
