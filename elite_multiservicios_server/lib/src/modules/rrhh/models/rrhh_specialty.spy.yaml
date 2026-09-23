@@ -1,0 +1,26 @@
+### Especialidad operativa y técnica (ej: Jardinería, Limpieza, Seguridad, Climatización).
+class: RrhhSpecialty
+table: rrhh_specialty
+fields:
+  ### Código único de especialidad (ej: ESP-JARD, ESP-LIMP, ESP-SEG).
+  code: String
+  ### Nombre de la especialidad técnica.
+  name: String
+  ### Descripción detallada del alcance técnico y certificaciones asociadas.
+  description: String?
+  ### Color identificador (#HEX) para badges y filtros rápidos en planillas y turnos.
+  colorTag: String?
+  ### Estado operativo.
+  isActive: bool, default=true
+  ### Eliminación lógica y auditoría temporal.
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  rrhh_specialty_code_unique_idx:
+    fields: code
+    unique: true
+  rrhh_specialty_name_unique_idx:
+    fields: name
+    unique: true

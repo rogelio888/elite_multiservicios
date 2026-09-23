@@ -1,0 +1,41 @@
+### Control y registro de vacaciones del colaborador conforme a Ley Laboral.
+class: RrhhVacation
+table: rrhh_vacation
+fields:
+  ### Código de solicitud de vacación (ej: VAC-2026-001)
+  code: String
+
+  ### Colaborador solicitante
+  employeeId: int, relation(parent=rrhh_employee)
+  employeeCode: String
+  employeeName: String
+
+  ### Período y vigencia
+  periodYear: int
+  startDate: DateTime
+  endDate: DateTime
+  daysRequested: int
+
+  ### Saldo computado a la fecha de solicitud
+  totalAccruedDays: int
+  remainingBalanceDays: int
+
+  ### Estado: 'SOLICITADA', 'APROBADA', 'EN_CURSO', 'COMPLETADA', 'RECHAZADA'
+  status: String, default='SOLICITADA'
+
+  ### Aprobación
+  approvedByUserId: int?
+  approvedAt: DateTime?
+  notes: String?
+
+  ### Eliminación lógica y fechas
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  rrhh_vacation_code_unique_idx:
+    fields: code
+    unique: true
+  rrhh_vacation_employee_idx:
+    fields: employeeId, periodYear

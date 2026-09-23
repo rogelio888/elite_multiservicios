@@ -1,0 +1,20 @@
+### Evento o hito histórico en la línea de tiempo del colaborador (RRHH).
+class: RrhhTimelineEvent
+table: rrhh_timeline_event
+fields:
+  ### Empleado al que corresponde el evento.
+  employeeId: int, relation(parent=rrhh_employee, onDelete=Cascade)
+  ### Fecha del suceso.
+  date: DateTime
+  ### Título del hito (ej: Contratación Inicial, Ascenso, Traslado).
+  title: String
+  ### Detalle o descripción del hecho.
+  description: String
+  ### Categoría del evento: 'CONTRATACION', 'ASIGNACION', 'HORARIO', 'PERMISO', 'INCIDENCIA', 'DESVINCULACION'.
+  category: String
+  ### Usuario o responsable que registró el evento.
+  registeredBy: String
+  createdAt: DateTime
+indexes:
+  rrhh_timeline_employee_idx:
+    fields: employeeId, date

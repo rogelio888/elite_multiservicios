@@ -1,0 +1,44 @@
+### Régimen disciplinario, incidentes y reconocimientos en el expediente del trabajador.
+class: RrhhIncident
+table: rrhh_incident
+fields:
+  ### Código de incidente (ej: INC-2026-001)
+  code: String
+
+  ### Colaborador afectado / reconocido
+  employeeId: int, relation(parent=rrhh_employee)
+  employeeCode: String
+  employeeName: String
+
+  ### Tipo: 'FALTA_INJUSTIFICADA', 'ATRASO_REITERADO', 'LLAMADO_ATENCION_LEVE', 'MEMORANDUM_GRAVE', 'SUSPENSION_TEMPORAL', 'FELICITACION', 'RECONOCIMIENTO'
+  incidentType: String
+
+  ### Severidad: 'POSITIVA', 'LEVE', 'MODERADA', 'GRAVE'
+  severity: String
+
+  ### Fecha del suceso
+  incidentDate: DateTime
+
+  ### Título y descripción
+  title: String
+  description: String
+
+  ### Medida correctiva / efecto laboral
+  actionTaken: String
+  isJustified: bool, default=false
+
+  ### Auditoría
+  recordedByUserId: int?
+  documentReferenceUrl: String?
+
+  ### Eliminación lógica y fechas
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  rrhh_incident_code_unique_idx:
+    fields: code
+    unique: true
+  rrhh_incident_employee_type_idx:
+    fields: employeeId, incidentType

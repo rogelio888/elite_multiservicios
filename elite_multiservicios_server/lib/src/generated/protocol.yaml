@@ -77,9 +77,77 @@ crmPipeline:
   - promoteToCustomer:
   - deleteOpportunity:
   - getMetrics:
+rrhhApplicant:
+  - listApplicants:
+  - getApplicantById:
+  - createApplicant:
+  - updateApplicant:
+  - updateApplicantStatus:
+  - deleteApplicant:
+  - seedInitialData:
+rrhhAssignment:
+  - listSchedules:
+  - getScheduleById:
+  - createSchedule:
+  - updateSchedule:
+  - deleteSchedule:
+  - listAssignments:
+  - getAssignmentById:
+  - getActiveAssignmentByEmployee:
+  - getRotationHistory:
+  - createAssignment:
+  - rotateAssignment:
+  - cancelAssignment:
 rrhhDashboard:
   - getMetrics:
   - getRecentMovements:
+rrhhLabor:
+  - listLeaveRequests:
+  - getLeaveRequestById:
+  - createLeaveRequest:
+  - resolveLeaveRequest:
+  - calculateVacationEntitlement:
+  - listVacations:
+  - requestVacation:
+  - approveVacation:
+  - listIncidents:
+  - recordIncident:
+  - terminateEmployee:
+  - listMovements:
+  - recordMovement:
+rrhhOrganization:
+  - listAreas:
+  - getAreaById:
+  - createArea:
+  - updateArea:
+  - deleteArea:
+  - listPositions:
+  - getPositionById:
+  - createPosition:
+  - updatePosition:
+  - deletePosition:
+  - listSpecialties:
+  - getSpecialtyById:
+  - createSpecialty:
+  - updateSpecialty:
+  - deleteSpecialty:
+  - seedInitialData:
+rrhhPersonnel:
+  - listEmployees:
+  - getEmployeeById:
+  - getEmployeeByCode:
+  - createEmployee:
+  - updateEmployee:
+  - hireApplicant:
+  - updateAvailabilityStatus:
+  - terminateEmployee:
+  - deleteEmployee:
+  - listDocuments:
+  - addDocument:
+  - deleteDocument:
+  - listTimelineEvents:
+  - addTimelineEvent:
+  - seedInitialData:
 audit:
   - listLogs:
   - listLogsPaged:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../data/models/rrhh_employee.dart';
 import '../../data/services/rrhh_state_service.dart';
 import '../widgets/rrhh_shared_widgets.dart';
 import '../widgets/rrhh_export_payroll_dialog.dart';
@@ -21,11 +22,31 @@ class _RrhhReportsViewState extends State<RrhhReportsView>
   String _filterType = 'TODOS'; // TODOS, OFICINA, CAMPO
   String _filterStatus = 'ACTIVO'; // ACTIVO, INACTIVO, TODOS
   String _searchQuery = '';
-  String _payrollViewMode = 'OFICIAL'; // OFICIAL, RESUMEN
+  String _payrollViewMode =
+      'RESUMEN'; // RESUMEN (Fiel a Imagen 2) u OFICIAL (19 col)
+  String _selectedCompany = 'TODAS'; // TODAS o empresa/cliente específico
 
   late final ScrollController _payrollScrollController;
   late final ScrollController _incidentsScrollController;
   late final ScrollController _exitsScrollController;
+
+  List<String> get _availableCompanies {
+    final companies = <String>{};
+    for (final e in _stateService.allEmployees) {
+      if (e.type == 'OFICINA') {
+        companies.add('Oficina Central Elite');
+      } else if (e.workplace.trim().isNotEmpty) {
+        companies.add(e.workplace.trim());
+      }
+    }
+    for (final c in _stateService.clientCompanies) {
+      if (c.name.trim().isNotEmpty) {
+        companies.add(c.name.trim());
+      }
+    }
+    final sorted = companies.toList()..sort();
+    return ['TODAS', ...sorted];
+  }
 
   @override
   void initState() {
@@ -60,6 +81,15 @@ class _RrhhReportsViewState extends State<RrhhReportsView>
           if (_filterStatus != 'TODOS' && e.status != _filterStatus) {
             return false;
           }
+          if (_selectedCompany != 'TODAS') {
+            if (e.type == 'OFICINA' &&
+                _selectedCompany != 'Oficina Central Elite') {
+              return false;
+            }
+            if (e.type == 'CAMPO' && e.workplace != _selectedCompany) {
+              return false;
+            }
+          }
           if (_searchQuery.isEmpty) {
             return true;
           }
@@ -67,6 +97,7 @@ class _RrhhReportsViewState extends State<RrhhReportsView>
           return e.fullName.toLowerCase().contains(q) ||
               e.code.toLowerCase().contains(q) ||
               e.position.toLowerCase().contains(q) ||
+              e.workplace.toLowerCase().contains(q) ||
               (e.clientCompanyName?.toLowerCase().contains(q) ?? false) ||
               e.area.toLowerCase().contains(q);
         }).toList();
@@ -89,12 +120,9 @@ class _RrhhReportsViewState extends State<RrhhReportsView>
               : const Color(0xFFF8FAFC),
           body: Column(
             children: [
-              // 1. Header Principal Ejecutivo con Exportación
+              // 1. Header Principal con Exportación (Fiel a Imagen 2)
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: isDark ? const Color(0xFF0F172A) : Colors.white,
                   border: Border(
@@ -105,29 +133,32 @@ class _RrhhReportsViewState extends State<RrhhReportsView>
                     ),
                   ),
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6366F1).withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(
-                        Icons.analytics_outlined,
-                        color: Color(0xFF6366F1),
-                        size: 22,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: const Color(
+                              0xFF6366F1,
+                            ).withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.analytics_outlined,
+                            color: Color(0xFF6366F1),
+                            size: 22,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Centro de Reportes & Planillas',
+                                'Centro de Reportes & Métricas',
                                 style: GoogleFonts.inter(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700,
@@ -136,313 +167,368 @@ class _RrhhReportsViewState extends State<RrhhReportsView>
                                       : const Color(0xFF0F172A),
                                 ),
                               ),
-                              const SizedBox(width: 10),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 7,
-                                  vertical: 3,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(
-                                    0xFF6366F1,
-                                  ).withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                    color: const Color(
-                                      0xFF6366F1,
-                                    ).withValues(alpha: 0.25),
-                                  ),
-                                ),
-                                child: Text(
-                                  'NIT: 4625505019',
-                                  style: GoogleFonts.jetBrainsMono(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF6366F1),
-                                  ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Planillas consolidadas, análisis salarial, bitácora de asistencias y exportación normativa',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12.5,
+                                  color: isDark
+                                      ? const Color(0xFF94A3B8)
+                                      : const Color(0xFF64748B),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Elite Multiservicios • Planilla Oficial de Sueldos (OVT / Min. de Trabajo) y Auditoría Laboral',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: isDark
-                                  ? const Color(0xFF94A3B8)
-                                  : const Color(0xFF64748B),
+                        ),
+                        Wrap(
+                          spacing: 8,
+                          children: [
+                            OutlinedButton.icon(
+                              onPressed: () => _openExportPayrollDialog(
+                                context,
+                                filteredEmployees,
+                              ),
+                              icon: const Icon(Icons.table_view, size: 16),
+                              label: const Text('Exportar Excel'),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 11,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Wrap(
-                      spacing: 8,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        SegmentedButton<String>(
-                          segments: const [
-                            ButtonSegment(
-                              value: 'OFICIAL',
-                              label: Text('Planilla Oficial (19 col)'),
-                              icon: Icon(Icons.table_chart_outlined, size: 14),
-                            ),
-                            ButtonSegment(
-                              value: 'RESUMEN',
-                              label: Text('Directorio'),
-                              icon: Icon(Icons.view_compact_outlined, size: 14),
+                            FilledButton.icon(
+                              onPressed: () => _simulateExport(
+                                context,
+                                'Informe Ejecutivo RRHH',
+                                'pdf',
+                              ),
+                              icon: const Icon(Icons.picture_as_pdf, size: 16),
+                              label: const Text('Descargar PDF'),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: const Color(0xFF6366F1),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 11,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
                             ),
                           ],
-                          selected: {_payrollViewMode},
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Barra de Pestañas y Filtros (Fiel a Imagen 2)
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TabBar(
+                            controller: _tabController,
+                            onTap: (_) => setState(() {}),
+                            isScrollable: true,
+                            tabAlignment: TabAlignment.start,
+                            labelColor: const Color(0xFF6366F1),
+                            unselectedLabelColor: isDark
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFF64748B),
+                            indicatorColor: const Color(0xFF6366F1),
+                            indicatorWeight: 3,
+                            labelStyle: GoogleFonts.inter(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            tabs: [
+                              Tab(
+                                text: _selectedCompany == 'TODAS'
+                                    ? 'Planilla Consolidada (${filteredEmployees.length})'
+                                    : 'Planilla: $_selectedCompany (${filteredEmployees.length})',
+                              ),
+                              Tab(
+                                text:
+                                    'Incidencias (${_stateService.incidents.length})',
+                              ),
+                              Tab(
+                                text: 'Bajas Histórica',
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        SegmentedButton<String>(
+                          segments: const [
+                            ButtonSegment(value: 'TODOS', label: Text('Todos')),
+                            ButtonSegment(
+                              value: 'OFICINA',
+                              label: Text('Oficina'),
+                            ),
+                            ButtonSegment(value: 'CAMPO', label: Text('Campo')),
+                          ],
+                          selected: {_filterType},
                           onSelectionChanged: (val) =>
-                              setState(() => _payrollViewMode = val.first),
+                              setState(() => _filterType = val.first),
                           style: ButtonStyle(
                             visualDensity: VisualDensity.compact,
                             textStyle: WidgetStatePropertyAll(
-                              GoogleFonts.inter(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w600,
+                              GoogleFonts.inter(fontSize: 12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        SegmentedButton<String>(
+                          segments: const [
+                            ButtonSegment(
+                              value: 'ACTIVO',
+                              label: Text('Activos'),
+                            ),
+                            ButtonSegment(
+                              value: 'INACTIVO',
+                              label: Text('Bajas'),
+                            ),
+                            ButtonSegment(value: 'TODOS', label: Text('Ambos')),
+                          ],
+                          selected: {_filterStatus},
+                          onSelectionChanged: (val) =>
+                              setState(() => _filterStatus = val.first),
+                          style: ButtonStyle(
+                            visualDensity: VisualDensity.compact,
+                            textStyle: WidgetStatePropertyAll(
+                              GoogleFonts.inter(fontSize: 12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            onChanged: (val) =>
+                                setState(() => _searchQuery = val),
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
+                            ),
+                            decoration: InputDecoration(
+                              hintText: 'Filtrar reporte...',
+                              hintStyle: GoogleFonts.inter(
+                                fontSize: 13,
+                                color: isDark
+                                    ? const Color(0xFF64748B)
+                                    : const Color(0xFF94A3B8),
+                              ),
+                              prefixIcon: Icon(
+                                Icons.search,
+                                size: 18,
+                                color: isDark
+                                    ? const Color(0xFF64748B)
+                                    : const Color(0xFF94A3B8),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
+                              filled: true,
+                              fillColor: isDark
+                                  ? const Color(0xFF0B1324)
+                                  : const Color(0xFFF1F5F9),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
                               ),
                             ),
                           ),
                         ),
-                        FilledButton.icon(
-                          onPressed: () => _openExportPayrollDialog(context),
-                          icon: const Icon(
-                            Icons.file_download_outlined,
-                            size: 16,
-                          ),
-                          label: const Text('Exportar Excel (.xls)'),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: const Color(0xFF10B981),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                        OutlinedButton.icon(
-                          onPressed: () => _simulateExport(
-                            context,
-                            'Informe Ejecutivo RRHH',
-                            'pdf',
-                          ),
-                          icon: const Icon(
-                            Icons.picture_as_pdf_outlined,
-                            size: 16,
-                          ),
-                          label: const Text('Descargar PDF'),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ],
                 ),
               ),
 
-              // 2. Tarjetas Ejecutivas de KPIs (Diseño limpio y proporcional, CERO OVERFLOW)
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 14,
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _buildMetricCard(
-                        label: 'Total Colaboradores',
-                        value: '${filteredEmployees.length} activos',
-                        sub: '$oficinaCount Oficina • $campoCount Campo',
-                        icon: Icons.people_outline,
-                        color: const Color(0xFF6366F1),
-                        isDark: isDark,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: _buildMetricCard(
-                        label: 'Masa Salarial Bruta',
-                        value: 'Bs. ${totalSalary.toStringAsFixed(2)}',
-                        sub: 'Total ganado mensual computable',
-                        icon: Icons.payments_outlined,
-                        color: const Color(0xFF3B82F6),
-                        isDark: isDark,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: _buildMetricCard(
-                        label: 'Aporte Gestora (12.71%)',
-                        value:
-                            'Bs. ${(totalSalary * 0.1271).toStringAsFixed(2)}',
-                        sub: 'Seguridad Social / Jubilación',
-                        icon: Icons.account_balance_outlined,
-                        color: const Color(0xFFF59E0B),
-                        isDark: isDark,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: _buildMetricCard(
-                        label: 'Líquido Pagable Total',
-                        value:
-                            'Bs. ${(totalSalary * (1 - 0.1271)).toStringAsFixed(2)}',
-                        sub: 'Neto transferible a trabajadores',
-                        icon: Icons.verified_outlined,
-                        color: const Color(0xFF10B981),
-                        isDark: isDark,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // 3. Barra Unificada de Pestañas y Filtros
+              // 2. Sub-barra de Resumen Rápido con Selector de Planilla por Empresa (Adaptable, CERO OVERFLOW)
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 4,
+                  horizontal: 20,
+                  vertical: 8,
                 ),
-                decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF0F172A) : Colors.white,
-                  border: Border(
-                    top: BorderSide(
-                      color: isDark
-                          ? const Color(0xFF1E293B)
-                          : const Color(0xFFE2E8F0),
-                    ),
-                    bottom: BorderSide(
-                      color: isDark
-                          ? const Color(0xFF1E293B)
-                          : const Color(0xFFE2E8F0),
-                    ),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    TabBar(
-                      controller: _tabController,
-                      onTap: (_) => setState(() {}),
-                      isScrollable: true,
-                      tabAlignment: TabAlignment.start,
-                      labelColor: const Color(0xFF6366F1),
-                      unselectedLabelColor: isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF64748B),
-                      indicatorColor: const Color(0xFF6366F1),
-                      indicatorWeight: 3,
-                      labelStyle: GoogleFonts.inter(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      tabs: [
-                        Tab(
-                          text:
-                              'Planilla Oficial de Sueldos (${filteredEmployees.length})',
+                color: isDark
+                    ? const Color(0xFF0B1324)
+                    : const Color(0xFFF1F5F9),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Wrap(
+                      spacing: 16,
+                      runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      alignment: WrapAlignment.spaceBetween,
+                      children: [
+                        Wrap(
+                          spacing: 14,
+                          runSpacing: 6,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            _buildKpiPill(
+                              label: 'Registros Filtrados',
+                              value: '${filteredEmployees.length}',
+                              isDark: isDark,
+                            ),
+                            _buildKpiPill(
+                              label: 'Masa Salarial Filtrada',
+                              value: 'Bs. ${totalSalary.toStringAsFixed(2)}',
+                              isDark: isDark,
+                            ),
+                            _buildKpiPill(
+                              label: 'Personal Oficina',
+                              value: '$oficinaCount',
+                              isDark: isDark,
+                            ),
+                            _buildKpiPill(
+                              label: 'Personal Campo',
+                              value: '$campoCount',
+                              isDark: isDark,
+                            ),
+                          ],
                         ),
-                        Tab(
-                          text:
-                              'Incidencias (${_stateService.incidents.length})',
-                        ),
-                        Tab(
-                          text:
-                              'Bajas Históricas (${_stateService.exits.length})',
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 6,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            // Selector de Empresa / Cliente para Planillas Dedicadas
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? const Color(0xFF161F30)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: isDark
+                                      ? const Color(0xFF1E293B)
+                                      : const Color(0xFFCBD5E1),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.business_outlined,
+                                    size: 15,
+                                    color: isDark
+                                        ? const Color(0xFF818CF8)
+                                        : const Color(0xFF6366F1),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Empresa: ',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11.5,
+                                      color: isDark
+                                          ? const Color(0xFF94A3B8)
+                                          : const Color(0xFF64748B),
+                                    ),
+                                  ),
+                                  DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      value: _selectedCompany,
+                                      isDense: true,
+                                      icon: const Icon(
+                                        Icons.keyboard_arrow_down,
+                                        size: 16,
+                                      ),
+                                      items: _availableCompanies.map((c) {
+                                        final String label;
+                                        if (c == 'TODAS') {
+                                          label = 'Todas las Empresas';
+                                        } else if (c ==
+                                            'Oficina Central Elite') {
+                                          final count = _stateService
+                                              .allEmployees
+                                              .where((e) => e.type == 'OFICINA')
+                                              .length;
+                                          label = 'Oficina Central ($count)';
+                                        } else {
+                                          final count = _stateService
+                                              .allEmployees
+                                              .where((e) => e.workplace == c)
+                                              .length;
+                                          label = '$c ($count)';
+                                        }
+                                        return DropdownMenuItem(
+                                          value: c,
+                                          child: Text(
+                                            label,
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : const Color(0xFF0F172A),
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                      onChanged: (val) => setState(
+                                        () => _selectedCompany = val ?? 'TODAS',
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Botón de alternancia Formato Min. de Trabajo / Vista Consolidada
+                            TextButton.icon(
+                              onPressed: () {
+                                setState(() {
+                                  _payrollViewMode =
+                                      _payrollViewMode == 'RESUMEN'
+                                      ? 'OFICIAL'
+                                      : 'RESUMEN';
+                                });
+                              },
+                              icon: Icon(
+                                _payrollViewMode == 'RESUMEN'
+                                    ? Icons.account_balance
+                                    : Icons.table_chart_outlined,
+                                size: 16,
+                              ),
+                              label: Text(
+                                _payrollViewMode == 'RESUMEN'
+                                    ? 'Formato Min. de Trabajo'
+                                    : 'Vista Consolidada',
+                              ),
+                              style: TextButton.styleFrom(
+                                textStyle: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                foregroundColor: const Color(0xFF6366F1),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
-                    ),
-                    const Spacer(),
-                    SegmentedButton<String>(
-                      segments: const [
-                        ButtonSegment(value: 'TODOS', label: Text('Todos')),
-                        ButtonSegment(value: 'OFICINA', label: Text('Oficina')),
-                        ButtonSegment(value: 'CAMPO', label: Text('Campo')),
-                      ],
-                      selected: {_filterType},
-                      onSelectionChanged: (val) =>
-                          setState(() => _filterType = val.first),
-                      style: ButtonStyle(
-                        visualDensity: VisualDensity.compact,
-                        textStyle: WidgetStatePropertyAll(
-                          GoogleFonts.inter(fontSize: 11.5),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    SegmentedButton<String>(
-                      segments: const [
-                        ButtonSegment(value: 'ACTIVO', label: Text('Activos')),
-                        ButtonSegment(value: 'INACTIVO', label: Text('Bajas')),
-                      ],
-                      selected: {_filterStatus},
-                      onSelectionChanged: (val) =>
-                          setState(() => _filterStatus = val.first),
-                      style: ButtonStyle(
-                        visualDensity: VisualDensity.compact,
-                        textStyle: WidgetStatePropertyAll(
-                          GoogleFonts.inter(fontSize: 11.5),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    SizedBox(
-                      width: 190,
-                      height: 36,
-                      child: TextField(
-                        onChanged: (val) => setState(() => _searchQuery = val),
-                        style: GoogleFonts.inter(
-                          fontSize: 12.5,
-                          color: isDark
-                              ? Colors.white
-                              : const Color(0xFF0F172A),
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Buscar colaborador...',
-                          hintStyle: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: isDark
-                                ? const Color(0xFF64748B)
-                                : const Color(0xFF94A3B8),
-                          ),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            size: 16,
-                            color: isDark
-                                ? const Color(0xFF64748B)
-                                : const Color(0xFF94A3B8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 0,
-                          ),
-                          filled: true,
-                          fillColor: isDark
-                              ? const Color(0xFF0B1324)
-                              : const Color(0xFFF1F5F9),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
 
-              // 4. Contenido de Tablas
+              // 3. Contenido de Tablas
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
@@ -460,73 +546,30 @@ class _RrhhReportsViewState extends State<RrhhReportsView>
     );
   }
 
-  Widget _buildMetricCard({
+  Widget _buildKpiPill({
     required String label,
     required String value,
-    required String sub,
-    required IconData icon,
-    required Color color,
     required bool isDark,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0F172A) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          '$label: ',
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(9),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 20),
+        Text(
+          value,
+          style: GoogleFonts.inter(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w700,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  label,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: isDark
-                        ? const Color(0xFF94A3B8)
-                        : const Color(0xFF64748B),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: GoogleFonts.jetBrainsMono(
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w800,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  sub,
-                  style: GoogleFonts.inter(
-                    fontSize: 10.5,
-                    color: isDark
-                        ? const Color(0xFF64748B)
-                        : const Color(0xFF94A3B8),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -2025,11 +2068,14 @@ class _RrhhReportsViewState extends State<RrhhReportsView>
     );
   }
 
-  void _openExportPayrollDialog(BuildContext context) {
+  void _openExportPayrollDialog(
+    BuildContext context, [
+    List<RrhhEmployee>? exportEmployees,
+  ]) {
     showDialog(
       context: context,
       builder: (ctx) => RrhhExportPayrollDialog(
-        employees: _stateService.allEmployees,
+        employees: exportEmployees ?? _stateService.allEmployees,
       ),
     );
   }

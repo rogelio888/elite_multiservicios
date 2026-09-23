@@ -1,0 +1,103 @@
+### Expediente maestro del Colaborador / Empleado de Elite Multiservicios.
+class: RrhhEmployee
+table: rrhh_employee
+fields:
+  ### Código institucional del empleado (ej: EMP-001).
+  code: String
+  ### Nombre completo oficial.
+  fullName: String
+  ### Fecha de nacimiento.
+  birthDate: DateTime?
+  ### Lugar de nacimiento (ej: Santa Cruz de la Sierra, La Paz).
+  birthPlace: String
+  ### Cédula de identidad (CI).
+  identityCard: String
+  ### Teléfono de contacto personal.
+  phone: String
+  ### Dirección de domicilio particular.
+  address: String
+  ### Profesión u ocupación formal.
+  occupation: String
+  ### Referencia personal o familiar.
+  personalReference: String
+  ### Teléfono de la referencia.
+  referencePhone: String
+
+  ### Clasificación laboral
+  ### Tipo de entorno laboral: 'OFICINA' o 'CAMPO'.
+  employeeType: String
+  ### Nombre del área o departamento.
+  area: String
+  areaId: int?, relation(parent=rrhh_area)
+  ### Nombre del cargo o puesto de trabajo.
+  position: String
+  positionId: int?, relation(parent=rrhh_position)
+  ### Especialidad técnica (ej. Jardinería, Limpieza, Seguridad).
+  specialty: String
+  specialtyId: int?, relation(parent=rrhh_specialty)
+  ### Sede asignada o nombre de cliente/sede.
+  workplace: String
+  ### Nombre del supervisor o jefe directo.
+  supervisor: String
+  supervisorId: int?, relation(parent=rrhh_employee)
+
+  ### Fechas y Contrato
+  realStartDate: DateTime
+  fiscalStartDate: DateTime
+  agreedSalary: double
+  ### Modalidad de contrato: 'Indefinido', 'Plazo Fijo', 'Servicios'.
+  contractType: String
+  contractEndDate: DateTime?
+  observations: String?
+  ### Estado laboral principal: 'ACTIVO', 'INACTIVO'.
+  status: String, default='ACTIVO'
+
+  ### Arquitectura Funcional: Integración Operaciones y Contabilidad
+  ### Habilidades técnicas y certificaciones del trabajador.
+  skills: List<String>?
+  ### Estado de disponibilidad para Operaciones: 'DISPONIBLE', 'ASIGNADO', 'DE_VACACIONES', 'CON_PERMISO', 'SUSPENDIDO'.
+  availabilityStatus: String, default='DISPONIBLE'
+  ### Modalidad de pago para Contabilidad: 'MENSUAL', 'JORNAL', 'POR_HORAS', 'POR_PROYECTO'.
+  paymentModality: String, default='MENSUAL'
+  ### Tipo de jornada laboral: 'TIEMPO_COMPLETO_48H', 'MEDIO_TIEMPO', 'ROTATIVO_24_48', 'HORARIO_OFICINA'.
+  workScheduleType: String, default='TIEMPO_COMPLETO_48H'
+
+  ### Documentos Físicos del Expediente
+  hasCiCopy: bool, default=true
+  hasUtilityBill: bool, default=true
+  hasHomeSketch: bool, default=true
+  hasFelccRecord: bool, default=true
+  hasPhoto3x4: bool, default=true
+  hasSusInsurance: bool, default=true
+  photoUrl: String?
+
+  ### Credenciales Institucionales para APK de Asistencia
+  corporateEmail: String?
+  temporaryPassword: String?
+
+  ### Vinculación con postulante de origen si proviene del proceso de reclutamiento
+  applicantId: int?, relation(parent=rrhh_applicant)
+
+  ### Datos de Desvinculación (si pasa a INACTIVO)
+  exitDate: DateTime?
+  exitReason: String?
+  exitObservations: String?
+  exitRegisteredBy: String?
+
+  ### Eliminación lógica y auditoría
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  rrhh_employee_code_unique_idx:
+    fields: code
+    unique: true
+  rrhh_employee_ci_idx:
+    fields: identityCard
+  rrhh_employee_status_idx:
+    fields: status
+  rrhh_employee_type_idx:
+    fields: employeeType
+  rrhh_employee_availability_idx:
+    fields: availabilityStatus

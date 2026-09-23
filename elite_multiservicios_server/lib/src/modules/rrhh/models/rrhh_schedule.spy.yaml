@@ -1,0 +1,38 @@
+### Catálogo de Horarios y Turnos Operativos / Administrativos de RRHH.
+class: RrhhSchedule
+table: rrhh_schedule
+fields:
+  ### Código de turno (ej: SCH-001, SCH-ADM, SCH-OP-MAN).
+  code: String
+  ### Nombre descriptivo del turno (ej: Administrativo Central, Operativo Mañana).
+  name: String
+  ### Tipo de entorno al que aplica: 'OFICINA', 'CAMPO', 'AMBOS'.
+  targetType: String, default='AMBOS'
+  ### Hora de inicio en formato HH:mm (ej: "08:30", "07:00", "22:00").
+  startTime: String
+  ### Hora de finalización en formato HH:mm (ej: "17:30", "15:00", "06:00").
+  endTime: String
+  ### Días laborales (1=Lunes, 2=Martes, ..., 7=Domingo).
+  workDays: List<int>
+  ### Tolerancia de atraso en minutos (ej: 15, 10, 5).
+  toleranceMinutes: int, default=10
+  ### Indica si es turno nocturno para recargos legales.
+  isNightShift: bool, default=false
+  ### Descripción opcional del turno o sede sugerida.
+  description: String?
+  ### Estado activo del turno en catálogo.
+  isActive: bool, default=true
+
+  ### Eliminación lógica y auditoría
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  rrhh_schedule_code_unique_idx:
+    fields: code
+    unique: true
+  rrhh_schedule_type_idx:
+    fields: targetType
+  rrhh_schedule_active_idx:
+    fields: isActive

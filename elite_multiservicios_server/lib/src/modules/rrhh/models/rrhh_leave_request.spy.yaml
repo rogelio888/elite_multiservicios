@@ -1,0 +1,47 @@
+### Solicitudes y licencias de personal (médicas, personales, duelo, maternidad/paternidad).
+class: RrhhLeaveRequest
+table: rrhh_leave_request
+fields:
+  ### Código único de solicitud (ej: LIC-2026-001)
+  code: String
+
+  ### Colaborador solicitante
+  employeeId: int, relation(parent=rrhh_employee)
+  employeeCode: String
+  employeeName: String
+
+  ### Tipo de licencia: 'MEDICA', 'PERSONAL', 'DUELO', 'MATERNIDAD_PATERNIDAD', 'ESTUDIO', 'OTRO'
+  leaveType: String
+
+  ### Fechas de inicio y fin
+  startDate: DateTime
+  endDate: DateTime
+  daysCount: int
+  hoursCount: double?
+
+  ### Motivo detallado
+  reason: String
+
+  ### Respaldo médico / institucional
+  medicalCertificateNumber: String?
+  attachmentUrl: String?
+
+  ### Estado: 'PENDIENTE', 'APROBADO', 'RECHAZADO', 'CANCELADO'
+  status: String, default='PENDIENTE'
+
+  ### Resolución y auditoría administrativa
+  resolutionNotes: String?
+  resolvedByUserId: int?
+  resolvedAt: DateTime?
+
+  ### Eliminación lógica y fechas
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  rrhh_leave_code_unique_idx:
+    fields: code
+    unique: true
+  rrhh_leave_employee_status_idx:
+    fields: employeeId, status
