@@ -897,7 +897,7 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
     bool isDark,
     double maxWidth,
   ) {
-    final tableWidth = max(maxWidth - 48, 1260.0);
+    final tableWidth = max(maxWidth - 48, 1340.0);
     const columnWidths = {
       0: FlexColumnWidth(2.6), // Colaborador
       1: FixedColumnWidth(110), // Modalidad
@@ -907,7 +907,7 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
       5: FlexColumnWidth(1.9), // Supervisor
       6: FixedColumnWidth(130), // Rotación
       7: FixedColumnWidth(100), // Estado
-      8: FixedColumnWidth(215), // Acciones
+      8: FixedColumnWidth(250), // Acciones
     };
 
     return Container(
@@ -1293,80 +1293,88 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                                   _buildBodyCell(
                                     Align(
                                       alignment: Alignment.centerRight,
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          OutlinedButton.icon(
-                                            onPressed: () =>
-                                                _openRotationHistoryDialog(
-                                              context,
-                                              a,
-                                            ),
-                                            icon: const Icon(
-                                              Icons.history,
-                                              size: 13,
-                                              color: Color(0xFF3B82F6),
-                                            ),
-                                            label: Text(
-                                              historyCount > 1
-                                                  ? 'Historial ($historyCount)'
-                                                  : 'Historial',
-                                              style: const TextStyle(
-                                                color: Color(0xFF3B82F6),
-                                                fontSize: 10.5,
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        alignment: Alignment.centerRight,
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            OutlinedButton.icon(
+                                              onPressed: () =>
+                                                  _openRotationHistoryDialog(
+                                                context,
+                                                a,
                                               ),
-                                            ),
-                                            style: OutlinedButton.styleFrom(
-                                              visualDensity:
-                                                  VisualDensity.compact,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 8,
-                                                vertical: 5,
-                                              ),
-                                              side: const BorderSide(
+                                              icon: const Icon(
+                                                Icons.history,
+                                                size: 13,
                                                 color: Color(0xFF3B82F6),
                                               ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
+                                              label: Text(
+                                                historyCount > 1
+                                                    ? 'Historial ($historyCount)'
+                                                    : 'Historial',
+                                                style: const TextStyle(
+                                                  color: Color(0xFF3B82F6),
+                                                  fontSize: 10.5,
+                                                ),
+                                              ),
+                                              style: OutlinedButton.styleFrom(
+                                                visualDensity:
+                                                    VisualDensity.compact,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 8,
+                                                  vertical: 5,
+                                                ),
+                                                side: const BorderSide(
+                                                  color: Color(0xFF3B82F6),
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          const SizedBox(width: 6),
-                                          FilledButton.tonalIcon(
-                                            onPressed: () =>
-                                                _openReassignDialog(context, a),
-                                            icon: const Icon(
-                                              Icons.swap_horiz,
-                                              size: 13,
-                                            ),
-                                            label: const Text(
-                                              'Rotar Destino',
-                                              style: TextStyle(fontSize: 10.5),
-                                            ),
-                                            style: FilledButton.styleFrom(
-                                              visualDensity:
-                                                  VisualDensity.compact,
-                                              backgroundColor: const Color(
-                                                0xFF6366F1,
-                                              ).withValues(alpha: 0.14),
-                                              foregroundColor: const Color(
-                                                0xFF6366F1,
+                                            const SizedBox(width: 6),
+                                            FilledButton.tonalIcon(
+                                              onPressed: () =>
+                                                  _openReassignDialog(context, a),
+                                              icon: const Icon(
+                                                Icons.swap_horiz,
+                                                size: 13,
                                               ),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 8,
-                                                vertical: 5,
+                                              label: const Text(
+                                                'Rotar Destino',
+                                                style: TextStyle(fontSize: 10.5),
                                               ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
+                                              style: FilledButton.styleFrom(
+                                                visualDensity:
+                                                    VisualDensity.compact,
+                                                backgroundColor: const Color(
+                                                  0xFF6366F1,
+                                                ).withValues(alpha: 0.14),
+                                                foregroundColor: const Color(
+                                                  0xFF6366F1,
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 8,
+                                                  vertical: 5,
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 10,
                                     ),
                                   ),
                                 ],
@@ -1614,9 +1622,9 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
     );
   }
 
-  Widget _buildBodyCell(Widget child) {
+  Widget _buildBodyCell(Widget child, {EdgeInsetsGeometry? padding}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: child,
     );
   }
