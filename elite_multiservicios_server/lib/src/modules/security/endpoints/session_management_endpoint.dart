@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as auth_idp;
 import '../../../generated/protocol.dart';
@@ -16,19 +17,36 @@ class SessionManagementEndpoint extends Endpoint {
     AuditService auditService = const ServerpodAuditService(),
   }) : _auditService = auditService;
 
+  /// Obtiene la duración configurada para los refresh tokens desde JwtTokenManager.
+  /// Si ocurre un fallo inesperado, recurre a 14 días con log de advertencia.
+  Duration _getRefreshTokenLifetime(Session session) {
+    try {
+      return AuthServices.getTokenManager<JwtTokenManager>()
+          .jwt
+          .config
+          .refreshTokenLifetime;
+    } catch (e, stackTrace) {
+      session.log(
+        'No se pudo obtener refreshTokenLifetime de JwtTokenManager, usando 14 días por defecto: $e',
+        level: LogLevel.warning,
+        stackTrace: stackTrace,
+      );
+      return const Duration(days: 14);
+    }
+  }
+
   /// Registra la sesión actual del usuario autenticado en la tabla `user_session`.
   /// Se invoca después de un login exitoso.
   /// Retorna el `id` de la sesión creada.
   Future<int> registerSession(
     Session session, {
-    required String sessionTokenHash,
-    required DateTime expiresAt,
     bool? mfaVerified,
   }) async {
-    // 1. Obtener identificador del usuario autenticado
+    // 1. Obtener identificadores del usuario autenticado y su sesión
     final authUserIdStr = session.authenticated?.userIdentifier;
-    if (authUserIdStr == null) {
-      throw Exception('Usuario no autenticado');
+    final authSessionId = session.authenticated?.authId;
+    if (authUserIdStr == null || authSessionId == null) {
+      throw const UnauthorizedException('Usuario o sesión no autenticada.');
     }
 
     // 2. Resolver el AppUser correspondiente
@@ -38,11 +56,14 @@ class SessionManagementEndpoint extends Endpoint {
     final ipAddress = session.request?.remoteInfo;
     final deviceInfo = session.request?.headers['user-agent']?.firstOrNull;
 
-    // 4. Insertar o actualizar fila en user_session
+    // 4. Calcular expiración canónica según configuración de JWT
     final now = DateTime.now().toUtc();
+    final expiresAt = now.add(_getRefreshTokenLifetime(session));
+
+    // 5. Insertar o actualizar fila en user_session usando authSessionId
     final existingSession = await UserSession.db.findFirstRow(
       session,
-      where: (t) => t.sessionTokenHash.equals(sessionTokenHash),
+      where: (t) => t.authSessionId.equals(authSessionId),
     );
 
     final UserSession userSession;
@@ -54,7 +75,7 @@ class SessionManagementEndpoint extends Endpoint {
           isRevoked: false,
           mfaVerified: mfaVerified ?? false,
           lastActivityAt: now,
-          expiresAt: expiresAt.toUtc(),
+          expiresAt: expiresAt,
           ipAddress: ipAddress,
           deviceInfo: deviceInfo,
         ),
@@ -64,19 +85,21 @@ class SessionManagementEndpoint extends Endpoint {
         session,
         UserSession(
           userId: appUser.id!,
-          sessionTokenHash: sessionTokenHash,
+          authSessionId: authSessionId,
+          sessionTokenHash: null,
           ipAddress: ipAddress,
           deviceInfo: deviceInfo,
           isRevoked: false,
           mfaVerified: mfaVerified ?? false,
+          reconcileAttempts: 0,
           createdAt: now,
           lastActivityAt: now,
-          expiresAt: expiresAt.toUtc(),
+          expiresAt: expiresAt,
         ),
       );
     }
 
-    // 5. Registrar evento LOGIN_SUCCESS en audit_log
+    // 6. Registrar evento LOGIN_SUCCESS en audit_log
     await _auditService.logEvent(
       session,
       AuditEventRecord(
@@ -90,6 +113,7 @@ class SessionManagementEndpoint extends Endpoint {
           'ipAddress': ipAddress,
           'deviceInfo': deviceInfo,
           'sessionId': userSession.id,
+          'authSessionId': authSessionId,
         },
       ),
     );
@@ -122,13 +146,32 @@ class SessionManagementEndpoint extends Endpoint {
     final userSession = await UserSession.db.findById(session, sessionId);
     if (userSession == null) return false;
 
+    final now = DateTime.now().toUtc();
     await UserSession.db.updateRow(
       session,
       userSession.copyWith(
         isRevoked: true,
-        revokedAt: DateTime.now().toUtc(),
+        revokedAt: now,
+        lastActivityAt: now,
       ),
     );
+
+    // Revocar en Serverpod nativo si tiene authSessionId
+    if (userSession.authSessionId != null) {
+      try {
+        await AuthServices.instance.tokenManager.revokeToken(
+          session,
+          tokenId: userSession.authSessionId!,
+        );
+      } catch (e, stackTrace) {
+        session.log(
+          'Error al revocar refresh token en Serverpod para sessionId $sessionId, authSessionId ${userSession.authSessionId}: $e',
+          level: LogLevel.error,
+          exception: e,
+          stackTrace: stackTrace,
+        );
+      }
+    }
 
     await _auditService.logEvent(
       session,
@@ -144,55 +187,77 @@ class SessionManagementEndpoint extends Endpoint {
   }
 
   /// Cierra la sesión actual del usuario autenticado.
-  /// Marca la fila en `user_session` como revocada y registra el evento en `audit_log`.
-  /// Retorna `true` si se revocó correctamente, `false` si no se encontró la sesión.
+  /// Marca la fila en `user_session` como revocada y revoca el token nativo en Serverpod.
+  /// Retorna `true` de forma idempotente para preservar la UX de cierre de sesión.
   Future<bool> logout(Session session) async {
     final authUserIdStr = session.authenticated?.userIdentifier;
-    if (authUserIdStr == null) {
-      throw Exception('Usuario no autenticado');
+    final authSessionId = session.authenticated?.authId;
+    if (authUserIdStr == null || authSessionId == null) {
+      throw const UnauthorizedException(
+        'Identificador de sesión no disponible.',
+      );
     }
 
     // 1. Resolver el AppUser por authUserId
     final appUser = await _resolveAuthenticatedAppUser(session, authUserIdStr);
 
-    // 2. Buscar la sesión activa más reciente de este usuario
+    // 2. Buscar exactamente la sesión vinculada a esta llamada
     final activeSession = await UserSession.db.findFirstRow(
       session,
-      where: (t) => t.userId.equals(appUser.id!) & t.isRevoked.equals(false),
-      orderBy: (t) => t.createdAt,
-      orderDescending: true,
+      where: (t) =>
+          t.userId.equals(appUser.id!) &
+          t.authSessionId.equals(authSessionId) &
+          t.isRevoked.equals(false),
     );
 
-    if (activeSession == null) {
-      session.log(
-        'No hay sesión activa para revocar para el usuario ${appUser.id}',
+    final now = DateTime.now().toUtc();
+
+    // 3. Si la sesión existe en user_session, marcarla como revocada
+    if (activeSession != null) {
+      await UserSession.db.updateRow(
+        session,
+        activeSession.copyWith(
+          isRevoked: true,
+          revokedAt: now,
+          lastActivityAt: now,
+        ),
       );
-      return false;
+    } else {
+      session.log(
+        'Logout idempotente: no se encontró sesión activa en user_session para authSessionId $authSessionId.',
+        level: LogLevel.info,
+      );
     }
 
-    // 3. Marcar como revocada con fecha actual UTC
-    final now = DateTime.now().toUtc();
-    await UserSession.db.updateRow(
-      session,
-      activeSession.copyWith(
-        isRevoked: true,
-        revokedAt: now,
-        lastActivityAt: now,
-      ),
-    );
+    // 4. Revocar siempre el refresh token nativo en Serverpod (Fail-Open con alerta y logging)
+    try {
+      await AuthServices.instance.tokenManager.revokeToken(
+        session,
+        tokenId: authSessionId,
+      );
+    } catch (e, stackTrace) {
+      session.log(
+        'Error al revocar refresh token en Serverpod para authSessionId $authSessionId: $e',
+        level: LogLevel.error,
+        exception: e,
+        stackTrace: stackTrace,
+      );
+    }
 
-    // 4. Registrar LOGOUT en audit_log
+    // 5. Registrar LOGOUT en audit_log
     await _auditService.logEvent(
       session,
       AuditEventRecord(
         action: AuditEventType.logout,
         userId: appUser.id,
         userIdentifier: appUser.email,
-        resource: 'session:#${activeSession.id}/user:#${appUser.id}',
+        resource:
+            'session:#${activeSession?.id ?? "unknown"}/user:#${appUser.id}',
         ipAddress: session.request?.remoteInfo,
         result: AuditResult.success,
         metadata: {
-          'sessionId': activeSession.id,
+          'sessionId': activeSession?.id,
+          'authSessionId': authSessionId,
           'revokedAt': now.toIso8601String(),
         },
       ),
@@ -204,17 +269,19 @@ class SessionManagementEndpoint extends Endpoint {
   /// Marca la sesión activa actual del usuario autenticado como verificada con MFA.
   Future<void> markMfaVerified(Session session) async {
     final authUserIdStr = session.authenticated?.userIdentifier;
-    if (authUserIdStr == null) {
-      throw const UnauthorizedException('Usuario no autenticado.');
+    final authSessionId = session.authenticated?.authId;
+    if (authUserIdStr == null || authSessionId == null) {
+      throw const UnauthorizedException('Usuario o sesión no autenticada.');
     }
 
     final appUser = await _resolveAuthenticatedAppUser(session, authUserIdStr);
 
     final activeSession = await UserSession.db.findFirstRow(
       session,
-      where: (t) => t.userId.equals(appUser.id!) & t.isRevoked.equals(false),
-      orderBy: (t) => t.createdAt,
-      orderDescending: true,
+      where: (t) =>
+          t.userId.equals(appUser.id!) &
+          t.authSessionId.equals(authSessionId) &
+          t.isRevoked.equals(false),
     );
 
     if (activeSession == null) return;
@@ -236,10 +303,15 @@ class SessionManagementEndpoint extends Endpoint {
   ) async {
     AppUser? appUser;
     UuidValue? authUuid;
-    try {
-      authUuid = UuidValue.fromString(authUserIdStr);
-    } catch (_) {
-      // No es un UUID
+    final isUuid = RegExp(
+      r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+    ).hasMatch(authUserIdStr);
+    if (isUuid) {
+      try {
+        authUuid = UuidValue.fromString(authUserIdStr);
+      } catch (_) {
+        // No es un UUID
+      }
     }
 
     if (authUuid != null) {

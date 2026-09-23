@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../domain/exceptions/auth_exception.dart';
 import '../services/auth_service.dart';
 import 'recovery/forgot_password_screen.dart';
 import 'recovery/mfa_verification_screen.dart';
@@ -117,7 +118,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         final errorStr = e.toString();
         String errorMsg;
-        if (errorStr.contains('ACCOUNT_LOCKED') ||
+        if (e is AuthException) {
+          errorMsg = e.message;
+        } else if (errorStr.contains('ACCOUNT_LOCKED') ||
             errorStr.contains('bloqueada') ||
             errorStr.contains('tooManyAttempts') ||
             errorStr.contains('AccountLockedException')) {

@@ -2,6 +2,7 @@ import 'package:test/test.dart';
 import 'package:elite_multiservicios_server/src/authorization/permissions.dart';
 import 'package:elite_multiservicios_server/src/exceptions/app_exception.dart';
 import 'package:elite_multiservicios_server/src/audit/audit_event.dart';
+import 'package:elite_multiservicios_server/src/generated/protocol.dart';
 
 void main() {
   group('Server Security Domain Unit Tests', () {
@@ -45,5 +46,31 @@ void main() {
       expect(json['ipAddress'], equals('192.168.1.100'));
       expect(json['timestamp'], isNotNull);
     });
+
+    test(
+      'UserSession model correctly handles authSessionId and reconcileAttempts defaults',
+      () {
+        final now = DateTime.now().toUtc();
+        final userSession = UserSession(
+          userId: 10,
+          authSessionId: '550e8400-e29b-41d4-a716-446655440000',
+          sessionTokenHash: null,
+          isRevoked: false,
+          mfaVerified: false,
+          reconcileAttempts: 0,
+          createdAt: now,
+          lastActivityAt: now,
+          expiresAt: now.add(const Duration(days: 14)),
+        );
+
+        expect(
+          userSession.authSessionId,
+          equals('550e8400-e29b-41d4-a716-446655440000'),
+        );
+        expect(userSession.sessionTokenHash, isNull);
+        expect(userSession.reconcileAttempts, equals(0));
+        expect(userSession.mfaVerified, isFalse);
+      },
+    );
   });
 }

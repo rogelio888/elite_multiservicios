@@ -4,14 +4,16 @@ title = "Elite Multiservicios Gitleaks config"
 useDefault = true
 
 [allowlist]
-description = "Allow placeholders and CI dummy values"
+description = "Allow placeholders, CI dummy values and test fixture UUIDs"
 regexes = [
   '''ci-dummy-not-real''',
   '''REDACTED_[A-Z_]+''',
   '''tu_password_[a-z_]+''',
   '''your-google-cloud-project-id''',
+  '''550e8400-e29b-41d4-a716-[0-9a-f]{12}''',
 ]
 paths = [
   '''.env.example''',
   '''config/passwords.yaml.example''',
+  '''test/integration/session_mfa_behavior_test\.dart''',
 ]

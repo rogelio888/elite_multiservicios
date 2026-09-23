@@ -19,25 +19,30 @@ abstract class UserSession
   UserSession._({
     this.id,
     required this.userId,
-    required this.sessionTokenHash,
+    this.authSessionId,
+    this.sessionTokenHash,
     this.ipAddress,
     this.deviceInfo,
     required this.isRevoked,
     bool? mfaVerified,
+    int? reconcileAttempts,
     this.revokedAt,
     required this.createdAt,
     required this.lastActivityAt,
     required this.expiresAt,
-  }) : mfaVerified = mfaVerified ?? false;
+  }) : mfaVerified = mfaVerified ?? false,
+       reconcileAttempts = reconcileAttempts ?? 0;
 
   factory UserSession({
     int? id,
     required int userId,
-    required String sessionTokenHash,
+    String? authSessionId,
+    String? sessionTokenHash,
     String? ipAddress,
     String? deviceInfo,
     required bool isRevoked,
     bool? mfaVerified,
+    int? reconcileAttempts,
     DateTime? revokedAt,
     required DateTime createdAt,
     required DateTime lastActivityAt,
@@ -48,13 +53,15 @@ abstract class UserSession
     return UserSession(
       id: jsonSerialization['id'] as int?,
       userId: jsonSerialization['userId'] as int,
-      sessionTokenHash: jsonSerialization['sessionTokenHash'] as String,
+      authSessionId: jsonSerialization['authSessionId'] as String?,
+      sessionTokenHash: jsonSerialization['sessionTokenHash'] as String?,
       ipAddress: jsonSerialization['ipAddress'] as String?,
       deviceInfo: jsonSerialization['deviceInfo'] as String?,
       isRevoked: _i1.BoolJsonExtension.fromJson(jsonSerialization['isRevoked']),
       mfaVerified: jsonSerialization['mfaVerified'] == null
           ? null
           : _i1.BoolJsonExtension.fromJson(jsonSerialization['mfaVerified']),
+      reconcileAttempts: jsonSerialization['reconcileAttempts'] as int?,
       revokedAt: jsonSerialization['revokedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['revokedAt']),
@@ -80,8 +87,11 @@ abstract class UserSession
   /// ID del usuario propietario de la sesión.
   int userId;
 
-  /// Hash criptográfico del token de sesión (nunca el token plano).
-  String sessionTokenHash;
+  /// Identificador persistente de la sesión de autenticación en Serverpod (UUID de RefreshToken).
+  String? authSessionId;
+
+  /// Hash criptográfico del token de sesión para auditoría histórica (NULL en nuevas sesiones).
+  String? sessionTokenHash;
 
   /// Dirección IP asociada a la sesión.
   String? ipAddress;
@@ -94,6 +104,9 @@ abstract class UserSession
 
   /// Indicador de autenticación multifactor (MFA) verificada en esta sesión.
   bool mfaVerified;
+
+  /// Contador de reintentos del job de reconciliación.
+  int reconcileAttempts;
 
   /// Momento de revocación de la sesión.
   DateTime? revokedAt;
@@ -116,11 +129,13 @@ abstract class UserSession
   UserSession copyWith({
     int? id,
     int? userId,
+    String? authSessionId,
     String? sessionTokenHash,
     String? ipAddress,
     String? deviceInfo,
     bool? isRevoked,
     bool? mfaVerified,
+    int? reconcileAttempts,
     DateTime? revokedAt,
     DateTime? createdAt,
     DateTime? lastActivityAt,
@@ -132,11 +147,13 @@ abstract class UserSession
       '__className__': 'UserSession',
       if (id != null) 'id': id,
       'userId': userId,
-      'sessionTokenHash': sessionTokenHash,
+      if (authSessionId != null) 'authSessionId': authSessionId,
+      if (sessionTokenHash != null) 'sessionTokenHash': sessionTokenHash,
       if (ipAddress != null) 'ipAddress': ipAddress,
       if (deviceInfo != null) 'deviceInfo': deviceInfo,
       'isRevoked': isRevoked,
       'mfaVerified': mfaVerified,
+      'reconcileAttempts': reconcileAttempts,
       if (revokedAt != null) 'revokedAt': revokedAt?.toJson(),
       'createdAt': createdAt.toJson(),
       'lastActivityAt': lastActivityAt.toJson(),
@@ -150,11 +167,13 @@ abstract class UserSession
       '__className__': 'UserSession',
       if (id != null) 'id': id,
       'userId': userId,
-      'sessionTokenHash': sessionTokenHash,
+      if (authSessionId != null) 'authSessionId': authSessionId,
+      if (sessionTokenHash != null) 'sessionTokenHash': sessionTokenHash,
       if (ipAddress != null) 'ipAddress': ipAddress,
       if (deviceInfo != null) 'deviceInfo': deviceInfo,
       'isRevoked': isRevoked,
       'mfaVerified': mfaVerified,
+      'reconcileAttempts': reconcileAttempts,
       if (revokedAt != null) 'revokedAt': revokedAt?.toJson(),
       'createdAt': createdAt.toJson(),
       'lastActivityAt': lastActivityAt.toJson(),
@@ -198,11 +217,13 @@ class _UserSessionImpl extends UserSession {
   _UserSessionImpl({
     int? id,
     required int userId,
-    required String sessionTokenHash,
+    String? authSessionId,
+    String? sessionTokenHash,
     String? ipAddress,
     String? deviceInfo,
     required bool isRevoked,
     bool? mfaVerified,
+    int? reconcileAttempts,
     DateTime? revokedAt,
     required DateTime createdAt,
     required DateTime lastActivityAt,
@@ -210,11 +231,13 @@ class _UserSessionImpl extends UserSession {
   }) : super._(
          id: id,
          userId: userId,
+         authSessionId: authSessionId,
          sessionTokenHash: sessionTokenHash,
          ipAddress: ipAddress,
          deviceInfo: deviceInfo,
          isRevoked: isRevoked,
          mfaVerified: mfaVerified,
+         reconcileAttempts: reconcileAttempts,
          revokedAt: revokedAt,
          createdAt: createdAt,
          lastActivityAt: lastActivityAt,
@@ -228,11 +251,13 @@ class _UserSessionImpl extends UserSession {
   UserSession copyWith({
     Object? id = _Undefined,
     int? userId,
-    String? sessionTokenHash,
+    Object? authSessionId = _Undefined,
+    Object? sessionTokenHash = _Undefined,
     Object? ipAddress = _Undefined,
     Object? deviceInfo = _Undefined,
     bool? isRevoked,
     bool? mfaVerified,
+    int? reconcileAttempts,
     Object? revokedAt = _Undefined,
     DateTime? createdAt,
     DateTime? lastActivityAt,
@@ -241,11 +266,17 @@ class _UserSessionImpl extends UserSession {
     return UserSession(
       id: id is int? ? id : this.id,
       userId: userId ?? this.userId,
-      sessionTokenHash: sessionTokenHash ?? this.sessionTokenHash,
+      authSessionId: authSessionId is String?
+          ? authSessionId
+          : this.authSessionId,
+      sessionTokenHash: sessionTokenHash is String?
+          ? sessionTokenHash
+          : this.sessionTokenHash,
       ipAddress: ipAddress is String? ? ipAddress : this.ipAddress,
       deviceInfo: deviceInfo is String? ? deviceInfo : this.deviceInfo,
       isRevoked: isRevoked ?? this.isRevoked,
       mfaVerified: mfaVerified ?? this.mfaVerified,
+      reconcileAttempts: reconcileAttempts ?? this.reconcileAttempts,
       revokedAt: revokedAt is DateTime? ? revokedAt : this.revokedAt,
       createdAt: createdAt ?? this.createdAt,
       lastActivityAt: lastActivityAt ?? this.lastActivityAt,
@@ -262,7 +293,13 @@ class UserSessionUpdateTable extends _i1.UpdateTable<UserSessionTable> {
     value,
   );
 
-  _i1.ColumnValue<String, String> sessionTokenHash(String value) =>
+  _i1.ColumnValue<String, String> authSessionId(String? value) =>
+      _i1.ColumnValue(
+        table.authSessionId,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> sessionTokenHash(String? value) =>
       _i1.ColumnValue(
         table.sessionTokenHash,
         value,
@@ -285,6 +322,11 @@ class UserSessionUpdateTable extends _i1.UpdateTable<UserSessionTable> {
 
   _i1.ColumnValue<bool, bool> mfaVerified(bool value) => _i1.ColumnValue(
     table.mfaVerified,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> reconcileAttempts(int value) => _i1.ColumnValue(
+    table.reconcileAttempts,
     value,
   );
 
@@ -320,6 +362,10 @@ class UserSessionTable extends _i1.Table<int?> {
       'userId',
       this,
     );
+    authSessionId = _i1.ColumnString(
+      'authSessionId',
+      this,
+    );
     sessionTokenHash = _i1.ColumnString(
       'sessionTokenHash',
       this,
@@ -338,6 +384,11 @@ class UserSessionTable extends _i1.Table<int?> {
     );
     mfaVerified = _i1.ColumnBool(
       'mfaVerified',
+      this,
+      hasDefault: true,
+    );
+    reconcileAttempts = _i1.ColumnInt(
+      'reconcileAttempts',
       this,
       hasDefault: true,
     );
@@ -364,7 +415,10 @@ class UserSessionTable extends _i1.Table<int?> {
   /// ID del usuario propietario de la sesión.
   late final _i1.ColumnInt userId;
 
-  /// Hash criptográfico del token de sesión (nunca el token plano).
+  /// Identificador persistente de la sesión de autenticación en Serverpod (UUID de RefreshToken).
+  late final _i1.ColumnString authSessionId;
+
+  /// Hash criptográfico del token de sesión para auditoría histórica (NULL en nuevas sesiones).
   late final _i1.ColumnString sessionTokenHash;
 
   /// Dirección IP asociada a la sesión.
@@ -378,6 +432,9 @@ class UserSessionTable extends _i1.Table<int?> {
 
   /// Indicador de autenticación multifactor (MFA) verificada en esta sesión.
   late final _i1.ColumnBool mfaVerified;
+
+  /// Contador de reintentos del job de reconciliación.
+  late final _i1.ColumnInt reconcileAttempts;
 
   /// Momento de revocación de la sesión.
   late final _i1.ColumnDateTime revokedAt;
@@ -395,11 +452,13 @@ class UserSessionTable extends _i1.Table<int?> {
   List<_i1.Column> get columns => [
     id,
     userId,
+    authSessionId,
     sessionTokenHash,
     ipAddress,
     deviceInfo,
     isRevoked,
     mfaVerified,
+    reconcileAttempts,
     revokedAt,
     createdAt,
     lastActivityAt,
