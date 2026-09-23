@@ -2201,19 +2201,12 @@ class EndpointSessionManagement extends _i2.EndpointRef {
   /// Registra la sesión actual del usuario autenticado en la tabla `user_session`.
   /// Se invoca después de un login exitoso.
   /// Retorna el `id` de la sesión creada.
-  _i3.Future<int> registerSession({
-    required String sessionTokenHash,
-    required DateTime expiresAt,
-    bool? mfaVerified,
-  }) => caller.callServerEndpoint<int>(
-    'sessionManagement',
-    'registerSession',
-    {
-      'sessionTokenHash': sessionTokenHash,
-      'expiresAt': expiresAt,
-      'mfaVerified': mfaVerified,
-    },
-  );
+  _i3.Future<int> registerSession({bool? mfaVerified}) =>
+      caller.callServerEndpoint<int>(
+        'sessionManagement',
+        'registerSession',
+        {'mfaVerified': mfaVerified},
+      );
 
   /// Lista las sesiones activas asociadas a un usuario. Requiere sessions.view.
   _i3.Future<List<_i47.UserSession>> listUserSessions(int userId) =>
@@ -2232,8 +2225,8 @@ class EndpointSessionManagement extends _i2.EndpointRef {
       );
 
   /// Cierra la sesión actual del usuario autenticado.
-  /// Marca la fila en `user_session` como revocada y registra el evento en `audit_log`.
-  /// Retorna `true` si se revocó correctamente, `false` si no se encontró la sesión.
+  /// Marca la fila en `user_session` como revocada y revoca el token nativo en Serverpod.
+  /// Retorna `true` de forma idempotente para preservar la UX de cierre de sesión.
   _i3.Future<bool> logout() => caller.callServerEndpoint<bool>(
     'sessionManagement',
     'logout',

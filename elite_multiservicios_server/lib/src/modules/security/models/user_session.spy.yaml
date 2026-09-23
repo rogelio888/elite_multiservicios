@@ -4,8 +4,10 @@ table: user_session
 fields:
   ### ID del usuario propietario de la sesión.
   userId: int, relation(parent=app_user, onDelete=Cascade)
-  ### Hash criptográfico del token de sesión (nunca el token plano).
-  sessionTokenHash: String
+  ### Identificador persistente de la sesión de autenticación en Serverpod (UUID de RefreshToken).
+  authSessionId: String?
+  ### Hash criptográfico del token de sesión para auditoría histórica (NULL en nuevas sesiones).
+  sessionTokenHash: String?
   ### Dirección IP asociada a la sesión.
   ipAddress: String?
   ### Información de cliente/dispositivo (User-Agent).
@@ -14,6 +16,8 @@ fields:
   isRevoked: bool
   ### Indicador de autenticación multifactor (MFA) verificada en esta sesión.
   mfaVerified: bool, default=false
+  ### Contador de reintentos del job de reconciliación.
+  reconcileAttempts: int, default=0
   ### Momento de revocación de la sesión.
   revokedAt: DateTime?
   ### Momento de inicio de sesión.
@@ -23,9 +27,8 @@ fields:
   ### Momento límite de expiración de la sesión.
   expiresAt: DateTime
 indexes:
-  user_session_token_hash_idx:
-    fields: sessionTokenHash
-    unique: true
+  user_session_auth_id_idx:
+    fields: authSessionId
   user_session_user_idx:
     fields: userId
   user_session_expires_idx:

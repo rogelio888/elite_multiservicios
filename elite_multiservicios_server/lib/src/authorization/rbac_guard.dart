@@ -93,8 +93,11 @@ class RbacGuard {
   /// Si no está verificado, lanza [MfaRequiredException].
   static Future<void> requireMfaVerified(Session session) async {
     final authUserIdStr = session.authenticated?.userIdentifier;
-    if (authUserIdStr == null) {
-      throw const UnauthorizedException('Usuario no autenticado.');
+    final authSessionId = session.authenticated?.authId;
+    if (authUserIdStr == null || authSessionId == null) {
+      throw const UnauthorizedException(
+        'Identificador de sesión no disponible.',
+      );
     }
 
     // 1. Resolver el AppUser autenticado
@@ -105,12 +108,13 @@ class RbacGuard {
       return;
     }
 
-    // 3. Buscar la sesión activa del usuario
+    // 3. Buscar exactamente la sesión activa vinculada a este authSessionId
     final activeSession = await UserSession.db.findFirstRow(
       session,
-      where: (t) => t.userId.equals(appUser.id!) & t.isRevoked.equals(false),
-      orderBy: (t) => t.createdAt,
-      orderDescending: true,
+      where: (t) =>
+          t.userId.equals(appUser.id!) &
+          t.authSessionId.equals(authSessionId) &
+          t.isRevoked.equals(false),
     );
 
     if (activeSession == null || !activeSession.mfaVerified) {
@@ -125,10 +129,15 @@ class RbacGuard {
   ) async {
     AppUser? appUser;
     UuidValue? authUuid;
-    try {
-      authUuid = UuidValue.fromString(authUserIdStr);
-    } catch (_) {
-      // No es un UUID
+    final isUuid = RegExp(
+      r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+    ).hasMatch(authUserIdStr);
+    if (isUuid) {
+      try {
+        authUuid = UuidValue.fromString(authUserIdStr);
+      } catch (_) {
+        // No es un UUID
+      }
     }
 
     if (authUuid != null) {

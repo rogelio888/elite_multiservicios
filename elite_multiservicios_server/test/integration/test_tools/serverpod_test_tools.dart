@@ -5807,8 +5807,6 @@ class _SessionManagementEndpoint {
 
   _i3.Future<int> registerSession(
     _i1.TestSessionBuilder sessionBuilder, {
-    required String sessionTokenHash,
-    required DateTime expiresAt,
     bool? mfaVerified,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -5822,11 +5820,7 @@ class _SessionManagementEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'sessionManagement',
           methodName: 'registerSession',
-          parameters: _i1.testObjectToJson({
-            'sessionTokenHash': sessionTokenHash,
-            'expiresAt': expiresAt,
-            'mfaVerified': mfaVerified,
-          }),
+          parameters: _i1.testObjectToJson({'mfaVerified': mfaVerified}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =

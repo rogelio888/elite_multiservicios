@@ -4389,16 +4389,6 @@ class Endpoints extends _i1.EndpointDispatch {
         'registerSession': _i1.MethodConnector(
           name: 'registerSession',
           params: {
-            'sessionTokenHash': _i1.ParameterDescription(
-              name: 'sessionTokenHash',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'expiresAt': _i1.ParameterDescription(
-              name: 'expiresAt',
-              type: _i1.getType<DateTime>(),
-              nullable: false,
-            ),
             'mfaVerified': _i1.ParameterDescription(
               name: 'mfaVerified',
               type: _i1.getType<bool?>(),
@@ -4414,8 +4404,6 @@ class Endpoints extends _i1.EndpointDispatch {
                           as _i19.SessionManagementEndpoint)
                       .registerSession(
                         session,
-                        sessionTokenHash: params['sessionTokenHash'],
-                        expiresAt: params['expiresAt'],
                         mfaVerified: params['mfaVerified'],
                       ),
         ),

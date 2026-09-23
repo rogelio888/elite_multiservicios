@@ -5903,10 +5903,16 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'int',
         ),
         _i2.ColumnDefinition(
+          name: 'authSessionId',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
           name: 'sessionTokenHash',
           columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
+          isNullable: true,
+          dartType: 'String?',
         ),
         _i2.ColumnDefinition(
           name: 'ipAddress',
@@ -5932,6 +5938,13 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
           dartType: 'bool',
           columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'reconcileAttempts',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+          columnDefault: '0',
         ),
         _i2.ColumnDefinition(
           name: 'revokedAt',
@@ -5985,16 +5998,16 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'user_session_token_hash_idx',
+          indexName: 'user_session_auth_id_idx',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
-              definition: 'sessionTokenHash',
+              definition: 'authSessionId',
             ),
           ],
           type: 'btree',
-          isUnique: true,
+          isUnique: false,
           isPrimary: false,
         ),
         _i2.IndexDefinition(

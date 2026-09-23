@@ -10,6 +10,7 @@ import 'src/modules/security/seeds/security_seed.dart';
 import 'src/modules/crm/seeds/crm_catalog_seed.dart';
 import 'src/modules/rrhh/seeds/rrhh_organization_seed.dart';
 import 'src/modules/security/services/password_policy_validator.dart';
+import 'src/modules/security/jobs/reconcile_revoked_sessions_job.dart';
 import 'src/services/mail_service.dart';
 import 'src/web/routes/app_config_route.dart';
 import 'src/web/routes/health_route.dart';
@@ -22,6 +23,12 @@ void run(List<String> args) async {
 
   // Initialize Serverpod and connect it with your generated code.
   final pod = Serverpod(serverpodArgs, Protocol(), Endpoints());
+
+  // Registrar FutureCalls
+  pod.registerFutureCall(
+    ReconcileRevokedSessionsJob(),
+    'reconcileRevokedSessions',
+  );
 
   // Initialize authentication services for the server.
   // Token managers will be used to validate and issue authentication keys,
@@ -86,6 +93,15 @@ void run(List<String> args) async {
 
   // Start the server.
   await pod.start();
+
+  // Programar ejecución periódica inicial de reconciliación de sesiones (inmediata en arranque)
+  // ignore: deprecated_member_use
+  await pod.futureCallWithDelay(
+    'reconcileRevokedSessions',
+    null,
+    Duration.zero,
+    identifier: 'reconcileRevokedSessions',
+  );
 
   // Ejecutar sembrado de base de datos si se especificó el flag --seed
   if (shouldSeed) {

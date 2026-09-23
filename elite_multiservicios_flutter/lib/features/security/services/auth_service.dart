@@ -1,9 +1,9 @@
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
+import 'dart:async';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import '../../../../main.dart' as main_app;
+import '../domain/exceptions/auth_exception.dart';
 import 'security_api_service.dart';
 
 /// Servicio reactivo para orquestar la autenticación de usuarios, gestión de tokens JWT
@@ -132,13 +132,7 @@ class AuthService extends ChangeNotifier {
 
       // Registrar sesión en base de datos para auditoría y monitoreo
       try {
-        final token = authSuccess.token;
-        final expiresAt =
-            authSuccess.tokenExpiresAt ??
-            DateTime.now().toUtc().add(const Duration(days: 30));
         await _client.sessionManagement.registerSession(
-          sessionTokenHash: _hashToken(token),
-          expiresAt: expiresAt,
           mfaVerified: false,
         );
       } catch (e) {
@@ -147,18 +141,11 @@ class AuthService extends ChangeNotifier {
         }
       }
 
-      // Verificar inmediatamente si MFA es requerido para este usuario
-      try {
-        final mfaChallenge = await checkMfaRequired(rememberMe: rememberMe);
-        if (mfaChallenge != null) {
-          setMfaPending(mfaChallenge, rememberMe: rememberMe);
-        } else {
-          clearMfaPending();
-        }
-      } catch (mfaError) {
-        if (kDebugMode) {
-          print('Advertencia al verificar MFA en login: $mfaError');
-        }
+      // Verificar inmediatamente si MFA es requerido para este usuario con política Fail-Closed
+      final mfaChallenge = await checkMfaRequired(rememberMe: rememberMe);
+      if (mfaChallenge != null) {
+        setMfaPending(mfaChallenge, rememberMe: rememberMe);
+      } else {
         clearMfaPending();
       }
 
@@ -172,7 +159,13 @@ class AuthService extends ChangeNotifier {
       clearMfaPending();
       try {
         await _client.auth.signOutDevice();
-      } catch (_) {}
+      } catch (signOutError) {
+        if (kDebugMode) {
+          print(
+            '[AuthService] Error no bloqueante al purgar dispositivo tras fallo de login: $signOutError',
+          );
+        }
+      }
       if (kDebugMode) {
         print('Error en login: $e');
       }
@@ -245,8 +238,72 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  /// Verifica si el usuario autenticado requiere MFA.
+  /// Clasifica si una excepción corresponde a un fallo transitorio de red.
+  bool _isTransientError(Object error) {
+    if (error is TimeoutException) {
+      return true;
+    }
+    final errStr = error.toString().toLowerCase();
+    return errStr.contains('socketexception') ||
+        errStr.contains('connection') ||
+        errStr.contains('timeout') ||
+        errStr.contains('network') ||
+        errStr.contains('closed') ||
+        errStr.contains('clientexception') ||
+        errStr.contains('failed host lookup') ||
+        errStr.contains('xmlhttprequest') ||
+        errStr.contains('handshake') ||
+        errStr.contains('aborted');
+  }
+
+  /// Ejecuta `checkRequired` con hasta [maxAttempts] reintentos y retroceso exponencial
+  /// ante fallos de conectividad transitorios.
+  Future<MfaChallengeResponse?> _checkMfaWithRetry({
+    required bool rememberMe,
+    int maxAttempts = 3,
+  }) async {
+    Object? lastError;
+    StackTrace? lastStackTrace;
+
+    for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        final trustedToken = await getTrustedDeviceToken();
+        return await _client.mfa.checkRequired(
+          rememberMe: rememberMe,
+          trustedDeviceToken: trustedToken,
+        );
+      } catch (e, stackTrace) {
+        lastError = e;
+        lastStackTrace = stackTrace;
+        final isTransient = _isTransientError(e);
+
+        if (kDebugMode) {
+          print(
+            '[AuthService] Intento $attempt/$maxAttempts de checkRequired falló (transitorio=$isTransient): $e',
+          );
+        }
+
+        if (attempt < maxAttempts && isTransient) {
+          final delayMs = 500 * (1 << (attempt - 1)); // 500ms, 1000ms
+          await Future.delayed(Duration(milliseconds: delayMs));
+        } else {
+          break;
+        }
+      }
+    }
+
+    if (lastError != null) {
+      Error.throwWithStackTrace(
+        lastError,
+        lastStackTrace ?? StackTrace.current,
+      );
+    }
+    return null;
+  }
+
+  /// Verifica si el usuario autenticado requiere MFA aplicando política Fail-Closed.
   /// Si sí, retorna el challenge. Si no, retorna null.
+  /// Ante cualquier fallo no recuperable, purga la sesión local y lanza [AuthException].
   Future<MfaChallengeResponse?> checkMfaRequired({
     required bool rememberMe,
     bool notify = true,
@@ -254,11 +311,7 @@ class AuthService extends ChangeNotifier {
     _isCheckingMfa = true;
     if (notify) notifyListeners();
     try {
-      final trustedToken = await getTrustedDeviceToken();
-      final challenge = await _client.mfa.checkRequired(
-        rememberMe: rememberMe,
-        trustedDeviceToken: trustedToken,
-      );
+      final challenge = await _checkMfaWithRetry(rememberMe: rememberMe);
       if (challenge != null) {
         _currentMfaChallenge = challenge;
         _isMfaPending = true;
@@ -268,11 +321,38 @@ class AuthService extends ChangeNotifier {
         _isMfaPending = false;
       }
       return challenge;
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (kDebugMode) {
-        print('Error verificando MFA: $e');
+        print(
+          '[AuthService] Fallo definitivo al verificar MFA: $e\n$stackTrace',
+        );
       }
-      return null;
+      clearMfaPending();
+
+      // Purga preventiva no bloqueante de sesión local para garantizar Fail-Closed
+      try {
+        await _client.auth.signOutDevice();
+      } catch (signOutError) {
+        if (kDebugMode) {
+          print(
+            '[AuthService] Error no bloqueante al purgar dispositivo tras fallo MFA: $signOutError',
+          );
+        }
+      }
+
+      if (_isTransientError(e)) {
+        throw AuthException(
+          'No se pudo verificar la seguridad de su sesión debido a un problema de conexión. Por favor, verifique su red e intente nuevamente.',
+          code: 'NETWORK_ERROR',
+          details: e,
+        );
+      } else {
+        throw AuthException(
+          'Error al validar la seguridad de la cuenta. Por favor intente más tarde.',
+          code: 'SECURITY_CHECK_FAILED',
+          details: e,
+        );
+      }
     } finally {
       _isCheckingMfa = false;
       if (notify) notifyListeners();
@@ -406,10 +486,6 @@ class AuthService extends ChangeNotifier {
       await _client.auth.signOutDevice();
       notifyListeners();
     }
-  }
-
-  static String _hashToken(String token) {
-    return sha256.convert(utf8.encode(token)).toString();
   }
 
   @override
