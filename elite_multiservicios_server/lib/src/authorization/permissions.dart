@@ -71,6 +71,7 @@ abstract class AppPermissions {
   static const String rrhhAssignmentsView = 'rrhh.assignments.view';
   static const String rrhhAssignmentsManage = 'rrhh.assignments.manage';
   static const String rrhhLaborView = 'rrhh.labor.view';
+  static const String rrhhLaborManage = 'rrhh.labor.manage';
   static const String rrhhReportsView = 'rrhh.reports.view';
 
   /// Catálogo de todos los permisos registrados en el sistema.
@@ -122,6 +123,7 @@ abstract class AppPermissions {
     rrhhAssignmentsView,
     rrhhAssignmentsManage,
     rrhhLaborView,
+    rrhhLaborManage,
     rrhhReportsView,
   ];
 }

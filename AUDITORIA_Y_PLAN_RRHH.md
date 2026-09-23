@@ -143,17 +143,21 @@ El plan de construcción e integración backend se ejecuta en **7 Fases Secuenci
 
 ### **FASE 5: Gestión Laboral (Permisos, Vacaciones, Incidencias, Desvinculación)**
 *Objetivo:* Registro de novedades administrativas, trazabilidad disciplinaria y preservación histórica post-salida.
-- [ ] **Modelos Serverpod:**
-  - `rrhh_leave_request.spy.yaml`: Permisos médicos, personales, duelo, con fechas, horas, justificación y estado ('Pendiente' | 'Aprobado' | 'Rechazado').
-  - `rrhh_vacation.spy.yaml`: Registro de días solicitados, saldo restante, período legal.
+- [x] **Modelos Serverpod:**
+  - `rrhh_leave_request.spy.yaml`: Permisos médicos, personales, duelo, con fechas, horas, justificación y estado ('PENDIENTE' | 'APROBADO' | 'RECHAZADO' | 'CANCELADO').
+  - `rrhh_vacation.spy.yaml`: Registro de días solicitados, saldo restante, cómputo según Ley General del Trabajo de Bolivia (15, 20 o 30 días hábiles).
   - `rrhh_incident.spy.yaml`: Memorándums, atrasos justificados, faltas, llamados de atención o felicitaciones.
-  - `rrhh_termination.spy.yaml`: Fecha de egreso, motivo ('Renuncia Voluntaria', 'Fin de Contrato', 'Despido Justificado'), observaciones, responsable.
-  - `rrhh_movement_history.spy.yaml`: Bitácora inmutable de cambios (ascensos, cambio de área, ajustes salariales, traslados).
-- [ ] **Regla de Oro en Desvinculación:**
-  - **PROHIBIDO ELIMINAR FÍSICAMENTE.** El empleado pasa a `employmentStatus = 'Inactivo'`. El expediente y su historial permanecen intactos para auditorías laborales y emisión de certificados de trabajo.
-- [ ] **Repositorio & Endpoint:**
-  - `RrhhLaborRepository` y `RrhhLaborEndpoint`.
-- ⏸️ **PUNTO DE CONTROL 5: Verificación de gestión disciplinaria, permisos y retención de inactivos.**
+  - `rrhh_termination.spy.yaml`: Fecha de egreso, motivo ('RENUNCIA_VOLUNTARIA', 'FIN_DE_CONTRATO', 'DESPIDO_JUSTIFICADO', etc.), finiquito y paz y salvo.
+  - `rrhh_movement_history.spy.yaml`: Bitácora inmutable de cambios (ascensos, cambio de área, ajustes salariales, traslados, desvinculaciones).
+- [x] **Regla de Oro en Desvinculación Cumplida al 100%:**
+  - **PROHIBIDO ELIMINAR FÍSICAMENTE.** El empleado pasa a `status = 'INACTIVO'` y `availabilityStatus = 'NO_DISPONIBLE'`. Todas sus asignaciones operativas activas pasan automáticamente a `FINALIZADA`. Su expediente completo y documentos permanecen intactos para auditorías laborales OVT y emisión de finiquitos/certificados de trabajo.
+- [x] **Repositorio & Endpoint:**
+  - `RrhhLaborRepository` y `RrhhLaborEndpoint` con validación RBAC (`AppPermissions.rrhhLaborView` y `AppPermissions.rrhhLaborManage`).
+- [x] **Migración & Seed Data:**
+  - Migración SQL `20260923153226709` aplicada a PostgreSQL.
+  - Seeder de licencias (médica validada por CNS y personal), vacaciones aprobadas con cálculo de antigüedad, incidencias con felicitaciones/memorándums y colaborador formalmente desvinculado preservado como inactivo.
+  - Suite de integración `rrhh_labor_test.dart` y las 5 suites de RRHH ejecutadas con éxito al 100%.
+- ⏸️ **PUNTO DE CONTROL 5 ALCANZADO: FASE 5 completada, verificada en base de datos y con cero errores de análisis estático.**
 
 ---
 

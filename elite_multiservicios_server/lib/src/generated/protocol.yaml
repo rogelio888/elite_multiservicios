@@ -101,6 +101,20 @@ rrhhAssignment:
 rrhhDashboard:
   - getMetrics:
   - getRecentMovements:
+rrhhLabor:
+  - listLeaveRequests:
+  - getLeaveRequestById:
+  - createLeaveRequest:
+  - resolveLeaveRequest:
+  - calculateVacationEntitlement:
+  - listVacations:
+  - requestVacation:
+  - approveVacation:
+  - listIncidents:
+  - recordIncident:
+  - terminateEmployee:
+  - listMovements:
+  - recordMovement:
 rrhhOrganization:
   - listAreas:
   - getAreaById:

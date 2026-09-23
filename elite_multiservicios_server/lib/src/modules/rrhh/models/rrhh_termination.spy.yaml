@@ -1,0 +1,41 @@
+### Registro inmutable de desvinculación formal (egreso laboral sin borrado físico).
+class: RrhhTermination
+table: rrhh_termination
+fields:
+  ### Código de desvinculación (ej: DESV-2026-001)
+  code: String
+
+  ### Colaborador desvinculado (se mantiene intacto en rrhh_employee como INACTIVO)
+  employeeId: int, relation(parent=rrhh_employee)
+  employeeCode: String
+  employeeName: String
+  employeeCi: String
+
+  ### Régimen de contratación y antigüedad
+  contractType: String
+  entryDate: DateTime
+  terminationDate: DateTime
+  lastWorkingDay: DateTime
+
+  ### Motivo: 'RENUNCIA_VOLUNTARIA', 'FIN_DE_CONTRATO', 'DESPIDO_JUSTIFICADO', 'DESPIDO_INJUSTIFICADO', 'MUTUO_ACUERDO', 'JUBILACION'
+  reason: String
+  detailedReason: String
+  yearsOfService: double
+
+  ### Liquidación y entrega de activos
+  severanceAmount: double?
+  clearanceCompleted: bool, default=false
+  isEligibleForRehire: bool, default=true
+
+  ### Auditoría administrativa
+  processedByUserId: int?
+  handoverNotes: String?
+
+  ### Fecha inmutable de registro
+  createdAt: DateTime
+indexes:
+  rrhh_termination_code_unique_idx:
+    fields: code
+    unique: true
+  rrhh_termination_employee_idx:
+    fields: employeeId

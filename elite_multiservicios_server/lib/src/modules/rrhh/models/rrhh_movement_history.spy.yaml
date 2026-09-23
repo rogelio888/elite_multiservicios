@@ -1,0 +1,26 @@
+### Bitácora inmutable de cambios y movimientos de personal.
+class: RrhhMovementHistory
+table: rrhh_movement_history
+fields:
+  ### Colaborador afectado
+  employeeId: int, relation(parent=rrhh_employee)
+  employeeCode: String
+  employeeName: String
+
+  ### Tipo: 'INGRESO', 'ASCENSO', 'TRASLADO_AREA', 'ROTACION_SEDE', 'AJUSTE_SALARIAL', 'CAMBIO_TURNO', 'SUSPENSION', 'DESVINCULACION', 'REINCORPORACION'
+  movementType: String
+
+  ### Valores previos y nuevos
+  previousValue: String?
+  newValue: String
+
+  ### Fecha efectiva y justificación
+  effectiveDate: DateTime
+  reason: String
+  authorizedBy: String
+
+  ### Auditoría inmutable
+  createdAt: DateTime
+indexes:
+  rrhh_movement_employee_idx:
+    fields: employeeId, effectiveDate
