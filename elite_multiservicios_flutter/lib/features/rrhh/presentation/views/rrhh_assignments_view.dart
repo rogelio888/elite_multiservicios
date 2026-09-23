@@ -899,14 +899,14 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
     bool isDark,
     double maxWidth,
   ) {
-    final tableWidth = max(maxWidth - 48, 1140.0);
+    final tableWidth = max(maxWidth - 48, 1150.0);
     const columnWidths = {
       0: FlexColumnWidth(2.6), // Colaborador
-      1: FlexColumnWidth(2.5), // Cargo & Modalidad
-      2: FlexColumnWidth(2.5), // Destino / Sede
+      1: FlexColumnWidth(2.4), // Cargo & Modalidad
+      2: FlexColumnWidth(2.4), // Destino / Sede
       3: FlexColumnWidth(2.1), // Horario / Turno
       4: FlexColumnWidth(1.9), // Supervisor
-      5: FixedColumnWidth(125), // Rotación
+      5: FixedColumnWidth(135), // Rotación
       6: FixedColumnWidth(95), // Estado
       7: FixedColumnWidth(155), // Acciones
     };
@@ -1226,23 +1226,64 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                                   // 5: Rotación
                                   _buildBodyCell(
                                     Center(
-                                      child: a.rotationNumber > 0
-                                          ? Tooltip(
-                                              message:
-                                                  'Rotó desde: ${a.originDescription ?? "Anterior"}${a.rotationReason != null && a.rotationReason!.isNotEmpty ? "\nMotivo: ${a.rotationReason}" : ""}',
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: a.rotationNumber > 0
+                                            ? Tooltip(
+                                                message:
+                                                    'Rotó desde: ${a.originDescription ?? "Anterior"}${a.rotationReason != null && a.rotationReason!.isNotEmpty ? "\nMotivo: ${a.rotationReason}" : ""}',
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 3,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(0xFFF59E0B)
+                                                        .withValues(alpha: 0.12),
+                                                    borderRadius:
+                                                        BorderRadius.circular(6),
+                                                    border: Border.all(
+                                                      color: const Color(0xFFF59E0B)
+                                                          .withValues(alpha: 0.35),
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.sync_alt,
+                                                        size: 11,
+                                                        color: Color(0xFFF59E0B),
+                                                      ),
+                                                      const SizedBox(width: 4),
+                                                      Text(
+                                                        'Rotación #${a.rotationNumber}',
+                                                        style: GoogleFonts.inter(
+                                                          fontSize: 10.5,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          color: const Color(
+                                                            0xFFF59E0B,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )
+                                            : Container(
+                                                padding: const EdgeInsets.symmetric(
                                                   horizontal: 8,
                                                   vertical: 3,
                                                 ),
                                                 decoration: BoxDecoration(
-                                                  color: const Color(0xFFF59E0B)
+                                                  color: const Color(0xFF64748B)
                                                       .withValues(alpha: 0.12),
                                                   borderRadius:
                                                       BorderRadius.circular(6),
                                                   border: Border.all(
-                                                    color: const Color(0xFFF59E0B)
+                                                    color: const Color(0xFF64748B)
                                                         .withValues(alpha: 0.35),
                                                   ),
                                                 ),
@@ -1250,76 +1291,49 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
                                                   mainAxisSize: MainAxisSize.min,
                                                   children: [
                                                     const Icon(
-                                                      Icons.sync_alt,
+                                                      Icons.flag_outlined,
                                                       size: 11,
-                                                      color: Color(0xFFF59E0B),
+                                                      color: Color(0xFF64748B),
                                                     ),
                                                     const SizedBox(width: 4),
                                                     Text(
-                                                      'Rotación #${a.rotationNumber}',
+                                                      'Puesto Inicial',
                                                       style: GoogleFonts.inter(
                                                         fontSize: 10.5,
                                                         fontWeight:
-                                                            FontWeight.w700,
+                                                            FontWeight.w600,
                                                         color: const Color(
-                                                          0xFFF59E0B,
+                                                          0xFF64748B,
                                                         ),
                                                       ),
                                                     ),
                                                   ],
                                                 ),
                                               ),
-                                            )
-                                          : Container(
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 8,
-                                                vertical: 3,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xFF64748B)
-                                                    .withValues(alpha: 0.12),
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
-                                                border: Border.all(
-                                                  color: const Color(0xFF64748B)
-                                                      .withValues(alpha: 0.35),
-                                                ),
-                                              ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const Icon(
-                                                    Icons.flag_outlined,
-                                                    size: 11,
-                                                    color: Color(0xFF64748B),
-                                                  ),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    'Puesto Inicial',
-                                                    style: GoogleFonts.inter(
-                                                      fontSize: 10.5,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: const Color(
-                                                        0xFF64748B,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
+                                      ),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                      vertical: 8,
                                     ),
                                   ),
 
                                   // 6: Estado
                                   _buildBodyCell(
                                     Center(
-                                      child: RrhhStatusChip(
-                                        label: a.status,
-                                        statusType: a.status == 'ACTIVA'
-                                            ? StatusType.success
-                                            : StatusType.neutral,
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: RrhhStatusChip(
+                                          label: a.status,
+                                          statusType: a.status == 'ACTIVA'
+                                              ? StatusType.success
+                                              : StatusType.neutral,
+                                        ),
                                       ),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                      vertical: 8,
                                     ),
                                   ),
 
