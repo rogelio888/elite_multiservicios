@@ -216,29 +216,54 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
           ),
         ),
         const SizedBox(width: 14),
-        FilledButton.icon(
-          icon: const Icon(Icons.add, size: 16),
-          label: Text(
-            _tabController.index == 0
-                ? 'Nueva Asignación'
-                : (_tabController.index == 1
-                    ? 'Nuevo Cliente / Servicio'
-                    : 'Nuevo Horario'),
-          ),
-          style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFF6366F1),
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-            shape: RoundedRectangleBorder(
+        if (_tabController.index == 1)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+            decoration: BoxDecoration(
+              color: const Color(0xFF3B82F6).withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: const Color(0xFF3B82F6).withValues(alpha: 0.3),
+              ),
             ),
-            textStyle: GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.sync_alt, size: 15, color: Color(0xFF60A5FA)),
+                const SizedBox(width: 8),
+                Text(
+                  'Origen: CRM & Ventas (Solo Lectura)',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF60A5FA),
+                  ),
+                ),
+              ],
             ),
+          )
+        else
+          FilledButton.icon(
+            icon: const Icon(Icons.add, size: 16),
+            label: Text(
+              _tabController.index == 0
+                  ? 'Nueva Asignación'
+                  : 'Nuevo Horario',
+            ),
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF6366F1),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              textStyle: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onPressed: () => _openCreationDialog(context),
           ),
-          onPressed: () => _openCreationDialog(context),
-        ),
       ],
     );
   }
@@ -1687,9 +1712,49 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
 
     return ListView.builder(
       padding: const EdgeInsets.only(top: 6, bottom: 20),
-      itemCount: clients.length,
+      itemCount: clients.length + 1,
       itemBuilder: (context, index) {
-        final client = clients[index];
+        if (index == 0) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? const Color(0xFF1E293B).withValues(alpha: 0.5)
+                  : const Color(0xFFEFF6FF),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF334155)
+                    : const Color(0xFFBFDBFE),
+              ),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.info_outline,
+                  size: 18,
+                  color: Color(0xFF38BDF8),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Delimitación funcional: Las empresas cliente, sedes operativas y contratos de servicio son administrados exclusivamente por el módulo de Clientes & CRM. RRHH únicamente consulta estos destinos para dotación y asignación de personal.',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF475569),
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        final client = clients[index - 1];
 
         return Card(
           margin: const EdgeInsets.only(bottom: 16),
@@ -2827,9 +2892,7 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
     final currentTab = _tabController.index;
     if (currentTab == 0) {
       _openNewAssignmentDialog(context);
-    } else if (currentTab == 1) {
-      _openNewClientDialog(context);
-    } else {
+    } else if (currentTab == 2) {
       _openNewScheduleDialog(context);
     }
   }
@@ -3359,202 +3422,6 @@ class _RrhhAssignmentsViewState extends State<RrhhAssignmentsView>
     );
   }
 
-  void _openNewClientDialog(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final nameCtrl = TextEditingController();
-    final categoryCtrl = TextEditingController(text: 'Retail / Comercial');
-    final addressCtrl = TextEditingController();
-    final contactCtrl = TextEditingController();
-    final phoneCtrl = TextEditingController();
-    final serviceNameCtrl = TextEditingController(text: 'Limpieza Integral');
-    final branchCtrl = TextEditingController(text: 'Sede Principal');
-
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF10B981).withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(
-                Icons.add_business,
-                color: Color(0xFF10B981),
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Registrar Nuevo Cliente / Empresa',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
-                    ),
-                  ),
-                  Text(
-                    'Alta de empresa contratante y servicio inicial',
-                    style: GoogleFonts.inter(
-                      fontSize: 12.5,
-                      color: isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF64748B),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        content: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: 480,
-            maxHeight: MediaQuery.sizeOf(ctx).height * 0.75,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Nombre de la Empresa Cliente *',
-                    hintText: 'Ej: Hipermaxi S.A., Farmacorp...',
-                    prefixIcon: Icon(Icons.business, size: 18),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: categoryCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Rubro / Categoría *',
-                    hintText: 'Ej: Retail, Salud, Industrial, Logística',
-                    prefixIcon: Icon(Icons.category, size: 18),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: addressCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Dirección o Ubicación Principal',
-                    prefixIcon: Icon(Icons.place, size: 18),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: contactCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'Persona de Contacto',
-                          prefixIcon: Icon(Icons.person, size: 18),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextField(
-                        controller: phoneCtrl,
-                        decoration: const InputDecoration(
-                          labelText: 'Teléfono de Contacto',
-                          prefixIcon: Icon(Icons.phone, size: 18),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: serviceNameCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Servicio Contratado Inicial *',
-                    hintText: 'Ej: Limpieza de Áreas Comunes, Mantenimiento...',
-                    prefixIcon: Icon(Icons.room_service, size: 18),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: branchCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Sede Asignada al Servicio *',
-                    hintText: 'Ej: Sede Central, Sucursal Norte...',
-                    prefixIcon: Icon(Icons.store, size: 18),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton.icon(
-            icon: const Icon(Icons.check, size: 16),
-            label: const Text('Guardar Cliente'),
-            style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFF10B981),
-            ),
-            onPressed: () {
-              if (nameCtrl.text.trim().isEmpty) return;
-              final newId = 'cli-${DateTime.now().millisecondsSinceEpoch}';
-              final newSvc = RrhhClientContractedService(
-                id: 'svc-${DateTime.now().millisecondsSinceEpoch}',
-                clientId: newId,
-                serviceName: serviceNameCtrl.text.trim().isNotEmpty
-                    ? serviceNameCtrl.text.trim()
-                    : 'Servicio General',
-                branchLocation: branchCtrl.text.trim().isNotEmpty
-                    ? branchCtrl.text.trim()
-                    : 'Sede Principal',
-                requiredStaff: 2,
-                scheduleSummary: '08:00 - 16:00',
-              );
-              _stateService.addClientCompany(
-                RrhhClientCompany(
-                  id: newId,
-                  name: nameCtrl.text.trim(),
-                  businessCategory: categoryCtrl.text.trim(),
-                  address: addressCtrl.text.trim().isNotEmpty
-                      ? addressCtrl.text.trim()
-                      : 'Santa Cruz de la Sierra',
-                  contactPerson: contactCtrl.text.trim().isNotEmpty
-                      ? contactCtrl.text.trim()
-                      : 'Administración',
-                  contactPhone: phoneCtrl.text.trim().isNotEmpty
-                      ? phoneCtrl.text.trim()
-                      : '70000000',
-                  services: [newSvc],
-                ),
-              );
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Cliente "${nameCtrl.text.trim()}" registrado con éxito.',
-                  ),
-                  backgroundColor: const Color(0xFF10B981),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
 
   void _openNewScheduleDialog(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
