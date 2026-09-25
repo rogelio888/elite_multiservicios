@@ -27,4 +27,28 @@ class RrhhApplicantSummaryDto {
 
   bool get isSelected => status.toUpperCase() == 'SELECCIONADO';
   bool get isRejected => status.toUpperCase() == 'RECHAZADO';
+
+  RrhhApplicantSummaryDto copyWith({
+    int? id,
+    String? code,
+    String? fullName,
+    String? targetType,
+    String? targetPosition,
+    String? specialty,
+    String? status,
+    DateTime? applicationDate,
+    bool? hasCv,
+  }) {
+    return RrhhApplicantSummaryDto(
+      id: id ?? this.id,
+      code: code ?? this.code,
+      fullName: fullName ?? this.fullName,
+      targetType: targetType ?? this.targetType,
+      targetPosition: targetPosition ?? this.targetPosition,
+      specialty: specialty ?? this.specialty,
+      status: status ?? this.status,
+      applicationDate: applicationDate ?? this.applicationDate,
+      hasCv: hasCv ?? this.hasCv,
+    );
+  }
 }
