@@ -5344,36 +5344,15 @@ class _RrhhHiringDossierDetailViewState
       if (!mounted) return;
       setState(() => _isSaving = false);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: const Color(0xFF10B981),
-          duration: const Duration(seconds: 5),
-          content: Text(
-            'Empleado ${employee.fullName} creado exitosamente con código ${employee.code}',
-            style: GoogleFonts.inter(
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-          action: widget.onEmployeeCreated != null
-              ? SnackBarAction(
-                  label: 'VER DIRECTORIO',
-                  textColor: Colors.white,
-                  onPressed: () {
-                    widget.onEmployeeCreated!(employee.code);
-                  },
-                )
-              : null,
-        ),
-      );
-
       widget.onEmployeeCreated?.call(employee.code);
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          behavior: SnackBarBehavior.floating,
           backgroundColor: const Color(0xFFEF4444),
+          duration: const Duration(seconds: 4),
           content: Text('Error al convertir empleado: $e'),
         ),
       );

@@ -109,6 +109,38 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
             _selectedDossierId = null;
             _tabController.animateTo(0);
           });
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              backgroundColor: const Color(0xFF065F46),
+              elevation: 6,
+              margin: const EdgeInsets.only(bottom: 24, right: 32, left: 32),
+              duration: const Duration(seconds: 4),
+              showCloseIcon: true,
+              closeIconColor: Colors.white70,
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle_rounded,
+                      color: Color(0xFF34D399), size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Empleado creado exitosamente con código $empCode',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
         },
       );
     }
