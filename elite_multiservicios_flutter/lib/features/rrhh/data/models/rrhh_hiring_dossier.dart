@@ -41,6 +41,7 @@ class RrhhDossierDocument {
   final DateTime? receivedAt;
   final String? notes;
   final String? scannedFileUrl;
+  final bool validatedInRecruitment; // true si se validó durante la etapa de Reclutamiento
 
   const RrhhDossierDocument({
     required this.code,
@@ -51,6 +52,7 @@ class RrhhDossierDocument {
     this.receivedAt,
     this.notes,
     this.scannedFileUrl,
+    this.validatedInRecruitment = false,
   });
 
   bool get isValidated => status == 'validado';
@@ -67,6 +69,7 @@ class RrhhDossierDocument {
     DateTime? receivedAt,
     String? notes,
     String? scannedFileUrl,
+    bool? validatedInRecruitment,
   }) {
     return RrhhDossierDocument(
       code: code ?? this.code,
@@ -77,13 +80,18 @@ class RrhhDossierDocument {
       receivedAt: receivedAt ?? this.receivedAt,
       notes: notes ?? this.notes,
       scannedFileUrl: scannedFileUrl ?? this.scannedFileUrl,
+      validatedInRecruitment:
+          validatedInRecruitment ?? this.validatedInRecruitment,
     );
   }
 
   /// Construye el checklist estándar adaptado a CAMPO vs OFICINA y el cargo.
+  /// Si se provee [recruitmentValidatedDocs], los documentos validados en Fase 3
+  /// se marcan automáticamente como [validado] y [validatedInRecruitment: true].
   static Map<String, RrhhDossierDocument> defaultChecklistFor({
     required String workplaceType,
     required String targetPosition,
+    Map<String, bool>? recruitmentValidatedDocs,
   }) {
     final isCampo = workplaceType.toUpperCase() == 'CAMPO';
     final posLower = targetPosition.toLowerCase();
@@ -176,7 +184,7 @@ class RrhhDossierDocument {
       requirementType: licenciaType,
     );
 
-    return {
+    final map = {
       'CI': ci,
       'AVISO': aviso,
       'CROQUIS': croquis,
@@ -186,6 +194,24 @@ class RrhhDossierDocument {
       'TITULO': titulo,
       'LICENCIA': licencia,
     };
+
+    if (recruitmentValidatedDocs != null && recruitmentValidatedDocs.isNotEmpty) {
+      final updated = <String, RrhhDossierDocument>{};
+      for (final entry in map.entries) {
+        if (recruitmentValidatedDocs[entry.key] == true) {
+          updated[entry.key] = entry.value.copyWith(
+            status: 'validado',
+            validatedInRecruitment: true,
+            receivedAt: DateTime.now(),
+          );
+        } else {
+          updated[entry.key] = entry.value;
+        }
+      }
+      return updated;
+    }
+
+    return map;
   }
 
   Map<String, dynamic> toJson() => {
@@ -197,6 +223,7 @@ class RrhhDossierDocument {
         'receivedAt': receivedAt?.toIso8601String(),
         'notes': notes,
         'scannedFileUrl': scannedFileUrl,
+        'validatedInRecruitment': validatedInRecruitment,
       };
 
   factory RrhhDossierDocument.fromJson(Map<String, dynamic> json) =>
@@ -211,6 +238,8 @@ class RrhhDossierDocument {
             : null,
         notes: json['notes'] as String?,
         scannedFileUrl: json['scannedFileUrl'] as String?,
+        validatedInRecruitment:
+            json['validatedInRecruitment'] as bool? ?? false,
       );
 }
 
@@ -241,6 +270,7 @@ class RrhhHiringDossier {
   final String section4Status;
   final String section5Status;
   final String section6Status;
+  final bool preloadedFromApplicant; // true si se precargó inicialmente desde los datos del postulante
 
   // Contenido de la Sección 1 (Documentos)
   final Map<String, RrhhDossierDocument> documents;
@@ -268,6 +298,7 @@ class RrhhHiringDossier {
   final String? paymentModalityId;
   final String? paymentModalityName;
   final double? baseSalary;
+  final double? applicantExpectedSalary; // Referencia informativa de pretensión salarial (Fase 2)
   final String? currency; // 'BOB' | 'USD'
   final DateTime? contractStartDate;
   final DateTime? contractEndDate;
@@ -312,6 +343,7 @@ class RrhhHiringDossier {
     this.section4Status = 'pendiente',
     this.section5Status = 'pendiente',
     this.section6Status = 'pendiente',
+    this.preloadedFromApplicant = false,
     this.documents = const {},
     this.afpId,
     this.afpName,
@@ -331,6 +363,7 @@ class RrhhHiringDossier {
     this.paymentModalityId,
     this.paymentModalityName,
     this.baseSalary,
+    this.applicantExpectedSalary,
     this.currency,
     this.contractStartDate,
     this.contractEndDate,
@@ -426,6 +459,7 @@ class RrhhHiringDossier {
     String? section4Status,
     String? section5Status,
     String? section6Status,
+    bool? preloadedFromApplicant,
     Map<String, RrhhDossierDocument>? documents,
     String? afpId,
     String? afpName,
@@ -445,6 +479,7 @@ class RrhhHiringDossier {
     String? paymentModalityId,
     String? paymentModalityName,
     double? baseSalary,
+    double? applicantExpectedSalary,
     String? currency,
     DateTime? contractStartDate,
     DateTime? contractEndDate,
@@ -487,6 +522,7 @@ class RrhhHiringDossier {
       section4Status: section4Status ?? this.section4Status,
       section5Status: section5Status ?? this.section5Status,
       section6Status: section6Status ?? this.section6Status,
+      preloadedFromApplicant: preloadedFromApplicant ?? this.preloadedFromApplicant,
       documents: documents ?? this.documents,
       afpId: afpId ?? this.afpId,
       afpName: afpName ?? this.afpName,
@@ -506,6 +542,7 @@ class RrhhHiringDossier {
       paymentModalityId: paymentModalityId ?? this.paymentModalityId,
       paymentModalityName: paymentModalityName ?? this.paymentModalityName,
       baseSalary: baseSalary ?? this.baseSalary,
+      applicantExpectedSalary: applicantExpectedSalary ?? this.applicantExpectedSalary,
       currency: currency ?? this.currency,
       contractStartDate: contractStartDate ?? this.contractStartDate,
       contractEndDate: contractEndDate ?? this.contractEndDate,
@@ -550,6 +587,7 @@ class RrhhHiringDossier {
         'section4Status': section4Status,
         'section5Status': section5Status,
         'section6Status': section6Status,
+        'preloadedFromApplicant': preloadedFromApplicant,
         'documents': documents.map((k, v) => MapEntry(k, v.toJson())),
         if (afpId != null) 'afpId': afpId,
         if (afpName != null) 'afpName': afpName,
@@ -569,6 +607,7 @@ class RrhhHiringDossier {
         if (paymentModalityId != null) 'paymentModalityId': paymentModalityId,
         if (paymentModalityName != null) 'paymentModalityName': paymentModalityName,
         if (baseSalary != null) 'baseSalary': baseSalary,
+        if (applicantExpectedSalary != null) 'applicantExpectedSalary': applicantExpectedSalary,
         if (currency != null) 'currency': currency,
         if (contractStartDate != null) 'contractStartDate': contractStartDate!.toIso8601String(),
         if (contractEndDate != null) 'contractEndDate': contractEndDate!.toIso8601String(),
@@ -642,6 +681,7 @@ class RrhhHiringDossier {
         section4Status: json['section4Status'] as String? ?? 'pendiente',
         section5Status: json['section5Status'] as String? ?? 'pendiente',
         section6Status: json['section6Status'] as String? ?? 'pendiente',
+        preloadedFromApplicant: json['preloadedFromApplicant'] as bool? ?? false,
         documents: (json['documents'] as Map<String, dynamic>?)?.map(
               (k, v) => MapEntry(
                 k,
@@ -667,6 +707,8 @@ class RrhhHiringDossier {
         paymentModalityId: json['paymentModalityId'] as String?,
         paymentModalityName: json['paymentModalityName'] as String?,
         baseSalary: (json['baseSalary'] as num?)?.toDouble(),
+        applicantExpectedSalary:
+            (json['applicantExpectedSalary'] as num?)?.toDouble(),
         currency: json['currency'] as String?,
         contractStartDate: json['contractStartDate'] != null
             ? DateTime.tryParse(json['contractStartDate'] as String)

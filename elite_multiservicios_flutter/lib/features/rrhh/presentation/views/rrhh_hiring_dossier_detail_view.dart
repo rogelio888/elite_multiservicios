@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
-    show RrhhArea, RrhhPosition, RrhhEmployeeBonus, RrhhEmployeeDeduction;
+    show
+        RrhhArea,
+        RrhhPosition,
+        RrhhEmployeeBonus,
+        RrhhEmployeeDeduction,
+        RrhhApplicant;
+import '../../data/models/rrhh_applicant_companion.dart';
 import '../../data/models/rrhh_hiring_dossier.dart';
 import '../../data/models/rrhh_catalog_item.dart';
 import '../../data/models/rrhh_shift.dart';
@@ -96,11 +102,23 @@ class _RrhhHiringDossierDetailViewState
   String? _s5SupervisorName;
   DateTime? _s5EffectiveStartDate;
 
+  // Datos originales del postulante para rastreo de origen / pre-carga
+  String? _applicantAddress;
+  String? _applicantEmergName;
+  String? _applicantEmergPhone;
+  String? _applicantTargetArea;
+  String? _applicantTargetPosition;
+  double? _applicantExpectedSalary;
+
   @override
   void initState() {
     super.initState();
-    _loadCatalogs();
-    _loadDossier();
+    _initData();
+  }
+
+  Future<void> _initData() async {
+    await _loadCatalogs();
+    await _loadDossier();
   }
 
   @override
@@ -201,15 +219,85 @@ class _RrhhHiringDossierDetailViewState
   Future<void> _loadDossier() async {
     setState(() => _isLoading = true);
     final d = await RrhhRepository.current.getDossierById(widget.dossierId);
+    RrhhApplicant? app;
+    RrhhApplicantCompanion? comp;
+    if (d != null) {
+      try {
+        app = await RrhhRepository.current.getApplicantById(d.applicantId);
+        comp = await RrhhRepository.current.getApplicantCompanion(d.applicantId);
+      } catch (_) {}
+    }
+
     if (mounted) {
       setState(() {
         _dossier = d;
         _isLoading = false;
+
+        if (app != null || comp != null) {
+          _applicantAddress = app?.address;
+          _applicantEmergName = comp?.evaluation.personalReferenceName ??
+              app?.referencePerson ??
+              app?.emergencyContact;
+          _applicantEmergPhone = comp?.evaluation.personalReferencePhone ??
+              app?.referencePhone ??
+              app?.emergencyPhone;
+          _applicantTargetArea = app?.targetArea;
+          _applicantTargetPosition = app?.targetPosition;
+          _applicantExpectedSalary = comp?.evaluation.salaryExpectation ??
+              d?.applicantExpectedSalary ??
+              (app != null &&
+                      app.expectedSalary != null &&
+                      app.expectedSalary! > 0
+                  ? app.expectedSalary
+                  : null);
+        } else if (d != null) {
+          _applicantExpectedSalary = d.applicantExpectedSalary;
+        }
+
         if (d != null) {
           _populateSection2From(d);
           _populateSection3From(d);
           _populateSection4From(d);
           _populateSection5From(d);
+
+          // Pre-carga automática en campos si estaban vacíos en el expediente
+          if (_s3AddressCtrl.text.isEmpty &&
+              _applicantAddress != null &&
+              _applicantAddress!.isNotEmpty) {
+            _s3AddressCtrl.text = _applicantAddress!;
+          }
+          if (_s3EmergNameCtrl.text.isEmpty &&
+              _applicantEmergName != null &&
+              _applicantEmergName!.isNotEmpty) {
+            _s3EmergNameCtrl.text = _applicantEmergName!;
+          }
+          if (_s3EmergPhoneCtrl.text.isEmpty &&
+              _applicantEmergPhone != null &&
+              _applicantEmergPhone!.isNotEmpty) {
+            _s3EmergPhoneCtrl.text = _applicantEmergPhone!;
+          }
+
+          if (_s5AreaId == null && _applicantTargetArea != null) {
+            for (final area in _areas) {
+              if (area.name.toLowerCase().contains(_applicantTargetArea!.toLowerCase()) ||
+                  _applicantTargetArea!.toLowerCase().contains(area.name.toLowerCase())) {
+                _s5AreaId = area.id?.toString();
+                _s5AreaName = area.name;
+                break;
+              }
+            }
+          }
+          if (_s5PositionId == null && _applicantTargetPosition != null) {
+            for (final pos in _positions) {
+              if (pos.name.toLowerCase().contains(_applicantTargetPosition!.toLowerCase()) ||
+                  _applicantTargetPosition!.toLowerCase().contains(pos.name.toLowerCase())) {
+                _s5PositionId = pos.id?.toString();
+                _s5PositionName = pos.name;
+                break;
+              }
+            }
+          }
+
           if (d.closingNotes != null) _s6NotesCtrl.text = d.closingNotes!;
           if (d.status == 'cerrado' || d.section6Status == 'completa') {
             _s6IsConfirmed = true;
@@ -1168,7 +1256,7 @@ class _RrhhHiringDossierDetailViewState
                 ),
               ),
               SizedBox(
-                width: 90,
+                width: 80,
                 child: Text(
                   'REQUISITO',
                   style: GoogleFonts.inter(
@@ -1180,7 +1268,7 @@ class _RrhhHiringDossierDetailViewState
                 ),
               ),
               SizedBox(
-                width: 105,
+                width: 180,
                 child: Text(
                   'ESTADO',
                   style: GoogleFonts.inter(
@@ -1291,15 +1379,15 @@ class _RrhhHiringDossierDetailViewState
               ],
             ),
           ),
-          // Requisito — fixed 90
+          // Requisito — fixed 80
           SizedBox(
-            width: 90,
+            width: 80,
             child: _buildRequirementChip(doc.requirementType),
           ),
-          // Estado — fixed 105
+          // Estado — fixed 180
           SizedBox(
-            width: 105,
-            child: _buildDocStatusChip(doc.status),
+            width: 180,
+            child: _buildDocStatusChip(doc),
           ),
           // Fecha recepción — fixed 100
           SizedBox(
@@ -1558,14 +1646,16 @@ class _RrhhHiringDossierDetailViewState
     );
   }
 
-  Widget _buildDocStatusChip(String status) {
+  Widget _buildDocStatusChip(RrhhDossierDocument doc) {
     Color dotColor;
     String label;
 
-    switch (status) {
+    switch (doc.status) {
       case 'validado':
         dotColor = const Color(0xFF10B981);
-        label = 'Validado';
+        label = doc.validatedInRecruitment
+            ? '✓ Validado en reclutamiento'
+            : 'Validado';
         break;
       case 'recibido':
         dotColor = const Color(0xFF38BDF8);
@@ -2125,7 +2215,14 @@ class _RrhhHiringDossierDetailViewState
                   const SizedBox(height: 10),
 
                   // Address
-                  _buildFormLabel('Dirección completa *'),
+                  _buildFormLabel(
+                    'Dirección completa *',
+                    isPreloaded: _applicantAddress != null &&
+                        _applicantAddress!.isNotEmpty,
+                    isEdited: _applicantAddress != null &&
+                        _applicantAddress!.isNotEmpty &&
+                        _s3AddressCtrl.text.trim() != _applicantAddress!.trim(),
+                  ),
                   const SizedBox(height: 6),
                   _buildTextField(
                     controller: _s3AddressCtrl,
@@ -2207,7 +2304,15 @@ class _RrhhHiringDossierDetailViewState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildFormLabel('Nombre del contacto *'),
+                            _buildFormLabel(
+                              'Nombre del contacto *',
+                              isPreloaded: _applicantEmergName != null &&
+                                  _applicantEmergName!.isNotEmpty,
+                              isEdited: _applicantEmergName != null &&
+                                  _applicantEmergName!.isNotEmpty &&
+                                  _s3EmergNameCtrl.text.trim() !=
+                                      _applicantEmergName!.trim(),
+                            ),
                             const SizedBox(height: 6),
                             _buildTextField(
                               controller: _s3EmergNameCtrl,
@@ -2223,7 +2328,15 @@ class _RrhhHiringDossierDetailViewState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildFormLabel('Teléfono *'),
+                            _buildFormLabel(
+                              'Teléfono *',
+                              isPreloaded: _applicantEmergPhone != null &&
+                                  _applicantEmergPhone!.isNotEmpty,
+                              isEdited: _applicantEmergPhone != null &&
+                                  _applicantEmergPhone!.isNotEmpty &&
+                                  _s3EmergPhoneCtrl.text.trim() !=
+                                      _applicantEmergPhone!.trim(),
+                            ),
                             const SizedBox(height: 6),
                             _buildTextField(
                               controller: _s3EmergPhoneCtrl,
@@ -3060,7 +3173,14 @@ class _RrhhHiringDossierDetailViewState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildFormLabel('Salario base acordado *'),
+                            _buildFormLabel(
+                              'Salario base acordado *',
+                              subtitleSuggestion: (_applicantExpectedSalary !=
+                                          null &&
+                                      _applicantExpectedSalary! > 0)
+                                  ? 'Sugerencia basada en pretensión: Bs. ${_applicantExpectedSalary!.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}'
+                                  : null,
+                            ),
                             const SizedBox(height: 6),
                             _buildTextField(
                               controller: _s4BaseSalaryCtrl,
@@ -3972,7 +4092,16 @@ class _RrhhHiringDossierDetailViewState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildFormLabel('Área de la empresa *'),
+                            _buildFormLabel(
+                              'Área de la empresa *',
+                              isPreloaded: _applicantTargetArea != null &&
+                                  _applicantTargetArea!.isNotEmpty,
+                              isEdited: _applicantTargetArea != null &&
+                                  _applicantTargetArea!.isNotEmpty &&
+                                  (_s5AreaName != null &&
+                                      !_s5AreaName!.toLowerCase().contains(
+                                          _applicantTargetArea!.toLowerCase())),
+                            ),
                             const SizedBox(height: 6),
                             _buildDropdownField<String>(
                               value: _s5AreaId,
@@ -4014,7 +4143,16 @@ class _RrhhHiringDossierDetailViewState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildFormLabel('Cargo asignado *'),
+                            _buildFormLabel(
+                              'Cargo asignado *',
+                              isPreloaded: _applicantTargetPosition != null &&
+                                  _applicantTargetPosition!.isNotEmpty,
+                              isEdited: _applicantTargetPosition != null &&
+                                  _applicantTargetPosition!.isNotEmpty &&
+                                  (_s5PositionName != null &&
+                                      !_s5PositionName!.toLowerCase().contains(
+                                          _applicantTargetPosition!.toLowerCase())),
+                            ),
                             const SizedBox(height: 6),
                             _buildDropdownField<String>(
                               value: _s5PositionId,
@@ -4479,14 +4617,97 @@ class _RrhhHiringDossierDetailViewState
     );
   }
 
-  Widget _buildFormLabel(String text) {
-    return Text(
-      text,
-      style: GoogleFonts.inter(
-        fontSize: 11.5,
-        fontWeight: FontWeight.w600,
-        color: const Color(0xFF94A3B8),
-      ),
+  Widget _buildFormLabel(
+    String text, {
+    bool isPreloaded = false,
+    bool isEdited = false,
+    String? subtitleSuggestion,
+  }) {
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 8,
+      runSpacing: 4,
+      children: [
+        Text(
+          text,
+          style: GoogleFonts.inter(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF94A3B8),
+          ),
+        ),
+        if (isPreloaded && !isEdited)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0284C7).withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: const Color(0xFF38BDF8).withValues(alpha: 0.35),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('🌱', style: TextStyle(fontSize: 10)),
+                const SizedBox(width: 4),
+                Text(
+                  'Pre-cargado del postulante',
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF38BDF8),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else if (isEdited)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: const Color(0xFFD97706).withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: const Color(0xFFF59E0B).withValues(alpha: 0.35),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('✏️', style: TextStyle(fontSize: 10)),
+                const SizedBox(width: 4),
+                Text(
+                  'Editado',
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFFFBBF24),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if (subtitleSuggestion != null && subtitleSuggestion.isNotEmpty)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+            decoration: BoxDecoration(
+              color: const Color(0xFF10B981).withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: const Color(0xFF10B981).withValues(alpha: 0.3),
+              ),
+            ),
+            child: Text(
+              subtitleSuggestion,
+              style: GoogleFonts.inter(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF34D399),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -4792,6 +5013,10 @@ class _RrhhHiringDossierDetailViewState
                           status: d.section1Status,
                           detail:
                               '${d.validatedRequiredDocsCount}/${d.totalRequiredDocsCount} validados',
+                          originBadge: d.documents.values
+                                  .any((doc) => doc.validatedInRecruitment)
+                              ? '🌱 del postulante'
+                              : null,
                         ),
                         const Divider(height: 1, color: Color(0xFF1E293B)),
                         _buildSectionSummaryRow(
@@ -4801,6 +5026,8 @@ class _RrhhHiringDossierDetailViewState
                           detail: d.afpName != null && d.afpName!.isNotEmpty
                               ? '${d.afpName} - ${d.healthInsuranceName ?? "Sin caja"}'
                               : 'No completado',
+                          originBadge:
+                              d.section2Status == 'completa' ? '🆕 nuevo' : null,
                         ),
                         const Divider(height: 1, color: Color(0xFF1E293B)),
                         _buildSectionSummaryRow(
@@ -4811,6 +5038,16 @@ class _RrhhHiringDossierDetailViewState
                                   d.fullAddress!.isNotEmpty
                               ? '${d.maritalStatus ?? "Estado civil"}, ${d.childrenCount ?? 0} hijos'
                               : 'No completado',
+                          originBadge: (_applicantEmergName != null &&
+                                  _applicantEmergName!.isNotEmpty)
+                              ? ((_s3EmergNameCtrl.text.trim() !=
+                                          _applicantEmergName!.trim() ||
+                                      (_applicantAddress != null &&
+                                          _s3AddressCtrl.text.trim() !=
+                                              _applicantAddress!.trim()))
+                                  ? '✏️ modificado'
+                                  : '🌱 del postulante')
+                              : null,
                         ),
                         const Divider(height: 1, color: Color(0xFF1E293B)),
                         _buildSectionSummaryRow(
@@ -4821,6 +5058,8 @@ class _RrhhHiringDossierDetailViewState
                                   d.contractTypeName!.isNotEmpty
                               ? '${d.contractTypeName} (${d.currency} ${d.baseSalary?.toStringAsFixed(2) ?? "0.00"})'
                               : 'No completado',
+                          originBadge:
+                              d.section4Status == 'completa' ? '🆕 nuevo' : null,
                         ),
                         const Divider(height: 1, color: Color(0xFF1E293B)),
                         _buildSectionSummaryRow(
@@ -4831,6 +5070,14 @@ class _RrhhHiringDossierDetailViewState
                                   d.positionName!.isNotEmpty
                               ? '${d.positionName} - ${d.areaName ?? "Sin área"}'
                               : 'No completado',
+                          originBadge: (_applicantTargetArea != null &&
+                                  _applicantTargetArea!.isNotEmpty)
+                              ? ((_s5AreaName != null &&
+                                      !_s5AreaName!.toLowerCase().contains(
+                                          _applicantTargetArea!.toLowerCase()))
+                                  ? '✏️ modificado'
+                                  : '🌱 del postulante')
+                              : null,
                         ),
                       ],
                     ),
@@ -5075,6 +5322,7 @@ class _RrhhHiringDossierDetailViewState
     required String title,
     required String status,
     required String detail,
+    String? originBadge,
   }) {
     final isComplete = status == 'completa';
     final isInProgress = status == 'en_proceso';
@@ -5143,6 +5391,39 @@ class _RrhhHiringDossierDetailViewState
               ),
             ),
           ),
+          if (originBadge != null) ...[
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+              decoration: BoxDecoration(
+                color: originBadge.contains('del postulante')
+                    ? const Color(0xFF0284C7).withValues(alpha: 0.15)
+                    : (originBadge.contains('modificado')
+                        ? const Color(0xFFD97706).withValues(alpha: 0.15)
+                        : const Color(0xFF334155).withValues(alpha: 0.2)),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                  color: originBadge.contains('del postulante')
+                      ? const Color(0xFF38BDF8).withValues(alpha: 0.3)
+                      : (originBadge.contains('modificado')
+                          ? const Color(0xFFF59E0B).withValues(alpha: 0.3)
+                          : const Color(0xFF64748B).withValues(alpha: 0.3)),
+                ),
+              ),
+              child: Text(
+                originBadge,
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: originBadge.contains('del postulante')
+                      ? const Color(0xFF38BDF8)
+                      : (originBadge.contains('modificado')
+                          ? const Color(0xFFFBBF24)
+                          : const Color(0xFF94A3B8)),
+                ),
+              ),
+            ),
+          ],
           const SizedBox(width: 14),
           InkWell(
             onTap: () {

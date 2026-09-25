@@ -68,10 +68,67 @@ class RrhhRepositoryMock implements RrhhRepository {
     final list = <RrhhHiringDossier>[];
     for (final a in _applicants) {
       if (a.status == 'SELECCIONADO' && a.code != 'POST-016') {
+        final comp = _applicantCompanions[a.id];
+        final validatedDocsMap = <String, bool>{};
+        if (comp?.documents != null) {
+          if (comp!.documents.hasCiCopy) validatedDocsMap['CI'] = true;
+          if (comp.documents.hasUtilityBill) validatedDocsMap['AVISO'] = true;
+          if (comp.documents.hasHomeSketch) validatedDocsMap['CROQUIS'] = true;
+          if (comp.documents.hasPhoto3x4) validatedDocsMap['FOTO'] = true;
+          if (comp.documents.hasSus) validatedDocsMap['SUS'] = true;
+          if (comp.documents.hasFelcc) validatedDocsMap['FELCC'] = true;
+        }
+
         final checklist = RrhhDossierDocument.defaultChecklistFor(
           workplaceType: a.targetType,
           targetPosition: a.targetPosition ?? 'Operario',
+          recruitmentValidatedDocs: validatedDocsMap,
         );
+
+        const String sec1Status = 'pendiente';
+
+        // Match area and position from catalogs if possible
+        String? matchedAreaId;
+        String? matchedAreaName = a.targetArea;
+        for (final area in _areas) {
+          if (area.name.toLowerCase().contains((a.targetArea ?? '').toLowerCase()) ||
+              (a.targetArea ?? '').toLowerCase().contains(area.name.toLowerCase())) {
+            matchedAreaId = area.id?.toString();
+            matchedAreaName = area.name;
+            break;
+          }
+        }
+        if (matchedAreaId == null && _areas.isNotEmpty) {
+          matchedAreaId = _areas.first.id?.toString();
+          matchedAreaName ??= _areas.first.name;
+        }
+
+        String? matchedPosId;
+        String? matchedPosName = a.targetPosition;
+        for (final pos in _positions) {
+          if (pos.name.toLowerCase().contains((a.targetPosition ?? '').toLowerCase()) ||
+              (a.targetPosition ?? '').toLowerCase().contains(pos.name.toLowerCase())) {
+            matchedPosId = pos.id?.toString();
+            matchedPosName = pos.name;
+            break;
+          }
+        }
+        if (matchedPosId == null && _positions.isNotEmpty) {
+          matchedPosId = _positions.first.id?.toString();
+          matchedPosName ??= _positions.first.name;
+        }
+
+        final emergName = comp?.evaluation.personalReferenceName ??
+            a.referencePerson ??
+            a.emergencyContact;
+        final emergPhone = comp?.evaluation.personalReferencePhone ??
+            a.referencePhone ??
+            a.emergencyPhone;
+        final expectedSal = comp?.evaluation.salaryExpectation ??
+            (a.expectedSalary != null && a.expectedSalary! > 0
+                ? a.expectedSalary
+                : null);
+
         list.add(
           RrhhHiringDossier(
             id: list.length + 1,
@@ -87,8 +144,17 @@ class RrhhRepositoryMock implements RrhhRepository {
             applicationDate: a.applicationDate,
             createdAt: a.createdAt,
             status: 'abierto',
-            section1Status: 'pendiente',
+            section1Status: sec1Status,
+            preloadedFromApplicant: true,
             documents: checklist,
+            fullAddress: (a.address != null && a.address!.isNotEmpty) ? a.address : null,
+            emergencyContactName: emergName,
+            emergencyContactPhone: emergPhone,
+            applicantExpectedSalary: expectedSal,
+            areaId: matchedAreaId,
+            areaName: matchedAreaName,
+            positionId: matchedPosId,
+            positionName: matchedPosName,
           ),
         );
       }
@@ -373,12 +439,12 @@ class RrhhRepositoryMock implements RrhhRepository {
           result: 'Apto',
         ),
         documents: const RrhhApplicantDocumentsChecklist(
-          hasCiCopy: true,
+          hasCiCopy: false,
           hasUtilityBill: true,
           hasHomeSketch: true,
-          hasPhoto3x4: true,
-          hasSus: true,
-          hasFelcc: true,
+          hasPhoto3x4: false,
+          hasSus: false,
+          hasFelcc: false,
         ),
         history: [
           RrhhStatusHistoryEntry(
@@ -394,6 +460,54 @@ class RrhhRepositoryMock implements RrhhRepository {
             timestamp: now.subtract(const Duration(days: 2)),
             author: 'Lic. Laura Mendoza',
             notes: 'Aprobado por Gerencia. Documentación completa. Listo para contratar.',
+          ),
+        ],
+      ),
+      // POST-026: SELECCIONADO (CAMPO) - Rogelio Arandia Arandia
+      26: RrhhApplicantCompanion(
+        applicantId: 26,
+        evaluation: const RrhhApplicantEvaluation(
+          education: 'Bachiller en Humanidades - Libreta Militar',
+          experienceSummary: '4 años en seguridad privada y custodia de condominios',
+          technicalSkills: ['Defensa personal', 'Primeros auxilios', 'Control de accesos'],
+          personalReferenceName: 'brigida',
+          personalReferencePhone: '7712345',
+          workReferenceName: 'Lic. Marco Justiniano',
+          workReferencePhone: '71199882',
+          rotatingShiftsAvailable: true,
+          clientBranchesAvailable: true,
+          physicalFitnessDeclared: true,
+          salaryExpectation: 3600.0,
+        ),
+        interviewRecord: RrhhInterviewRecord(
+          dateTime: now.subtract(const Duration(days: 4)),
+          interviewers: ['Encargada de RRHH', 'Dueño'],
+          modality: 'Presencial',
+          notes: 'Entrevista satisfactoria. Documentación y referencias comprobadas.',
+          result: 'Apto',
+        ),
+        documents: const RrhhApplicantDocumentsChecklist(
+          hasCiCopy: true,
+          hasUtilityBill: true,
+          hasHomeSketch: true,
+          hasPhoto3x4: true,
+          hasSus: true,
+          hasFelcc: true,
+        ),
+        history: [
+          RrhhStatusHistoryEntry(
+            fromStatus: 'ENTREVISTA',
+            toStatus: 'PRUEBAS',
+            timestamp: now.subtract(const Duration(days: 3)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Prueba práctica de rondas y libro de control superada',
+          ),
+          RrhhStatusHistoryEntry(
+            fromStatus: 'PRUEBAS',
+            toStatus: 'SELECCIONADO',
+            timestamp: now.subtract(const Duration(days: 1)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Fases 1, 2 y 3 completadas. Derivado a Expediente de Contratación.',
           ),
         ],
       ),
@@ -953,14 +1067,68 @@ class RrhhRepositoryMock implements RrhhRepository {
     if (existing != null) return existing;
 
     final applicant = await getApplicantById(applicantId);
+    final comp = await getApplicantCompanion(applicantId);
     final nextId = _dossiers.isEmpty
         ? 1
         : (_dossiers.map((d) => d.id).reduce((a, b) => a > b ? a : b) + 1);
 
+    final validatedDocsMap = <String, bool>{};
+    if (comp.documents.hasCiCopy) validatedDocsMap['CI'] = true;
+    if (comp.documents.hasUtilityBill) validatedDocsMap['AVISO'] = true;
+    if (comp.documents.hasHomeSketch) validatedDocsMap['CROQUIS'] = true;
+    if (comp.documents.hasPhoto3x4) validatedDocsMap['FOTO'] = true;
+    if (comp.documents.hasSus) validatedDocsMap['SUS'] = true;
+    if (comp.documents.hasFelcc) validatedDocsMap['FELCC'] = true;
+
     final checklist = RrhhDossierDocument.defaultChecklistFor(
       workplaceType: applicant.targetType,
       targetPosition: applicant.targetPosition ?? 'Operario',
+      recruitmentValidatedDocs: validatedDocsMap,
     );
+
+    const String sec1Status = 'pendiente';
+
+    // Match area and position
+    String? matchedAreaId;
+    String? matchedAreaName = applicant.targetArea;
+    for (final area in _areas) {
+      if (area.name.toLowerCase().contains((applicant.targetArea ?? '').toLowerCase()) ||
+          (applicant.targetArea ?? '').toLowerCase().contains(area.name.toLowerCase())) {
+        matchedAreaId = area.id?.toString();
+        matchedAreaName = area.name;
+        break;
+      }
+    }
+    if (matchedAreaId == null && _areas.isNotEmpty) {
+      matchedAreaId = _areas.first.id?.toString();
+      matchedAreaName ??= _areas.first.name;
+    }
+
+    String? matchedPosId;
+    String? matchedPosName = applicant.targetPosition;
+    for (final pos in _positions) {
+      if (pos.name.toLowerCase().contains((applicant.targetPosition ?? '').toLowerCase()) ||
+          (applicant.targetPosition ?? '').toLowerCase().contains(pos.name.toLowerCase())) {
+        matchedPosId = pos.id?.toString();
+        matchedPosName = pos.name;
+        break;
+      }
+    }
+    if (matchedPosId == null && _positions.isNotEmpty) {
+      matchedPosId = _positions.first.id?.toString();
+      matchedPosName ??= _positions.first.name;
+    }
+
+    final emergName = comp.evaluation.personalReferenceName ??
+        applicant.referencePerson ??
+        applicant.emergencyContact;
+    final emergPhone = comp.evaluation.personalReferencePhone ??
+        applicant.referencePhone ??
+        applicant.emergencyPhone;
+    final expectedSal = comp.evaluation.salaryExpectation ??
+        (applicant.expectedSalary != null && applicant.expectedSalary! > 0
+            ? applicant.expectedSalary
+            : null);
 
     final dossier = RrhhHiringDossier(
       id: nextId,
@@ -976,8 +1144,19 @@ class RrhhRepositoryMock implements RrhhRepository {
       applicationDate: applicant.applicationDate,
       createdAt: DateTime.now(),
       status: 'abierto',
-      section1Status: 'pendiente',
+      section1Status: sec1Status,
+      preloadedFromApplicant: true,
       documents: checklist,
+      fullAddress: (applicant.address != null && applicant.address!.isNotEmpty)
+          ? applicant.address
+          : null,
+      emergencyContactName: emergName,
+      emergencyContactPhone: emergPhone,
+      applicantExpectedSalary: expectedSal,
+      areaId: matchedAreaId,
+      areaName: matchedAreaName,
+      positionId: matchedPosId,
+      positionName: matchedPosName,
     );
 
     _dossiers.insert(0, dossier);
@@ -1221,8 +1400,12 @@ class RrhhRepositoryMock implements RrhhRepository {
       phone: app?.phone ?? dossier.applicantPhone,
       address: dossier.fullAddress ?? '',
       occupation: dossier.targetPosition,
-      personalReference: app?.referencePerson ?? '',
-      referencePhone: app?.referencePhone ?? '',
+      personalReference: (dossier.emergencyContactName != null && dossier.emergencyContactName!.isNotEmpty)
+          ? dossier.emergencyContactName!
+          : (app?.referencePerson ?? ''),
+      referencePhone: (dossier.emergencyContactPhone != null && dossier.emergencyContactPhone!.isNotEmpty)
+          ? dossier.emergencyContactPhone!
+          : (app?.referencePhone ?? ''),
       employeeType: dossier.workplaceType,
       area: dossier.areaName ?? dossier.targetArea,
       areaId: app?.areaId ?? (dossier.areaId != null ? int.tryParse(dossier.areaId!) : 1),
