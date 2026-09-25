@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (_authService.isMfaPending &&
           _authService.currentMfaChallenge != null) {
         final challenge = _authService.currentMfaChallenge!;
-        await Navigator.of(context).push(
+        final verified = await Navigator.of(context).push<bool>(
           MaterialPageRoute(
             builder: (_) => MfaVerificationScreen(
               authService: _authService,
@@ -113,6 +113,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         );
+        if (verified == true && mounted) {
+          widget.onLoginSuccess?.call();
+        }
       } else {
         widget.onLoginSuccess?.call();
       }
