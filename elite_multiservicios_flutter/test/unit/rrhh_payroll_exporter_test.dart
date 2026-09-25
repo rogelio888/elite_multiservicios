@@ -1,16 +1,41 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/utils/rrhh_payroll_exporter.dart';
-import 'package:elite_multiservicios_flutter/features/rrhh/data/services/rrhh_state_service.dart';
+import 'package:elite_multiservicios_flutter/features/rrhh/data/models/rrhh_employee.dart';
 
 void main() {
   group('RrhhPayrollExporter Tests', () {
-    final stateService = RrhhStateService();
+    final employees = [
+      RrhhEmployee(
+        id: '1',
+        code: 'EMP-001',
+        fullName: 'Juan Carlos Pérez Mendoza',
+        birthPlace: 'Santa Cruz',
+        identityCard: '4455882 SC',
+        phone: '70012345',
+        address: 'Barrio Las Palmas',
+        occupation: 'Operario',
+        personalReference: 'Madre',
+        referencePhone: '78899001',
+        employeeType: 'CAMPO',
+        area: 'Operaciones',
+        position: 'Líder',
+        specialty: 'Limpieza',
+        workplace: 'Central',
+        supervisor: 'Supervisor',
+        realStartDate: DateTime(2023, 5, 12),
+        fiscalStartDate: DateTime(2023, 5, 12),
+        agreedSalary: 4200.0,
+        contractType: 'Indefinido',
+        observations: 'Ninguna',
+        status: 'ACTIVO',
+      ),
+    ];
 
     test(
       'Genera planilla XML compatible con Excel con nombre de hoja PSUELDOS',
       () {
-        final employees = stateService.allEmployees;
         expect(employees.isNotEmpty, isTrue);
+
 
         final xml = RrhhPayrollExporter.generateSpreadsheetXml(
           employees: employees,
