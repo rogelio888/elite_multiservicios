@@ -1,3 +1,9 @@
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
+    show RrhhEmployeeBonus, RrhhEmployeeDeduction;
+
+export 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
+    show RrhhEmployeeBonus, RrhhEmployeeDeduction, RrhhEmployeeContractData;
+
 /// Evento o hito en la línea de tiempo del colaborador
 class RrhhTimelineEvent {
   final String id;
@@ -16,6 +22,84 @@ class RrhhTimelineEvent {
     required this.category,
     required this.registeredBy,
   });
+
+  factory RrhhTimelineEvent.fromJson(Map<String, dynamic> json) {
+    return RrhhTimelineEvent(
+      id: json['id'] as String? ?? '',
+      date: json['date'] != null
+          ? DateTime.tryParse(json['date'] as String) ?? DateTime.now()
+          : DateTime.now(),
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      category: json['category'] as String? ?? 'CONTRATACION',
+      registeredBy: json['registeredBy'] as String? ?? 'RRHH',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'date': date.toIso8601String(),
+      'title': title,
+      'description': description,
+      'category': category,
+      'registeredBy': registeredBy,
+    };
+  }
+}
+
+/// Elemento o ítem del checklist documental del empleado
+class RrhhEmployeeDocumentItem {
+  final String code;
+  final String name;
+  final String status; // 'pendiente' | 'recibido' | 'validado' | 'rechazado'
+  final DateTime? receivedAt;
+  final String? notes;
+  final String? scannedFileUrl;
+
+  const RrhhEmployeeDocumentItem({
+    required this.code,
+    required this.name,
+    this.status = 'pendiente',
+    this.receivedAt,
+    this.notes,
+    this.scannedFileUrl,
+  });
+
+  static const List<MapEntry<String, String>> standardDocuments = [
+    MapEntry('CI', 'Fotocopia CI'),
+    MapEntry('FELCC', 'Certificado FELCC'),
+    MapEntry('AVISO', 'Aviso luz/agua'),
+    MapEntry('CROQUIS', 'Croquis domiciliario'),
+    MapEntry('FOTO', 'Foto 3x4 fondo rojo'),
+    MapEntry('SUS', 'Constancia SUS'),
+    MapEntry('TITULO', 'Título profesional'),
+    MapEntry('LICENCIA', 'Licencia de conducir'),
+  ];
+
+  factory RrhhEmployeeDocumentItem.fromJson(Map<String, dynamic> json) {
+    return RrhhEmployeeDocumentItem(
+      code: json['code'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      status: json['status'] as String? ?? 'pendiente',
+      receivedAt: json['receivedAt'] != null
+          ? DateTime.tryParse(json['receivedAt'] as String)
+          : null,
+      notes: json['notes'] as String?,
+      scannedFileUrl: json['scannedFileUrl'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'code': code,
+      'name': name,
+      'status': status,
+      if (receivedAt != null) 'receivedAt': receivedAt!.toIso8601String(),
+      if (notes != null) 'notes': notes,
+      if (scannedFileUrl != null) 'scannedFileUrl': scannedFileUrl,
+    };
+  }
 }
 
 /// Modelo central de Colaborador / Empleado de Elite Multiservicios
@@ -36,8 +120,7 @@ class RrhhEmployee {
   final String employeeType; // 'OFICINA' o 'CAMPO'
   final String area; // Área o departamento (ej. Operaciones, Marketing, Ventas)
   final String position; // Cargo (ej. Encargada de Marketing, Jardinero)
-  final String
-  specialty; // Especialidad (Jardinería, Limpieza, Seguridad, etc.)
+  final String specialty; // Especialidad (Jardinería, Limpieza, Seguridad, etc.)
   final String workplace; // Sede asignada o nombre de cliente/sede
   final String supervisor; // Jefe directo o supervisor asignado
 
@@ -79,6 +162,45 @@ class RrhhEmployee {
 
   // Línea de tiempo / Historial laboral conservado
   final List<RrhhTimelineEvent> timeline;
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // NUEVOS CAMPOS FASE B: EXPEDIENTE DE CONTRATACIÓN (NULLABLE / RETROCOMPATIBLES)
+  // ───────────────────────────────────────────────────────────────────────────
+
+  // Datos bancarios
+  final String? bankName;
+  final String? accountType; // 'Ahorro' | 'Corriente'
+  final String? accountNumber;
+
+  // Seguridad social
+  final String? afpName;
+  final String? afpNumber;
+  final String? healthInsurance;
+
+  // Datos personales complementarios
+  final String? fullAddress;
+  final String? maritalStatus; // 'Soltero' | 'Casado' | 'Divorciado' | 'Viudo' | 'Unión Libre'
+  final int? childrenCount;
+  final String? emergencyContactName;
+  final String? emergencyContactPhone;
+  final String? emergencyContactRelation;
+
+  // Datos contractuales complementarios
+  final String? workdayType; // 'Completa' | 'Parcial' | 'Por horas'
+  final DateTime? contractStartDate;
+  final String? contractSignedPdfUrl;
+
+  // Bonificaciones y descuentos
+  final List<RrhhEmployeeBonus>? bonuses;
+  final List<RrhhEmployeeDeduction>? deductions;
+
+  // Asignación organizacional
+  final String? shiftId;
+  final String? baseLocation;
+  final String? supervisorEmployeeId;
+
+  // Documentos (Checklist mapeado de código -> estado)
+  final Map<String, String>? documentChecklist;
 
   const RrhhEmployee({
     required this.id,
@@ -122,6 +244,28 @@ class RrhhEmployee {
     this.exitObservations,
     this.exitRegisteredBy,
     this.timeline = const [],
+    // Nuevos campos opcionales Fase B
+    this.bankName,
+    this.accountType,
+    this.accountNumber,
+    this.afpName,
+    this.afpNumber,
+    this.healthInsurance,
+    this.fullAddress,
+    this.maritalStatus,
+    this.childrenCount,
+    this.emergencyContactName,
+    this.emergencyContactPhone,
+    this.emergencyContactRelation,
+    this.workdayType,
+    this.contractStartDate,
+    this.contractSignedPdfUrl,
+    this.bonuses,
+    this.deductions,
+    this.shiftId,
+    this.baseLocation,
+    this.supervisorEmployeeId,
+    this.documentChecklist,
   });
 
   int get attachedDocumentsCount {
@@ -260,6 +404,28 @@ class RrhhEmployee {
     String? exitObservations,
     String? exitRegisteredBy,
     List<RrhhTimelineEvent>? timeline,
+    // Nuevos campos Fase B
+    String? bankName,
+    String? accountType,
+    String? accountNumber,
+    String? afpName,
+    String? afpNumber,
+    String? healthInsurance,
+    String? fullAddress,
+    String? maritalStatus,
+    int? childrenCount,
+    String? emergencyContactName,
+    String? emergencyContactPhone,
+    String? emergencyContactRelation,
+    String? workdayType,
+    DateTime? contractStartDate,
+    String? contractSignedPdfUrl,
+    List<RrhhEmployeeBonus>? bonuses,
+    List<RrhhEmployeeDeduction>? deductions,
+    String? shiftId,
+    String? baseLocation,
+    String? supervisorEmployeeId,
+    Map<String, String>? documentChecklist,
   }) {
     return RrhhEmployee(
       id: id ?? this.id,
@@ -303,7 +469,196 @@ class RrhhEmployee {
       exitObservations: exitObservations ?? this.exitObservations,
       exitRegisteredBy: exitRegisteredBy ?? this.exitRegisteredBy,
       timeline: timeline ?? this.timeline,
+      bankName: bankName ?? this.bankName,
+      accountType: accountType ?? this.accountType,
+      accountNumber: accountNumber ?? this.accountNumber,
+      afpName: afpName ?? this.afpName,
+      afpNumber: afpNumber ?? this.afpNumber,
+      healthInsurance: healthInsurance ?? this.healthInsurance,
+      fullAddress: fullAddress ?? this.fullAddress,
+      maritalStatus: maritalStatus ?? this.maritalStatus,
+      childrenCount: childrenCount ?? this.childrenCount,
+      emergencyContactName: emergencyContactName ?? this.emergencyContactName,
+      emergencyContactPhone: emergencyContactPhone ?? this.emergencyContactPhone,
+      emergencyContactRelation: emergencyContactRelation ?? this.emergencyContactRelation,
+      workdayType: workdayType ?? this.workdayType,
+      contractStartDate: contractStartDate ?? this.contractStartDate,
+      contractSignedPdfUrl: contractSignedPdfUrl ?? this.contractSignedPdfUrl,
+      bonuses: bonuses ?? this.bonuses,
+      deductions: deductions ?? this.deductions,
+      shiftId: shiftId ?? this.shiftId,
+      baseLocation: baseLocation ?? this.baseLocation,
+      supervisorEmployeeId: supervisorEmployeeId ?? this.supervisorEmployeeId,
+      documentChecklist: documentChecklist ?? this.documentChecklist,
     );
+  }
+
+  factory RrhhEmployee.fromJson(Map<String, dynamic> json) {
+    return RrhhEmployee(
+      id: json['id'] as String? ?? '',
+      code: json['code'] as String? ?? '',
+      fullName: json['fullName'] as String? ?? '',
+      birthDate: json['birthDate'] != null
+          ? DateTime.tryParse(json['birthDate'] as String)
+          : null,
+      birthPlace: json['birthPlace'] as String? ?? '',
+      identityCard: json['identityCard'] as String? ?? '',
+      phone: json['phone'] as String? ?? '',
+      address: json['address'] as String? ?? '',
+      occupation: json['occupation'] as String? ?? '',
+      personalReference: json['personalReference'] as String? ?? '',
+      referencePhone: json['referencePhone'] as String? ?? '',
+      employeeType: json['employeeType'] as String? ?? 'OFICINA',
+      area: json['area'] as String? ?? '',
+      position: json['position'] as String? ?? '',
+      specialty: json['specialty'] as String? ?? '',
+      workplace: json['workplace'] as String? ?? '',
+      supervisor: json['supervisor'] as String? ?? '',
+      realStartDate: json['realStartDate'] != null
+          ? DateTime.tryParse(json['realStartDate'] as String) ?? DateTime.now()
+          : DateTime.now(),
+      fiscalStartDate: json['fiscalStartDate'] != null
+          ? DateTime.tryParse(json['fiscalStartDate'] as String) ?? DateTime.now()
+          : DateTime.now(),
+      agreedSalary: (json['agreedSalary'] as num?)?.toDouble() ?? 0.0,
+      contractType: json['contractType'] as String? ?? 'Indefinido',
+      contractEndDate: json['contractEndDate'] != null
+          ? DateTime.tryParse(json['contractEndDate'] as String)
+          : null,
+      observations: json['observations'] as String? ?? '',
+      status: json['status'] as String? ?? 'ACTIVO',
+      skills: (json['skills'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      availabilityStatus:
+          json['availabilityStatus'] as String? ?? 'DISPONIBLE',
+      paymentModality: json['paymentModality'] as String? ?? 'MENSUAL',
+      workScheduleType:
+          json['workScheduleType'] as String? ?? 'TIEMPO_COMPLETO_48H',
+      hasCiCopy: json['hasCiCopy'] as bool? ?? true,
+      hasUtilityBill: json['hasUtilityBill'] as bool? ?? true,
+      hasHomeSketch: json['hasHomeSketch'] as bool? ?? true,
+      hasFelccRecord: json['hasFelccRecord'] as bool? ?? true,
+      hasPhoto3x4: json['hasPhoto3x4'] as bool? ?? true,
+      hasSusInsurance: json['hasSusInsurance'] as bool? ?? true,
+      corporateEmail: json['corporateEmail'] as String?,
+      temporaryPassword: json['temporaryPassword'] as String?,
+      exitDate: json['exitDate'] != null
+          ? DateTime.tryParse(json['exitDate'] as String)
+          : null,
+      exitReason: json['exitReason'] as String?,
+      exitObservations: json['exitObservations'] as String?,
+      exitRegisteredBy: json['exitRegisteredBy'] as String?,
+      timeline: (json['timeline'] as List<dynamic>?)
+              ?.map((e) => RrhhTimelineEvent.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      bankName: json['bankName'] as String?,
+      accountType: json['accountType'] as String?,
+      accountNumber: json['accountNumber'] as String?,
+      afpName: json['afpName'] as String?,
+      afpNumber: json['afpNumber'] as String?,
+      healthInsurance: json['healthInsurance'] as String?,
+      fullAddress: json['fullAddress'] as String?,
+      maritalStatus: json['maritalStatus'] as String?,
+      childrenCount: json['childrenCount'] as int?,
+      emergencyContactName: json['emergencyContactName'] as String?,
+      emergencyContactPhone: json['emergencyContactPhone'] as String?,
+      emergencyContactRelation: json['emergencyContactRelation'] as String?,
+      workdayType: json['workdayType'] as String?,
+      contractStartDate: json['contractStartDate'] != null
+          ? DateTime.tryParse(json['contractStartDate'] as String)
+          : null,
+      contractSignedPdfUrl: json['contractSignedPdfUrl'] as String?,
+      bonuses: (json['bonuses'] as List<dynamic>?)
+          ?.map((e) => RrhhEmployeeBonus.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      deductions: (json['deductions'] as List<dynamic>?)
+          ?.map((e) => RrhhEmployeeDeduction.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      shiftId: json['shiftId'] as String?,
+      baseLocation: json['baseLocation'] as String?,
+      supervisorEmployeeId: json['supervisorEmployeeId'] as String?,
+      documentChecklist: (json['documentChecklist'] as Map<String, dynamic>?)
+          ?.map((k, v) => MapEntry(k, v.toString())),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'code': code,
+      'fullName': fullName,
+      if (birthDate != null) 'birthDate': birthDate!.toIso8601String(),
+      'birthPlace': birthPlace,
+      'identityCard': identityCard,
+      'phone': phone,
+      'address': address,
+      'occupation': occupation,
+      'personalReference': personalReference,
+      'referencePhone': referencePhone,
+      'employeeType': employeeType,
+      'area': area,
+      'position': position,
+      'specialty': specialty,
+      'workplace': workplace,
+      'supervisor': supervisor,
+      'realStartDate': realStartDate.toIso8601String(),
+      'fiscalStartDate': fiscalStartDate.toIso8601String(),
+      'agreedSalary': agreedSalary,
+      'contractType': contractType,
+      if (contractEndDate != null)
+        'contractEndDate': contractEndDate!.toIso8601String(),
+      'observations': observations,
+      'status': status,
+      'skills': skills,
+      'availabilityStatus': availabilityStatus,
+      'paymentModality': paymentModality,
+      'workScheduleType': workScheduleType,
+      'hasCiCopy': hasCiCopy,
+      'hasUtilityBill': hasUtilityBill,
+      'hasHomeSketch': hasHomeSketch,
+      'hasFelccRecord': hasFelccRecord,
+      'hasPhoto3x4': hasPhoto3x4,
+      'hasSusInsurance': hasSusInsurance,
+      if (corporateEmail != null) 'corporateEmail': corporateEmail,
+      if (temporaryPassword != null) 'temporaryPassword': temporaryPassword,
+      if (exitDate != null) 'exitDate': exitDate!.toIso8601String(),
+      if (exitReason != null) 'exitReason': exitReason,
+      if (exitObservations != null) 'exitObservations': exitObservations,
+      if (exitRegisteredBy != null) 'exitRegisteredBy': exitRegisteredBy,
+      'timeline': timeline.map((e) => e.toJson()).toList(),
+      if (bankName != null) 'bankName': bankName,
+      if (accountType != null) 'accountType': accountType,
+      if (accountNumber != null) 'accountNumber': accountNumber,
+      if (afpName != null) 'afpName': afpName,
+      if (afpNumber != null) 'afpNumber': afpNumber,
+      if (healthInsurance != null) 'healthInsurance': healthInsurance,
+      if (fullAddress != null) 'fullAddress': fullAddress,
+      if (maritalStatus != null) 'maritalStatus': maritalStatus,
+      if (childrenCount != null) 'childrenCount': childrenCount,
+      if (emergencyContactName != null)
+        'emergencyContactName': emergencyContactName,
+      if (emergencyContactPhone != null)
+        'emergencyContactPhone': emergencyContactPhone,
+      if (emergencyContactRelation != null)
+        'emergencyContactRelation': emergencyContactRelation,
+      if (workdayType != null) 'workdayType': workdayType,
+      if (contractStartDate != null)
+        'contractStartDate': contractStartDate!.toIso8601String(),
+      if (contractSignedPdfUrl != null)
+        'contractSignedPdfUrl': contractSignedPdfUrl,
+      if (bonuses != null)
+        'bonuses': bonuses!.map((e) => e.toJson()).toList(),
+      if (deductions != null)
+        'deductions': deductions!.map((e) => e.toJson()).toList(),
+      if (shiftId != null) 'shiftId': shiftId,
+      if (baseLocation != null) 'baseLocation': baseLocation,
+      if (supervisorEmployeeId != null)
+        'supervisorEmployeeId': supervisorEmployeeId,
+      if (documentChecklist != null) 'documentChecklist': documentChecklist,
+    };
   }
 }
 
@@ -331,4 +686,34 @@ class RrhhSalaryAdjustment {
     required this.date,
     this.status = 'AUTORIZADO',
   });
+
+  factory RrhhSalaryAdjustment.fromJson(Map<String, dynamic> json) {
+    return RrhhSalaryAdjustment(
+      id: json['id'] as String? ?? '',
+      employeeId: json['employeeId'] as String? ?? '',
+      employeeName: json['employeeName'] as String? ?? '',
+      type: json['type'] as String? ?? 'BONO',
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      concept: json['concept'] as String? ?? '',
+      authorizedBy: json['authorizedBy'] as String? ?? 'RRHH',
+      date: json['date'] != null
+          ? DateTime.tryParse(json['date'] as String) ?? DateTime.now()
+          : DateTime.now(),
+      status: json['status'] as String? ?? 'AUTORIZADO',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'employeeId': employeeId,
+      'employeeName': employeeName,
+      'type': type,
+      'amount': amount,
+      'concept': concept,
+      'authorizedBy': authorizedBy,
+      'date': date.toIso8601String(),
+      'status': status,
+    };
+  }
 }

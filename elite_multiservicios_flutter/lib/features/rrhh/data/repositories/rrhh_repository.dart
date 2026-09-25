@@ -1,9 +1,13 @@
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import '../models/crm_client_ref_dto.dart';
 import '../models/ops_attendance_summary_dto.dart';
+import '../models/rrhh_applicant_companion.dart';
 import '../models/rrhh_applicant_summary_dto.dart';
+import '../models/rrhh_catalog_item.dart';
 import '../models/rrhh_employee_summary_dto.dart';
+import '../models/rrhh_hiring_dossier.dart';
 import '../models/rrhh_payroll_export_dto.dart';
+import '../models/rrhh_shift.dart';
 
 import 'rrhh_repository_mock.dart';
 
@@ -46,6 +50,68 @@ abstract class RrhhRepository {
   Future<RrhhAssignment?> getCurrentAssignment(int employeeId);
   Future<RrhhEmployee> updateEmployee(RrhhEmployee employee);
 
+  // Métodos FASE B: Actualizaciones por sección del Expediente de Contratación
+  Future<RrhhEmployee> updateEmployeeBankInfo(
+    int id, {
+    String? bankName,
+    String? accountType,
+    String? accountNumber,
+  });
+
+  Future<RrhhEmployee> updateEmployeeSocialSecurity(
+    int id, {
+    String? afpName,
+    String? afpNumber,
+    String? healthInsurance,
+  });
+
+  Future<RrhhEmployee> updateEmployeePersonalInfo(
+    int id, {
+    String? fullAddress,
+    String? maritalStatus,
+    int? childrenCount,
+    String? emergencyContactName,
+    String? emergencyContactPhone,
+    String? emergencyContactRelation,
+  });
+
+  Future<RrhhEmployee> updateEmployeeContract(
+    int id, {
+    String? contractType,
+    String? paymentModality,
+    String? workdayType,
+    DateTime? contractStartDate,
+    DateTime? contractEndDate,
+    String? contractSignedPdfUrl,
+  });
+
+  Future<RrhhEmployee> updateEmployeeBonuses(
+    int id,
+    List<RrhhEmployeeBonus> bonuses,
+  );
+
+  Future<RrhhEmployee> updateEmployeeDeductions(
+    int id,
+    List<RrhhEmployeeDeduction> deductions,
+  );
+
+  Future<RrhhEmployee> updateEmployeeAssignment(
+    int id, {
+    String? shiftId,
+    String? baseLocation,
+    String? supervisorEmployeeId,
+  });
+
+  Future<RrhhEmployee> updateEmployeeDocuments(
+    int id,
+    Map<String, String> documentChecklist,
+  );
+
+  // ---------------------------------------------------------------------------
+  // EXPOSICIÓN PARA CONTABILIDAD (Solo Lectura)
+  // ---------------------------------------------------------------------------
+  Future<RrhhEmployeeContractData> getEmployeeContractData(int id);
+
   // ---------------------------------------------------------------------------
   // PANTALLA 04: Reclutamiento & Pipeline de Postulantes
   // ---------------------------------------------------------------------------
@@ -54,16 +120,89 @@ abstract class RrhhRepository {
     String? search,
   });
   Future<RrhhApplicant> getApplicantById(int id);
-  Future<RrhhApplicant> createApplicant(RrhhApplicant applicant);
+  Future<RrhhApplicantCompanion> getApplicantCompanion(int applicantId);
+  Future<void> saveApplicantCompanion(int applicantId, RrhhApplicantCompanion companion);
+  Future<List<RrhhApplicant>> findApplicantsByCi(String identityCard);
+  Future<RrhhApplicant> createApplicant(
+    RrhhApplicant applicant, {
+    RrhhApplicantCompanion? companion,
+  });
   Future<RrhhApplicant> updateApplicantStatus(
     int applicantId,
     String newStatus, {
     String? notes,
+    String? discardReason,
+    bool? isEligibleForRehire,
   });
+  Future<void> addInterviewRecord(
+    int applicantId,
+    RrhhInterviewRecord record,
+  );
 
   // ---------------------------------------------------------------------------
-  // PANTALLA 05: Contratación Formal (Wizard / Stepper)
+  // PANTALLA 05: Contratación Formal & Expedientes de Contratación (FASE C)
   // ---------------------------------------------------------------------------
+  Future<List<RrhhHiringDossier>> listActiveDossiers();
+  Future<RrhhHiringDossier?> getDossierByApplicantId(int applicantId);
+  Future<RrhhHiringDossier?> getDossierById(int id);
+  Future<RrhhHiringDossier> createDossierForApplicant(int applicantId);
+  Future<RrhhHiringDossier> updateDossierSection1(
+    int id,
+    Map<String, RrhhDossierDocument> documents,
+  );
+  Future<RrhhHiringDossier> updateDossierSection2(
+    int id, {
+    String? afpId,
+    String? afpName,
+    String? afpNumber,
+    String? healthInsuranceId,
+    String? healthInsuranceName,
+    String? section2Notes,
+    required String sectionStatus,
+  });
+  Future<RrhhHiringDossier> updateDossierSection3(
+    int id, {
+    String? fullAddress,
+    String? maritalStatus,
+    int? childrenCount,
+    String? emergencyContactName,
+    String? emergencyContactPhone,
+    String? emergencyContactRelation,
+    required String sectionStatus,
+  });
+  Future<RrhhHiringDossier> updateDossierSection4(
+    int id, {
+    String? contractTypeId,
+    String? contractTypeName,
+    String? workdayType,
+    String? paymentModalityId,
+    String? paymentModalityName,
+    double? baseSalary,
+    String? currency,
+    DateTime? contractStartDate,
+    DateTime? contractEndDate,
+    List<RrhhEmployeeBonus>? bonuses,
+    List<RrhhEmployeeDeduction>? deductions,
+    required String sectionStatus,
+  });
+  Future<RrhhHiringDossier> updateDossierSection5(
+    int id, {
+    String? areaId,
+    String? areaName,
+    String? positionId,
+    String? positionName,
+    String? shiftId,
+    String? shiftName,
+    String? scheduleId,
+    String? scheduleName,
+    String? baseLocation,
+    String? supervisorEmployeeId,
+    String? supervisorName,
+    DateTime? effectiveStartDate,
+    required String sectionStatus,
+  });
+  Future<RrhhHiringDossier> updateDossierStatus(int id, String status);
+
   Future<RrhhEmployee> hireApplicant({
     required int? applicantId,
     required RrhhEmployee employeeData,
@@ -87,9 +226,24 @@ abstract class RrhhRepository {
   // ---------------------------------------------------------------------------
   // PANTALLA 07: Catálogo de Horarios y Turnos Base
   // ---------------------------------------------------------------------------
+  Future<List<RrhhShift>> listShifts();
+  Future<RrhhShift> createShift(RrhhShift shift);
+  Future<RrhhShift> updateShift(RrhhShift shift);
+
+  Future<List<RrhhBaseSchedule>> listBaseSchedules();
+  Future<RrhhBaseSchedule> createBaseSchedule(RrhhBaseSchedule schedule);
+  Future<RrhhBaseSchedule> updateBaseSchedule(RrhhBaseSchedule schedule);
+
   Future<List<RrhhSchedule>> listSchedules();
   Future<RrhhSchedule> createSchedule(RrhhSchedule schedule);
   Future<RrhhSchedule> updateSchedule(RrhhSchedule schedule);
+
+  // ---------------------------------------------------------------------------
+  // CATÁLOGOS AUXILIARES MAESTROS (Bancos, AFPs, Seguros, Contratos, etc.)
+  // ---------------------------------------------------------------------------
+  Future<List<RrhhCatalogItem>> listCatalogItems(RrhhCatalogType type);
+  Future<RrhhCatalogItem> createCatalogItem(RrhhCatalogItem item);
+  Future<RrhhCatalogItem> updateCatalogItem(RrhhCatalogItem item);
 
   // ---------------------------------------------------------------------------
   // PANTALLA 08: Permisos y Licencias Médicas

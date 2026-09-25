@@ -13,6 +13,7 @@ class RrhhPersonalTableRow extends StatefulWidget {
   final VoidCallback onViewDetails;
   final VoidCallback onEdit;
   final VoidCallback onTerminate;
+  final RrhhTableWidths widths;
 
   const RrhhPersonalTableRow({
     super.key,
@@ -20,6 +21,7 @@ class RrhhPersonalTableRow extends StatefulWidget {
     required this.onViewDetails,
     required this.onEdit,
     required this.onTerminate,
+    this.widths = const RrhhTableWidths(),
   });
 
   @override
@@ -56,198 +58,86 @@ class _RrhhPersonalTableRowState extends State<RrhhPersonalTableRow> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // 1. Código (#EMP-xxx)
+              SizedBox(width: widget.widths.codigo, child: Text(e.code, style: GoogleFonts.jetBrainsMono(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF64748B)))),
               SizedBox(
-                width: RrhhPersonalTableColumns.codigo,
-                child: Text(
-                  e.code,
-                  style: GoogleFonts.jetBrainsMono(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF64748B),
-                  ),
-                ),
-              ),
-
-              // 2. Avatar Squircle
-              SizedBox(
-                width: RrhhPersonalTableColumns.foto,
+                width: widget.widths.foto,
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1E293B),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: const Color(0xFF334155)),
-                    ),
+                    width: 30, height: 30,
+                    decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0xFF334155))),
                     alignment: Alignment.center,
-                    child: Text(
-                      _getInitials(e.fullName),
-                      style: GoogleFonts.inter(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFFE2E8F0),
-                      ),
-                    ),
+                    child: Text(_getInitials(e.fullName), style: GoogleFonts.inter(fontSize: 10.5, fontWeight: FontWeight.w600, color: const Color(0xFFE2E8F0))),
                   ),
                 ),
               ),
-
-              // 3. Nombre Completo
               SizedBox(
-                width: RrhhPersonalTableColumns.nombre,
+                width: widget.widths.nombre,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        e.fullName,
-                        style: GoogleFonts.inter(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFFF8FAFC),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        'Ingreso: ${_formatDate(e.realStartDate)}',
-                        style: GoogleFonts.inter(
-                          fontSize: 10.5,
-                          color: const Color(0xFF64748B),
-                        ),
-                      ),
+                      Text(e.fullName, style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w500, color: const Color(0xFFF8FAFC)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text('Ingreso: ${_formatDate(e.realStartDate)}', style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFF64748B))),
                     ],
                   ),
                 ),
               ),
-
-              // 4. Tipo (OFICINA / CAMPO)
               SizedBox(
-                width: RrhhPersonalTableColumns.tipo,
+                width: widget.widths.tipo,
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                     decoration: BoxDecoration(
-                      color: e.isField
-                          ? const Color(0xFF059669).withValues(alpha: 0.12)
-                          : const Color(0xFF2563EB).withValues(alpha: 0.12),
+                      color: e.isField ? const Color(0xFF059669).withValues(alpha: 0.12) : const Color(0xFF2563EB).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(4),
-                      border: Border.all(
-                        color: e.isField
-                            ? const Color(0xFF059669).withValues(alpha: 0.25)
-                            : const Color(0xFF2563EB).withValues(alpha: 0.25),
-                      ),
+                      border: Border.all(color: e.isField ? const Color(0xFF059669).withValues(alpha: 0.25) : const Color(0xFF2563EB).withValues(alpha: 0.25)),
                     ),
-                    child: Text(
-                      e.employeeType,
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w600,
-                        color: e.isField
-                            ? const Color(0xFF10B981)
-                            : const Color(0xFF60A5FA),
-                      ),
-                    ),
+                    child: Text(e.employeeType, style: GoogleFonts.jetBrainsMono(fontSize: 9.5, fontWeight: FontWeight.w600, color: e.isField ? const Color(0xFF10B981) : const Color(0xFF60A5FA))),
                   ),
                 ),
               ),
-
-              // 5. Área / Cargo
               SizedBox(
-                width: RrhhPersonalTableColumns.areaCargo,
+                width: widget.widths.areaCargo,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        e.position,
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFFCBD5E1),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        e.area,
-                        style: GoogleFonts.inter(
-                          fontSize: 10.5,
-                          color: const Color(0xFF64748B),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      Text(e.position, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: const Color(0xFFCBD5E1)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(e.area, style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFF64748B)), maxLines: 1, overflow: TextOverflow.ellipsis),
                     ],
                   ),
                 ),
               ),
-
-              // 6. Especialidad
               SizedBox(
-                width: RrhhPersonalTableColumns.especialidad,
+                width: widget.widths.especialidad,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 12),
-                  child: Text(
-                    e.specialty,
-                    style: GoogleFonts.inter(
-                      fontSize: 11.5,
-                      color: const Color(0xFF94A3B8),
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  child: Text(e.specialty, style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF94A3B8)), maxLines: 1, overflow: TextOverflow.ellipsis),
                 ),
               ),
-
-              // 7. Disponibilidad
               SizedBox(
-                width: RrhhPersonalTableColumns.disponibilidad,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: RrhhPersonalStatusChip(status: e.availabilityStatus),
-                ),
+                width: widget.widths.disponibilidad,
+                child: Align(alignment: Alignment.centerLeft, child: RrhhPersonalStatusChip(status: e.availabilityStatus)),
               ),
-
-              // 8. Expediente (6/6)
               SizedBox(
-                width: RrhhPersonalTableColumns.expediente,
+                width: widget.widths.expediente,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      e.hasCompleteDocs ? Icons.check_circle_outline : Icons.pending_actions_outlined,
-                      size: 13,
-                      color: e.hasCompleteDocs
-                          ? const Color(0xFF10B981)
-                          : const Color(0xFFF59E0B),
-                    ),
+                    Icon(e.hasCompleteDocs ? Icons.check_circle_outline : Icons.pending_actions_outlined, size: 13, color: e.hasCompleteDocs ? const Color(0xFF10B981) : const Color(0xFFF59E0B)),
                     const SizedBox(width: 4),
-                    Text(
-                      '${e.attachedDocsCount}/6',
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w600,
-                        color: e.hasCompleteDocs
-                            ? const Color(0xFF10B981)
-                            : const Color(0xFFF59E0B),
-                      ),
-                    ),
+                    Text('${e.attachedDocsCount}/6', style: GoogleFonts.jetBrainsMono(fontSize: 10.5, fontWeight: FontWeight.w600, color: e.hasCompleteDocs ? const Color(0xFF10B981) : const Color(0xFFF59E0B))),
                   ],
                 ),
               ),
-
-              // 9. Acciones
               SizedBox(
-                width: RrhhPersonalTableColumns.acciones,
+                width: widget.widths.acciones,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

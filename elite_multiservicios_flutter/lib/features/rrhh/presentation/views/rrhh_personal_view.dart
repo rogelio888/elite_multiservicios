@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../widgets/rrhh_contratacion_tab.dart';
-import '../widgets/rrhh_hire_wizard.dart';
+import '../widgets/rrhh_hiring_dossiers_tab.dart';
 import '../widgets/rrhh_personal_directorio_tab.dart';
+import '../widgets/rrhh_recruitment_tab.dart';
 import '../widgets/rrhh_state_widgets.dart';
-import 'rrhh_placeholder_view.dart';
+import 'rrhh_hiring_dossier_detail_view.dart';
 
 /// Vista raíz de Gestión de Personal (Entrada 02 del acordeón RRHH).
-/// Contenedor ejecutivo con 3 tabs: Directorio, Reclutamiento y Contratación.
+/// Contenedor ejecutivo con 3 tabs: Directorio, Reclutamiento y Contrataciones en Curso.
 class RrhhPersonalView extends StatefulWidget {
   final String? initialTab;
+  final int? initialDossierId;
   final bool hasPermission;
+  final bool canManage;
   final void Function(int index)? onNavigateToTab;
 
   const RrhhPersonalView({
     super.key,
     this.initialTab,
+    this.initialDossierId,
     this.hasPermission = true,
+    this.canManage = true,
     this.onNavigateToTab,
   });
 
@@ -28,16 +32,21 @@ class RrhhPersonalView extends StatefulWidget {
 class _RrhhPersonalViewState extends State<RrhhPersonalView>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  final GlobalKey<RrhhPersonalDirectorioTabState> _directorioKey = GlobalKey();
+  int? _selectedDossierId;
 
   @override
   void initState() {
     super.initState();
+    _selectedDossierId = widget.initialDossierId;
+
     int tabIndex = 0;
     final init = widget.initialTab?.toLowerCase();
     if (init == 'reclutamiento' || init == 'postulantes') {
       tabIndex = 1;
-    } else if (init == 'contratacion' || init == 'alta') {
+    } else if (init == 'contrataciones' ||
+        init == 'contrataciones_en_curso' ||
+        init == 'expediente' ||
+        widget.initialDossierId != null) {
       tabIndex = 2;
     }
 
@@ -46,6 +55,32 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
       vsync: this,
       initialIndex: tabIndex,
     );
+  }
+
+  @override
+  void didUpdateWidget(covariant RrhhPersonalView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialTab != widget.initialTab && widget.initialTab != null) {
+      final init = widget.initialTab?.toLowerCase();
+      int newIndex = 0;
+      if (init == 'reclutamiento' || init == 'postulantes') {
+        newIndex = 1;
+      } else if (init == 'contrataciones' ||
+          init == 'contrataciones_en_curso' ||
+          init == 'expediente' ||
+          widget.initialDossierId != null) {
+        newIndex = 2;
+      }
+      if (_tabController.index != newIndex) {
+        _tabController.animateTo(newIndex);
+      }
+    }
+    if (widget.initialDossierId != oldWidget.initialDossierId &&
+        widget.initialDossierId != null) {
+      setState(() {
+        _selectedDossierId = widget.initialDossierId;
+      });
+    }
   }
 
   @override
@@ -60,6 +95,18 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
       return const RrhhForbiddenState(requiredPermission: 'rrhh.personal.view');
     }
 
+    // Si hay un expediente seleccionado, mostramos la vista completa del expediente
+    if (_selectedDossierId != null) {
+      return RrhhHiringDossierDetailView(
+        dossierId: _selectedDossierId!,
+        onBack: () {
+          setState(() {
+            _selectedDossierId = null;
+          });
+        },
+      );
+    }
+
     return Column(
       children: [
         _buildHeader(),
@@ -68,22 +115,17 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
             controller: _tabController,
             children: [
               // Tab 1: Directorio (Pantalla 02)
-              RrhhPersonalDirectorioTab(key: _directorioKey),
+              RrhhPersonalDirectorioTab(canManage: widget.canManage),
 
               // Tab 2: Reclutamiento & Postulantes (Pantalla 04)
-              const RrhhPlaceholderView(
-                title: '04. Reclutamiento & Pipeline de Postulantes',
-                blockName: 'En construcción - Bloque 1',
-                description:
-                    'Gestión del embudo de candidatos, evaluación curricular, entrevistas y filtro previo a contratación.',
-                icon: Icons.person_search_outlined,
-              ),
+              const RrhhRecruitmentTab(),
 
-              // Tab 3: Contratación Formal (Wizard, Pantalla 05)
-              RrhhContratacionTab(
-                onHireCompleted: () {
-                  _directorioKey.currentState?.loadEmployees();
-                  _tabController.animateTo(0);
+              // Tab 3: Contrataciones en Curso (NUEVA - FASE C1)
+              RrhhHiringDossiersTab(
+                onOpenDossier: (dossierId) {
+                  setState(() {
+                    _selectedDossierId = dossierId;
+                  });
                 },
               ),
             ],
@@ -94,89 +136,50 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
   }
 
   Widget _buildHeader() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 14, 24, 0),
-      decoration: const BoxDecoration(
-        color: Color(0xFF0F172A),
-        border: Border(bottom: BorderSide(color: Color(0xFF1E293B))),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF090D16) : Colors.white,
+        border: Border(
+          bottom: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+            width: 1,
+          ),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Fila única: Título + Subtítulo a la izquierda, Acción principal a la derecha
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Gestión de Personal',
-                      style: GoogleFonts.inter(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFFF8FAFC),
-                        letterSpacing: -0.4,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Directorio oficial de colaboradores, embudo de postulantes y contratación formal',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: const Color(0xFF94A3B8),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              FilledButton.icon(
-                onPressed: () {
-                  RrhhEmployeeHireWizard.show(
-                    context,
-                    onCompleted: () {
-                      _directorioKey.currentState?.loadEmployees();
-                    },
-                  );
-                },
-                style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF2563EB),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 9,
-                  ),
-                ),
-                icon: const Icon(Icons.person_add_alt_1, size: 15),
-                label: Text(
-                  '+ Contratar Colaborador',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
+          Text(
+            'Gestión de Personal',
+            style: GoogleFonts.inter(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+              letterSpacing: -0.4,
+            ),
           ),
-
+          const SizedBox(height: 2),
+          Text(
+            'Directorio oficial de colaboradores, reclutamiento y contrataciones en curso',
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
           const SizedBox(height: 10),
           TabBar(
             controller: _tabController,
             isScrollable: true,
             tabAlignment: TabAlignment.start,
             indicatorColor: const Color(0xFF2563EB),
-            indicatorWeight: 2,
+            indicatorWeight: 2.5,
             labelColor: const Color(0xFF2563EB),
-            unselectedLabelColor: const Color(0xFF94A3B8),
+            unselectedLabelColor:
+                isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
             labelStyle: GoogleFonts.inter(
               fontSize: 12.5,
               fontWeight: FontWeight.w600,
@@ -185,6 +188,7 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
               fontSize: 12.5,
               fontWeight: FontWeight.w500,
             ),
+            dividerColor: Colors.transparent,
             tabs: const [
               Tab(
                 height: 38,
@@ -213,9 +217,9 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.how_to_reg_outlined, size: 15),
+                    Icon(Icons.assignment_outlined, size: 15),
                     SizedBox(width: 6),
-                    Text('Contratación'),
+                    Text('Contrataciones en Curso'),
                   ],
                 ),
               ),

@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'presentation/views/rrhh_catalogs_view.dart';
 import 'presentation/views/rrhh_dashboard_view.dart';
 import 'presentation/views/rrhh_novedades_tabs_view.dart';
-import 'presentation/views/rrhh_organizacion_tabs_view.dart';
+import 'presentation/views/rrhh_organization_view.dart';
 import 'presentation/views/rrhh_personal_view.dart';
 import 'presentation/views/rrhh_placeholder_view.dart';
 import 'presentation/views/rrhh_reportes_tabs_view.dart';
+import 'presentation/views/rrhh_turnos_view.dart';
+import 'presentation/views/rrhh_hiring_dossier_detail_view.dart';
 import 'presentation/widgets/rrhh_employee_detail_dialog.dart';
 
 /// Rutas oficiales para el módulo RRHH.
-/// Estructura organizada en 6 entradas de menú superior con tabs internos
+/// Estructura organizada en 7 entradas de menú superior con tabs internos
 /// preservando retrocompatibilidad total con las 14 pantallas individuales.
 class RrhhRoutes {
   // ---------------------------------------------------------------------------
-  // 6 Rutas de Nivel Superior (Menú Acordeón Reorganizado)
+  // 7 Rutas de Nivel Superior (Menú Acordeón Reorganizado + Catálogos)
   // ---------------------------------------------------------------------------
   static const String dashboard = '/rrhh/dashboard';
   static const String personal = '/rrhh/personal';
@@ -20,11 +23,14 @@ class RrhhRoutes {
   static const String novedades = '/rrhh/novedades';
   static const String asistencia = '/rrhh/asistencia';
   static const String reportes = '/rrhh/reportes';
+  static const String catalogos = '/rrhh/catalogos';
 
   // ---------------------------------------------------------------------------
   // Rutas Específicas / Sub-pantallas (Retrocompatibilidad e Invocación Directa)
   // ---------------------------------------------------------------------------
   static const String directorio = '/rrhh/personal/directorio';
+  static const String contrataciones = '/rrhh/personal/contrataciones';
+  static const String contratacionesDetalle = '/rrhh/personal/contrataciones/:dossierId';
   static const String expediente = '/rrhh/expediente';
   static const String postulantes = '/rrhh/postulantes';
   static const String contratacion = '/rrhh/contratacion';
@@ -38,7 +44,7 @@ class RrhhRoutes {
   static const String asistenciaCampo = '/rrhh/asistencia-campo';
   static const String bitacora = '/rrhh/bitacora';
 
-  /// 6 Rutas canónicas del acordeón lateral
+  /// Rutas canónicas del acordeón lateral
   static const List<String> topLevelRoutes = [
     dashboard,
     personal,
@@ -46,12 +52,15 @@ class RrhhRoutes {
     novedades,
     asistencia,
     reportes,
+    catalogos,
   ];
 
-  /// Lista exhaustiva de las 14 pantallas funcionales
+  /// Lista exhaustiva de las pantallas funcionales
   static const List<String> allRoutes = [
     dashboard,
     personal,
+    contrataciones,
+    contratacionesDetalle,
     expediente,
     postulantes,
     contratacion,
@@ -64,6 +73,7 @@ class RrhhRoutes {
     novedadesNomina,
     asistenciaCampo,
     bitacora,
+    catalogos,
   ];
 
   /// Generador de vistas de nivel superior (Contenedores con pestañas)
@@ -80,10 +90,13 @@ class RrhhRoutes {
           initialTab: tab,
           onNavigateToTab: onNavigateToTab,
         );
+      case contrataciones:
+        return const RrhhPersonalView(
+          initialTab: 'contrataciones',
+        );
       case organizacion:
-        return RrhhOrganizacionTabsView(
+        return RrhhOrganizationView(
           initialTab: tab,
-          onNavigateToTab: onNavigateToTab,
         );
       case novedades:
         return RrhhNovedadesTabsView(
@@ -98,6 +111,8 @@ class RrhhRoutes {
           initialTab: tab,
           onNavigateToTab: onNavigateToTab,
         );
+      case catalogos:
+        return const RrhhCatalogsView();
       default:
         return buildView(route, onNavigateToTab: onNavigateToTab);
     }
@@ -114,6 +129,8 @@ class RrhhRoutes {
       case personal:
       case directorio:
         return const RrhhPersonalView();
+      case contrataciones:
+        return const RrhhPersonalView(initialTab: 'contrataciones');
       case expediente:
         return const Center(
           child: RrhhEmployeeDetailDialog(
@@ -131,28 +148,17 @@ class RrhhRoutes {
       case contratacion:
         return const RrhhPlaceholderView(
           title: '05. Contratación Formal (Wizard / Stepper)',
-          blockName: 'Bloque 1',
+          blockName: 'Módulo en desarrollo',
           description:
               'Promoción guiada de postulante seleccionado a empleado o alta directa, validando checklist legal y bloqueo de antecedentes FELCC.',
           icon: Icons.how_to_reg_outlined,
         );
       case organizacion:
       case areas:
-        return const RrhhPlaceholderView(
-          title: '06. Estructura Organizacional',
-          blockName: 'Bloque 2',
-          description:
-              'Administración de catálogos estructurales: Áreas corporativas, Puestos/Cargos de trabajo y Especialidades técnicas operativas.',
-          icon: Icons.account_tree_outlined,
-        );
+        return const RrhhOrganizationView();
+
       case turnos:
-        return const RrhhPlaceholderView(
-          title: '07. Catálogo de Horarios y Turnos Base',
-          blockName: 'Bloque 2',
-          description:
-              'Gestión del catálogo oficial de jornadas y turnos de trabajo que RRHH publica para consulta de Operaciones.',
-          icon: Icons.schedule_outlined,
-        );
+        return const RrhhTurnosView();
       case permisos:
         return const RrhhPlaceholderView(
           title: '08. Permisos y Licencias Médicas',
@@ -209,7 +215,14 @@ class RrhhRoutes {
               'Trazabilidad inmutable de todas las novedades laborales del sistema (ascensos, transferencias de área, ajustes salariales y bajas).',
           icon: Icons.history_edu_outlined,
         );
+      case catalogos:
+        return const RrhhCatalogsView();
       default:
+        if (route.startsWith('/rrhh/personal/contrataciones/')) {
+          final idStr = route.replaceFirst('/rrhh/personal/contrataciones/', '');
+          final dossierId = int.tryParse(idStr) ?? 1;
+          return RrhhHiringDossierDetailView(dossierId: dossierId);
+        }
         return const Center(child: Text('Ruta de RRHH no encontrada'));
     }
   }

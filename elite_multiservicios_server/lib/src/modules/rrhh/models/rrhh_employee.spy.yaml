@@ -84,6 +84,41 @@ fields:
   exitObservations: String?
   exitRegisteredBy: String?
 
+  ### Datos bancarios (FASE B)
+  bankName: String?
+  accountType: String?
+  accountNumber: String?
+
+  ### Seguridad social (FASE B)
+  afpName: String?
+  afpNumber: String?
+  healthInsurance: String?
+
+  ### Datos personales complementarios (FASE B)
+  fullAddress: String?
+  maritalStatus: String?
+  childrenCount: int?
+  emergencyContactName: String?
+  emergencyContactPhone: String?
+  emergencyContactRelation: String?
+
+  ### Datos contractuales complementarios (FASE B)
+  workdayType: String?
+  contractStartDate: DateTime?
+  contractSignedPdfUrl: String?
+
+  ### Bonificaciones y deducciones (FASE B)
+  bonuses: List<RrhhEmployeeBonus>?
+  deductions: List<RrhhEmployeeDeduction>?
+
+  ### Asignación organizacional (FASE B)
+  shiftId: String?
+  baseLocation: String?
+  supervisorEmployeeId: String?
+
+  ### Checklist de documentos (FASE B)
+  documentChecklist: Map<String, String>?
+
   ### Eliminación lógica y auditoría
   isDeleted: bool, default=false
   deletedAt: DateTime?

@@ -1,0 +1,17 @@
+### Deducción o retención asignada al colaborador (Contrato / Nómina).
+class: RrhhEmployeeDeduction
+fields:
+  ### Código institucional de la deducción (ej: DESC-001).
+  code: String
+  ### Nombre o concepto del descuento (ej: Aporte Laboral SIP).
+  name: String
+  ### Tipo de descuento: 'Fijo' | 'Porcentaje' | 'Por evento'.
+  type: String
+  ### Monto en Bs o valor numérico.
+  amount: double?
+  ### Verdadero si el monto representa un porcentaje.
+  isPercentage: bool, default=false
+  ### Fecha desde la que aplica la deducción.
+  applyFrom: DateTime?
+  ### Fecha hasta la que aplica la deducción (opcional).
+  applyTo: DateTime?

@@ -15,6 +15,7 @@ class RrhhHireStepLabor extends StatefulWidget {
   final List<String> availableSupervisors;
   final ValueChanged<String> onTypeChanged;
   final VoidCallback onChanged;
+  final bool isDirectHire;
 
   const RrhhHireStepLabor({
     super.key,
@@ -26,6 +27,7 @@ class RrhhHireStepLabor extends StatefulWidget {
     required this.availableSupervisors,
     required this.onTypeChanged,
     required this.onChanged,
+    this.isDirectHire = false,
   });
 
   @override
@@ -69,6 +71,33 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (widget.isDirectHire) ...[
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.4)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.warning_amber_rounded, color: Color(0xFFF59E0B), size: 22),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Estás dando de alta a un colaborador sin pasar por reclutamiento. Usa esta opción solo para reingresos o altas de emergencia autorizadas.',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFFFDE68A),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           buildHireSectionHeader('CLASIFICACIÓN LABORAL'),
           const SizedBox(height: 12),
           Row(

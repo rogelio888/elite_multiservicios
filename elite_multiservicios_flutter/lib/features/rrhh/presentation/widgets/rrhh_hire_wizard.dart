@@ -67,7 +67,14 @@ class _RrhhEmployeeHireWizardState extends State<RrhhEmployeeHireWizard> {
       if (ofiSups.isNotEmpty) _oficinaSupervisors = ofiSups;
 
       if (widget.applicant != null) {
-        _formState.initFromApplicant(widget.applicant!, availableAreas: _areas, availablePositions: _positions, availableSpecialties: _specialties);
+        final comp = await repo.getApplicantCompanion(widget.applicant!.id ?? 0);
+        _formState.initFromApplicant(
+          widget.applicant!,
+          companion: comp,
+          availableAreas: _areas,
+          availablePositions: _positions,
+          availableSpecialties: _specialties,
+        );
       } else {
         _autoSelectDefaults();
       }
@@ -230,6 +237,7 @@ class _RrhhEmployeeHireWizardState extends State<RrhhEmployeeHireWizard> {
           availableSupervisors: sups,
           onTypeChanged: _handleTypeChange,
           onChanged: () => setState(() {}),
+          isDirectHire: widget.applicant == null,
         );
       case 1:
         return RrhhHireStepContract(formState: _formState, onChanged: () => setState(() {}));

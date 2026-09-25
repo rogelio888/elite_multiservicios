@@ -114,6 +114,44 @@ class SecuritySeed {
       }
     }
 
+    // 3.2 Rol RRHH (Encargada de RRHH - permisos de rrhh.* únicamente)
+    var rrhhRole = await AppRole.db.findFirstRow(
+      session,
+      where: (t) => t.name.equals('RRHH'),
+    );
+
+    rrhhRole ??= await AppRole.db.insertRow(
+      session,
+      AppRole(
+        name: 'RRHH',
+        description: 'Rol para la gestión integral de Recursos Humanos, Personal y Reclutamiento',
+        isSystemRole: true,
+        createdAt: DateTime.now().toUtc(),
+      ),
+    );
+
+    final rrhhPermissions = allPermissions.where((p) => p.code.startsWith('rrhh.')).toList();
+    for (final perm in rrhhPermissions) {
+      if (perm.id == null) continue;
+
+      final existingLink = await RolePermission.db.findFirstRow(
+        session,
+        where: (t) =>
+            t.roleId.equals(rrhhRole!.id!) & t.permissionId.equals(perm.id!),
+      );
+
+      if (existingLink == null) {
+        await RolePermission.db.insertRow(
+          session,
+          RolePermission(
+            roleId: rrhhRole.id!,
+            permissionId: perm.id!,
+            assignedAt: DateTime.now().toUtc(),
+          ),
+        );
+      }
+    }
+
     // 4. Sembrado seguro del usuario Administrador Inicial
     final adminEmail =
         Platform.environment['SEED_ADMIN_EMAIL'] ??

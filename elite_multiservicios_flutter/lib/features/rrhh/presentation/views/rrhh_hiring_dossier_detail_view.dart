@@ -1,0 +1,4663 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
+    show RrhhArea, RrhhPosition, RrhhEmployeeBonus, RrhhEmployeeDeduction;
+import '../../data/models/rrhh_hiring_dossier.dart';
+import '../../data/models/rrhh_catalog_item.dart';
+import '../../data/models/rrhh_shift.dart';
+import '../../data/models/rrhh_employee_summary_dto.dart';
+import '../../data/repositories/rrhh_repository.dart';
+
+/// Vista completa 360° del Expediente de Contratación (FASE C).
+/// Conecta la selección del candidato con la formalización contractual.
+class RrhhHiringDossierDetailView extends StatefulWidget {
+  final int dossierId;
+  final VoidCallback? onBack;
+
+  const RrhhHiringDossierDetailView({
+    super.key,
+    required this.dossierId,
+    this.onBack,
+  });
+
+  @override
+  State<RrhhHiringDossierDetailView> createState() =>
+      _RrhhHiringDossierDetailViewState();
+}
+
+class _RrhhHiringDossierDetailViewState
+    extends State<RrhhHiringDossierDetailView> {
+  RrhhHiringDossier? _dossier;
+  bool _isLoading = true;
+  bool _isSaving = false;
+  final Set<int> _expandedSections = {1}; // Sección 1 abierta por defecto
+
+  // Catálogos cargados
+  List<RrhhCatalogItem> _afpItems = [];
+  List<RrhhCatalogItem> _healthInsuranceItems = [];
+  List<RrhhCatalogItem> _contractTypeItems = [];
+  List<RrhhCatalogItem> _paymentModalityItems = [];
+  List<RrhhCatalogItem> _bonusCatalogItems = [];
+  List<RrhhCatalogItem> _deductionCatalogItems = [];
+  List<RrhhShift> _shifts = [];
+  List<RrhhBaseSchedule> _schedules = [];
+  List<RrhhArea> _areas = [];
+  List<RrhhPosition> _positions = [];
+  List<RrhhEmployeeSummaryDto> _supervisors = [];
+
+  // Section 2 controllers
+  String? _s2AfpId;
+  String? _s2AfpName;
+  final TextEditingController _s2AfpNumberCtrl = TextEditingController();
+  String? _s2HealthInsuranceId;
+  String? _s2HealthInsuranceName;
+  final TextEditingController _s2NotesCtrl = TextEditingController();
+
+  // Section 3 controllers
+  final TextEditingController _s3AddressCtrl = TextEditingController();
+  String? _s3MaritalStatus;
+  final TextEditingController _s3ChildrenCtrl = TextEditingController(text: '0');
+  final TextEditingController _s3EmergNameCtrl = TextEditingController();
+  final TextEditingController _s3EmergPhoneCtrl = TextEditingController();
+  String? _s3EmergRelation;
+
+  // Section 4 controllers & state
+  String? _s4ContractTypeId;
+  String? _s4ContractTypeName;
+  String _s4WorkdayType = 'Completa'; // 'Completa' | 'Parcial' | 'Por horas'
+  String? _s4PaymentModalityId;
+  String? _s4PaymentModalityName;
+  final TextEditingController _s4BaseSalaryCtrl = TextEditingController();
+  String _s4Currency = 'BOB'; // 'BOB' | 'USD'
+  DateTime? _s4StartDate;
+  DateTime? _s4EndDate;
+  List<RrhhEmployeeBonus> _s4Bonuses = [];
+  List<RrhhEmployeeDeduction> _s4Deductions = [];
+
+  // Section 5 controllers & state
+  String? _s5AreaId;
+  String? _s5AreaName;
+  String? _s5PositionId;
+  String? _s5PositionName;
+  String? _s5ShiftId;
+  String? _s5ShiftName;
+  String? _s5ScheduleId;
+  String? _s5ScheduleName;
+  final TextEditingController _s5BaseLocationCtrl =
+      TextEditingController(text: 'Oficina Central Santa Cruz');
+  String? _s5SupervisorId;
+  String? _s5SupervisorName;
+  DateTime? _s5EffectiveStartDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCatalogs();
+    _loadDossier();
+  }
+
+  @override
+  void dispose() {
+    _s2AfpNumberCtrl.dispose();
+    _s2NotesCtrl.dispose();
+    _s3AddressCtrl.dispose();
+    _s3ChildrenCtrl.dispose();
+    _s3EmergNameCtrl.dispose();
+    _s3EmergPhoneCtrl.dispose();
+    _s4BaseSalaryCtrl.dispose();
+    _s5BaseLocationCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadCatalogs() async {
+    final repo = RrhhRepository.current;
+    final results = await Future.wait([
+      repo.listCatalogItems(RrhhCatalogType.afps),
+      repo.listCatalogItems(RrhhCatalogType.healthInsurances),
+      repo.listCatalogItems(RrhhCatalogType.contractTypes),
+      repo.listCatalogItems(RrhhCatalogType.paymentModalities),
+      repo.listCatalogItems(RrhhCatalogType.bonuses),
+      repo.listCatalogItems(RrhhCatalogType.deductions),
+      repo.listShifts(),
+      repo.listBaseSchedules(),
+      repo.listAreas(),
+      repo.listPositions(),
+      repo.listEmployees(),
+    ]);
+
+    if (mounted) {
+      setState(() {
+        _afpItems = (results[0] as List<RrhhCatalogItem>).where((i) => i.isActive).toList();
+        _healthInsuranceItems = (results[1] as List<RrhhCatalogItem>).where((i) => i.isActive).toList();
+        _contractTypeItems = (results[2] as List<RrhhCatalogItem>).where((i) => i.isActive).toList();
+        _paymentModalityItems = (results[3] as List<RrhhCatalogItem>).where((i) => i.isActive).toList();
+        _bonusCatalogItems = (results[4] as List<RrhhCatalogItem>).where((i) => i.isActive).toList();
+        _deductionCatalogItems = (results[5] as List<RrhhCatalogItem>).where((i) => i.isActive).toList();
+        _shifts = (results[6] as List<RrhhShift>).where((s) => s.isActive).toList();
+        _schedules = (results[7] as List<RrhhBaseSchedule>).where((s) => s.isActive).toList();
+        _areas = (results[8] as List<RrhhArea>).where((a) => a.isActive).toList();
+        _positions = (results[9] as List<RrhhPosition>).where((p) => p.isActive).toList();
+        _supervisors = (results[10] as List<RrhhEmployeeSummaryDto>).where((e) => e.status == 'ACTIVO').toList();
+      });
+    }
+  }
+
+  void _populateSection2From(RrhhHiringDossier d) {
+    _s2AfpId = d.afpId;
+    _s2AfpName = d.afpName;
+    _s2AfpNumberCtrl.text = d.afpNumber ?? '';
+    _s2HealthInsuranceId = d.healthInsuranceId;
+    _s2HealthInsuranceName = d.healthInsuranceName;
+    _s2NotesCtrl.text = d.section2Notes ?? '';
+  }
+
+  void _populateSection3From(RrhhHiringDossier d) {
+    _s3AddressCtrl.text = d.fullAddress ?? '';
+    _s3MaritalStatus = d.maritalStatus;
+    _s3ChildrenCtrl.text = (d.childrenCount ?? 0).toString();
+    _s3EmergNameCtrl.text = d.emergencyContactName ?? '';
+    _s3EmergPhoneCtrl.text = d.emergencyContactPhone ?? '';
+    _s3EmergRelation = d.emergencyContactRelation;
+  }
+
+  void _populateSection4From(RrhhHiringDossier d) {
+    _s4ContractTypeId = d.contractTypeId;
+    _s4ContractTypeName = d.contractTypeName;
+    _s4WorkdayType = d.workdayType ?? 'Completa';
+    _s4PaymentModalityId = d.paymentModalityId;
+    _s4PaymentModalityName = d.paymentModalityName;
+    _s4BaseSalaryCtrl.text = d.baseSalary != null ? d.baseSalary!.toStringAsFixed(0) : '';
+    _s4Currency = d.currency ?? 'BOB';
+    _s4StartDate = d.contractStartDate;
+    _s4EndDate = d.contractEndDate;
+    _s4Bonuses = d.bonuses != null ? List<RrhhEmployeeBonus>.from(d.bonuses!) : [];
+    _s4Deductions = d.deductions != null ? List<RrhhEmployeeDeduction>.from(d.deductions!) : [];
+  }
+
+  void _populateSection5From(RrhhHiringDossier d) {
+    _s5AreaId = d.areaId;
+    _s5AreaName = d.areaName ?? d.targetArea;
+    _s5PositionId = d.positionId;
+    _s5PositionName = d.positionName ?? d.targetPosition;
+    _s5ShiftId = d.shiftId;
+    _s5ShiftName = d.shiftName;
+    _s5ScheduleId = d.scheduleId;
+    _s5ScheduleName = d.scheduleName;
+    _s5BaseLocationCtrl.text = d.baseLocation ??
+        (d.workplaceType == 'CAMPO' ? 'Puesto Campo / Clientes' : 'Oficina Central Santa Cruz');
+    _s5SupervisorId = d.supervisorEmployeeId;
+    _s5SupervisorName = d.supervisorName;
+    _s5EffectiveStartDate = d.effectiveStartDate ?? d.contractStartDate;
+  }
+
+  Future<void> _loadDossier() async {
+    setState(() => _isLoading = true);
+    final d = await RrhhRepository.current.getDossierById(widget.dossierId);
+    if (mounted) {
+      setState(() {
+        _dossier = d;
+        _isLoading = false;
+        if (d != null) {
+          _populateSection2From(d);
+          _populateSection3From(d);
+          _populateSection4From(d);
+          _populateSection5From(d);
+        }
+      });
+    }
+  }
+
+  void _toggleSection(int section) {
+    setState(() {
+      if (_expandedSections.contains(section)) {
+        _expandedSections.remove(section);
+      } else {
+        _expandedSections.add(section);
+      }
+    });
+  }
+
+  Future<void> _updateDoc(RrhhDossierDocument updated) async {
+    if (_dossier == null) return;
+    final docs = Map<String, RrhhDossierDocument>.from(_dossier!.documents);
+    docs[updated.code] = updated;
+
+    setState(() {
+      _dossier = _dossier!.copyWith(documents: docs);
+    });
+
+    await RrhhRepository.current.updateDossierSection1(_dossier!.id, docs);
+  }
+
+  Future<void> _markDocumentReceived(RrhhDossierDocument doc) async {
+    final updated = doc.copyWith(
+      status: 'recibido',
+      receivedAt: DateTime.now(),
+    );
+    await _updateDoc(updated);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Documento ${doc.name} marcado como Recibido'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  Future<void> _markDocumentValidated(RrhhDossierDocument doc) async {
+    final updated = doc.copyWith(
+      status: 'validado',
+      receivedAt: doc.receivedAt ?? DateTime.now(),
+    );
+    await _updateDoc(updated);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: const Color(0xFF10B981),
+          content: Text('Documento ${doc.name} Validado exitosamente'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  Future<void> _showRejectDialog(RrhhDossierDocument doc) async {
+    final controller = TextEditingController();
+    final reason = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF0F172A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Color(0xFF1E293B)),
+        ),
+        title: Text(
+          'Rechazar Documento: ${doc.code}',
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFFEF4444),
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Indique el motivo obligatorio del rechazo de ${doc.name}:',
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                color: const Color(0xFF94A3B8),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              maxLines: 3,
+              style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: const Color(0xFF111827),
+                hintText: 'Ej: Documento ilegible, caducado o incompleto...',
+                hintStyle: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: const Color(0xFF64748B),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0xFF334155)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0xFFEF4444)),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (controller.text.trim().isNotEmpty) {
+                Navigator.of(ctx).pop(controller.text.trim());
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+            ),
+            child: Text(
+              'Confirmar Rechazo',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (reason != null && mounted) {
+      final updated = doc.copyWith(
+        status: 'rechazado',
+        notes: reason,
+      );
+      await _updateDoc(updated);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: const Color(0xFFEF4444),
+            content: Text('Documento ${doc.code} rechazado: $reason'),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _showAttachDialog(RrhhDossierDocument doc) async {
+    final suggested =
+        '${doc.code.toLowerCase()}_${_dossier!.applicantCode.toLowerCase().replaceAll('-', '_')}.pdf';
+    final controller = TextEditingController(text: suggested);
+
+    final fileName = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF0F172A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Color(0xFF1E293B)),
+        ),
+        title: Row(
+          children: [
+            const Icon(Icons.attach_file, color: Color(0xFF2563EB), size: 20),
+            const SizedBox(width: 8),
+            Text(
+              'Adjuntar archivo digital: ${doc.code}',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Seleccione o confirme el archivo digital escaneado:',
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                color: const Color(0xFF94A3B8),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: const Color(0xFF111827),
+                prefixIcon: const Icon(Icons.description_outlined,
+                    size: 16, color: Color(0xFF38BDF8)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0xFF334155)),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text('Cancelar',
+                style: GoogleFonts.inter(color: const Color(0xFF94A3B8))),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (controller.text.trim().isNotEmpty) {
+                Navigator.of(ctx).pop(controller.text.trim());
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2563EB),
+              foregroundColor: Colors.white,
+            ),
+            child: Text('Adjuntar Archivo',
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
+
+    if (fileName != null && mounted) {
+      final updated = doc.copyWith(
+        status: doc.status == 'pendiente' ? 'recibido' : doc.status,
+        receivedAt: doc.receivedAt ?? DateTime.now(),
+        scannedFileUrl: fileName,
+      );
+      await _updateDoc(updated);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: const Color(0xFF2563EB),
+            content: Text('Archivo adjuntado: $fileName'),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _saveSection1() async {
+    if (_dossier == null) return;
+    setState(() => _isSaving = true);
+    await RrhhRepository.current
+        .updateDossierSection1(_dossier!.id, _dossier!.documents);
+    await _loadDossier();
+    if (mounted) {
+      setState(() => _isSaving = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Color(0xFF10B981),
+          content: Text('Cambios guardados en el Expediente'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _completeSection1() async {
+    if (_dossier == null) return;
+    if (!_dossier!.areAllRequiredDocumentsValidated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Color(0xFFF59E0B),
+          content: Text(
+            'No se puede completar: faltan documentos obligatorios por validar.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isSaving = true);
+    final updated = _dossier!.copyWith(section1Status: 'completa');
+    await RrhhRepository.current
+        .updateDossierSection1(updated.id, updated.documents);
+    await _loadDossier();
+
+    if (mounted) {
+      setState(() {
+        _isSaving = false;
+        _expandedSections.remove(1); // Colapsar sección tras completar
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Color(0xFF10B981),
+          duration: Duration(seconds: 4),
+          content: Text(
+            'Sección 1 completada. Puedes continuar con la Sección 2 (se habilitará en la próxima fase).',
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _toggleDossierStatus() async {
+    if (_dossier == null) return;
+    final newStatus = _dossier!.status == 'pausado' ? 'abierto' : 'pausado';
+    await RrhhRepository.current.updateDossierStatus(_dossier!.id, newStatus);
+    await _loadDossier();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(newStatus == 'pausado'
+              ? 'Expediente pausado temporalmente'
+              : 'Expediente reanudado'),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF090D16) : const Color(0xFFF8FAFC);
+
+    if (_isLoading) {
+      return Container(
+        color: bgColor,
+        child: const Center(
+          child: CircularProgressIndicator(color: Color(0xFF2563EB)),
+        ),
+      );
+    }
+
+    if (_dossier == null) {
+      return Container(
+        color: bgColor,
+        padding: const EdgeInsets.all(24),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.folder_off_outlined,
+                  size: 48, color: Color(0xFF64748B)),
+              const SizedBox(height: 12),
+              Text(
+                'Expediente no encontrado',
+                style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () {
+                  if (widget.onBack != null) {
+                    widget.onBack!();
+                  } else {
+                    Navigator.of(context).maybePop();
+                  }
+                },
+                icon: const Icon(Icons.arrow_back, size: 16),
+                label: const Text('Volver a Contrataciones en Curso'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final d = _dossier!;
+
+    return Scaffold(
+      backgroundColor: bgColor,
+      body: Column(
+        children: [
+          _buildHeader(d, isDark),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildApplicantSummaryCard(d, isDark),
+                  const SizedBox(height: 20),
+                  _buildSection1Accordion(d, isDark),
+                  const SizedBox(height: 12),
+                  _buildSection2Accordion(d, isDark),
+                  const SizedBox(height: 12),
+                  _buildSection3Accordion(d, isDark),
+                  const SizedBox(height: 12),
+                  _buildSection4Accordion(d, isDark),
+                  const SizedBox(height: 12),
+                  _buildSection5Accordion(d, isDark),
+                  const SizedBox(height: 12),
+                  _buildPlaceholderSection(
+                    sectionNum: 6,
+                    title: 'Emisión del Contrato Legal y Handoff a Nómina',
+                    status: d.section6Status,
+                    phase: 'FASE C4',
+                    isDark: isDark,
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(RrhhHiringDossier d, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 14),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF090D16) : Colors.white,
+        border: Border(
+          bottom: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+            width: 1,
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Breadcrumb
+          Row(
+            children: [
+              InkWell(
+                onTap: () {
+                  if (widget.onBack != null) {
+                    widget.onBack!();
+                  } else {
+                    Navigator.of(context).maybePop();
+                  }
+                },
+                child: Text(
+                  'Personal',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 6),
+                child: Icon(Icons.chevron_right,
+                    size: 14, color: Color(0xFF64748B)),
+              ),
+              InkWell(
+                onTap: () {
+                  if (widget.onBack != null) {
+                    widget.onBack!();
+                  } else {
+                    Navigator.of(context).maybePop();
+                  }
+                },
+                child: Text(
+                  'Contrataciones en Curso',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 6),
+                child: Icon(Icons.chevron_right,
+                    size: 14, color: Color(0xFF64748B)),
+              ),
+              Text(
+                d.applicantCode,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF38BDF8),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          // Title + Action row
+          Row(
+            children: [
+              OutlinedButton.icon(
+                onPressed: () {
+                  if (widget.onBack != null) {
+                    widget.onBack!();
+                  } else {
+                    Navigator.of(context).maybePop();
+                  }
+                },
+                icon: const Icon(Icons.arrow_back, size: 14),
+                label: const Text('Volver a Contrataciones en Curso'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor:
+                      isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569),
+                  side: BorderSide(
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFCBD5E1),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  textStyle: GoogleFonts.inter(
+                      fontSize: 11.5, fontWeight: FontWeight.w600),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'Expediente de Contratación — ${d.applicantName}',
+                            style: GoogleFonts.inter(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: isDark
+                                  ? const Color(0xFFF8FAFC)
+                                  : const Color(0xFF0F172A),
+                              letterSpacing: -0.3,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        _buildDossierStatusChip(d),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${d.applicantCode} · ${d.targetArea} / ${d.targetPosition} (${d.workplaceType})',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuButton<String>(
+                icon: Icon(
+                  Icons.more_vert,
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
+                ),
+                color: const Color(0xFF0F172A),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: const BorderSide(color: Color(0xFF1E293B)),
+                ),
+                onSelected: (val) {
+                  if (val == 'toggle_status') {
+                    _toggleDossierStatus();
+                  }
+                },
+                itemBuilder: (ctx) => [
+                  PopupMenuItem(
+                    value: 'toggle_status',
+                    child: Row(
+                      children: [
+                        Icon(
+                          d.status == 'pausado'
+                              ? Icons.play_arrow_outlined
+                              : Icons.pause_circle_outline,
+                          size: 16,
+                          color: d.status == 'pausado'
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFFF59E0B),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          d.status == 'pausado'
+                              ? 'Reanudar expediente'
+                              : 'Pausar expediente',
+                          style: GoogleFonts.inter(
+                              fontSize: 12.5, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildApplicantSummaryCard(RrhhHiringDossier d, bool isDark) {
+    final initials = d.applicantName.trim().isNotEmpty
+        ? d.applicantName
+            .trim()
+            .split(' ')
+            .take(2)
+            .map((w) => w.isNotEmpty ? w[0].toUpperCase() : '')
+            .join()
+        : 'P';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: const Color(0xFF2563EB),
+                child: Text(
+                  initials,
+                  style: GoogleFonts.inter(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Wrap(
+                  spacing: 24,
+                  runSpacing: 10,
+                  children: [
+                    _miniInfo('Cédula de Identidad', d.applicantCi),
+                    _miniInfo('Teléfono de Contacto', d.applicantPhone),
+                    _miniInfo('Correo Personal', d.applicantEmail ?? 'Sin correo'),
+                    _miniInfo('Área / Cargo',
+                        '${d.targetArea} • ${d.targetPosition}'),
+                    _miniInfo(
+                      'Fecha de Postulación',
+                      '${d.applicationDate.day}/${d.applicationDate.month}/${d.applicationDate.year}',
+                    ),
+                    _miniInfo(
+                      'Paso a Seleccionado',
+                      '${d.createdAt.day}/${d.createdAt.month}/${d.createdAt.year}',
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Divider(
+            height: 1,
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Text(
+                'Progreso de Formalización: ${d.progressLabel}',
+                style: GoogleFonts.inter(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w600,
+                  color: d.completedSectionsCount >= 5
+                      ? const Color(0xFF10B981)
+                      : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${(d.progressFraction * 100).toInt()}%',
+                style: GoogleFonts.inter(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                  color: d.completedSectionsCount >= 5
+                      ? const Color(0xFF10B981)
+                      : const Color(0xFF38BDF8),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: d.progressFraction,
+              minHeight: 5,
+              backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                d.completedSectionsCount >= 5
+                    ? const Color(0xFF10B981)
+                    : const Color(0xFF2563EB),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _miniInfo(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: GoogleFonts.inter(
+            fontSize: 9.5,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF64748B),
+            letterSpacing: 0.4,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFFE2E8F0),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSection1Accordion(RrhhHiringDossier d, bool isDark) {
+    final isExpanded = _expandedSections.contains(1);
+    final isComplete = d.section1Status == 'completa';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isComplete
+              ? const Color(0xFF10B981).withValues(alpha: 0.4)
+              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+        ),
+      ),
+      child: Column(
+        children: [
+          // Section Header (Click to toggle)
+          InkWell(
+            onTap: () => _toggleSection(1),
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: isComplete
+                          ? const Color(0xFF10B981)
+                          : const Color(0xFF2563EB).withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: isComplete
+                        ? const Icon(Icons.check, size: 16, color: Colors.white)
+                        : Text(
+                            '1',
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF38BDF8),
+                            ),
+                          ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '1. Recepción de Documentos',
+                          style: GoogleFonts.inter(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w700,
+                            color: isDark
+                                ? const Color(0xFFF8FAFC)
+                                : const Color(0xFF0F172A),
+                          ),
+                        ),
+                        Text(
+                          '${d.validatedRequiredDocsCount}/${d.totalRequiredDocsCount} obligatorios validados • Checklist adaptado a perfil ${d.workplaceType}',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: const Color(0xFF94A3B8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildSectionStatusChip(d.section1Status),
+                  const SizedBox(width: 12),
+                  Icon(
+                    isExpanded ? Icons.expand_less : Icons.expand_more,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (isExpanded) ...[
+            const Divider(height: 1, color: Color(0xFF1E293B)),
+            Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Progress indicator bar
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: d.totalRequiredDocsCount > 0
+                                ? (d.validatedRequiredDocsCount /
+                                        d.totalRequiredDocsCount)
+                                    .clamp(0.0, 1.0)
+                                : 0.0,
+                            minHeight: 6,
+                            backgroundColor: const Color(0xFF1E293B),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              isComplete
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFF2563EB),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Text(
+                        '${d.validatedRequiredDocsCount} de ${d.totalRequiredDocsCount} validados',
+                        style: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: isComplete
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFF38BDF8),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Documents Table
+                  _buildDocumentsTable(d, isDark),
+                  const SizedBox(height: 20),
+
+                  // Footer Actions
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: _isSaving ? null : _saveSection1,
+                        icon: const Icon(Icons.save_outlined, size: 14),
+                        label: const Text('Guardar cambios'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF94A3B8),
+                          side: const BorderSide(color: Color(0xFF334155)),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 11),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      FilledButton.icon(
+                        onPressed: (_isSaving ||
+                                !d.areAllRequiredDocumentsValidated ||
+                                isComplete)
+                            ? null
+                            : _completeSection1,
+                        icon: const Icon(Icons.check_circle_outline, size: 15),
+                        label: Text(
+                          isComplete
+                              ? 'Sección 1 Completada'
+                              : 'Marcar sección como completa',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFF10B981),
+                          foregroundColor: Colors.white,
+                          disabledBackgroundColor: const Color(0xFF1E293B),
+                          disabledForegroundColor: const Color(0xFF475569),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 18, vertical: 11),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDocumentsTable(RrhhHiringDossier d, bool isDark) {
+    final docsList = d.documents.values.toList();
+
+    return Column(
+      children: [
+        // Header row
+        Container(
+          padding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: isDark
+                ? const Color(0xFF1E293B).withValues(alpha: 0.6)
+                : const Color(0xFFF1F5F9),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 5,
+                child: Text(
+                  'DOCUMENTO',
+                  style: GoogleFonts.inter(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF94A3B8),
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 90,
+                child: Text(
+                  'REQUISITO',
+                  style: GoogleFonts.inter(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF94A3B8),
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 105,
+                child: Text(
+                  'ESTADO',
+                  style: GoogleFonts.inter(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF94A3B8),
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 100,
+                child: Text(
+                  'RECEPCIÓN',
+                  style: GoogleFonts.inter(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF94A3B8),
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: Text(
+                  'NOTAS / ARCHIVO',
+                  style: GoogleFonts.inter(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF94A3B8),
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 72,
+                child: Text(
+                  'ACCIONES',
+                  textAlign: TextAlign.right,
+                  style: GoogleFonts.inter(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF94A3B8),
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Table Rows
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: docsList.length,
+          separatorBuilder: (_, _) =>
+              const Divider(height: 1, color: Color(0xFF1E293B)),
+          itemBuilder: (context, idx) {
+            return _buildDocumentRow(docsList[idx]);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDocumentRow(RrhhDossierDocument doc) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: Row(
+        children: [
+          // Documento (Nombre + Código) — flex: 5
+          Expanded(
+            flex: 5,
+            child: Row(
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: const Color(0xFF2563EB).withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Text(
+                    doc.code,
+                    style: GoogleFonts.inter(
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF38BDF8),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    doc.name,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Requisito — fixed 90
+          SizedBox(
+            width: 90,
+            child: _buildRequirementChip(doc.requirementType),
+          ),
+          // Estado — fixed 105
+          SizedBox(
+            width: 105,
+            child: _buildDocStatusChip(doc.status),
+          ),
+          // Fecha recepción — fixed 100
+          SizedBox(
+            width: 100,
+            child: Text(
+              doc.receivedAt != null
+                  ? '${doc.receivedAt!.day.toString().padLeft(2, '0')}/${doc.receivedAt!.month.toString().padLeft(2, '0')}/${doc.receivedAt!.year}'
+                  : '—',
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                color: const Color(0xFF94A3B8),
+              ),
+            ),
+          ),
+          // Notas / Archivo — flex: 3
+          Expanded(
+            flex: 3,
+            child: Row(
+              children: [
+                if (doc.scannedFileUrl != null &&
+                    doc.scannedFileUrl!.isNotEmpty) ...[
+                  const Icon(Icons.attach_file,
+                      size: 13, color: Color(0xFF38BDF8)),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Tooltip(
+                      message: doc.scannedFileUrl!,
+                      child: Text(
+                        doc.scannedFileUrl!,
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: const Color(0xFF38BDF8),
+                          decoration: TextDecoration.underline,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ] else if (doc.notes != null && doc.notes!.isNotEmpty) ...[
+                  Flexible(
+                    child: Tooltip(
+                      message: doc.notes!,
+                      child: Text(
+                        doc.notes!,
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontStyle: FontStyle.italic,
+                          color: doc.status == 'rechazado'
+                              ? const Color(0xFFFCA5A5)
+                              : const Color(0xFFCBD5E1),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ] else ...[
+                  Text('—',
+                      style: GoogleFonts.inter(
+                          fontSize: 11, color: const Color(0xFF64748B))),
+                ],
+              ],
+            ),
+          ),
+          // Acciones — fixed 72 (primary icon + overflow menu)
+          SizedBox(
+            width: 72,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // Primary action: contextual to document status
+                if (doc.status == 'pendiente' || doc.status == 'rechazado')
+                  _actionIconButton(
+                    icon: Icons.check_circle_outline,
+                    color: const Color(0xFF10B981),
+                    tooltip: 'Validar Documento',
+                    onPressed: () => _markDocumentValidated(doc),
+                  )
+                else if (doc.status == 'recibido')
+                  _actionIconButton(
+                    icon: Icons.check_circle_outline,
+                    color: const Color(0xFF10B981),
+                    tooltip: 'Validar Documento',
+                    onPressed: () => _markDocumentValidated(doc),
+                  ),
+                // Overflow menu with remaining actions
+                SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_horiz,
+                        size: 16, color: Color(0xFF94A3B8)),
+                    padding: EdgeInsets.zero,
+                    iconSize: 16,
+                    color: const Color(0xFF0F172A),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: const BorderSide(color: Color(0xFF1E293B)),
+                    ),
+                    onSelected: (action) {
+                      switch (action) {
+                        case 'recibir':
+                          _markDocumentReceived(doc);
+                          break;
+                        case 'validar':
+                          _markDocumentValidated(doc);
+                          break;
+                        case 'rechazar':
+                          _showRejectDialog(doc);
+                          break;
+                        case 'adjuntar':
+                          _showAttachDialog(doc);
+                          break;
+                      }
+                    },
+                    itemBuilder: (ctx) => [
+                      if (doc.status == 'pendiente' ||
+                          doc.status == 'rechazado')
+                        PopupMenuItem(
+                          value: 'recibir',
+                          height: 36,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.mark_email_read_outlined,
+                                  size: 15, color: Color(0xFF38BDF8)),
+                              const SizedBox(width: 8),
+                              Text('Marcar Recibido',
+                                  style: GoogleFonts.inter(
+                                      fontSize: 12, color: Colors.white)),
+                            ],
+                          ),
+                        ),
+                      if (doc.status != 'validado')
+                        PopupMenuItem(
+                          value: 'validar',
+                          height: 36,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.check_circle_outline,
+                                  size: 15, color: Color(0xFF10B981)),
+                              const SizedBox(width: 8),
+                              Text('Validar',
+                                  style: GoogleFonts.inter(
+                                      fontSize: 12, color: Colors.white)),
+                            ],
+                          ),
+                        ),
+                      if (doc.status != 'rechazado')
+                        PopupMenuItem(
+                          value: 'rechazar',
+                          height: 36,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.cancel_outlined,
+                                  size: 15, color: Color(0xFFEF4444)),
+                              const SizedBox(width: 8),
+                              Text('Rechazar',
+                                  style: GoogleFonts.inter(
+                                      fontSize: 12, color: Colors.white)),
+                            ],
+                          ),
+                        ),
+                      PopupMenuItem(
+                        value: 'adjuntar',
+                        height: 36,
+                        child: Row(
+                          children: [
+                            const Icon(Icons.attach_file,
+                                size: 15, color: Color(0xFFA855F7)),
+                            const SizedBox(width: 8),
+                            Text('Adjuntar Archivo',
+                                style: GoogleFonts.inter(
+                                    fontSize: 12, color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _actionIconButton({
+    required IconData icon,
+    required Color color,
+    required String tooltip,
+    required VoidCallback onPressed,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(6),
+        child: Container(
+          width: 28,
+          height: 28,
+          alignment: Alignment.center,
+          margin: const EdgeInsets.only(right: 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            color: color.withValues(alpha: 0.1),
+          ),
+          child: Icon(icon, size: 15, color: color),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRequirementChip(String reqType) {
+    Color bg;
+    Color fg;
+    String label;
+
+    switch (reqType) {
+      case 'obligatorio':
+        bg = const Color(0xFFEF4444).withValues(alpha: 0.15);
+        fg = const Color(0xFFF87171);
+        label = 'Obligatorio';
+        break;
+      case 'condicional':
+        bg = const Color(0xFF8B5CF6).withValues(alpha: 0.15);
+        fg = const Color(0xFFC4B5FD);
+        label = 'Condicional';
+        break;
+      case 'no_aplica':
+      default:
+        bg = const Color(0xFF334155).withValues(alpha: 0.25);
+        fg = const Color(0xFF94A3B8);
+        label = 'No aplica';
+    }
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: fg.withValues(alpha: 0.3)),
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            color: fg,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDocStatusChip(String status) {
+    Color dotColor;
+    String label;
+
+    switch (status) {
+      case 'validado':
+        dotColor = const Color(0xFF10B981);
+        label = 'Validado';
+        break;
+      case 'recibido':
+        dotColor = const Color(0xFF38BDF8);
+        label = 'Recibido';
+        break;
+      case 'rechazado':
+        dotColor = const Color(0xFFEF4444);
+        label = 'Rechazado';
+        break;
+      case 'pendiente':
+      default:
+        dotColor = const Color(0xFFF59E0B);
+        label = 'Pendiente';
+    }
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+        decoration: BoxDecoration(
+          color: dotColor.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: dotColor.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 5,
+              height: 5,
+              decoration: BoxDecoration(
+                color: dotColor,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 5),
+            Flexible(
+              child: Text(
+                label,
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: dotColor,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionStatusChip(String status) {
+    Color color;
+    String label;
+    switch (status) {
+      case 'completa':
+        color = const Color(0xFF10B981);
+        label = 'Completa';
+        break;
+      case 'en_proceso':
+        color = const Color(0xFF38BDF8);
+        label = 'En proceso';
+        break;
+      case 'pendiente':
+      default:
+        color = const Color(0xFFF59E0B);
+        label = 'Pendiente';
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.inter(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDossierStatusChip(RrhhHiringDossier d) {
+    Color color;
+    String label = d.dossierStatusLabel;
+
+    if (d.status == 'pausado') {
+      color = const Color(0xFF64748B);
+    } else if (d.completedSectionsCount >= 5) {
+      color = const Color(0xFF10B981);
+    } else if (d.completedSectionsCount >= 3) {
+      color = const Color(0xFF38BDF8);
+    } else {
+      color = const Color(0xFFF59E0B);
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.inter(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  // ==========================================================================
+  // SECCIÓN 2 — Afiliación a Seguridad Social (AFP y Caja Médica)
+  // ==========================================================================
+
+  bool get _isSection2Valid =>
+      _s2AfpId != null &&
+      _s2AfpNumberCtrl.text.trim().length >= 6 &&
+      _s2HealthInsuranceId != null;
+
+  Widget _buildSection2Accordion(RrhhHiringDossier d, bool isDark) {
+    final isExpanded = _expandedSections.contains(2);
+    final isComplete = d.section2Status == 'completa';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isComplete
+              ? const Color(0xFF10B981).withValues(alpha: 0.4)
+              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+        ),
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () => _toggleSection(2),
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: isComplete
+                          ? const Color(0xFF10B981).withValues(alpha: 0.2)
+                          : const Color(0xFF2563EB).withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: isComplete
+                        ? const Icon(Icons.check,
+                            size: 15, color: Color(0xFF10B981))
+                        : Text(
+                            '2',
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF38BDF8),
+                            ),
+                          ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '2. Afiliación a Seguridad Social (AFP y Caja Médica)',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF334155),
+                          ),
+                        ),
+                        Text(
+                          d.afpName != null
+                              ? '${d.afpName} · ${d.healthInsuranceName ?? "Sin caja"}'
+                              : 'Selecciona AFP y caja médica para completar la afiliación.',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF64748B),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildSectionStatusChip(d.section2Status),
+                  const SizedBox(width: 12),
+                  Icon(
+                    isExpanded ? Icons.expand_less : Icons.expand_more,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (isExpanded) ...[
+            const Divider(height: 1, color: Color(0xFF1E293B)),
+            Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // AFP Dropdown
+                  _buildFormLabel('AFP / Gestora *'),
+                  const SizedBox(height: 6),
+                  _buildDropdownField<String>(
+                    value: _s2AfpId,
+                    hint: 'Selecciona AFP',
+                    items: _afpItems
+                        .map((a) => DropdownMenuItem(
+                              value: a.code,
+                              child: Text(a.name,
+                                  style: GoogleFonts.inter(
+                                      fontSize: 12.5, color: Colors.white)),
+                            ))
+                        .toList(),
+                    onChanged: isComplete
+                        ? null
+                        : (val) {
+                            final item =
+                                _afpItems.firstWhere((a) => a.code == val);
+                            setState(() {
+                              _s2AfpId = val;
+                              _s2AfpName = item.name;
+                            });
+                          },
+                  ),
+                  const SizedBox(height: 14),
+
+                  // AFP Number
+                  _buildFormLabel('Número de asegurado AFP *'),
+                  const SizedBox(height: 6),
+                  _buildTextField(
+                    controller: _s2AfpNumberCtrl,
+                    hint: 'Ej: GP-1234567',
+                    enabled: !isComplete,
+                  ),
+                  if (_s2AfpNumberCtrl.text.isNotEmpty &&
+                      _s2AfpNumberCtrl.text.trim().length < 6)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        'Mínimo 6 caracteres',
+                        style: GoogleFonts.inter(
+                            fontSize: 10.5, color: const Color(0xFFFCA5A5)),
+                      ),
+                    ),
+                  const SizedBox(height: 14),
+
+                  // Health Insurance Dropdown
+                  _buildFormLabel('Caja / Seguro de Salud *'),
+                  const SizedBox(height: 6),
+                  _buildDropdownField<String>(
+                    value: _s2HealthInsuranceId,
+                    hint: 'Selecciona caja o seguro',
+                    items: _healthInsuranceItems
+                        .map((h) => DropdownMenuItem(
+                              value: h.code,
+                              child: Text(h.name,
+                                  style: GoogleFonts.inter(
+                                      fontSize: 12.5, color: Colors.white)),
+                            ))
+                        .toList(),
+                    onChanged: isComplete
+                        ? null
+                        : (val) {
+                            final item = _healthInsuranceItems
+                                .firstWhere((h) => h.code == val);
+                            setState(() {
+                              _s2HealthInsuranceId = val;
+                              _s2HealthInsuranceName = item.name;
+                            });
+                          },
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Notes
+                  _buildFormLabel('Notas sobre la afiliación (opcional)'),
+                  const SizedBox(height: 6),
+                  _buildTextField(
+                    controller: _s2NotesCtrl,
+                    hint:
+                        'Ej: Pendiente de actualización de datos...',
+                    maxLines: 2,
+                    enabled: !isComplete,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Action buttons
+                  if (!isComplete)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: _isSaving ? null : _saveSection2Draft,
+                          icon: const Icon(Icons.save_outlined, size: 14),
+                          label: Text('Guardar borrador',
+                              style: GoogleFonts.inter(fontSize: 12)),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF94A3B8),
+                            side: const BorderSide(color: Color(0xFF334155)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        ElevatedButton.icon(
+                          onPressed:
+                              _isSection2Valid && !_isSaving
+                                  ? _markSection2Complete
+                                  : null,
+                          icon: const Icon(Icons.check_circle_outline,
+                              size: 14),
+                          label: Text('Marcar sección como completa',
+                              style: GoogleFonts.inter(fontSize: 12)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF10B981),
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor:
+                                const Color(0xFF334155),
+                            disabledForegroundColor:
+                                const Color(0xFF64748B),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _saveSection2Draft() async {
+    if (_dossier == null) return;
+    setState(() => _isSaving = true);
+    try {
+      final updated = await RrhhRepository.current.updateDossierSection2(
+        _dossier!.id,
+        afpId: _s2AfpId,
+        afpName: _s2AfpName,
+        afpNumber: _s2AfpNumberCtrl.text.trim(),
+        healthInsuranceId: _s2HealthInsuranceId,
+        healthInsuranceName: _s2HealthInsuranceName,
+        section2Notes: _s2NotesCtrl.text.trim(),
+        sectionStatus: 'en_proceso',
+      );
+      if (mounted) {
+        setState(() => _dossier = updated);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sección 2 guardada'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _markSection2Complete() async {
+    if (_dossier == null || !_isSection2Valid) return;
+    setState(() => _isSaving = true);
+    try {
+      final updated = await RrhhRepository.current.updateDossierSection2(
+        _dossier!.id,
+        afpId: _s2AfpId,
+        afpName: _s2AfpName,
+        afpNumber: _s2AfpNumberCtrl.text.trim(),
+        healthInsuranceId: _s2HealthInsuranceId,
+        healthInsuranceName: _s2HealthInsuranceName,
+        section2Notes: _s2NotesCtrl.text.trim(),
+        sectionStatus: 'completa',
+      );
+      if (mounted) {
+        setState(() => _dossier = updated);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Sección 2 completada'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Color(0xFF10B981),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  // ==========================================================================
+  // SECCIÓN 3 — Datos Personales Complementarios y Contacto de Emergencia
+  // ==========================================================================
+
+  static const List<String> _maritalStatusOptions = [
+    'Soltero',
+    'Casado',
+    'Divorciado',
+    'Viudo',
+    'Unión Libre',
+  ];
+
+  static const List<String> _relationOptions = [
+    'Cónyuge',
+    'Madre',
+    'Padre',
+    'Hermano/a',
+    'Hijo/a',
+    'Tío/a',
+    'Abuelo/a',
+    'Amigo/a',
+    'Otro',
+  ];
+
+  bool get _isSection3Valid =>
+      _s3AddressCtrl.text.trim().isNotEmpty &&
+      _s3MaritalStatus != null &&
+      _s3EmergNameCtrl.text.trim().isNotEmpty &&
+      _s3EmergPhoneCtrl.text.trim().length == 8 &&
+      _s3EmergRelation != null;
+
+  Widget _buildSection3Accordion(RrhhHiringDossier d, bool isDark) {
+    final isExpanded = _expandedSections.contains(3);
+    final isComplete = d.section3Status == 'completa';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isComplete
+              ? const Color(0xFF10B981).withValues(alpha: 0.4)
+              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+        ),
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () => _toggleSection(3),
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: isComplete
+                          ? const Color(0xFF10B981).withValues(alpha: 0.2)
+                          : const Color(0xFF2563EB).withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: isComplete
+                        ? const Icon(Icons.check,
+                            size: 15, color: Color(0xFF10B981))
+                        : Text(
+                            '3',
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF38BDF8),
+                            ),
+                          ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '3. Datos Personales Complementarios y Contacto de Emergencia',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF334155),
+                          ),
+                        ),
+                        Text(
+                          d.fullAddress != null
+                              ? '${d.maritalStatus ?? ""} · ${d.emergencyContactName ?? "Sin contacto"}'
+                              : 'Completa los datos personales y de emergencia.',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF64748B),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildSectionStatusChip(d.section3Status),
+                  const SizedBox(width: 12),
+                  Icon(
+                    isExpanded ? Icons.expand_less : Icons.expand_more,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (isExpanded) ...[
+            const Divider(height: 1, color: Color(0xFF1E293B)),
+            Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Bloque A: Datos personales ──
+                  Text(
+                    'DATOS PERSONALES',
+                    style: GoogleFonts.inter(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF94A3B8),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Address
+                  _buildFormLabel('Dirección completa *'),
+                  const SizedBox(height: 6),
+                  _buildTextField(
+                    controller: _s3AddressCtrl,
+                    hint: 'Barrio Sirari, C/ Las Begonias #24, Santa Cruz',
+                    enabled: !isComplete,
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Marital Status + Children in a row
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Estado civil *'),
+                            const SizedBox(height: 6),
+                            _buildDropdownField<String>(
+                              value: _s3MaritalStatus,
+                              hint: 'Seleccionar',
+                              items: _maritalStatusOptions
+                                  .map((s) => DropdownMenuItem(
+                                        value: s,
+                                        child: Text(s,
+                                            style: GoogleFonts.inter(
+                                                fontSize: 12.5,
+                                                color: Colors.white)),
+                                      ))
+                                  .toList(),
+                              onChanged: isComplete
+                                  ? null
+                                  : (val) =>
+                                      setState(() => _s3MaritalStatus = val),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      SizedBox(
+                        width: 120,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Nº de hijos'),
+                            const SizedBox(height: 6),
+                            _buildTextField(
+                              controller: _s3ChildrenCtrl,
+                              hint: '0',
+                              enabled: !isComplete,
+                              keyboardType: TextInputType.number,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 22),
+
+                  // ── Bloque B: Contacto de emergencia ──
+                  Text(
+                    'CONTACTO DE EMERGENCIA',
+                    style: GoogleFonts.inter(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF94A3B8),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Name + Phone in a row
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Nombre del contacto *'),
+                            const SizedBox(height: 6),
+                            _buildTextField(
+                              controller: _s3EmergNameCtrl,
+                              hint: 'Nombre completo',
+                              enabled: !isComplete,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Teléfono *'),
+                            const SizedBox(height: 6),
+                            _buildTextField(
+                              controller: _s3EmergPhoneCtrl,
+                              hint: '77712345',
+                              enabled: !isComplete,
+                              keyboardType: TextInputType.phone,
+                            ),
+                            if (_s3EmergPhoneCtrl.text.isNotEmpty &&
+                                _s3EmergPhoneCtrl.text.trim().length != 8)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  '8 dígitos requeridos',
+                                  style: GoogleFonts.inter(
+                                      fontSize: 10.5,
+                                      color: const Color(0xFFFCA5A5)),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Relation dropdown
+                  _buildFormLabel('Parentesco *'),
+                  const SizedBox(height: 6),
+                  _buildDropdownField<String>(
+                    value: _s3EmergRelation,
+                    hint: 'Seleccionar parentesco',
+                    items: _relationOptions
+                        .map((r) => DropdownMenuItem(
+                              value: r,
+                              child: Text(r,
+                                  style: GoogleFonts.inter(
+                                      fontSize: 12.5, color: Colors.white)),
+                            ))
+                        .toList(),
+                    onChanged: isComplete
+                        ? null
+                        : (val) => setState(() => _s3EmergRelation = val),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Action buttons
+                  if (!isComplete)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: _isSaving ? null : _saveSection3Draft,
+                          icon: const Icon(Icons.save_outlined, size: 14),
+                          label: Text('Guardar borrador',
+                              style: GoogleFonts.inter(fontSize: 12)),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF94A3B8),
+                            side: const BorderSide(color: Color(0xFF334155)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        ElevatedButton.icon(
+                          onPressed:
+                              _isSection3Valid && !_isSaving
+                                  ? _markSection3Complete
+                                  : null,
+                          icon: const Icon(Icons.check_circle_outline,
+                              size: 14),
+                          label: Text('Marcar sección como completa',
+                              style: GoogleFonts.inter(fontSize: 12)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF10B981),
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor:
+                                const Color(0xFF334155),
+                            disabledForegroundColor:
+                                const Color(0xFF64748B),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _saveSection3Draft() async {
+    if (_dossier == null) return;
+    setState(() => _isSaving = true);
+    try {
+      final updated = await RrhhRepository.current.updateDossierSection3(
+        _dossier!.id,
+        fullAddress: _s3AddressCtrl.text.trim(),
+        maritalStatus: _s3MaritalStatus,
+        childrenCount: int.tryParse(_s3ChildrenCtrl.text) ?? 0,
+        emergencyContactName: _s3EmergNameCtrl.text.trim(),
+        emergencyContactPhone: _s3EmergPhoneCtrl.text.trim(),
+        emergencyContactRelation: _s3EmergRelation,
+        sectionStatus: 'en_proceso',
+      );
+      if (mounted) {
+        setState(() => _dossier = updated);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sección 3 guardada'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _markSection3Complete() async {
+    if (_dossier == null || !_isSection3Valid) return;
+    setState(() => _isSaving = true);
+    try {
+      final updated = await RrhhRepository.current.updateDossierSection3(
+        _dossier!.id,
+        fullAddress: _s3AddressCtrl.text.trim(),
+        maritalStatus: _s3MaritalStatus,
+        childrenCount: int.tryParse(_s3ChildrenCtrl.text) ?? 0,
+        emergencyContactName: _s3EmergNameCtrl.text.trim(),
+        emergencyContactPhone: _s3EmergPhoneCtrl.text.trim(),
+        emergencyContactRelation: _s3EmergRelation,
+        sectionStatus: 'completa',
+      );
+      if (mounted) {
+        setState(() => _dossier = updated);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Sección 3 completada'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Color(0xFF10B981),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  // ==========================================================================
+  // SECCIÓN 4 — Condiciones Contractuales y Modalidad de Pago
+  // ==========================================================================
+
+  bool get _isContractTemporary {
+    if (_s4ContractTypeName == null) return false;
+    final name = _s4ContractTypeName!.toLowerCase();
+    return name.contains('temporal') ||
+        name.contains('obra') ||
+        name.contains('plazo fijo') ||
+        name.contains('determinado') ||
+        name.contains('eventual');
+  }
+
+  bool get _isSection4Valid {
+    if (_s4ContractTypeId == null) return false;
+    if (_s4StartDate == null) return false;
+    if (_isContractTemporary) {
+      if (_s4EndDate == null) return false;
+      if (!_s4EndDate!.isAfter(_s4StartDate!)) return false;
+    }
+    if (_s4PaymentModalityId == null) return false;
+    final salary = double.tryParse(_s4BaseSalaryCtrl.text.trim()) ?? 0;
+    if (salary <= 0) return false;
+    return true;
+  }
+
+  Future<void> _saveSection4Draft() async {
+    if (_dossier == null) return;
+    setState(() => _isSaving = true);
+    try {
+      final salary = double.tryParse(_s4BaseSalaryCtrl.text.trim());
+      final updated = await RrhhRepository.current.updateDossierSection4(
+        _dossier!.id,
+        contractTypeId: _s4ContractTypeId,
+        contractTypeName: _s4ContractTypeName,
+        workdayType: _s4WorkdayType,
+        paymentModalityId: _s4PaymentModalityId,
+        paymentModalityName: _s4PaymentModalityName,
+        baseSalary: salary,
+        currency: _s4Currency,
+        contractStartDate: _s4StartDate,
+        contractEndDate: _isContractTemporary ? _s4EndDate : null,
+        bonuses: _s4Bonuses,
+        deductions: _s4Deductions,
+        sectionStatus: _dossier!.section4Status == 'completa'
+            ? 'completa'
+            : 'en_proceso',
+      );
+      if (mounted) {
+        setState(() => _dossier = updated);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Borrador de Sección 4 guardado'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Color(0xFF1E293B),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _completeSection4() async {
+    if (_dossier == null || !_isSection4Valid) return;
+    setState(() => _isSaving = true);
+    try {
+      final salary = double.tryParse(_s4BaseSalaryCtrl.text.trim());
+      final updated = await RrhhRepository.current.updateDossierSection4(
+        _dossier!.id,
+        contractTypeId: _s4ContractTypeId,
+        contractTypeName: _s4ContractTypeName,
+        workdayType: _s4WorkdayType,
+        paymentModalityId: _s4PaymentModalityId,
+        paymentModalityName: _s4PaymentModalityName,
+        baseSalary: salary,
+        currency: _s4Currency,
+        contractStartDate: _s4StartDate,
+        contractEndDate: _isContractTemporary ? _s4EndDate : null,
+        bonuses: _s4Bonuses,
+        deductions: _s4Deductions,
+        sectionStatus: 'completa',
+      );
+      if (mounted) {
+        setState(() => _dossier = updated);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Sección 4 completada'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Color(0xFF10B981),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _showAddCustomBonusDialog() async {
+    final nameCtrl = TextEditingController();
+    final amountCtrl = TextEditingController(text: '200');
+    String type = 'Fija mensual';
+    bool isPercentage = false;
+
+    final result = await showDialog<RrhhEmployeeBonus>(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setDlgState) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFF0F172A),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: const BorderSide(color: Color(0xFF1E293B)),
+              ),
+              title: Text(
+                'Agregar Bonificación Personalizada',
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFFF8FAFC),
+                ),
+              ),
+              content: SizedBox(
+                width: 380,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildFormLabel('Concepto del bono *'),
+                    const SizedBox(height: 6),
+                    _buildTextField(
+                      controller: nameCtrl,
+                      hint: 'Ej: Bono de Productividad Extra',
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildFormLabel('Monto *'),
+                              const SizedBox(height: 6),
+                              _buildTextField(
+                                controller: amountCtrl,
+                                hint: '0.00',
+                                keyboardType: TextInputType.number,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          flex: 4,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildFormLabel('Tipo'),
+                              const SizedBox(height: 6),
+                              _buildDropdownField<String>(
+                                value: type,
+                                hint: 'Tipo',
+                                items: ['Fija mensual', 'Por evento', 'Variable']
+                                    .map((t) => DropdownMenuItem(
+                                          value: t,
+                                          child: Text(t,
+                                              style: GoogleFonts.inter(
+                                                  fontSize: 12,
+                                                  color: Colors.white)),
+                                        ))
+                                    .toList(),
+                                onChanged: (val) {
+                                  if (val != null) {
+                                    setDlgState(() => type = val);
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    InkWell(
+                      onTap: () =>
+                          setDlgState(() => isPercentage = !isPercentage),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: isPercentage,
+                            activeColor: const Color(0xFF2563EB),
+                            onChanged: (v) => setDlgState(
+                                () => isPercentage = v ?? false),
+                          ),
+                          Text(
+                            'El valor representa un porcentaje (%)',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: const Color(0xFFCBD5E1),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: Text('Cancelar',
+                      style: GoogleFonts.inter(
+                          color: const Color(0xFF94A3B8), fontSize: 12)),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    final name = nameCtrl.text.trim();
+                    final amt = double.tryParse(amountCtrl.text.trim()) ?? 0;
+                    if (name.isEmpty || amt <= 0) return;
+                    Navigator.of(ctx).pop(
+                      RrhhEmployeeBonus(
+                        code:
+                            'BONO-CUSTOM-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                        name: name,
+                        type: type,
+                        amount: amt,
+                        isPercentage: isPercentage,
+                      ),
+                    );
+                  },
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF2563EB),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 8),
+                  ),
+                  child: Text('Agregar',
+                      style: GoogleFonts.inter(fontSize: 12)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (result != null) {
+      setState(() {
+        _s4Bonuses.add(result);
+      });
+    }
+  }
+
+  Future<void> _showAddCustomDeductionDialog() async {
+    final nameCtrl = TextEditingController();
+    final amountCtrl = TextEditingController(text: '100');
+    String type = 'Fijo';
+    bool isPercentage = false;
+
+    final result = await showDialog<RrhhEmployeeDeduction>(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setDlgState) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFF0F172A),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: const BorderSide(color: Color(0xFF1E293B)),
+              ),
+              title: Text(
+                'Agregar Descuento Personalizado',
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFFF8FAFC),
+                ),
+              ),
+              content: SizedBox(
+                width: 380,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildFormLabel('Concepto del descuento *'),
+                    const SizedBox(height: 6),
+                    _buildTextField(
+                      controller: nameCtrl,
+                      hint: 'Ej: Préstamo Empresarial Interno',
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildFormLabel('Monto *'),
+                              const SizedBox(height: 6),
+                              _buildTextField(
+                                controller: amountCtrl,
+                                hint: '0.00',
+                                keyboardType: TextInputType.number,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          flex: 4,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildFormLabel('Tipo'),
+                              const SizedBox(height: 6),
+                              _buildDropdownField<String>(
+                                value: type,
+                                hint: 'Tipo',
+                                items: ['Fijo', 'Porcentaje', 'Por evento']
+                                    .map((t) => DropdownMenuItem(
+                                          value: t,
+                                          child: Text(t,
+                                              style: GoogleFonts.inter(
+                                                  fontSize: 12,
+                                                  color: Colors.white)),
+                                        ))
+                                    .toList(),
+                                onChanged: (val) {
+                                  if (val != null) {
+                                    setDlgState(() => type = val);
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    InkWell(
+                      onTap: () =>
+                          setDlgState(() => isPercentage = !isPercentage),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: isPercentage,
+                            activeColor: const Color(0xFF2563EB),
+                            onChanged: (v) => setDlgState(
+                                () => isPercentage = v ?? false),
+                          ),
+                          Text(
+                            'El valor representa un porcentaje (%)',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: const Color(0xFFCBD5E1),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: Text('Cancelar',
+                      style: GoogleFonts.inter(
+                          color: const Color(0xFF94A3B8), fontSize: 12)),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    final name = nameCtrl.text.trim();
+                    final amt = double.tryParse(amountCtrl.text.trim()) ?? 0;
+                    if (name.isEmpty || amt <= 0) return;
+                    Navigator.of(ctx).pop(
+                      RrhhEmployeeDeduction(
+                        code:
+                            'DESC-CUSTOM-${DateTime.now().millisecondsSinceEpoch % 10000}',
+                        name: name,
+                        type: type,
+                        amount: amt,
+                        isPercentage: isPercentage,
+                      ),
+                    );
+                  },
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF2563EB),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 8),
+                  ),
+                  child: Text('Agregar',
+                      style: GoogleFonts.inter(fontSize: 12)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (result != null) {
+      setState(() {
+        _s4Deductions.add(result);
+      });
+    }
+  }
+
+  Widget _buildSection4Accordion(RrhhHiringDossier d, bool isDark) {
+    final isExpanded = _expandedSections.contains(4);
+    final isComplete = d.section4Status == 'completa';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isComplete
+              ? const Color(0xFF10B981).withValues(alpha: 0.4)
+              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+        ),
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () => _toggleSection(4),
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: isComplete
+                          ? const Color(0xFF10B981).withValues(alpha: 0.2)
+                          : const Color(0xFF2563EB).withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: isComplete
+                        ? const Icon(Icons.check,
+                            size: 15, color: Color(0xFF10B981))
+                        : Text(
+                            '4',
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF38BDF8),
+                            ),
+                          ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '4. Condiciones Contractuales y Modalidad de Pago',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF334155),
+                          ),
+                        ),
+                        Text(
+                          d.contractTypeName != null
+                              ? '${d.contractTypeName} (${d.workdayType ?? "Completa"}) · ${d.currency ?? "BOB"} ${d.baseSalary != null ? d.baseSalary!.toStringAsFixed(0) : "0"} · ${d.paymentModalityName ?? "Sin modalidad"}'
+                              : 'Define tipo de contrato, jornada laboral, fechas, salario y bonificaciones.',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF64748B),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildSectionStatusChip(d.section4Status),
+                  const SizedBox(width: 12),
+                  Icon(
+                    isExpanded ? Icons.expand_less : Icons.expand_more,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (isExpanded) ...[
+            const Divider(height: 1, color: Color(0xFF1E293B)),
+            Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Bloque A: Tipo de contrato y jornada ──
+                  Text(
+                    'BLOQUE A — TIPO DE CONTRATO Y JORNADA',
+                    style: GoogleFonts.inter(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF94A3B8),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Tipo de contrato *'),
+                            const SizedBox(height: 6),
+                            _buildDropdownField<String>(
+                              value: _s4ContractTypeId,
+                              hint: 'Seleccionar tipo de contrato',
+                              items: _contractTypeItems
+                                  .map((c) => DropdownMenuItem(
+                                        value: c.code,
+                                        child: Text(c.name,
+                                            style: GoogleFonts.inter(
+                                                fontSize: 12.5,
+                                                color: Colors.white)),
+                                      ))
+                                  .toList(),
+                              onChanged: isComplete
+                                  ? null
+                                  : (val) {
+                                      final item = _contractTypeItems
+                                          .firstWhere((c) => c.code == val);
+                                      setState(() {
+                                        _s4ContractTypeId = val;
+                                        _s4ContractTypeName = item.name;
+                                        if (!_isContractTemporary) {
+                                          _s4EndDate = null;
+                                        }
+                                      });
+                                    },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Jornada laboral *'),
+                            const SizedBox(height: 6),
+                            _buildWorkdaySelector(!isComplete),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 22),
+
+                  // ── Bloque B: Vigencia ──
+                  Text(
+                    'BLOQUE B — VIGENCIA DEL CONTRATO',
+                    style: GoogleFonts.inter(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF94A3B8),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: _buildDateField(
+                          context: context,
+                          label: 'Fecha de inicio de contrato *',
+                          value: _s4StartDate,
+                          enabled: !isComplete,
+                          onDateSelected: (picked) {
+                            setState(() {
+                              _s4StartDate = picked;
+                              if (_s5EffectiveStartDate == null ||
+                                  _s5EffectiveStartDate!.isBefore(picked)) {
+                                _s5EffectiveStartDate = picked;
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                      if (_isContractTemporary) ...[
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: _buildDateField(
+                            context: context,
+                            label: 'Fecha de fin de contrato *',
+                            value: _s4EndDate,
+                            enabled: !isComplete,
+                            firstDate: _s4StartDate ?? DateTime(2020),
+                            errorText: (_s4EndDate != null &&
+                                    _s4StartDate != null &&
+                                    !_s4EndDate!.isAfter(_s4StartDate!))
+                                ? 'Debe ser posterior a la fecha de inicio'
+                                : null,
+                            onDateSelected: (picked) {
+                              setState(() => _s4EndDate = picked);
+                            },
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 22),
+
+                  // ── Bloque C: Salario y modalidad ──
+                  Text(
+                    'BLOQUE C — SALARIO Y MODALIDAD DE PAGO',
+                    style: GoogleFonts.inter(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF94A3B8),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Modalidad de pago *'),
+                            const SizedBox(height: 6),
+                            _buildDropdownField<String>(
+                              value: _s4PaymentModalityId,
+                              hint: 'Seleccionar modalidad',
+                              items: _paymentModalityItems
+                                  .map((p) => DropdownMenuItem(
+                                        value: p.code,
+                                        child: Text(p.name,
+                                            style: GoogleFonts.inter(
+                                                fontSize: 12.5,
+                                                color: Colors.white)),
+                                      ))
+                                  .toList(),
+                              onChanged: isComplete
+                                  ? null
+                                  : (val) {
+                                      final item = _paymentModalityItems
+                                          .firstWhere((p) => p.code == val);
+                                      setState(() {
+                                        _s4PaymentModalityId = val;
+                                        _s4PaymentModalityName = item.name;
+                                      });
+                                    },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Salario base acordado *'),
+                            const SizedBox(height: 6),
+                            _buildTextField(
+                              controller: _s4BaseSalaryCtrl,
+                              hint: 'Ej: 3500',
+                              enabled: !isComplete,
+                              keyboardType: TextInputType.number,
+                            ),
+                            if (_s4BaseSalaryCtrl.text.isNotEmpty &&
+                                (double.tryParse(_s4BaseSalaryCtrl.text.trim()) ??
+                                        0) <=
+                                    0)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  'El salario debe ser mayor a 0',
+                                  style: GoogleFonts.inter(
+                                      fontSize: 10.5,
+                                      color: const Color(0xFFFCA5A5)),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      SizedBox(
+                        width: 100,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Moneda'),
+                            const SizedBox(height: 6),
+                            _buildDropdownField<String>(
+                              value: _s4Currency,
+                              hint: 'BOB',
+                              items: ['BOB', 'USD']
+                                  .map((c) => DropdownMenuItem(
+                                        value: c,
+                                        child: Text(c,
+                                            style: GoogleFonts.inter(
+                                                fontSize: 12.5,
+                                                color: Colors.white)),
+                                      ))
+                                  .toList(),
+                              onChanged: isComplete
+                                  ? null
+                                  : (val) {
+                                      if (val != null) {
+                                        setState(() => _s4Currency = val);
+                                      }
+                                    },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 22),
+
+                  // ── Bloque D: Bonificaciones autorizadas ──
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'BLOQUE D — BONIFICACIONES AUTORIZADAS (OPCIONAL)',
+                            style: GoogleFonts.inter(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF94A3B8),
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Marca las bonificaciones que apliquen al postulante',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: const Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (!isComplete)
+                        TextButton.icon(
+                          onPressed: _showAddCustomBonusDialog,
+                          icon: const Icon(Icons.add, size: 14),
+                          label: Text('Bonificación personalizada',
+                              style: GoogleFonts.inter(fontSize: 11.5)),
+                          style: TextButton.styleFrom(
+                            foregroundColor: const Color(0xFF38BDF8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  _buildBonusesSection(isComplete),
+                  const SizedBox(height: 22),
+
+                  // ── Bloque E: Descuentos autorizados ──
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'BLOQUE E — DESCUENTOS AUTORIZADOS (OPCIONAL)',
+                            style: GoogleFonts.inter(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF94A3B8),
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Deducciones y aportes regulares asignados',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: const Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (!isComplete)
+                        TextButton.icon(
+                          onPressed: _showAddCustomDeductionDialog,
+                          icon: const Icon(Icons.add, size: 14),
+                          label: Text('Descuento personalizado',
+                              style: GoogleFonts.inter(fontSize: 11.5)),
+                          style: TextButton.styleFrom(
+                            foregroundColor: const Color(0xFF38BDF8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  _buildDeductionsSection(isComplete),
+                  const SizedBox(height: 22),
+
+                  // Action buttons
+                  if (!isComplete)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: _isSaving ? null : _saveSection4Draft,
+                          icon: const Icon(Icons.save_outlined, size: 14),
+                          label: Text('Guardar borrador',
+                              style: GoogleFonts.inter(fontSize: 12)),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF94A3B8),
+                            side: const BorderSide(color: Color(0xFF334155)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        ElevatedButton.icon(
+                          onPressed: (_isSaving || !_isSection4Valid)
+                              ? null
+                              : _completeSection4,
+                          icon: const Icon(Icons.check_circle_outline, size: 15),
+                          label: Text(
+                            'Marcar sección como completa',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF10B981),
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor: const Color(0xFF1E293B),
+                            disabledForegroundColor: const Color(0xFF475569),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '✅ Sección 4 completada y registrada en el expediente.',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF10B981),
+                          ),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              _dossier = _dossier!.copyWith(
+                                section4Status: 'en_proceso',
+                              );
+                            });
+                          },
+                          icon: const Icon(Icons.edit_outlined, size: 13),
+                          label: Text('Modificar sección',
+                              style: GoogleFonts.inter(fontSize: 11.5)),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF38BDF8),
+                            side: const BorderSide(color: Color(0xFF1E293B)),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWorkdaySelector(bool enabled) {
+    final options = ['Completa', 'Parcial', 'Por horas'];
+    return Row(
+      children: options.map((opt) {
+        final isSelected = _s4WorkdayType == opt;
+        return Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3),
+            child: InkWell(
+              onTap: enabled ? () => setState(() => _s4WorkdayType = opt) : null,
+              borderRadius: BorderRadius.circular(8),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? const Color(0xFF2563EB).withValues(alpha: 0.2)
+                      : const Color(0xFF111827),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: isSelected
+                        ? const Color(0xFF2563EB)
+                        : const Color(0xFF1E293B),
+                    width: isSelected ? 1.5 : 1.0,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  opt,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    color: isSelected
+                        ? const Color(0xFF38BDF8)
+                        : const Color(0xFF94A3B8),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildBonusesSection(bool isComplete) {
+    if (_bonusCatalogItems.isEmpty && _s4Bonuses.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF111827),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFF1E293B)),
+        ),
+        child: Text(
+          'No hay bonificaciones disponibles en el catálogo.',
+          style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+        ),
+      );
+    }
+
+    final allItems = <({String code, String name, String type, double? defaultAmt})>[];
+    for (final c in _bonusCatalogItems) {
+      allItems.add((
+        code: c.code,
+        name: c.name,
+        type: c.subType ?? 'Fija mensual',
+        defaultAmt: c.defaultAmount,
+      ));
+    }
+    // Also include custom bonuses not in catalog
+    for (final b in _s4Bonuses) {
+      if (!allItems.any((it) => it.code == b.code)) {
+        allItems.add((
+          code: b.code,
+          name: b.name,
+          type: b.type,
+          defaultAmt: b.amount,
+        ));
+      }
+    }
+
+    return Column(
+      children: allItems.map((item) {
+        final existingIdx = _s4Bonuses.indexWhere((b) => b.code == item.code);
+        final isSelected = existingIdx != -1;
+        final selectedBonus = isSelected ? _s4Bonuses[existingIdx] : null;
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? const Color(0xFF131C2E)
+                : const Color(0xFF111827),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isSelected
+                  ? const Color(0xFF2563EB).withValues(alpha: 0.4)
+                  : const Color(0xFF1E293B),
+            ),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Checkbox(
+                    value: isSelected,
+                    activeColor: const Color(0xFF2563EB),
+                    onChanged: isComplete
+                        ? null
+                        : (val) {
+                            setState(() {
+                              if (val == true) {
+                                _s4Bonuses.add(RrhhEmployeeBonus(
+                                  code: item.code,
+                                  name: item.name,
+                                  type: item.type,
+                                  amount: item.defaultAmt ?? 250.0,
+                                  isPercentage: false,
+                                ));
+                              } else {
+                                _s4Bonuses.removeWhere(
+                                    (b) => b.code == item.code);
+                              }
+                            });
+                          },
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.name,
+                          style: GoogleFonts.inter(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected
+                                ? const Color(0xFFF8FAFC)
+                                : const Color(0xFFCBD5E1),
+                          ),
+                        ),
+                        Text(
+                          'Tipo base: ${item.type} · Ref: ${item.code}',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isSelected && selectedBonus != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        selectedBonus.isPercentage
+                            ? '${selectedBonus.amount ?? 0}%'
+                            : 'Bs. ${(selectedBonus.amount ?? 0).toStringAsFixed(0)}',
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF10B981),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              if (isSelected && selectedBonus != null && !isComplete) ...[
+                const SizedBox(height: 8),
+                const Divider(height: 1, color: Color(0xFF1E293B)),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const SizedBox(width: 40),
+                    SizedBox(
+                      width: 120,
+                      height: 34,
+                      child: TextField(
+                        style: GoogleFonts.jetBrainsMono(
+                            fontSize: 12, color: Colors.white),
+                        decoration: InputDecoration(
+                          labelText: 'Monto',
+                          labelStyle: GoogleFonts.inter(
+                              fontSize: 10, color: const Color(0xFF94A3B8)),
+                          prefixText:
+                              selectedBonus.isPercentage ? '% ' : 'Bs. ',
+                          prefixStyle: GoogleFonts.inter(
+                              fontSize: 11, color: const Color(0xFF64748B)),
+                          filled: true,
+                          fillColor: const Color(0xFF0F172A),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide:
+                                  const BorderSide(color: Color(0xFF1E293B))),
+                        ),
+                        controller: TextEditingController(
+                            text: (selectedBonus.amount ?? 0).toStringAsFixed(0))
+                          ..selection = TextSelection.collapsed(
+                              offset: (selectedBonus.amount ?? 0)
+                                  .toStringAsFixed(0)
+                                  .length),
+                        keyboardType: TextInputType.number,
+                        onChanged: (val) {
+                          final n = double.tryParse(val) ?? 0;
+                          selectedBonus.amount = n;
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: SizedBox(
+                        height: 34,
+                        child: DropdownButtonFormField<String>(
+                          initialValue: selectedBonus.type,
+                          dropdownColor: const Color(0xFF0F172A),
+                          style: GoogleFonts.inter(
+                              fontSize: 11.5, color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: 'Frecuencia',
+                            labelStyle: GoogleFonts.inter(
+                                fontSize: 10, color: const Color(0xFF94A3B8)),
+                            filled: true,
+                            fillColor: const Color(0xFF0F172A),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(6),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFF1E293B))),
+                          ),
+                          items: ['Fija mensual', 'Por evento', 'Variable']
+                              .map((t) => DropdownMenuItem(
+                                    value: t,
+                                    child: Text(t),
+                                  ))
+                              .toList(),
+                          onChanged: (val) {
+                            if (val != null) {
+                              setState(() => selectedBonus.type = val);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildDeductionsSection(bool isComplete) {
+    if (_deductionCatalogItems.isEmpty && _s4Deductions.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF111827),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFF1E293B)),
+        ),
+        child: Text(
+          'No hay deducciones disponibles en el catálogo.',
+          style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+        ),
+      );
+    }
+
+    final allItems = <({String code, String name, String type})>[];
+    for (final c in _deductionCatalogItems) {
+      allItems.add((
+        code: c.code,
+        name: c.name,
+        type: c.subType ?? 'Fijo',
+      ));
+    }
+    for (final d in _s4Deductions) {
+      if (!allItems.any((it) => it.code == d.code)) {
+        allItems.add((
+          code: d.code,
+          name: d.name,
+          type: d.type,
+        ));
+      }
+    }
+
+    return Column(
+      children: allItems.map((item) {
+        final existingIdx =
+            _s4Deductions.indexWhere((d) => d.code == item.code);
+        final isSelected = existingIdx != -1;
+        final selectedDed = isSelected ? _s4Deductions[existingIdx] : null;
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? const Color(0xFF131C2E)
+                : const Color(0xFF111827),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isSelected
+                  ? const Color(0xFFEF4444).withValues(alpha: 0.4)
+                  : const Color(0xFF1E293B),
+            ),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Checkbox(
+                    value: isSelected,
+                    activeColor: const Color(0xFFEF4444),
+                    onChanged: isComplete
+                        ? null
+                        : (val) {
+                            setState(() {
+                              if (val == true) {
+                                _s4Deductions.add(RrhhEmployeeDeduction(
+                                  code: item.code,
+                                  name: item.name,
+                                  type: item.type,
+                                  amount: 100.0,
+                                  isPercentage: item.type.toLowerCase().contains('porcent'),
+                                ));
+                              } else {
+                                _s4Deductions.removeWhere(
+                                    (d) => d.code == item.code);
+                              }
+                            });
+                          },
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.name,
+                          style: GoogleFonts.inter(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected
+                                ? const Color(0xFFF8FAFC)
+                                : const Color(0xFFCBD5E1),
+                          ),
+                        ),
+                        Text(
+                          'Tipo base: ${item.type} · Ref: ${item.code}',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isSelected && selectedDed != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEF4444).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        selectedDed.isPercentage
+                            ? '-${selectedDed.amount ?? 0}%'
+                            : '-Bs. ${(selectedDed.amount ?? 0).toStringAsFixed(0)}',
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFFF87171),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              if (isSelected && selectedDed != null && !isComplete) ...[
+                const SizedBox(height: 8),
+                const Divider(height: 1, color: Color(0xFF1E293B)),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const SizedBox(width: 40),
+                    SizedBox(
+                      width: 120,
+                      height: 34,
+                      child: TextField(
+                        style: GoogleFonts.jetBrainsMono(
+                            fontSize: 12, color: Colors.white),
+                        decoration: InputDecoration(
+                          labelText: 'Monto',
+                          labelStyle: GoogleFonts.inter(
+                              fontSize: 10, color: const Color(0xFF94A3B8)),
+                          prefixText:
+                              selectedDed.isPercentage ? '% ' : 'Bs. ',
+                          prefixStyle: GoogleFonts.inter(
+                              fontSize: 11, color: const Color(0xFF64748B)),
+                          filled: true,
+                          fillColor: const Color(0xFF0F172A),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide:
+                                  const BorderSide(color: Color(0xFF1E293B))),
+                        ),
+                        controller: TextEditingController(
+                            text: (selectedDed.amount ?? 0).toStringAsFixed(0))
+                          ..selection = TextSelection.collapsed(
+                              offset: (selectedDed.amount ?? 0)
+                                  .toStringAsFixed(0)
+                                  .length),
+                        keyboardType: TextInputType.number,
+                        onChanged: (val) {
+                          final n = double.tryParse(val) ?? 0;
+                          selectedDed.amount = n;
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: SizedBox(
+                        height: 34,
+                        child: DropdownButtonFormField<String>(
+                          initialValue: selectedDed.type,
+                          dropdownColor: const Color(0xFF0F172A),
+                          style: GoogleFonts.inter(
+                              fontSize: 11.5, color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: 'Tipo',
+                            labelStyle: GoogleFonts.inter(
+                                fontSize: 10, color: const Color(0xFF94A3B8)),
+                            filled: true,
+                            fillColor: const Color(0xFF0F172A),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(6),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFF1E293B))),
+                          ),
+                          items: ['Fijo', 'Porcentaje', 'Por evento']
+                              .map((t) => DropdownMenuItem(
+                                    value: t,
+                                    child: Text(t),
+                                  ))
+                              .toList(),
+                          onChanged: (val) {
+                            if (val != null) {
+                              setState(() => selectedDed.type = val);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  // ==========================================================================
+  // SECCIÓN 5 — Asignación Organizacional, Turno y Sede Base
+  // ==========================================================================
+
+  bool get _isSection5Valid {
+    if (_s5AreaId == null) return false;
+    if (_s5PositionId == null) return false;
+    if (_s5ShiftId == null) return false;
+    if (_s5BaseLocationCtrl.text.trim().isEmpty) return false;
+    if (_s5EffectiveStartDate == null) return false;
+    if (_s4StartDate != null) {
+      final s4Ymd = DateTime(_s4StartDate!.year, _s4StartDate!.month, _s4StartDate!.day);
+      final s5Ymd = DateTime(_s5EffectiveStartDate!.year, _s5EffectiveStartDate!.month, _s5EffectiveStartDate!.day);
+      if (s5Ymd.isBefore(s4Ymd)) return false;
+    }
+    return true;
+  }
+
+  Future<void> _saveSection5Draft() async {
+    if (_dossier == null) return;
+    setState(() => _isSaving = true);
+    try {
+      final updated = await RrhhRepository.current.updateDossierSection5(
+        _dossier!.id,
+        areaId: _s5AreaId,
+        areaName: _s5AreaName,
+        positionId: _s5PositionId,
+        positionName: _s5PositionName,
+        shiftId: _s5ShiftId,
+        shiftName: _s5ShiftName,
+        scheduleId: _s5ScheduleId,
+        scheduleName: _s5ScheduleName,
+        baseLocation: _s5BaseLocationCtrl.text.trim(),
+        supervisorEmployeeId: _s5SupervisorId,
+        supervisorName: _s5SupervisorName,
+        effectiveStartDate: _s5EffectiveStartDate,
+        sectionStatus: _dossier!.section5Status == 'completa'
+            ? 'completa'
+            : 'en_proceso',
+      );
+      if (mounted) {
+        setState(() => _dossier = updated);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Borrador de Sección 5 guardado'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Color(0xFF1E293B),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _completeSection5() async {
+    if (_dossier == null || !_isSection5Valid) return;
+    setState(() => _isSaving = true);
+    try {
+      final updated = await RrhhRepository.current.updateDossierSection5(
+        _dossier!.id,
+        areaId: _s5AreaId,
+        areaName: _s5AreaName,
+        positionId: _s5PositionId,
+        positionName: _s5PositionName,
+        shiftId: _s5ShiftId,
+        shiftName: _s5ShiftName,
+        scheduleId: _s5ScheduleId,
+        scheduleName: _s5ScheduleName,
+        baseLocation: _s5BaseLocationCtrl.text.trim(),
+        supervisorEmployeeId: _s5SupervisorId,
+        supervisorName: _s5SupervisorName,
+        effectiveStartDate: _s5EffectiveStartDate,
+        sectionStatus: 'completa',
+      );
+      if (mounted) {
+        setState(() => _dossier = updated);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Sección 5 completada'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Color(0xFF10B981),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Widget _buildSection5Accordion(RrhhHiringDossier d, bool isDark) {
+    final isExpanded = _expandedSections.contains(5);
+    final isComplete = d.section5Status == 'completa';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isComplete
+              ? const Color(0xFF10B981).withValues(alpha: 0.4)
+              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+        ),
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () => _toggleSection(5),
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: isComplete
+                          ? const Color(0xFF10B981).withValues(alpha: 0.2)
+                          : const Color(0xFF2563EB).withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: isComplete
+                        ? const Icon(Icons.check,
+                            size: 15, color: Color(0xFF10B981))
+                        : Text(
+                            '5',
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF38BDF8),
+                            ),
+                          ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '5. Asignación Organizacional, Turno y Sede Base',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF334155),
+                          ),
+                        ),
+                        Text(
+                          d.areaName != null
+                              ? '${d.areaName} / ${d.positionName ?? ""} · ${d.shiftName ?? "Sin turno"} · ${d.baseLocation ?? ""}'
+                              : 'Asigna área, cargo, turno laboral, horario base, sede y supervisor.',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF64748B),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildSectionStatusChip(d.section5Status),
+                  const SizedBox(width: 12),
+                  Icon(
+                    isExpanded ? Icons.expand_less : Icons.expand_more,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (isExpanded) ...[
+            const Divider(height: 1, color: Color(0xFF1E293B)),
+            Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Bloque A: Área y Cargo ──
+                  Text(
+                    'BLOQUE A — ÁREA Y CARGO',
+                    style: GoogleFonts.inter(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF94A3B8),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Área de la empresa *'),
+                            const SizedBox(height: 6),
+                            _buildDropdownField<String>(
+                              value: _s5AreaId,
+                              hint: 'Seleccionar área',
+                              items: _areas
+                                  .map((a) => DropdownMenuItem(
+                                        value: a.id?.toString(),
+                                        child: Text(a.name,
+                                            style: GoogleFonts.inter(
+                                                fontSize: 12.5,
+                                                color: Colors.white)),
+                                      ))
+                                  .toList(),
+                              onChanged: isComplete
+                                  ? null
+                                  : (val) {
+                                      final area =
+                                          _areas.firstWhere((a) => a.id?.toString() == val);
+                                      setState(() {
+                                        _s5AreaId = val;
+                                        _s5AreaName = area.name;
+                                        // Reset position if not matching new area
+                                        final availablePositions = _positions
+                                            .where((p) => p.areaId.toString() == val)
+                                            .toList();
+                                        if (!availablePositions.any(
+                                            (p) => p.id?.toString() == _s5PositionId)) {
+                                          _s5PositionId = null;
+                                          _s5PositionName = null;
+                                        }
+                                      });
+                                    },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Cargo asignado *'),
+                            const SizedBox(height: 6),
+                            _buildDropdownField<String>(
+                              value: _s5PositionId,
+                              hint: _s5AreaId == null
+                                  ? 'Primero selecciona un área'
+                                  : 'Seleccionar cargo',
+                              items: _positions
+                                  .where((p) =>
+                                      _s5AreaId == null || p.areaId.toString() == _s5AreaId)
+                                  .map((p) => DropdownMenuItem(
+                                        value: p.id?.toString(),
+                                        child: Text(
+                                          '${p.name} (${p.workplaceType})',
+                                          style: GoogleFonts.inter(
+                                              fontSize: 12.5,
+                                              color: Colors.white),
+                                        ),
+                                      ))
+                                  .toList(),
+                              onChanged: (isComplete || _s5AreaId == null)
+                                  ? null
+                                  : (val) {
+                                      final pos = _positions
+                                          .firstWhere((p) => p.id?.toString() == val);
+                                      setState(() {
+                                        _s5PositionId = val;
+                                        _s5PositionName = pos.name;
+                                      });
+                                    },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 22),
+
+                  // ── Bloque B: Turno y horario ──
+                  Text(
+                    'BLOQUE B — TURNO Y HORARIO LABORAL',
+                    style: GoogleFonts.inter(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF94A3B8),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Turno de trabajo *'),
+                            const SizedBox(height: 6),
+                            _buildDropdownField<String>(
+                              value: _s5ShiftId,
+                              hint: 'Seleccionar turno',
+                              items: _shifts
+                                  .map((s) => DropdownMenuItem(
+                                        value: s.id.toString(),
+                                        child: Text(
+                                          '${s.name} (${s.formattedTimeRange}) · ${s.shiftType}',
+                                          style: GoogleFonts.inter(
+                                              fontSize: 12,
+                                              color: Colors.white),
+                                        ),
+                                      ))
+                                  .toList(),
+                              onChanged: isComplete
+                                  ? null
+                                  : (val) {
+                                      final shift = _shifts.firstWhere(
+                                          (s) => s.id.toString() == val);
+                                      setState(() {
+                                        _s5ShiftId = val;
+                                        _s5ShiftName =
+                                            '${shift.name} (${shift.formattedTimeRange})';
+                                      });
+                                    },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Horario base (opcional)'),
+                            const SizedBox(height: 6),
+                            _buildDropdownField<String?>(
+                              value: _s5ScheduleId,
+                              hint: '(Opcional) Usar turno como horario',
+                              items: [
+                                const DropdownMenuItem<String?>(
+                                  value: null,
+                                  child: Text(
+                                    '(Opcional) Usar horario base del turno',
+                                    style: TextStyle(
+                                        color: Color(0xFF94A3B8), fontSize: 12),
+                                  ),
+                                ),
+                                ..._schedules.map((sc) => DropdownMenuItem<String?>(
+                                      value: sc.id.toString(),
+                                      child: Text(
+                                        '${sc.name} (${sc.totalWeeklyHours.toStringAsFixed(0)}h/sem)',
+                                        style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            color: Colors.white),
+                                      ),
+                                    )),
+                              ],
+                              onChanged: isComplete
+                                  ? null
+                                  : (val) {
+                                      setState(() {
+                                        _s5ScheduleId = val;
+                                        _s5ScheduleName = val != null
+                                            ? _schedules
+                                                .firstWhere(
+                                                    (sc) => sc.id.toString() == val)
+                                                .name
+                                            : null;
+                                      });
+                                    },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 22),
+
+                  // ── Bloque C: Ubicación, supervisor y fecha de ingreso ──
+                  Text(
+                    'BLOQUE C — UBICACIÓN, SUPERVISOR Y FECHA DE INGRESO',
+                    style: GoogleFonts.inter(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF94A3B8),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  _buildFormLabel('Sede / Ubicación base *'),
+                  const SizedBox(height: 6),
+                  _buildTextField(
+                    controller: _s5BaseLocationCtrl,
+                    hint: 'Ej: Oficina Central Santa Cruz, Sede Norte, Cliente X',
+                    enabled: !isComplete,
+                  ),
+                  const SizedBox(height: 6),
+                  // Quick chips for base location
+                  if (!isComplete)
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: [
+                        'Oficina Central Santa Cruz',
+                        'Sede Norte',
+                        'Sucursal Montero',
+                        'Puesto Cliente - Campo',
+                      ].map((loc) {
+                        return InkWell(
+                          onTap: () => setState(
+                              () => _s5BaseLocationCtrl.text = loc),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1E293B),
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: const Color(0xFF334155)),
+                            ),
+                            child: Text(
+                              loc,
+                              style: GoogleFonts.inter(
+                                fontSize: 10.5,
+                                color: const Color(0xFF94A3B8),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  const SizedBox(height: 14),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormLabel('Supervisor directo (opcional)'),
+                            const SizedBox(height: 6),
+                            _buildDropdownField<String?>(
+                              value: _s5SupervisorId,
+                              hint: '(Sin supervisor directo)',
+                              items: [
+                                const DropdownMenuItem<String?>(
+                                  value: null,
+                                  child: Text(
+                                    '(Sin supervisor directo)',
+                                    style: TextStyle(
+                                        color: Color(0xFF94A3B8), fontSize: 12),
+                                  ),
+                                ),
+                                ..._supervisors.map((e) =>
+                                    DropdownMenuItem<String?>(
+                                      value: e.id.toString(),
+                                      child: Text(
+                                        '${e.fullName} (${e.position})',
+                                        style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            color: Colors.white),
+                                      ),
+                                    )),
+                              ],
+                              onChanged: isComplete
+                                  ? null
+                                  : (val) {
+                                      setState(() {
+                                        _s5SupervisorId = val;
+                                        _s5SupervisorName = val != null
+                                            ? _supervisors
+                                                .firstWhere((e) => e.id.toString() == val)
+                                                .fullName
+                                            : null;
+                                      });
+                                    },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: _buildDateField(
+                          context: context,
+                          label: 'Fecha de ingreso efectiva *',
+                          value: _s5EffectiveStartDate,
+                          enabled: !isComplete,
+                          firstDate: _s4StartDate ?? DateTime(2020),
+                          errorText: (_s5EffectiveStartDate != null &&
+                                  _s4StartDate != null &&
+                                  DateTime(
+                                    _s5EffectiveStartDate!.year,
+                                    _s5EffectiveStartDate!.month,
+                                    _s5EffectiveStartDate!.day,
+                                  ).isBefore(DateTime(
+                                    _s4StartDate!.year,
+                                    _s4StartDate!.month,
+                                    _s4StartDate!.day,
+                                  )))
+                              ? 'Debe ser posterior o igual a la fecha de contrato'
+                              : null,
+                          onDateSelected: (picked) {
+                            setState(() => _s5EffectiveStartDate = picked);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 22),
+
+                  // Action buttons
+                  if (!isComplete)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: _isSaving ? null : _saveSection5Draft,
+                          icon: const Icon(Icons.save_outlined, size: 14),
+                          label: Text('Guardar borrador',
+                              style: GoogleFonts.inter(fontSize: 12)),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF94A3B8),
+                            side: const BorderSide(color: Color(0xFF334155)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        ElevatedButton.icon(
+                          onPressed: (_isSaving || !_isSection5Valid)
+                              ? null
+                              : _completeSection5,
+                          icon: const Icon(Icons.check_circle_outline, size: 15),
+                          label: Text(
+                            'Marcar sección como completa',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF10B981),
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor: const Color(0xFF1E293B),
+                            disabledForegroundColor: const Color(0xFF475569),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '✅ Sección 5 completada y asignación formalizada.',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF10B981),
+                          ),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              _dossier = _dossier!.copyWith(
+                                section5Status: 'en_proceso',
+                              );
+                            });
+                          },
+                          icon: const Icon(Icons.edit_outlined, size: 13),
+                          label: Text('Modificar sección',
+                              style: GoogleFonts.inter(fontSize: 11.5)),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF38BDF8),
+                            side: const BorderSide(color: Color(0xFF1E293B)),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // ==========================================================================
+  // SHARED FORM BUILDERS
+  // ==========================================================================
+
+  Widget _buildDateField({
+    required BuildContext context,
+    required String label,
+    required DateTime? value,
+    required ValueChanged<DateTime> onDateSelected,
+    DateTime? firstDate,
+    DateTime? lastDate,
+    bool enabled = true,
+    String? hint,
+    String? errorText,
+  }) {
+    final formatted = value != null
+        ? '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}'
+        : (hint ?? 'Seleccionar fecha');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildFormLabel(label),
+        const SizedBox(height: 6),
+        InkWell(
+          onTap: enabled
+              ? () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: value ?? DateTime.now(),
+                    firstDate: firstDate ?? DateTime(2020),
+                    lastDate: lastDate ?? DateTime(2035),
+                    builder: (context, child) {
+                      return Theme(
+                        data: ThemeData.dark().copyWith(
+                          colorScheme: const ColorScheme.dark(
+                            primary: Color(0xFF2563EB),
+                            onPrimary: Colors.white,
+                            surface: Color(0xFF0F172A),
+                            onSurface: Color(0xFFF8FAFC),
+                          ),
+                          dialogTheme: const DialogThemeData(
+                            backgroundColor: Color(0xFF0F172A),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (picked != null) onDateSelected(picked);
+                }
+              : null,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+            decoration: BoxDecoration(
+              color: enabled ? const Color(0xFF111827) : const Color(0xFF0A0F1A),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: errorText != null
+                    ? const Color(0xFFEF4444)
+                    : const Color(0xFF1E293B),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_today_outlined,
+                  size: 15,
+                  color: value != null
+                      ? const Color(0xFF38BDF8)
+                      : const Color(0xFF64748B),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  formatted,
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    color: value != null
+                        ? const Color(0xFFF8FAFC)
+                        : const Color(0xFF475569),
+                  ),
+                ),
+                const Spacer(),
+                const Icon(
+                  Icons.expand_more,
+                  size: 16,
+                  color: Color(0xFF64748B),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (errorText != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 4, left: 4),
+            child: Text(
+              errorText,
+              style: GoogleFonts.inter(
+                fontSize: 10.5,
+                color: const Color(0xFFFCA5A5),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildFormLabel(String text) {
+    return Text(
+      text,
+      style: GoogleFonts.inter(
+        fontSize: 11.5,
+        fontWeight: FontWeight.w600,
+        color: const Color(0xFF94A3B8),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    bool enabled = true,
+    int maxLines = 1,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return TextField(
+      controller: controller,
+      enabled: enabled,
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      onChanged: (_) => setState(() {}),
+      style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFFF8FAFC)),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle:
+            GoogleFonts.inter(fontSize: 12, color: const Color(0xFF475569)),
+        filled: true,
+        fillColor: const Color(0xFF111827),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF1E293B)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF1E293B)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF2563EB)),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF1E293B)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdownField<T>({
+    required T? value,
+    required String hint,
+    required List<DropdownMenuItem<T>> items,
+    required ValueChanged<T?>? onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF111827),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFF1E293B)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<T>(
+          value: value,
+          hint: Text(hint,
+              style: GoogleFonts.inter(
+                  fontSize: 12, color: const Color(0xFF475569))),
+          isExpanded: true,
+          dropdownColor: const Color(0xFF0F172A),
+          icon: const Icon(Icons.expand_more, color: Color(0xFF64748B)),
+          items: items,
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderSection({
+    required int sectionNum,
+    required String title,
+    required String status,
+    required String phase,
+    required bool isDark,
+  }) {
+    final isExpanded = _expandedSections.contains(sectionNum);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () => _toggleSection(sectionNum),
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              child: Row(
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF334155).withValues(alpha: 0.3),
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '$sectionNum',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF94A3B8),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$sectionNum. $title',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? const Color(0xFFCBD5E1)
+                                : const Color(0xFF334155),
+                          ),
+                        ),
+                        Text(
+                          'Próximamente ($phase)',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildSectionStatusChip(status),
+                  const SizedBox(width: 12),
+                  Icon(
+                    isExpanded ? Icons.expand_less : Icons.expand_more,
+                    color: const Color(0xFF64748B),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (isExpanded) ...[
+            const Divider(height: 1, color: Color(0xFF1E293B)),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  const Icon(Icons.lock_clock_outlined,
+                      size: 32, color: Color(0xFF64748B)),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Sección $sectionNum — En Desarrollo ($phase)',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF94A3B8),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Esta sección se habilitará de forma progresiva en las siguientes fases del Expediente.',
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      color: const Color(0xFF64748B),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}

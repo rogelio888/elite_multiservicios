@@ -1,0 +1,17 @@
+### Bonificación asignada al colaborador (Contrato / Nómina).
+class: RrhhEmployeeBonus
+fields:
+  ### Código institucional del bono (ej: BONO-001).
+  code: String
+  ### Nombre o concepto del bono (ej: Bono de Antigüedad).
+  name: String
+  ### Tipo de bono: 'Fija mensual' | 'Por evento' | 'Variable'.
+  type: String
+  ### Monto en Bs o valor numérico.
+  amount: double?
+  ### Verdadero si el monto representa un porcentaje.
+  isPercentage: bool, default=false
+  ### Fecha desde la que aplica el bono.
+  applyFrom: DateTime?
+  ### Fecha hasta la que aplica el bono (opcional).
+  applyTo: DateTime?

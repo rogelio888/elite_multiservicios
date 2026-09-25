@@ -53,6 +53,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'rrhh-asistencia',
     'rrhh-reportes',
     'crm-catalogo',
+    'rrhh-catalogos',
   ];
 
   static int _indexFromRouteOrHash(String raw) {
@@ -98,6 +99,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         return 9;
 
       case 'rrhh-personal':
+      case 'rrhhpersonal':
       case 'rrhh-colaboradores':
       case 'colaboradores':
       case 'empleados':
@@ -110,6 +112,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 'reclutamiento':
       case 'rrhh-contratacion':
       case 'contratacion':
+      case 'rrhh-contrataciones':
+      case 'contrataciones':
+      case 'contrataciones-en-curso':
       case 'alta':
       case 'directorio':
         return 10;
@@ -157,6 +162,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 'auditoria-rrhh':
       case 'bitacora':
         return 14;
+
+      case 'rrhh-catalogos':
+      case 'catalogos-rrhh':
+      case 'catalogos':
+      case 'rrhh-catalogos-auxiliares':
+        return 16;
 
       case 'crm-catalogo':
       case 'catalogo':
@@ -209,7 +220,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       _isSecurityExpanded = true;
     } else if ((initialIndex >= 5 && initialIndex <= 8) || initialIndex == 15) {
       _isCrmExpanded = true;
-    } else if (initialIndex >= 9 && initialIndex <= 14) {
+    } else if ((initialIndex >= 9 && initialIndex <= 14) || initialIndex == 16) {
       _isRrhhExpanded = true;
     }
 
@@ -227,7 +238,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
             if ((newIndex >= 5 && newIndex <= 8) || newIndex == 15) {
               _isCrmExpanded = true;
             }
-            if (newIndex >= 9 && newIndex <= 14) _isRrhhExpanded = true;
+            if ((newIndex >= 9 && newIndex <= 14) || newIndex == 16) {
+              _isRrhhExpanded = true;
+            }
           });
           _loadSidebarMetrics();
         }
@@ -621,7 +634,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     final isAnySecurityActive = _selectedIndex >= 1 && _selectedIndex <= 4;
     final isAnyCrmActive =
         (_selectedIndex >= 5 && _selectedIndex <= 8) || _selectedIndex == 15;
-    final isAnyRrhhActive = _selectedIndex >= 9 && _selectedIndex <= 14;
+    final isAnyRrhhActive =
+        (_selectedIndex >= 9 && _selectedIndex <= 14) || _selectedIndex == 16;
 
     final rrhhItems = [
       (
@@ -670,6 +684,14 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         label: 'Reportes y Auditoría',
         badge: null,
         index: 14,
+        isSubItem: false,
+      ),
+      (
+        icon: Icons.menu_book_outlined,
+        selectedIcon: Icons.menu_book,
+        label: 'Catálogos',
+        badge: null,
+        index: 16,
         isSubItem: false,
       ),
     ];
@@ -745,6 +767,12 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         break;
       case 15:
         currentView = const CrmCatalogManagementView();
+        break;
+      case 16:
+        currentView = RrhhRoutes.buildTopLevelView(
+          RrhhRoutes.catalogos,
+          onNavigateToTab: _onTabSelected,
+        );
         break;
       default:
         currentView = const Center(child: Text('Vista no encontrada'));

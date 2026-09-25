@@ -1,4 +1,5 @@
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
+import '../../data/models/rrhh_applicant_companion.dart';
 
 import 'rrhh_hire_type_config.dart';
 
@@ -78,6 +79,7 @@ class RrhhHireFormState {
   /// Inicializa datos precargados si se abre desde Reclutamiento con un postulante.
   void initFromApplicant(
     RrhhApplicant applicant, {
+    RrhhApplicantCompanion? companion,
     List<RrhhArea>? availableAreas,
     List<RrhhPosition>? availablePositions,
     List<RrhhSpecialty>? availableSpecialties,
@@ -92,6 +94,26 @@ class RrhhHireFormState {
     employeeType = applicant.targetType.isNotEmpty ? applicant.targetType : 'CAMPO';
     applyTypeDefaults();
 
+    if (applicant.expectedSalary != null && applicant.expectedSalary! > 0) {
+      agreedSalary = applicant.expectedSalary!;
+    }
+
+    if (companion != null) {
+      hasCiCopy = companion.documents.hasCiCopy;
+      hasFelccRecord = companion.documents.hasFelcc;
+      hasUtilityBill = companion.documents.hasUtilityBill;
+      hasHomeSketch = companion.documents.hasHomeSketch;
+      hasPhoto3x4 = companion.documents.hasPhoto3x4;
+      hasSusInsurance = companion.documents.hasSus;
+
+      if (companion.evaluation.salaryExpectation != null && companion.evaluation.salaryExpectation! > 0) {
+        agreedSalary = companion.evaluation.salaryExpectation!;
+      }
+      if (companion.evaluation.experienceSummary != null && companion.evaluation.experienceSummary!.isNotEmpty) {
+        occupation = companion.evaluation.experienceSummary!;
+      }
+    }
+
     if (availableAreas != null && applicant.targetArea != null) {
       final match = availableAreas.where((a) => a.name == applicant.targetArea || a.id == applicant.areaId);
       if (match.isNotEmpty) selectedArea = match.first;
@@ -101,7 +123,7 @@ class RrhhHireFormState {
       final match = availablePositions.where((p) => p.name == applicant.targetPosition || p.id == applicant.positionId);
       if (match.isNotEmpty) {
         selectedPosition = match.first;
-        if (selectedPosition?.suggestedSalary != null) {
+        if (selectedPosition?.suggestedSalary != null && agreedSalary <= 0) {
           agreedSalary = selectedPosition!.suggestedSalary!;
         }
       }

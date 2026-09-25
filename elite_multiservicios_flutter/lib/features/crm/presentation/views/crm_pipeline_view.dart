@@ -7762,17 +7762,25 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
           );
           final stageCol = _getStageColor(stage);
 
-          return Container(
-            width: 310,
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF090D16) : const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isDark
-                    ? const Color(0xFF1E293B)
-                    : const Color(0xFFE2E8F0),
-              ),
-            ),
+          return DragTarget<OpportunityItem>(
+            onWillAcceptWithDetails: (details) => details.data.stage != stage,
+            onAcceptWithDetails: (details) => _requestMoveDeal(details.data, stage),
+            builder: (context, candidateData, rejectedData) {
+              final isTargetHovered = candidateData.isNotEmpty;
+              return Container(
+                width: 310,
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF090D16) : const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isTargetHovered
+                        ? stageCol
+                        : (isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFE2E8F0)),
+                    width: isTargetHovered ? 1.5 : 1,
+                  ),
+                ),
             child: Column(
               children: [
                 // Cabecera de la columna Kanban
@@ -7903,6 +7911,8 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
             ),
           );
         },
+      );
+        },
       ),
     );
   }
@@ -7952,11 +7962,7 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
     final serviceCol = _getServiceColor(deal.serviceType);
     final stageCol = _getStageColor(deal.stage);
     final curStageIdx = _stages.indexOf(deal.stage);
-
-    return InkWell(
-      onTap: () => _showDealDetailsDialog(deal),
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
+    final cardContent = Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF0F172A) : Colors.white,
@@ -8435,6 +8441,22 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
             ),
           ],
         ),
+      );
+
+    return Draggable<OpportunityItem>(
+      data: deal,
+      feedback: Material(
+        color: Colors.transparent,
+        child: SizedBox(
+          width: 290,
+          child: Opacity(opacity: 0.9, child: cardContent),
+        ),
+      ),
+      childWhenDragging: Opacity(opacity: 0.35, child: cardContent),
+      child: InkWell(
+        onTap: () => _showDealDetailsDialog(deal),
+        borderRadius: BorderRadius.circular(10),
+        child: cardContent,
       ),
     );
   }

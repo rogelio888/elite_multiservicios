@@ -1,9 +1,13 @@
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import '../models/crm_client_ref_dto.dart';
 import '../models/ops_attendance_summary_dto.dart';
+import '../models/rrhh_applicant_companion.dart';
 import '../models/rrhh_applicant_summary_dto.dart';
+import '../models/rrhh_catalog_item.dart';
 import '../models/rrhh_employee_summary_dto.dart';
+import '../models/rrhh_hiring_dossier.dart';
 import '../models/rrhh_payroll_export_dto.dart';
+import '../models/rrhh_shift.dart';
 import 'rrhh_mock_dataset.dart';
 import 'rrhh_repository.dart';
 
@@ -24,8 +28,13 @@ class RrhhRepositoryMock implements RrhhRepository {
   late List<RrhhPosition> _positions;
   late List<RrhhSpecialty> _specialties;
   late List<RrhhSchedule> _schedules;
+  late List<RrhhShift> _shifts;
+  late List<RrhhBaseSchedule> _baseSchedules;
+  late List<RrhhCatalogItem> _catalogItems;
   late List<RrhhEmployee> _employees;
   late List<RrhhApplicant> _applicants;
+  late Map<int, RrhhApplicantCompanion> _applicantCompanions;
+  late List<RrhhHiringDossier> _dossiers;
   late List<RrhhLeaveRequest> _leaves;
   late List<RrhhVacation> _vacations;
   late List<RrhhIncident> _incidents;
@@ -39,8 +48,12 @@ class RrhhRepositoryMock implements RrhhRepository {
     _positions = RrhhMockDataset.initialPositions();
     _specialties = RrhhMockDataset.initialSpecialties();
     _schedules = RrhhMockDataset.initialSchedules();
+    _shifts = RrhhMockDataset.initialShifts();
+    _baseSchedules = RrhhMockDataset.initialBaseSchedules();
+    _catalogItems = RrhhMockDataset.initialCatalogItems();
     _employees = RrhhMockDataset.initialEmployees();
     _applicants = RrhhMockDataset.initialApplicants();
+    _applicantCompanions = _buildInitialCompanions();
     _attendances = RrhhMockDataset.initialAttendance();
     _clientRefs = RrhhMockDataset.initialClientRefs();
     _leaves = RrhhMockDataset.initialLeaves();
@@ -48,6 +61,348 @@ class RrhhRepositoryMock implements RrhhRepository {
     _incidents = RrhhMockDataset.initialIncidents();
     _terminations = RrhhMockDataset.initialTerminations();
     _movements = RrhhMockDataset.initialMovements();
+    _dossiers = _buildInitialDossiers();
+  }
+
+  List<RrhhHiringDossier> _buildInitialDossiers() {
+    final list = <RrhhHiringDossier>[];
+    for (final a in _applicants) {
+      if (a.status == 'SELECCIONADO') {
+        final checklist = RrhhDossierDocument.defaultChecklistFor(
+          workplaceType: a.targetType,
+          targetPosition: a.targetPosition ?? 'Operario',
+        );
+        list.add(
+          RrhhHiringDossier(
+            id: list.length + 1,
+            applicantId: a.id ?? 0,
+            applicantCode: a.code,
+            applicantName: a.fullName,
+            applicantCi: a.identityCard,
+            applicantPhone: a.phone,
+            applicantEmail: a.email,
+            targetArea: a.targetArea ?? 'General',
+            targetPosition: a.targetPosition ?? 'Operario',
+            workplaceType: a.targetType,
+            applicationDate: a.applicationDate,
+            createdAt: a.createdAt,
+            status: 'abierto',
+            section1Status: 'pendiente',
+            documents: checklist,
+          ),
+        );
+      }
+    }
+    // ── Postulante extra de prueba con Secciones 2-3 ya completas ──
+    final extraId = list.length + 1;
+    final extraChecklist = RrhhDossierDocument.defaultChecklistFor(
+      workplaceType: 'OFICINA',
+      targetPosition: 'Analista Administrativo',
+    );
+    list.add(
+      RrhhHiringDossier(
+        id: extraId,
+        applicantId: 999,
+        applicantCode: 'POST-015',
+        applicantName: 'Carla Reyes Torrez',
+        applicantCi: '9123456 SC',
+        applicantPhone: '76543210',
+        applicantEmail: 'carla.reyes@gmail.com',
+        targetArea: 'Administración',
+        targetPosition: 'Analista Administrativo',
+        workplaceType: 'OFICINA',
+        applicationDate: DateTime(2026, 9, 10),
+        createdAt: DateTime(2026, 9, 15),
+        status: 'abierto',
+        section1Status: 'completa',
+        section2Status: 'completa',
+        section3Status: 'completa',
+        documents: extraChecklist,
+        afpId: 'AFP-001',
+        afpName: 'Gestora Pública de la Seguridad Social de Largo Plazo',
+        afpNumber: 'GP-9123456',
+        healthInsuranceId: 'SEGURO-001',
+        healthInsuranceName: 'Caja Nacional de Salud (CNS)',
+        section2Notes: 'Afiliación verificada el 15/09/2026',
+        fullAddress: 'Barrio Equipetrol, Av. San Martín #1540, Santa Cruz',
+        maritalStatus: 'Casado',
+        childrenCount: 2,
+        emergencyContactName: 'Roberto Reyes',
+        emergencyContactPhone: '71234567',
+        emergencyContactRelation: 'Padre',
+      ),
+    );
+
+    // ── Postulante de prueba con Secciones 1 a 5 ya completas (5/6 Listo para convertir) ──
+    final listoId = list.length + 1;
+    final listoChecklist = RrhhDossierDocument.defaultChecklistFor(
+      workplaceType: 'CAMPO',
+      targetPosition: 'Supervisor de Operaciones',
+    );
+    list.add(
+      RrhhHiringDossier(
+        id: listoId,
+        applicantId: 998,
+        applicantCode: 'POST-016',
+        applicantName: 'Daniela Morales Ramos',
+        applicantCi: '8345129 SC',
+        applicantPhone: '70012345',
+        applicantEmail: 'daniela.morales@gmail.com',
+        targetArea: 'Operaciones',
+        targetPosition: 'Supervisor de Operaciones',
+        workplaceType: 'CAMPO',
+        applicationDate: DateTime(2026, 9, 8),
+        createdAt: DateTime(2026, 9, 12),
+        status: 'abierto',
+        section1Status: 'completa',
+        section2Status: 'completa',
+        section3Status: 'completa',
+        section4Status: 'completa',
+        section5Status: 'completa',
+        documents: listoChecklist,
+        afpId: 'AFP-001',
+        afpName: 'Gestora Pública de la Seguridad Social de Largo Plazo',
+        afpNumber: 'GP-8345129',
+        healthInsuranceId: 'SEGURO-001',
+        healthInsuranceName: 'Caja Nacional de Salud (CNS)',
+        section2Notes: 'Afiliación verificada',
+        fullAddress: 'Av. Banzer 4to Anillo, Condominio Sevilla Real #45',
+        maritalStatus: 'Soltero',
+        childrenCount: 1,
+        emergencyContactName: 'Carlos Morales',
+        emergencyContactPhone: '72345678',
+        emergencyContactRelation: 'Hermano',
+        contractTypeId: 'CONT-IND',
+        contractTypeName: 'Indefinido',
+        workdayType: 'Completa',
+        paymentModalityId: 'MOD-MEN',
+        paymentModalityName: 'Mensual',
+        baseSalary: 4500.0,
+        currency: 'BOB',
+        contractStartDate: DateTime(2026, 10, 1),
+        bonuses: [
+          RrhhEmployeeBonus(
+            code: 'BONO-PUNTUALIDAD',
+            name: 'Bono de Puntualidad y Asistencia',
+            amount: 250.0,
+            type: 'MENSUAL',
+          ),
+          RrhhEmployeeBonus(
+            code: 'BONO-TRANSPORTE',
+            name: 'Bono de Transporte / Movilidad',
+            amount: 300.0,
+            type: 'MENSUAL',
+          ),
+        ],
+        deductions: [],
+        areaId: 'AREA-001',
+        areaName: 'Operaciones',
+        positionId: 'POS-002',
+        positionName: 'Supervisor de Operaciones',
+        shiftId: 'T-01',
+        shiftName: 'Turno Mañana (07:00 - 15:00)',
+        scheduleId: 'SCH-01',
+        scheduleName: 'Lunes a Viernes',
+        baseLocation: 'Puesto Campo / Clientes',
+        supervisorEmployeeId: 'EMP-001',
+        supervisorName: 'Lic. Laura Mendoza (Jefatura RRHH)',
+        effectiveStartDate: DateTime(2026, 10, 1),
+      ),
+    );
+    return list;
+  }
+
+  Map<int, RrhhApplicantCompanion> _buildInitialCompanions() {
+    final now = DateTime(2026, 9, 24);
+    return {
+      // POST-012: NUEVO (CAMPO)
+      12: RrhhApplicantCompanion(
+        applicantId: 12,
+        history: [
+          RrhhStatusHistoryEntry(
+            fromStatus: 'REGISTRO',
+            toStatus: 'NUEVO',
+            timestamp: now.subtract(const Duration(days: 1)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Postulación recibida en recepción',
+          ),
+        ],
+      ),
+      // POST-016: EN_REVISION (CAMPO)
+      16: RrhhApplicantCompanion(
+        applicantId: 16,
+        history: [
+          RrhhStatusHistoryEntry(
+            fromStatus: 'REGISTRO',
+            toStatus: 'NUEVO',
+            timestamp: now.subtract(const Duration(days: 3)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Postulación en línea',
+          ),
+          RrhhStatusHistoryEntry(
+            fromStatus: 'NUEVO',
+            toStatus: 'EN_REVISION',
+            timestamp: now.subtract(const Duration(days: 2)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Pasa a validación de antecedentes y libreta militar',
+          ),
+        ],
+      ),
+      // POST-015: ENTREVISTA (OFICINA)
+      15: RrhhApplicantCompanion(
+        applicantId: 15,
+        evaluation: const RrhhApplicantEvaluation(
+          educationLevel: 'Licenciatura',
+          professionalTitle: 'Lic. en Administración de Empresas',
+          experienceSummary: '3 años como asistente contable y compras',
+          technicalSkills: ['Excel Avanzado', 'ERP', 'Facturación SIAT', 'Redacción'],
+          personalReferenceName: 'Lic. Mariana Soto',
+          personalReferencePhone: '73344556',
+          workReferenceName: 'Lic. Carlos Quiroga',
+          workReferencePhone: '71122334',
+          salaryExpectation: 3500.0,
+        ),
+        interviewRecord: RrhhInterviewRecord(
+          dateTime: now.subtract(const Duration(hours: 4)),
+          interviewers: ['Encargada de RRHH', 'Dueño'],
+          modality: 'Presencial',
+          notes: 'Manejo impecable de SIAT y conciliaciones bancarias.',
+          result: 'Apto',
+        ),
+        history: [
+          RrhhStatusHistoryEntry(
+            fromStatus: 'REGISTRO',
+            toStatus: 'NUEVO',
+            timestamp: now.subtract(const Duration(days: 4)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Recepción de CV',
+          ),
+          RrhhStatusHistoryEntry(
+            fromStatus: 'NUEVO',
+            toStatus: 'EN_REVISION',
+            timestamp: now.subtract(const Duration(days: 3)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Requisitos académicos verificados',
+          ),
+          RrhhStatusHistoryEntry(
+            fromStatus: 'EN_REVISION',
+            toStatus: 'ENTREVISTA',
+            timestamp: now.subtract(const Duration(days: 1)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Convocada a entrevista presencial',
+          ),
+        ],
+      ),
+      // POST-017: PRUEBAS (CAMPO)
+      17: RrhhApplicantCompanion(
+        applicantId: 17,
+        evaluation: const RrhhApplicantEvaluation(
+          education: 'Técnico Medio Industrial',
+          experienceSummary: '4 años en fábricas y plantas agroindustriales',
+          technicalSkills: ['Hidrolavadoras', 'Trabajo en altura', 'Químicos de planta'],
+          personalReferenceName: 'Ing. Mateo Vargas',
+          personalReferencePhone: '74455667',
+          workReferenceName: 'Lic. Roberto Paz',
+          workReferencePhone: '78899001',
+          rotatingShiftsAvailable: true,
+          clientBranchesAvailable: true,
+          physicalFitnessDeclared: true,
+        ),
+        interviewRecord: RrhhInterviewRecord(
+          dateTime: now.subtract(const Duration(days: 2)),
+          interviewers: ['Encargada de RRHH'],
+          modality: 'Presencial',
+          notes: 'Experiencia operativa comprobada. Se deriva a prueba técnica de maquinaria.',
+          result: 'Apto',
+        ),
+        documents: const RrhhApplicantDocumentsChecklist(
+          hasCiCopy: true,
+          hasUtilityBill: true,
+          hasHomeSketch: true,
+          hasPhoto3x4: true,
+          hasSus: false,
+          hasFelcc: true,
+        ),
+        history: [
+          RrhhStatusHistoryEntry(
+            fromStatus: 'EN_REVISION',
+            toStatus: 'ENTREVISTA',
+            timestamp: now.subtract(const Duration(days: 3)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Perfil operativo calificado',
+          ),
+          RrhhStatusHistoryEntry(
+            fromStatus: 'ENTREVISTA',
+            toStatus: 'PRUEBAS',
+            timestamp: now.subtract(const Duration(days: 1)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Aprobó entrevista. Derivado a prueba de hidrolavado.',
+          ),
+        ],
+      ),
+      // POST-014: SELECCIONADO (CAMPO) - Listo para contratación
+      14: RrhhApplicantCompanion(
+        applicantId: 14,
+        evaluation: const RrhhApplicantEvaluation(
+          education: 'Bachiller - Libreta Militar',
+          experienceSummary: '3 años en custodia corporativa en Torre Duo y Manzana 40',
+          technicalSkills: ['Defensa personal', 'Primeros auxilios', 'Libro de novedades'],
+          personalReferenceName: 'Rosa Soto (Madre)',
+          personalReferencePhone: '79900112',
+          workReferenceName: 'Cap. Jorge Roca',
+          workReferencePhone: '72233445',
+          rotatingShiftsAvailable: true,
+          clientBranchesAvailable: true,
+          drivingLicense: 'Cat. A (Motocicleta)',
+          physicalFitnessDeclared: true,
+        ),
+        interviewRecord: RrhhInterviewRecord(
+          dateTime: now.subtract(const Duration(days: 5)),
+          interviewers: ['Dueño', 'Encargada de RRHH'],
+          modality: 'Presencial',
+          notes: 'Excelente porte y disciplina. Referencias laborales impecables.',
+          result: 'Apto',
+        ),
+        documents: const RrhhApplicantDocumentsChecklist(
+          hasCiCopy: true,
+          hasUtilityBill: true,
+          hasHomeSketch: true,
+          hasPhoto3x4: true,
+          hasSus: true,
+          hasFelcc: true,
+        ),
+        history: [
+          RrhhStatusHistoryEntry(
+            fromStatus: 'ENTREVISTA',
+            toStatus: 'PRUEBAS',
+            timestamp: now.subtract(const Duration(days: 4)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Prueba de reflejos y tiro superada',
+          ),
+          RrhhStatusHistoryEntry(
+            fromStatus: 'PRUEBAS',
+            toStatus: 'SELECCIONADO',
+            timestamp: now.subtract(const Duration(days: 2)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Aprobado por Gerencia. Documentación completa. Listo para contratar.',
+          ),
+        ],
+      ),
+      // POST-010: RECHAZADO
+      10: RrhhApplicantCompanion(
+        applicantId: 10,
+        isEligibleForRehire: true,
+        history: [
+          RrhhStatusHistoryEntry(
+            fromStatus: 'EN_REVISION',
+            toStatus: 'RECHAZADO',
+            timestamp: now.subtract(const Duration(days: 7)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'No presentó certificado de antecedentes FELCC dentro del plazo establecido.',
+          ),
+        ],
+      ),
+    };
   }
 
   // ---------------------------------------------------------------------------
@@ -254,6 +609,149 @@ class RrhhRepositoryMock implements RrhhRepository {
   }
 
   // ---------------------------------------------------------------------------
+  // FASE B: Actualizaciones de secciones del Expediente de Contratación
+  // ---------------------------------------------------------------------------
+  @override
+  Future<RrhhEmployee> updateEmployeeBankInfo(
+    int id, {
+    String? bankName,
+    String? accountType,
+    String? accountNumber,
+  }) async {
+    final emp = await getEmployeeById(id);
+    final updated = emp.copyWith(
+      bankName: bankName,
+      accountType: accountType,
+      accountNumber: accountNumber,
+    );
+    return updateEmployee(updated);
+  }
+
+  @override
+  Future<RrhhEmployee> updateEmployeeSocialSecurity(
+    int id, {
+    String? afpName,
+    String? afpNumber,
+    String? healthInsurance,
+  }) async {
+    final emp = await getEmployeeById(id);
+    final updated = emp.copyWith(
+      afpName: afpName,
+      afpNumber: afpNumber,
+      healthInsurance: healthInsurance,
+    );
+    return updateEmployee(updated);
+  }
+
+  @override
+  Future<RrhhEmployee> updateEmployeePersonalInfo(
+    int id, {
+    String? fullAddress,
+    String? maritalStatus,
+    int? childrenCount,
+    String? emergencyContactName,
+    String? emergencyContactPhone,
+    String? emergencyContactRelation,
+  }) async {
+    final emp = await getEmployeeById(id);
+    final updated = emp.copyWith(
+      fullAddress: fullAddress,
+      maritalStatus: maritalStatus,
+      childrenCount: childrenCount,
+      emergencyContactName: emergencyContactName,
+      emergencyContactPhone: emergencyContactPhone,
+      emergencyContactRelation: emergencyContactRelation,
+    );
+    return updateEmployee(updated);
+  }
+
+  @override
+  Future<RrhhEmployee> updateEmployeeContract(
+    int id, {
+    String? contractType,
+    String? paymentModality,
+    String? workdayType,
+    DateTime? contractStartDate,
+    DateTime? contractEndDate,
+    String? contractSignedPdfUrl,
+  }) async {
+    final emp = await getEmployeeById(id);
+    final updated = emp.copyWith(
+      contractType: contractType ?? emp.contractType,
+      paymentModality: paymentModality ?? emp.paymentModality,
+      workdayType: workdayType,
+      contractStartDate: contractStartDate,
+      contractEndDate: contractEndDate,
+      contractSignedPdfUrl: contractSignedPdfUrl,
+    );
+    return updateEmployee(updated);
+  }
+
+  @override
+  Future<RrhhEmployee> updateEmployeeBonuses(
+    int id,
+    List<RrhhEmployeeBonus> bonuses,
+  ) async {
+    final emp = await getEmployeeById(id);
+    final updated = emp.copyWith(bonuses: bonuses);
+    return updateEmployee(updated);
+  }
+
+  @override
+  Future<RrhhEmployee> updateEmployeeDeductions(
+    int id,
+    List<RrhhEmployeeDeduction> deductions,
+  ) async {
+    final emp = await getEmployeeById(id);
+    final updated = emp.copyWith(deductions: deductions);
+    return updateEmployee(updated);
+  }
+
+  @override
+  Future<RrhhEmployee> updateEmployeeAssignment(
+    int id, {
+    String? shiftId,
+    String? baseLocation,
+    String? supervisorEmployeeId,
+  }) async {
+    final emp = await getEmployeeById(id);
+    final updated = emp.copyWith(
+      shiftId: shiftId,
+      baseLocation: baseLocation,
+      supervisorEmployeeId: supervisorEmployeeId,
+    );
+    return updateEmployee(updated);
+  }
+
+  @override
+  Future<RrhhEmployee> updateEmployeeDocuments(
+    int id,
+    Map<String, String> documentChecklist,
+  ) async {
+    final emp = await getEmployeeById(id);
+    final updated = emp.copyWith(documentChecklist: documentChecklist);
+    return updateEmployee(updated);
+  }
+
+  @override
+  Future<RrhhEmployeeContractData> getEmployeeContractData(int id) async {
+    final emp = await getEmployeeById(id);
+    return RrhhEmployeeContractData(
+      employeeId: emp.id ?? id,
+      code: emp.code,
+      fullName: emp.fullName,
+      status: emp.status,
+      contractType: emp.contractType,
+      baseSalary: emp.agreedSalary,
+      paymentModality: emp.paymentModality,
+      bonuses: emp.bonuses,
+      deductions: emp.deductions,
+      contractStartDate: emp.contractStartDate ?? emp.realStartDate,
+      terminationDate: emp.exitDate,
+    );
+  }
+
+  // ---------------------------------------------------------------------------
   // PANTALLA 04: Reclutamiento & Postulantes
   // ---------------------------------------------------------------------------
   @override
@@ -261,6 +759,9 @@ class RrhhRepositoryMock implements RrhhRepository {
     var filtered = _applicants.where((a) {
       if (status != null && status.isNotEmpty && status.toUpperCase() != 'TODOS') {
         if (a.status.toUpperCase() != status.toUpperCase()) return false;
+      } else {
+        // Por defecto, en la vista principal o TODOS, no mostrar los ya CONTRATADOS
+        if (a.status == 'CONTRATADO') return false;
       }
       if (search != null && search.trim().isNotEmpty) {
         final q = search.trim().toLowerCase();
@@ -290,27 +791,368 @@ class RrhhRepositoryMock implements RrhhRepository {
   }
 
   @override
-  Future<RrhhApplicant> createApplicant(RrhhApplicant applicant) async {
-    final nextId = _applicants.length + 10;
-    final created = applicant.copyWith(id: nextId, code: 'POST-${nextId.toString().padLeft(3, '0')}');
+  Future<RrhhApplicantCompanion> getApplicantCompanion(int applicantId) async {
+    return _applicantCompanions.putIfAbsent(
+      applicantId,
+      () => RrhhApplicantCompanion(
+        applicantId: applicantId,
+        history: [
+          RrhhStatusHistoryEntry(
+            fromStatus: 'INICIO',
+            toStatus: _applicants.firstWhere((a) => a.id == applicantId, orElse: () => _applicants.first).status,
+            timestamp: DateTime.now().subtract(const Duration(days: 1)),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Registro inicial de postulación',
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Future<void> saveApplicantCompanion(int applicantId, RrhhApplicantCompanion companion) async {
+    _applicantCompanions[applicantId] = companion;
+  }
+
+  @override
+  Future<List<RrhhApplicant>> findApplicantsByCi(String identityCard) async {
+    final cleanInput = identityCard.trim().toLowerCase().replaceAll(RegExp(r'\s+'), '');
+    if (cleanInput.isEmpty) return [];
+    return _applicants.where((a) {
+      final existing = a.identityCard.trim().toLowerCase().replaceAll(RegExp(r'\s+'), '');
+      return existing == cleanInput || existing.startsWith(cleanInput) || cleanInput.startsWith(existing);
+    }).toList();
+  }
+
+  @override
+  Future<RrhhApplicant> createApplicant(
+    RrhhApplicant applicant, {
+    RrhhApplicantCompanion? companion,
+  }) async {
+    final nextId = _applicants.length + 20;
+    final created = applicant.copyWith(
+      id: nextId,
+      code: 'POST-${nextId.toString().padLeft(3, '0')}',
+      status: 'NUEVO',
+    );
     _applicants.insert(0, created);
+
+    final comp = (companion ?? RrhhApplicantCompanion(applicantId: nextId)).copyWith(
+      applicantId: nextId,
+      history: [
+        RrhhStatusHistoryEntry(
+          fromStatus: 'REGISTRO',
+          toStatus: 'NUEVO',
+          timestamp: DateTime.now(),
+          author: 'Lic. Laura Mendoza',
+          notes: 'Postulante registrado en Fase 1',
+        ),
+      ],
+    );
+    _applicantCompanions[nextId] = comp;
     return created;
   }
 
   @override
-  Future<RrhhApplicant> updateApplicantStatus(int applicantId, String newStatus, {String? notes}) async {
+  Future<RrhhApplicant> updateApplicantStatus(
+    int applicantId,
+    String newStatus, {
+    String? notes,
+    String? discardReason,
+    bool? isEligibleForRehire,
+  }) async {
     final index = _applicants.indexWhere((a) => a.id == applicantId);
     if (index != -1) {
-      final updated = _applicants[index].copyWith(status: newStatus, interviewNotes: notes ?? _applicants[index].interviewNotes);
+      final old = _applicants[index];
+      final updated = old.copyWith(
+        status: newStatus,
+        interviewNotes: notes ?? old.interviewNotes,
+        discardReason: discardReason ?? old.discardReason,
+      );
       _applicants[index] = updated;
+
+      // Actualizar trazabilidad en el companion
+      final currentComp = await getApplicantCompanion(applicantId);
+      final newHistory = List<RrhhStatusHistoryEntry>.from(currentComp.history)
+        ..add(RrhhStatusHistoryEntry(
+          fromStatus: old.status,
+          toStatus: newStatus,
+          timestamp: DateTime.now(),
+          author: 'Lic. Laura Mendoza',
+          notes: discardReason ?? notes ?? 'Transición de etapa',
+        ));
+      _applicantCompanions[applicantId] = currentComp.copyWith(
+        history: newHistory,
+        isEligibleForRehire: isEligibleForRehire ?? currentComp.isEligibleForRehire,
+      );
+
+      if (newStatus == 'SELECCIONADO') {
+        await createDossierForApplicant(applicantId);
+      }
+
       return updated;
     }
     throw StateError('Postulante no encontrado');
   }
 
+  @override
+  Future<void> addInterviewRecord(
+    int applicantId,
+    RrhhInterviewRecord record,
+  ) async {
+    final currentComp = await getApplicantCompanion(applicantId);
+    _applicantCompanions[applicantId] = currentComp.copyWith(
+      interviewRecord: record,
+    );
+    final index = _applicants.indexWhere((a) => a.id == applicantId);
+    if (index != -1) {
+      _applicants[index] = _applicants[index].copyWith(
+        interviewNotes: 'Entrevista (${record.modality}) [${record.result}]: ${record.notes}',
+      );
+    }
+  }
+
   // ---------------------------------------------------------------------------
-  // PANTALLA 05: Contratación Formal (Wizard)
+  // PANTALLA 05: Contratación Formal & Expedientes de Contratación (FASE C)
   // ---------------------------------------------------------------------------
+  @override
+  Future<List<RrhhHiringDossier>> listActiveDossiers() async {
+    return _dossiers.where((d) => d.status != 'cerrado').toList();
+  }
+
+  @override
+  Future<RrhhHiringDossier?> getDossierByApplicantId(int applicantId) async {
+    try {
+      return _dossiers.firstWhere((d) => d.applicantId == applicantId);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<RrhhHiringDossier?> getDossierById(int id) async {
+    try {
+      return _dossiers.firstWhere((d) => d.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<RrhhHiringDossier> createDossierForApplicant(int applicantId) async {
+    final existing = await getDossierByApplicantId(applicantId);
+    if (existing != null) return existing;
+
+    final applicant = await getApplicantById(applicantId);
+    final nextId = _dossiers.isEmpty
+        ? 1
+        : (_dossiers.map((d) => d.id).reduce((a, b) => a > b ? a : b) + 1);
+
+    final checklist = RrhhDossierDocument.defaultChecklistFor(
+      workplaceType: applicant.targetType,
+      targetPosition: applicant.targetPosition ?? 'Operario',
+    );
+
+    final dossier = RrhhHiringDossier(
+      id: nextId,
+      applicantId: applicant.id ?? applicantId,
+      applicantCode: applicant.code,
+      applicantName: applicant.fullName,
+      applicantCi: applicant.identityCard,
+      applicantPhone: applicant.phone,
+      applicantEmail: applicant.email,
+      targetArea: applicant.targetArea ?? 'General',
+      targetPosition: applicant.targetPosition ?? 'Operario',
+      workplaceType: applicant.targetType,
+      applicationDate: applicant.applicationDate,
+      createdAt: DateTime.now(),
+      status: 'abierto',
+      section1Status: 'pendiente',
+      documents: checklist,
+    );
+
+    _dossiers.insert(0, dossier);
+
+    final currentComp = await getApplicantCompanion(applicantId);
+    final newHistory = List<RrhhStatusHistoryEntry>.from(currentComp.history)
+      ..add(RrhhStatusHistoryEntry(
+        fromStatus: applicant.status,
+        toStatus: 'SELECCIONADO',
+        timestamp: DateTime.now(),
+        author: 'Sistema RRHH',
+        notes: 'Expediente de contratación creado',
+      ));
+    _applicantCompanions[applicantId] = currentComp.copyWith(history: newHistory);
+
+    return dossier;
+  }
+
+  @override
+  Future<RrhhHiringDossier> updateDossierSection1(
+    int id,
+    Map<String, RrhhDossierDocument> documents,
+  ) async {
+    final index = _dossiers.indexWhere((d) => d.id == id);
+    if (index == -1) throw StateError('Expediente no encontrado');
+
+    final current = _dossiers[index];
+    final requiredDocs = documents.values.where((d) => d.isRequired);
+    final allRequiredOk = requiredDocs.isNotEmpty &&
+        requiredDocs.every((d) => d.status == 'validado');
+    final hasAnyProgress =
+        documents.values.any((d) => d.status != 'pendiente');
+
+    final String sec1Status = allRequiredOk
+        ? 'completa'
+        : (hasAnyProgress ? 'en_proceso' : 'pendiente');
+
+    final updated = current.copyWith(
+      documents: documents,
+      section1Status: sec1Status,
+    );
+    _dossiers[index] = updated;
+    return updated;
+  }
+
+  @override
+  Future<RrhhHiringDossier> updateDossierSection2(
+    int id, {
+    String? afpId,
+    String? afpName,
+    String? afpNumber,
+    String? healthInsuranceId,
+    String? healthInsuranceName,
+    String? section2Notes,
+    required String sectionStatus,
+  }) async {
+    final index = _dossiers.indexWhere((d) => d.id == id);
+    if (index == -1) throw StateError('Expediente no encontrado');
+
+    final updated = _dossiers[index].copyWith(
+      afpId: afpId,
+      afpName: afpName,
+      afpNumber: afpNumber,
+      healthInsuranceId: healthInsuranceId,
+      healthInsuranceName: healthInsuranceName,
+      section2Notes: section2Notes,
+      section2Status: sectionStatus,
+    );
+    _dossiers[index] = updated;
+    return updated;
+  }
+
+  @override
+  Future<RrhhHiringDossier> updateDossierSection3(
+    int id, {
+    String? fullAddress,
+    String? maritalStatus,
+    int? childrenCount,
+    String? emergencyContactName,
+    String? emergencyContactPhone,
+    String? emergencyContactRelation,
+    required String sectionStatus,
+  }) async {
+    final index = _dossiers.indexWhere((d) => d.id == id);
+    if (index == -1) throw StateError('Expediente no encontrado');
+
+    final updated = _dossiers[index].copyWith(
+      fullAddress: fullAddress,
+      maritalStatus: maritalStatus,
+      childrenCount: childrenCount,
+      emergencyContactName: emergencyContactName,
+      emergencyContactPhone: emergencyContactPhone,
+      emergencyContactRelation: emergencyContactRelation,
+      section3Status: sectionStatus,
+    );
+    _dossiers[index] = updated;
+    return updated;
+  }
+
+  @override
+  Future<RrhhHiringDossier> updateDossierSection4(
+    int id, {
+    String? contractTypeId,
+    String? contractTypeName,
+    String? workdayType,
+    String? paymentModalityId,
+    String? paymentModalityName,
+    double? baseSalary,
+    String? currency,
+    DateTime? contractStartDate,
+    DateTime? contractEndDate,
+    List<RrhhEmployeeBonus>? bonuses,
+    List<RrhhEmployeeDeduction>? deductions,
+    required String sectionStatus,
+  }) async {
+    final index = _dossiers.indexWhere((d) => d.id == id);
+    if (index == -1) throw StateError('Expediente no encontrado');
+
+    final updated = _dossiers[index].copyWith(
+      contractTypeId: contractTypeId,
+      contractTypeName: contractTypeName,
+      workdayType: workdayType,
+      paymentModalityId: paymentModalityId,
+      paymentModalityName: paymentModalityName,
+      baseSalary: baseSalary,
+      currency: currency,
+      contractStartDate: contractStartDate,
+      contractEndDate: contractEndDate,
+      bonuses: bonuses,
+      deductions: deductions,
+      section4Status: sectionStatus,
+    );
+    _dossiers[index] = updated;
+    return updated;
+  }
+
+  @override
+  Future<RrhhHiringDossier> updateDossierSection5(
+    int id, {
+    String? areaId,
+    String? areaName,
+    String? positionId,
+    String? positionName,
+    String? shiftId,
+    String? shiftName,
+    String? scheduleId,
+    String? scheduleName,
+    String? baseLocation,
+    String? supervisorEmployeeId,
+    String? supervisorName,
+    DateTime? effectiveStartDate,
+    required String sectionStatus,
+  }) async {
+    final index = _dossiers.indexWhere((d) => d.id == id);
+    if (index == -1) throw StateError('Expediente no encontrado');
+
+    final updated = _dossiers[index].copyWith(
+      areaId: areaId,
+      areaName: areaName,
+      positionId: positionId,
+      positionName: positionName,
+      shiftId: shiftId,
+      shiftName: shiftName,
+      scheduleId: scheduleId,
+      scheduleName: scheduleName,
+      baseLocation: baseLocation,
+      supervisorEmployeeId: supervisorEmployeeId,
+      supervisorName: supervisorName,
+      effectiveStartDate: effectiveStartDate,
+      section5Status: sectionStatus,
+    );
+    _dossiers[index] = updated;
+    return updated;
+  }
+
+  @override
+  Future<RrhhHiringDossier> updateDossierStatus(int id, String status) async {
+    final index = _dossiers.indexWhere((d) => d.id == id);
+    if (index == -1) throw StateError('Expediente no encontrado');
+    final updated = _dossiers[index].copyWith(status: status);
+    _dossiers[index] = updated;
+    return updated;
+  }
+
   @override
   Future<RrhhEmployee> hireApplicant({required int? applicantId, required RrhhEmployee employeeData}) async {
     final nextId = _employees.length + 1;
@@ -330,6 +1172,16 @@ class RrhhRepositoryMock implements RrhhRepository {
       final appIdx = _applicants.indexWhere((a) => a.id == applicantId);
       if (appIdx != -1) {
         _applicants[appIdx] = _applicants[appIdx].copyWith(status: 'CONTRATADO');
+        final currentComp = await getApplicantCompanion(applicantId);
+        final newHistory = List<RrhhStatusHistoryEntry>.from(currentComp.history)
+          ..add(RrhhStatusHistoryEntry(
+            fromStatus: 'SELECCIONADO',
+            toStatus: 'CONTRATADO',
+            timestamp: DateTime.now(),
+            author: 'Lic. Laura Mendoza',
+            notes: 'Contratación formal concluida: asignado código $code',
+          ));
+        _applicantCompanions[applicantId] = currentComp.copyWith(history: newHistory);
       }
     }
     _movements.insert(0, RrhhMovementHistory(
@@ -397,6 +1249,38 @@ class RrhhRepositoryMock implements RrhhRepository {
   }
 
   @override
+  Future<List<RrhhShift>> listShifts() async => _shifts;
+  @override
+  Future<RrhhShift> createShift(RrhhShift shift) async {
+    final nextId = _shifts.isEmpty ? 1 : (_shifts.map((s) => s.id).reduce((a, b) => a > b ? a : b) + 1);
+    final c = shift.copyWith(id: nextId);
+    _shifts.add(c);
+    return c;
+  }
+  @override
+  Future<RrhhShift> updateShift(RrhhShift shift) async {
+    final idx = _shifts.indexWhere((s) => s.id == shift.id);
+    if (idx != -1) _shifts[idx] = shift;
+    return shift;
+  }
+
+  @override
+  Future<List<RrhhBaseSchedule>> listBaseSchedules() async => _baseSchedules;
+  @override
+  Future<RrhhBaseSchedule> createBaseSchedule(RrhhBaseSchedule schedule) async {
+    final nextId = _baseSchedules.isEmpty ? 1 : (_baseSchedules.map((s) => s.id).reduce((a, b) => a > b ? a : b) + 1);
+    final c = schedule.copyWith(id: nextId);
+    _baseSchedules.add(c);
+    return c;
+  }
+  @override
+  Future<RrhhBaseSchedule> updateBaseSchedule(RrhhBaseSchedule schedule) async {
+    final idx = _baseSchedules.indexWhere((s) => s.id == schedule.id);
+    if (idx != -1) _baseSchedules[idx] = schedule;
+    return schedule;
+  }
+
+  @override
   Future<List<RrhhSchedule>> listSchedules() async => _schedules;
   @override
   Future<RrhhSchedule> createSchedule(RrhhSchedule schedule) async {
@@ -409,6 +1293,24 @@ class RrhhRepositoryMock implements RrhhRepository {
     final idx = _schedules.indexWhere((s) => s.id == schedule.id);
     if (idx != -1) _schedules[idx] = schedule;
     return schedule;
+  }
+
+  @override
+  Future<List<RrhhCatalogItem>> listCatalogItems(RrhhCatalogType type) async {
+    return _catalogItems.where((c) => c.catalogType == type).toList();
+  }
+  @override
+  Future<RrhhCatalogItem> createCatalogItem(RrhhCatalogItem item) async {
+    final nextId = _catalogItems.isEmpty ? 1 : (_catalogItems.map((c) => c.id).reduce((a, b) => a > b ? a : b) + 1);
+    final c = item.copyWith(id: nextId);
+    _catalogItems.add(c);
+    return c;
+  }
+  @override
+  Future<RrhhCatalogItem> updateCatalogItem(RrhhCatalogItem item) async {
+    final idx = _catalogItems.indexWhere((c) => c.id == item.id);
+    if (idx != -1) _catalogItems[idx] = item;
+    return item;
   }
 
   // ---------------------------------------------------------------------------
