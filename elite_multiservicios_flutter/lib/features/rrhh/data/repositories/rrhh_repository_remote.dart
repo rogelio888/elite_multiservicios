@@ -306,6 +306,11 @@ class RrhhRepositoryRemote implements RrhhRepository {
   }
 
   @override
+  Future<RrhhEmployee> convertDossierToEmployee(int dossierId, {String? notes}) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
   Future<RrhhEmployee> hireApplicant({
     required int? applicantId,
     required RrhhEmployee employeeData,

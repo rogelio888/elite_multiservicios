@@ -64,8 +64,7 @@ void main() {
       expect(find.text('3. Datos Personales Complementarios y Contacto de Emergencia'), findsOneWidget);
       expect(find.text('4. Condiciones Contractuales y Modalidad de Pago'), findsOneWidget);
       expect(find.text('5. Asignación Organizacional, Turno y Sede Base'), findsOneWidget);
-      expect(find.text('6. Emisión del Contrato Legal y Handoff a Nómina'), findsOneWidget);
-      expect(find.text('Próximamente (FASE C4)'), findsOneWidget);
+      expect(find.text('6. Revisión y Cierre del Expediente'), findsOneWidget);
 
       // Botón volver
       final backButton = find.widgetWithText(OutlinedButton, 'Volver a Contrataciones en Curso');

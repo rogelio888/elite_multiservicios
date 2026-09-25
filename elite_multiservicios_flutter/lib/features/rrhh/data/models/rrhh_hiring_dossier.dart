@@ -287,6 +287,9 @@ class RrhhHiringDossier {
   final String? supervisorEmployeeId;
   final String? supervisorName;
   final DateTime? effectiveStartDate;
+  final String? convertedEmployeeCode;
+  final int? convertedEmployeeId;
+  final String? closingNotes;
 
   const RrhhHiringDossier({
     required this.id,
@@ -345,6 +348,9 @@ class RrhhHiringDossier {
     this.supervisorEmployeeId,
     this.supervisorName,
     this.effectiveStartDate,
+    this.convertedEmployeeCode,
+    this.convertedEmployeeId,
+    this.closingNotes,
   });
 
   /// Número de secciones completas (0 a 6)
@@ -379,8 +385,20 @@ class RrhhHiringDossier {
   int get totalRequiredDocsCount =>
       documents.values.where((d) => d.isRequired).length;
 
+  /// ¿Están las primeras 5 secciones listas para formalizar la conversión a empleado?
+  bool get isReadyForEmployeeCreation =>
+      section1Status == 'completa' &&
+      section2Status == 'completa' &&
+      section3Status == 'completa' &&
+      section4Status == 'completa' &&
+      section5Status == 'completa';
+
+  /// Nombre completo del postulante (alias de applicantName)
+  String get applicantFullName => applicantName;
+
   /// Etiqueta descriptiva del estado del expediente para la tabla
   String get dossierStatusLabel {
+    if (status == 'cerrado') return 'Cerrado';
     if (status == 'pausado') return 'Pausado';
     if (completedSectionsCount >= 5) return 'Listo para convertir';
     if (completedSectionsCount >= 1) return 'En proceso';
@@ -444,6 +462,9 @@ class RrhhHiringDossier {
     String? supervisorEmployeeId,
     String? supervisorName,
     DateTime? effectiveStartDate,
+    String? convertedEmployeeCode,
+    int? convertedEmployeeId,
+    String? closingNotes,
   }) {
     return RrhhHiringDossier(
       id: id ?? this.id,
@@ -502,6 +523,9 @@ class RrhhHiringDossier {
       supervisorEmployeeId: supervisorEmployeeId ?? this.supervisorEmployeeId,
       supervisorName: supervisorName ?? this.supervisorName,
       effectiveStartDate: effectiveStartDate ?? this.effectiveStartDate,
+      convertedEmployeeCode: convertedEmployeeCode ?? this.convertedEmployeeCode,
+      convertedEmployeeId: convertedEmployeeId ?? this.convertedEmployeeId,
+      closingNotes: closingNotes ?? this.closingNotes,
     );
   }
 
@@ -584,6 +608,9 @@ class RrhhHiringDossier {
         if (supervisorEmployeeId != null) 'supervisorEmployeeId': supervisorEmployeeId,
         if (supervisorName != null) 'supervisorName': supervisorName,
         if (effectiveStartDate != null) 'effectiveStartDate': effectiveStartDate!.toIso8601String(),
+        if (convertedEmployeeCode != null) 'convertedEmployeeCode': convertedEmployeeCode,
+        if (convertedEmployeeId != null) 'convertedEmployeeId': convertedEmployeeId,
+        if (closingNotes != null) 'closingNotes': closingNotes,
       };
 
   factory RrhhHiringDossier.fromJson(Map<String, dynamic> json) =>
@@ -667,5 +694,8 @@ class RrhhHiringDossier {
         effectiveStartDate: json['effectiveStartDate'] != null
             ? DateTime.tryParse(json['effectiveStartDate'] as String)
             : null,
+        convertedEmployeeCode: json['convertedEmployeeCode'] as String?,
+        convertedEmployeeId: json['convertedEmployeeId'] as int?,
+        closingNotes: json['closingNotes'] as String?,
       );
 }

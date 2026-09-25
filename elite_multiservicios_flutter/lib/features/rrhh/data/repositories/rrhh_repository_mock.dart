@@ -67,7 +67,7 @@ class RrhhRepositoryMock implements RrhhRepository {
   List<RrhhHiringDossier> _buildInitialDossiers() {
     final list = <RrhhHiringDossier>[];
     for (final a in _applicants) {
-      if (a.status == 'SELECCIONADO') {
+      if (a.status == 'SELECCIONADO' && a.code != 'POST-016') {
         final checklist = RrhhDossierDocument.defaultChecklistFor(
           workplaceType: a.targetType,
           targetPosition: a.targetPosition ?? 'Operario',
@@ -135,14 +135,23 @@ class RrhhRepositoryMock implements RrhhRepository {
 
     // ── Postulante de prueba con Secciones 1 a 5 ya completas (5/6 Listo para convertir) ──
     final listoId = list.length + 1;
-    final listoChecklist = RrhhDossierDocument.defaultChecklistFor(
+    final rawListoChecklist = RrhhDossierDocument.defaultChecklistFor(
       workplaceType: 'CAMPO',
       targetPosition: 'Supervisor de Operaciones',
     );
+    final listoChecklist = rawListoChecklist.map((key, doc) => MapEntry(
+          key,
+          doc.copyWith(
+            status: 'validado',
+            receivedAt: DateTime(2026, 9, 10),
+            scannedFileUrl:
+                'https://storage.elitemultiservicios.com/expedientes/post_016_${key.toLowerCase()}.pdf',
+          ),
+        ));
     list.add(
       RrhhHiringDossier(
         id: listoId,
-        applicantId: 998,
+        applicantId: 16,
         applicantCode: 'POST-016',
         applicantName: 'Daniela Morales Ramos',
         applicantCi: '8345129 SC',
@@ -1151,6 +1160,162 @@ class RrhhRepositoryMock implements RrhhRepository {
     final updated = _dossiers[index].copyWith(status: status);
     _dossiers[index] = updated;
     return updated;
+  }
+
+  @override
+  Future<RrhhEmployee> convertDossierToEmployee(int dossierId, {String? notes}) async {
+    final dIdx = _dossiers.indexWhere((d) => d.id == dossierId);
+    if (dIdx == -1) throw StateError('Expediente no encontrado');
+    final dossier = _dossiers[dIdx];
+
+    // 1. Idempotencia: si ya está cerrado y tiene código de empleado, devolver el existente
+    if (dossier.status == 'cerrado' && dossier.convertedEmployeeCode != null) {
+      final existing = _employees.firstWhere(
+        (e) => e.code == dossier.convertedEmployeeCode,
+        orElse: () => _employees.first,
+      );
+      return existing;
+    }
+
+    // 2. Validar que las 5 secciones estén completas
+    if (dossier.section1Status != 'completa' ||
+        dossier.section2Status != 'completa' ||
+        dossier.section3Status != 'completa' ||
+        dossier.section4Status != 'completa' ||
+        dossier.section5Status != 'completa') {
+      throw StateError('El expediente no está listo para convertir');
+    }
+
+    // 3. Generar código correlativo EMP-XXX buscando el mayor número existente
+    int maxEmpNum = 0;
+    for (final e in _employees) {
+      final match = RegExp(r'EMP-(\d+)').firstMatch(e.code);
+      if (match != null) {
+        final val = int.tryParse(match.group(1)!) ?? 0;
+        if (val > maxEmpNum && val < 90) {
+          maxEmpNum = val;
+        } else if (val > maxEmpNum && maxEmpNum == 0) {
+          maxEmpNum = val;
+        }
+      }
+    }
+    final nextNum = maxEmpNum + 1;
+    final code = 'EMP-${nextNum.toString().padLeft(3, '0')}';
+
+    // 4. Buscar datos del postulante para complementar
+    final appIdx = _applicants.indexWhere((a) => a.id == dossier.applicantId);
+    final app = appIdx != -1 ? _applicants[appIdx] : null;
+
+    final now = DateTime.now();
+    final realStart = dossier.effectiveStartDate ?? dossier.contractStartDate ?? now;
+    final fiscalStart = dossier.contractStartDate ?? realStart;
+
+    // 5. Mapear RrhhEmployee con todos los datos del expediente
+    final newEmployee = RrhhEmployee(
+      id: nextNum,
+      code: code,
+      fullName: app?.fullName ?? dossier.applicantName,
+      birthDate: app?.birthDate,
+      birthPlace: 'Bolivia',
+      identityCard: app?.identityCard ?? dossier.applicantCi,
+      phone: app?.phone ?? dossier.applicantPhone,
+      address: dossier.fullAddress ?? '',
+      occupation: dossier.targetPosition,
+      personalReference: app?.referencePerson ?? '',
+      referencePhone: app?.referencePhone ?? '',
+      employeeType: dossier.workplaceType,
+      area: dossier.areaName ?? dossier.targetArea,
+      areaId: app?.areaId ?? (dossier.areaId != null ? int.tryParse(dossier.areaId!) : 1),
+      position: dossier.positionName ?? dossier.targetPosition,
+      positionId: app?.positionId ?? (dossier.positionId != null ? int.tryParse(dossier.positionId!) : 2),
+      specialty: app?.specialty ?? 'General',
+      specialtyId: app?.specialtyId,
+      workplace: dossier.baseLocation ?? 'Sede Central',
+      supervisor: dossier.supervisorName ?? 'Sin supervisor asignado',
+      realStartDate: realStart,
+      fiscalStartDate: fiscalStart,
+      agreedSalary: dossier.baseSalary ?? 0.0,
+      contractType: dossier.contractTypeName ?? 'Indefinido',
+      contractEndDate: dossier.contractEndDate,
+      observations: notes ?? 'Alta formal generada automáticamente desde Expediente ${dossier.applicantCode}.',
+      status: 'ACTIVO',
+      availabilityStatus: 'DISPONIBLE',
+      paymentModality: dossier.paymentModalityName ?? 'MENSUAL',
+      workScheduleType: dossier.scheduleName ?? 'TIEMPO_COMPLETO_48H',
+      hasCiCopy: dossier.documents['CI']?.isValidated ?? false,
+      hasUtilityBill: dossier.documents['AVISO']?.isValidated ?? false,
+      hasHomeSketch: dossier.documents['CROQUIS']?.isValidated ?? false,
+      hasFelccRecord: dossier.documents['FELCC']?.isValidated ?? false,
+      hasPhoto3x4: dossier.documents['FOTO']?.isValidated ?? false,
+      hasSusInsurance: dossier.documents['SUS']?.isValidated ?? false,
+      corporateEmail: (app?.email != null && app!.email!.isNotEmpty)
+          ? app.email!
+          : (dossier.applicantEmail ?? '${dossier.applicantName.trim().toLowerCase().replaceAll(RegExp(r'\s+'), '.')}@elitemultiservicios.com'),
+      afpName: dossier.afpName,
+      afpNumber: dossier.afpNumber,
+      healthInsurance: dossier.healthInsuranceName,
+      fullAddress: dossier.fullAddress,
+      maritalStatus: dossier.maritalStatus,
+      childrenCount: dossier.childrenCount,
+      emergencyContactName: dossier.emergencyContactName,
+      emergencyContactPhone: dossier.emergencyContactPhone,
+      emergencyContactRelation: dossier.emergencyContactRelation,
+      workdayType: dossier.workdayType,
+      contractStartDate: dossier.contractStartDate,
+      bonuses: dossier.bonuses,
+      deductions: dossier.deductions,
+      shiftId: dossier.shiftId,
+      baseLocation: dossier.baseLocation,
+      supervisorEmployeeId: dossier.supervisorEmployeeId,
+      documentChecklist: dossier.documents.map((k, v) => MapEntry(k, v.status)),
+      createdAt: now,
+      updatedAt: now,
+    );
+
+    // 6. Insertar en lista de empleados en primera posición
+    _employees.insert(0, newEmployee);
+
+    // 7. Actualizar el expediente a cerrado
+    _dossiers[dIdx] = dossier.copyWith(
+      status: 'cerrado',
+      closedAt: now,
+      section6Status: 'completa',
+      convertedEmployeeCode: code,
+      convertedEmployeeId: nextNum,
+      closingNotes: notes,
+    );
+
+    // 8. Actualizar postulante a CONTRATADO y su trazabilidad
+    if (appIdx != -1) {
+      _applicants[appIdx] = _applicants[appIdx].copyWith(status: 'CONTRATADO');
+      final comp = await getApplicantCompanion(dossier.applicantId);
+      final newHistory = List<RrhhStatusHistoryEntry>.from(comp.history)
+        ..add(RrhhStatusHistoryEntry(
+          fromStatus: 'SELECCIONADO',
+          toStatus: 'CONTRATADO',
+          timestamp: now,
+          author: 'Lic. Laura Mendoza',
+          notes: 'Contratación formal concluida desde Expediente ${dossier.applicantCode}. Código asignado: $code',
+        ));
+      _applicantCompanions[dossier.applicantId] = comp.copyWith(history: newHistory);
+    }
+
+    // 9. Registrar historial de movimiento
+    _movements.insert(0, RrhhMovementHistory(
+      id: _movements.length + 1,
+      employeeId: nextNum,
+      employeeCode: code,
+      employeeName: newEmployee.fullName,
+      movementType: 'INGRESO',
+      previousValue: 'Postulante Seleccionado (${dossier.applicantCode})',
+      newValue: 'Empleado Activo (${newEmployee.position})',
+      effectiveDate: newEmployee.realStartDate,
+      reason: 'Alta formal desde Expediente de Contratación',
+      authorizedBy: 'Lic. Laura Mendoza',
+      createdAt: now,
+    ));
+
+    return newEmployee;
   }
 
   @override

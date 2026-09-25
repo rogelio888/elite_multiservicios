@@ -14,11 +14,13 @@ import '../../data/repositories/rrhh_repository.dart';
 class RrhhHiringDossierDetailView extends StatefulWidget {
   final int dossierId;
   final VoidCallback? onBack;
+  final void Function(String employeeCode)? onEmployeeCreated;
 
   const RrhhHiringDossierDetailView({
     super.key,
     required this.dossierId,
     this.onBack,
+    this.onEmployeeCreated,
   });
 
   @override
@@ -32,6 +34,10 @@ class _RrhhHiringDossierDetailViewState
   bool _isLoading = true;
   bool _isSaving = false;
   final Set<int> _expandedSections = {1}; // Sección 1 abierta por defecto
+
+  // Estado Sección 6
+  bool _s6IsConfirmed = false;
+  final TextEditingController _s6NotesCtrl = TextEditingController();
 
   // Catálogos cargados
   List<RrhhCatalogItem> _afpItems = [];
@@ -107,6 +113,7 @@ class _RrhhHiringDossierDetailViewState
     _s3EmergPhoneCtrl.dispose();
     _s4BaseSalaryCtrl.dispose();
     _s5BaseLocationCtrl.dispose();
+    _s6NotesCtrl.dispose();
     super.dispose();
   }
 
@@ -203,6 +210,10 @@ class _RrhhHiringDossierDetailViewState
           _populateSection3From(d);
           _populateSection4From(d);
           _populateSection5From(d);
+          if (d.closingNotes != null) _s6NotesCtrl.text = d.closingNotes!;
+          if (d.status == 'cerrado' || d.section6Status == 'completa') {
+            _s6IsConfirmed = true;
+          }
         }
       });
     }
@@ -591,6 +602,10 @@ class _RrhhHiringDossierDetailViewState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildApplicantSummaryCard(d, isDark),
+                  if (d.status == 'cerrado') ...[
+                    const SizedBox(height: 16),
+                    _buildClosedDossierBanner(d, isDark),
+                  ],
                   const SizedBox(height: 20),
                   _buildSection1Accordion(d, isDark),
                   const SizedBox(height: 12),
@@ -602,13 +617,7 @@ class _RrhhHiringDossierDetailViewState
                   const SizedBox(height: 12),
                   _buildSection5Accordion(d, isDark),
                   const SizedBox(height: 12),
-                  _buildPlaceholderSection(
-                    sectionNum: 6,
-                    title: 'Emisión del Contrato Legal y Handoff a Nómina',
-                    status: d.section6Status,
-                    phase: 'FASE C4',
-                    isDark: isDark,
-                  ),
+                  _buildSection6Accordion(d, isDark),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -950,6 +959,7 @@ class _RrhhHiringDossierDetailViewState
   Widget _buildSection1Accordion(RrhhHiringDossier d, bool isDark) {
     final isExpanded = _expandedSections.contains(1);
     final isComplete = d.section1Status == 'completa';
+    final isClosed = d.status == 'cerrado';
 
     return Container(
       decoration: BoxDecoration(
@@ -1076,48 +1086,49 @@ class _RrhhHiringDossierDetailViewState
                   const SizedBox(height: 20),
 
                   // Footer Actions
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      OutlinedButton.icon(
-                        onPressed: _isSaving ? null : _saveSection1,
-                        icon: const Icon(Icons.save_outlined, size: 14),
-                        label: const Text('Guardar cambios'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF94A3B8),
-                          side: const BorderSide(color: Color(0xFF334155)),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 11),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      FilledButton.icon(
-                        onPressed: (_isSaving ||
-                                !d.areAllRequiredDocumentsValidated ||
-                                isComplete)
-                            ? null
-                            : _completeSection1,
-                        icon: const Icon(Icons.check_circle_outline, size: 15),
-                        label: Text(
-                          isComplete
-                              ? 'Sección 1 Completada'
-                              : 'Marcar sección como completa',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                  if (!isClosed)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: _isSaving ? null : _saveSection1,
+                          icon: const Icon(Icons.save_outlined, size: 14),
+                          label: const Text('Guardar cambios'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF94A3B8),
+                            side: const BorderSide(color: Color(0xFF334155)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 11),
                           ),
                         ),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF10B981),
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: const Color(0xFF1E293B),
-                          disabledForegroundColor: const Color(0xFF475569),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 18, vertical: 11),
+                        const SizedBox(width: 12),
+                        FilledButton.icon(
+                          onPressed: (_isSaving ||
+                                  !d.areAllRequiredDocumentsValidated ||
+                                  isComplete)
+                              ? null
+                              : _completeSection1,
+                          icon: const Icon(Icons.check_circle_outline, size: 15),
+                          label: Text(
+                            isComplete
+                                ? 'Sección 1 Completada'
+                                : 'Marcar sección como completa',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xFF10B981),
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor: const Color(0xFF1E293B),
+                            disabledForegroundColor: const Color(0xFF475569),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 11),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -1649,7 +1660,9 @@ class _RrhhHiringDossierDetailViewState
     Color color;
     String label = d.dossierStatusLabel;
 
-    if (d.status == 'pausado') {
+    if (d.status == 'cerrado') {
+      color = const Color(0xFF10B981);
+    } else if (d.status == 'pausado') {
       color = const Color(0xFF64748B);
     } else if (d.completedSectionsCount >= 5) {
       color = const Color(0xFF10B981);
@@ -4548,27 +4561,130 @@ class _RrhhHiringDossierDetailViewState
     );
   }
 
-  Widget _buildPlaceholderSection({
-    required int sectionNum,
-    required String title,
-    required String status,
-    required String phase,
-    required bool isDark,
-  }) {
-    final isExpanded = _expandedSections.contains(sectionNum);
+  Widget _buildClosedDossierBanner(RrhhHiringDossier d, bool isDark) {
+    final closedDateStr = d.closedAt != null
+        ? '${d.closedAt!.day.toString().padLeft(2, '0')}/${d.closedAt!.month.toString().padLeft(2, '0')}/${d.closedAt!.year} ${d.closedAt!.hour.toString().padLeft(2, '0')}:${d.closedAt!.minute.toString().padLeft(2, '0')}'
+        : 'Reciente';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF10B981).withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color(0xFF10B981).withValues(alpha: 0.4),
+          width: 1.5,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF10B981).withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.verified_user_rounded,
+              color: Color(0xFF10B981),
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'EXPEDIENTE CERRADO — MODO LECTURA',
+                      style: GoogleFonts.inter(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF10B981),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        d.convertedEmployeeCode ?? 'EMP-???',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF0F172A),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Este expediente fue cerrado el $closedDateStr. Empleado formalmente creado con código ${d.convertedEmployeeCode ?? "asociado"}. No admite modificaciones.',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: isDark
+                        ? const Color(0xFFCBD5E1)
+                        : const Color(0xFF475569),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (widget.onEmployeeCreated != null &&
+              d.convertedEmployeeCode != null) ...[
+            const SizedBox(width: 12),
+            ElevatedButton.icon(
+              onPressed: () =>
+                  widget.onEmployeeCreated!(d.convertedEmployeeCode!),
+              icon: const Icon(Icons.badge_outlined, size: 16),
+              label: const Text('Ver en Directorio'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF10B981),
+                foregroundColor: const Color(0xFF0F172A),
+                textStyle: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSection6Accordion(RrhhHiringDossier d, bool isDark) {
+    final isExpanded = _expandedSections.contains(6);
+    final isClosed = d.status == 'cerrado';
+    final all5Complete = d.isReadyForEmployeeCreation;
+    final canConvert = all5Complete && _s6IsConfirmed && !isClosed && !_isSaving;
 
     return Container(
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF0F172A) : Colors.white,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+          color: isClosed
+              ? const Color(0xFF10B981).withValues(alpha: 0.6)
+              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
+          width: isClosed ? 1.5 : 1.0,
         ),
       ),
       child: Column(
         children: [
           InkWell(
-            onTap: () => _toggleSection(sectionNum),
+            onTap: () => _toggleSection(6),
             borderRadius: BorderRadius.circular(10),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
@@ -4578,16 +4694,22 @@ class _RrhhHiringDossierDetailViewState
                     width: 28,
                     height: 28,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF334155).withValues(alpha: 0.3),
+                      color: isClosed
+                          ? const Color(0xFF10B981).withValues(alpha: 0.2)
+                          : (all5Complete
+                              ? const Color(0xFF10B981).withValues(alpha: 0.15)
+                              : const Color(0xFF334155).withValues(alpha: 0.3)),
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      '$sectionNum',
+                      '6',
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF94A3B8),
+                        color: isClosed || all5Complete
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFF94A3B8),
                       ),
                     ),
                   ),
@@ -4597,7 +4719,7 @@ class _RrhhHiringDossierDetailViewState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '$sectionNum. $title',
+                          '6. Revisión y Cierre del Expediente',
                           style: GoogleFonts.inter(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -4607,16 +4729,28 @@ class _RrhhHiringDossierDetailViewState
                           ),
                         ),
                         Text(
-                          'Próximamente ($phase)',
+                          isClosed
+                              ? 'Expediente formalizado y cerrado'
+                              : (all5Complete
+                                  ? 'Todas las secciones listas para conversión'
+                                  : 'Resumen de requisitos y validación para formalizar'),
                           style: GoogleFonts.inter(
                             fontSize: 11,
-                            color: const Color(0xFF64748B),
+                            color: isClosed || all5Complete
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFF64748B),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  _buildSectionStatusChip(status),
+                  _buildSectionStatusChip(
+                    isClosed
+                        ? 'completa'
+                        : (d.section6Status.isNotEmpty
+                            ? d.section6Status
+                            : (all5Complete ? 'en_proceso' : 'pendiente')),
+                  ),
                   const SizedBox(width: 12),
                   Icon(
                     isExpanded ? Icons.expand_less : Icons.expand_more,
@@ -4628,30 +4762,305 @@ class _RrhhHiringDossierDetailViewState
           ),
           if (isExpanded) ...[
             const Divider(height: 1, color: Color(0xFF1E293B)),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-              alignment: Alignment.center,
+            Padding(
+              padding: const EdgeInsets.all(20),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.lock_clock_outlined,
-                      size: 32, color: Color(0xFF64748B)),
-                  const SizedBox(height: 8),
+                  // BLOQUE A: Resumen visual de las 5 secciones
                   Text(
-                    'Sección $sectionNum — En Desarrollo ($phase)',
+                    'RESUMEN GENERAL DE SECCIONES',
                     style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
                       color: const Color(0xFF94A3B8),
+                      letterSpacing: 0.5,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Esta sección se habilitará de forma progresiva en las siguientes fases del Expediente.',
-                    style: GoogleFonts.inter(
-                      fontSize: 11.5,
-                      color: const Color(0xFF64748B),
+                  const SizedBox(height: 12),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF111827),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xFF1E293B)),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildSectionSummaryRow(
+                          secNum: 1,
+                          title: '1. Recepción de Documentos',
+                          status: d.section1Status,
+                          detail:
+                              '${d.validatedRequiredDocsCount}/${d.totalRequiredDocsCount} validados',
+                        ),
+                        const Divider(height: 1, color: Color(0xFF1E293B)),
+                        _buildSectionSummaryRow(
+                          secNum: 2,
+                          title: '2. Seguridad Social',
+                          status: d.section2Status,
+                          detail: d.afpName != null && d.afpName!.isNotEmpty
+                              ? '${d.afpName} - ${d.healthInsuranceName ?? "Sin caja"}'
+                              : 'No completado',
+                        ),
+                        const Divider(height: 1, color: Color(0xFF1E293B)),
+                        _buildSectionSummaryRow(
+                          secNum: 3,
+                          title: '3. Datos Personales',
+                          status: d.section3Status,
+                          detail: d.fullAddress != null &&
+                                  d.fullAddress!.isNotEmpty
+                              ? '${d.maritalStatus ?? "Estado civil"}, ${d.childrenCount ?? 0} hijos'
+                              : 'No completado',
+                        ),
+                        const Divider(height: 1, color: Color(0xFF1E293B)),
+                        _buildSectionSummaryRow(
+                          secNum: 4,
+                          title: '4. Condiciones Contractuales',
+                          status: d.section4Status,
+                          detail: d.contractTypeName != null &&
+                                  d.contractTypeName!.isNotEmpty
+                              ? '${d.contractTypeName} (${d.currency} ${d.baseSalary?.toStringAsFixed(2) ?? "0.00"})'
+                              : 'No completado',
+                        ),
+                        const Divider(height: 1, color: Color(0xFF1E293B)),
+                        _buildSectionSummaryRow(
+                          secNum: 5,
+                          title: '5. Asignación Organizacional',
+                          status: d.section5Status,
+                          detail: d.positionName != null &&
+                                  d.positionName!.isNotEmpty
+                              ? '${d.positionName} - ${d.areaName ?? "Sin área"}'
+                              : 'No completado',
+                        ),
+                      ],
                     ),
                   ),
+
+                  // BLOQUE B: Pendientes si hay secciones incompletas
+                  if (!all5Complete && !isClosed) ...[
+                    const SizedBox(height: 20),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF59E0B).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color:
+                              const Color(0xFFF59E0B).withValues(alpha: 0.35),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.warning_amber_rounded,
+                                  size: 18, color: Color(0xFFF59E0B)),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Hay secciones pendientes. Complétalas para poder convertir al empleado.',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFFF59E0B),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          if (d.section1Status != 'completa')
+                            _buildPendingItem(
+                              'Sección 1 (Documentos): Faltan documentos obligatorios por validar (${d.validatedRequiredDocsCount}/${d.totalRequiredDocsCount} validados).',
+                            ),
+                          if (d.section2Status != 'completa')
+                            _buildPendingItem(
+                              'Sección 2 (Seguridad Social): AFP y Caja de Salud requeridos.',
+                            ),
+                          if (d.section3Status != 'completa')
+                            _buildPendingItem(
+                              'Sección 3 (Datos Personales): Domicilio o contactos de emergencia incompletos.',
+                            ),
+                          if (d.section4Status != 'completa')
+                            _buildPendingItem(
+                              'Sección 4 (Contractual): Modalidad contractual o salario base incompletos.',
+                            ),
+                          if (d.section5Status != 'completa')
+                            _buildPendingItem(
+                              'Sección 5 (Asignación): Cargo, área o centro de costos sin asignar.',
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  const SizedBox(height: 24),
+
+                  // BLOQUE C: Confirmación final y Acción
+                  if (isClosed) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                            color: const Color(0xFF10B981)
+                                .withValues(alpha: 0.3)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.check_circle,
+                                  color: Color(0xFF10B981), size: 18),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Expediente Convertido y Cerrado Exitosamente',
+                                style: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF10B981),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'El postulante ${d.applicantFullName} es ahora empleado activo con código ${d.convertedEmployeeCode ?? "asignado"}.',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: const Color(0xFFCBD5E1),
+                            ),
+                          ),
+                          if (d.closingNotes != null &&
+                              d.closingNotes!.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              'Notas de cierre: "${d.closingNotes}"',
+                              style: GoogleFonts.inter(
+                                fontSize: 11.5,
+                                fontStyle: FontStyle.italic,
+                                color: const Color(0xFF94A3B8),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ] else ...[
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _s6IsConfirmed = !_s6IsConfirmed;
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(6),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: Checkbox(
+                                value: _s6IsConfirmed,
+                                activeColor: const Color(0xFF10B981),
+                                checkColor: const Color(0xFF0F172A),
+                                side: const BorderSide(
+                                    color: Color(0xFF64748B), width: 1.5),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                onChanged: (val) {
+                                  setState(() {
+                                    _s6IsConfirmed = val ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Confirmo que la información del expediente es correcta y está lista para crear al empleado.',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFFE2E8F0),
+                                  height: 1.4,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildFormLabel('Notas finales u observaciones (opcional)'),
+                    const SizedBox(height: 6),
+                    _buildTextField(
+                      controller: _s6NotesCtrl,
+                      hint:
+                          'Añade comentarios o consideraciones sobre la incorporación...',
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Botón Convertir
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Tooltip(
+                          message: !all5Complete
+                              ? 'Completa las 5 secciones primero'
+                              : (!_s6IsConfirmed
+                                  ? 'Confirma la información primero'
+                                  : 'Crear empleado formal'),
+                          child: FilledButton.icon(
+                            onPressed: canConvert
+                                ? () => _showConfirmConversionDialog(context, d)
+                                : null,
+                            icon: _isSaving
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Icon(Icons.person_add_alt_1_rounded,
+                                    size: 16),
+                            label: Text(
+                              _isSaving
+                                  ? 'Convirtiendo...'
+                                  : 'CONVERTIR A EMPLEADO',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: const Color(0xFF10B981),
+                              foregroundColor: const Color(0xFF0F172A),
+                              disabledBackgroundColor: const Color(0xFF1E293B),
+                              disabledForegroundColor: const Color(0xFF475569),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 24, vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -4660,4 +5069,315 @@ class _RrhhHiringDossierDetailViewState
       ),
     );
   }
+
+  Widget _buildSectionSummaryRow({
+    required int secNum,
+    required String title,
+    required String status,
+    required String detail,
+  }) {
+    final isComplete = status == 'completa';
+    final isInProgress = status == 'en_proceso';
+
+    Color statusColor;
+    IconData statusIcon;
+    String statusLabel;
+
+    if (isComplete) {
+      statusColor = const Color(0xFF10B981);
+      statusIcon = Icons.check_circle_rounded;
+      statusLabel = 'Completa';
+    } else if (isInProgress) {
+      statusColor = const Color(0xFFF59E0B);
+      statusIcon = Icons.warning_amber_rounded;
+      statusLabel = 'En proceso';
+    } else {
+      statusColor = const Color(0xFFEF4444);
+      statusIcon = Icons.cancel_outlined;
+      statusLabel = 'Pendiente';
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: Row(
+        children: [
+          Icon(statusIcon, color: statusColor, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            flex: 4,
+            child: Text(
+              title,
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFFE2E8F0),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 5,
+            child: Text(
+              detail,
+              style: GoogleFonts.inter(
+                fontSize: 11.5,
+                color: const Color(0xFF94A3B8),
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
+            decoration: BoxDecoration(
+              color: statusColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: statusColor.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Text(
+              statusLabel,
+              style: GoogleFonts.inter(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w600,
+                color: statusColor,
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          InkWell(
+            onTap: () {
+              setState(() {
+                if (!_expandedSections.contains(secNum)) {
+                  _expandedSections.add(secNum);
+                }
+              });
+            },
+            borderRadius: BorderRadius.circular(4),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Ver sección',
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF38BDF8),
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 10,
+                    color: Color(0xFF38BDF8),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPendingItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, left: 2),
+      child: Text(
+        '• $text',
+        style: GoogleFonts.inter(
+          fontSize: 11.5,
+          color: const Color(0xFFFCD34D),
+          height: 1.35,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showConfirmConversionDialog(
+      BuildContext context, RrhhHiringDossier d) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF0F172A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Color(0xFF1E293B)),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.how_to_reg_rounded,
+                color: Color(0xFF10B981),
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Confirmar conversión a empleado',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '¿Estás seguro? Esta acción creará al empleado con sus datos formales y cerrará el expediente de contratación:',
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: const Color(0xFF94A3B8),
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF111827),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFF1E293B)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.person_outline,
+                          size: 16, color: Color(0xFF38BDF8)),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          d.applicantFullName,
+                          style: GoogleFonts.inter(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Cargo asignado: ${d.positionName ?? "Pendiente"} — ${d.areaName ?? "Área"}',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: const Color(0xFF94A3B8),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Código generado automáticamente: EMP-XXX (siguiente secuencia correlativa)',
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF10B981),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'El expediente quedará cerrado y no podrá editarse. El postulante pasará a estado CONTRATADO y se retirará del pipeline activo de reclutamiento.',
+              style: GoogleFonts.inter(
+                fontSize: 11.5,
+                color: const Color(0xFF64748B),
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(
+                color: const Color(0xFF94A3B8),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          FilledButton.icon(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            icon: const Icon(Icons.check, size: 16),
+            label: const Text('Confirmar conversión'),
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF10B981),
+              foregroundColor: const Color(0xFF0F172A),
+              textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      await _executeConversion(d);
+    }
+  }
+
+  Future<void> _executeConversion(RrhhHiringDossier d) async {
+    setState(() => _isSaving = true);
+    try {
+      final employee = await RrhhRepository.current.convertDossierToEmployee(
+        d.id,
+        notes:
+            _s6NotesCtrl.text.trim().isEmpty ? null : _s6NotesCtrl.text.trim(),
+      );
+
+      await _loadDossier();
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: const Color(0xFF10B981),
+          duration: const Duration(seconds: 5),
+          content: Text(
+            'Empleado ${employee.fullName} creado exitosamente con código ${employee.code}',
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+          action: widget.onEmployeeCreated != null
+              ? SnackBarAction(
+                  label: 'VER DIRECTORIO',
+                  textColor: Colors.white,
+                  onPressed: () {
+                    widget.onEmployeeCreated!(employee.code);
+                  },
+                )
+              : null,
+        ),
+      );
+
+      widget.onEmployeeCreated?.call(employee.code);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: const Color(0xFFEF4444),
+          content: Text('Error al convertir empleado: $e'),
+        ),
+      );
+    }
+  }
 }
+

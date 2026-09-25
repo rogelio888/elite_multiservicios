@@ -104,6 +104,12 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
             _selectedDossierId = null;
           });
         },
+        onEmployeeCreated: (empCode) {
+          setState(() {
+            _selectedDossierId = null;
+            _tabController.animateTo(0);
+          });
+        },
       );
     }
 

@@ -282,5 +282,58 @@ void main() {
       expect(post16.dossierStatusLabel, 'Listo para convertir');
       expect(post16.progressFraction, closeTo(5 / 6, 0.01));
     });
+
+    test('FASE C4: convertDossierToEmployee convierte postulante en empleado formal, cierra expediente y asigna EMP-XXX correlativo', () async {
+      final dossiers = await repo.listActiveDossiers();
+      final post16 = dossiers.firstWhere((d) => d.applicantCode == 'POST-016');
+
+      // 1. Convertir a empleado
+      final createdEmp = await repo.convertDossierToEmployee(
+        post16.id,
+        notes: 'Cierre formal de expediente de prueba',
+      );
+
+      expect(createdEmp, isNotNull);
+      expect(createdEmp.code, startsWith('EMP-'));
+      expect(createdEmp.fullName, post16.applicantName);
+      expect(createdEmp.status, 'ACTIVO');
+      expect(createdEmp.position, post16.positionName);
+      expect(createdEmp.area, post16.areaName);
+      expect(createdEmp.agreedSalary, post16.baseSalary);
+      expect(createdEmp.afpName, post16.afpName);
+      expect(createdEmp.healthInsurance, post16.healthInsuranceName);
+      expect(createdEmp.fullAddress, post16.fullAddress);
+      expect(createdEmp.maritalStatus, post16.maritalStatus);
+
+      // 2. Verificar que el expediente queda cerrado
+      final closedDossier = await repo.getDossierById(post16.id);
+      expect(closedDossier, isNotNull);
+      expect(closedDossier!.status, 'cerrado');
+      expect(closedDossier.section6Status, 'completa');
+      expect(closedDossier.closedAt, isNotNull);
+      expect(closedDossier.convertedEmployeeCode, createdEmp.code);
+      expect(closedDossier.closingNotes, 'Cierre formal de expediente de prueba');
+
+      // 3. Verificar que desaparece de contrataciones en curso activas
+      final activeDossiersAfter = await repo.listActiveDossiers();
+      expect(activeDossiersAfter.any((d) => d.id == post16.id), isFalse);
+
+      // 4. Idempotencia: llamar nuevamente devuelve el mismo empleado sin duplicar
+      final reConverted = await repo.convertDossierToEmployee(post16.id);
+      expect(reConverted.code, createdEmp.code);
+      expect(reConverted.id, createdEmp.id);
+    });
+
+    test('FASE C4: convertDossierToEmployee lanza error si el expediente no tiene las 5 secciones completas', () async {
+      final dossiers = await repo.listActiveDossiers();
+      // POST-014 solo tiene sección 1 pendiente
+      final post14 = dossiers.firstWhere((d) => d.applicantCode == 'POST-014');
+
+      expect(
+        () => repo.convertDossierToEmployee(post14.id),
+        throwsA(isA<StateError>()),
+      );
+    });
   });
 }
+

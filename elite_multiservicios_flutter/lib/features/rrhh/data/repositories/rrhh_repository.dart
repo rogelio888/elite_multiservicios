@@ -203,6 +203,9 @@ abstract class RrhhRepository {
   });
   Future<RrhhHiringDossier> updateDossierStatus(int id, String status);
 
+  /// Convierte un expediente formalizado en empleado activo y actualiza el postulante.
+  Future<RrhhEmployee> convertDossierToEmployee(int dossierId, {String? notes});
+
   Future<RrhhEmployee> hireApplicant({
     required int? applicantId,
     required RrhhEmployee employeeData,
