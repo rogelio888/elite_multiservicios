@@ -429,7 +429,7 @@ class RrhhPersonnelRepository {
     return await RrhhTimelineEvent.db.find(
       session,
       where: (t) => t.employeeId.equals(employeeId),
-      orderBy: (t) => t.date,
+      orderBy: (t) => t.createdAt,
       orderDescending: true,
     );
   }

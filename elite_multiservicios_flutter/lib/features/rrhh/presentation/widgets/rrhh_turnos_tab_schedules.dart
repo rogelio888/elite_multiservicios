@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../data/models/rrhh_shift.dart';
 import '../../data/repositories/rrhh_repository.dart';
 import 'rrhh_schedule_edit_dialog.dart';
+import 'rrhh_snack_bar.dart';
 import 'rrhh_state_widgets.dart';
 
 /// Anchos proporcionales calculados para la tabla de Horarios Base.
@@ -112,11 +113,9 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
       builder: (ctx) => RrhhScheduleEditDialog(
         onSaved: () {
           _loadSchedules();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Horario base creado exitosamente'),
-              backgroundColor: Color(0xFF10B981),
-            ),
+          RrhhSnackBar.showSuccess(
+            context,
+            'Horario base creado exitosamente',
           );
         },
       ),
@@ -131,11 +130,9 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
         schedule: schedule,
         onSaved: () {
           _loadSchedules();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Horario "${schedule.name}" actualizado exitosamente'),
-              backgroundColor: const Color(0xFF2563EB),
-            ),
+          RrhhSnackBar.showInfo(
+            context,
+            'Horario "${schedule.name}" actualizado exitosamente',
           );
         },
       ),
@@ -227,19 +224,20 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
       });
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            saved.isActive ? 'Horario "${saved.name}" reactivado' : 'Horario "${saved.name}" desactivado',
-          ),
-          backgroundColor: saved.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B),
-        ),
-      );
+      if (saved.isActive) {
+        RrhhSnackBar.showSuccess(
+          context,
+          'Horario "${saved.name}" reactivado',
+        );
+      } else {
+        RrhhSnackBar.showInfo(
+          context,
+          'Horario "${saved.name}" desactivado',
+        );
+      }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cambiar estado: $e')),
-      );
+      RrhhSnackBar.showError(context, 'Error al cambiar estado: $e');
     }
   }
 

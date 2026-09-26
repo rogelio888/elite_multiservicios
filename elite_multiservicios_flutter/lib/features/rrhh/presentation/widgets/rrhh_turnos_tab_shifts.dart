@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../data/models/rrhh_shift.dart';
 import '../../data/repositories/rrhh_repository.dart';
 import 'rrhh_shift_edit_dialog.dart';
+import 'rrhh_snack_bar.dart';
 import 'rrhh_state_widgets.dart';
 
 /// Anchos proporcionales calculados para la tabla de Turnos de Trabajo.
@@ -112,11 +113,9 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
       builder: (ctx) => RrhhShiftEditDialog(
         onSaved: () {
           _loadShifts();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Turno de trabajo creado exitosamente'),
-              backgroundColor: Color(0xFF10B981),
-            ),
+          RrhhSnackBar.showSuccess(
+            context,
+            'Turno de trabajo creado exitosamente',
           );
         },
       ),
@@ -131,11 +130,9 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
         shift: shift,
         onSaved: () {
           _loadShifts();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Turno "${shift.name}" actualizado exitosamente'),
-              backgroundColor: const Color(0xFF2563EB),
-            ),
+          RrhhSnackBar.showInfo(
+            context,
+            'Turno "${shift.name}" actualizado exitosamente',
           );
         },
       ),
@@ -227,19 +224,20 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
       });
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            saved.isActive ? 'Turno "${saved.name}" reactivado' : 'Turno "${saved.name}" desactivado',
-          ),
-          backgroundColor: saved.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B),
-        ),
-      );
+      if (saved.isActive) {
+        RrhhSnackBar.showSuccess(
+          context,
+          'Turno "${saved.name}" reactivado',
+        );
+      } else {
+        RrhhSnackBar.showInfo(
+          context,
+          'Turno "${saved.name}" desactivado',
+        );
+      }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cambiar estado: $e')),
-      );
+      RrhhSnackBar.showError(context, 'Error al cambiar estado: $e');
     }
   }
 

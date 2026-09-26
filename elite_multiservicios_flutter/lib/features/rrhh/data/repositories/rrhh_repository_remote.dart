@@ -56,6 +56,11 @@ class RrhhRepositoryRemote implements RrhhRepository {
   }
 
   @override
+  Future<RrhhTimelineEvent> addTimelineEvent(RrhhTimelineEvent event) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
   Future<RrhhAssignment?> getCurrentAssignment(int employeeId) async {
     throw UnimplementedError(_pendingMsg);
   }

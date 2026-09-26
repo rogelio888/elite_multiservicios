@@ -1,4 +1,5 @@
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
+import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -181,11 +182,9 @@ class RrhhEmployeeDetailTabDocuments extends StatelessWidget {
           if (hasFile)
             OutlinedButton.icon(
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: const Color(0xFF1E293B),
-                    content: Text('Visualizando documento: ${doc.fileName}'),
-                  ),
+                RrhhSnackBar.showInfo(
+                  context,
+                  'Visualizando documento: ${doc.fileName}',
                 );
               },
               style: OutlinedButton.styleFrom(

@@ -303,10 +303,11 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
                                     _fieldLabel('NIVEL EDUCATIVO *'),
                                     DropdownButtonFormField<String>(
                                       initialValue: _educationLevel,
+                                      isExpanded: true,
                                       dropdownColor: const Color(0xFF1E293B),
                                       style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
                                       decoration: _inputDecoration(),
-                                      items: _educationLevels.map((lvl) => DropdownMenuItem(value: lvl, child: Text(lvl))).toList(),
+                                      items: _educationLevels.map((lvl) => DropdownMenuItem(value: lvl, child: Text(lvl, overflow: TextOverflow.ellipsis))).toList(),
                                       onChanged: (v) {
                                         if (v != null) setState(() => _educationLevel = v);
                                       },

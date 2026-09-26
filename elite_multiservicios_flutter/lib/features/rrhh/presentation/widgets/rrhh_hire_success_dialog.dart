@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'rrhh_employee_detail_dialog.dart';
+import 'rrhh_snack_bar.dart';
 
 /// Modal de éxito mostrado al formalizar la contratación y generar el expediente.
 class RrhhHireSuccessDialog extends StatelessWidget {
@@ -181,12 +182,9 @@ class RrhhHireSuccessDialog extends StatelessWidget {
                     OutlinedButton.icon(
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: 'Usuario: $apkUsername\nContraseña: $tempPassword'));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            backgroundColor: Color(0xFF10B981),
-                            content: Text('Credenciales copiadas al portapapeles'),
-                            duration: Duration(seconds: 2),
-                          ),
+                        RrhhSnackBar.showSuccess(
+                          context,
+                          'Credenciales copiadas al portapapeles',
                         );
                       },
                       style: OutlinedButton.styleFrom(

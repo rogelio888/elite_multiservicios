@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/repositories/rrhh_repository.dart';
 import 'rrhh_area_edit_dialog.dart';
+import 'rrhh_snack_bar.dart';
 import 'rrhh_state_widgets.dart';
 
 /// Anchos calculados proporcionalmente para la tabla de Áreas Departamentales.
@@ -122,17 +123,13 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
         setState(() {
           _areas = [..._areas, saved];
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Área "${saved.name}" creada exitosamente'),
-            backgroundColor: const Color(0xFF10B981),
-          ),
+        RrhhSnackBar.showSuccess(
+          context,
+          'Área "${saved.name}" creada exitosamente',
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al crear área: $e')),
-        );
+        RrhhSnackBar.showError(context, 'Error al crear área: $e');
       }
     }
   }
@@ -154,17 +151,13 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
           final idx = _areas.indexWhere((a) => a.id == saved.id);
           if (idx != -1) _areas[idx] = saved;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Área "${saved.name}" actualizada exitosamente'),
-            backgroundColor: const Color(0xFF2563EB),
-          ),
+        RrhhSnackBar.showInfo(
+          context,
+          'Área "${saved.name}" actualizada exitosamente',
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al actualizar área: $e')),
-        );
+        RrhhSnackBar.showError(context, 'Error al actualizar área: $e');
       }
     }
   }
@@ -235,21 +228,20 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
         if (idx != -1) _areas[idx] = saved;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            saved.isActive
-                ? 'Área "${saved.name}" reactivada'
-                : 'Área "${saved.name}" desactivada',
-          ),
-          backgroundColor: saved.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B),
-        ),
-      );
+      if (saved.isActive) {
+        RrhhSnackBar.showSuccess(
+          context,
+          'Área "${saved.name}" reactivada',
+        );
+      } else {
+        RrhhSnackBar.showInfo(
+          context,
+          'Área "${saved.name}" desactivada',
+        );
+      }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cambiar estado: $e')),
-      );
+      RrhhSnackBar.showError(context, 'Error al cambiar estado: $e');
     }
   }
 

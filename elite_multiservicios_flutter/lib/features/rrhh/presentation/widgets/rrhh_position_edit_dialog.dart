@@ -1,4 +1,5 @@
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
+import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -71,7 +72,7 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
   void _handleSave() {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedAreaId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Seleccione un área departamental')));
+      RrhhSnackBar.showWarning(context, 'Seleccione un área departamental');
       return;
     }
     final salary = _salaryCtrl.text.trim().isNotEmpty ? double.tryParse(_salaryCtrl.text.trim().replaceAll(',', '.')) : null;

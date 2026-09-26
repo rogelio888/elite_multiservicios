@@ -14,6 +14,7 @@ import '../../data/models/rrhh_catalog_item.dart';
 import '../../data/models/rrhh_shift.dart';
 import '../../data/models/rrhh_employee_summary_dto.dart';
 import '../../data/repositories/rrhh_repository.dart';
+import '../widgets/rrhh_snack_bar.dart';
 
 /// Vista completa 360° del Expediente de Contratación (FASE C).
 /// Conecta la selección del candidato con la formalización contractual.
@@ -336,11 +337,9 @@ class _RrhhHiringDossierDetailViewState
     );
     await _updateDoc(updated);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Documento ${doc.name} marcado como Recibido'),
-          duration: const Duration(seconds: 2),
-        ),
+      RrhhSnackBar.showInfo(
+        context,
+        'Documento ${doc.name} marcado como Recibido',
       );
     }
   }
@@ -352,12 +351,9 @@ class _RrhhHiringDossierDetailViewState
     );
     await _updateDoc(updated);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: const Color(0xFF10B981),
-          content: Text('Documento ${doc.name} Validado exitosamente'),
-          duration: const Duration(seconds: 2),
-        ),
+      RrhhSnackBar.showSuccess(
+        context,
+        'Documento ${doc.name} Validado exitosamente',
       );
     }
   }
@@ -450,11 +446,9 @@ class _RrhhHiringDossierDetailViewState
       );
       await _updateDoc(updated);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: const Color(0xFFEF4444),
-            content: Text('Documento ${doc.code} rechazado: $reason'),
-          ),
+        RrhhSnackBar.showError(
+          context,
+          'Documento ${doc.code} rechazado: $reason',
         );
       }
     }
@@ -546,12 +540,7 @@ class _RrhhHiringDossierDetailViewState
       );
       await _updateDoc(updated);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: const Color(0xFF2563EB),
-            content: Text('Archivo adjuntado: $fileName'),
-          ),
-        );
+        RrhhSnackBar.showInfo(context, 'Archivo adjuntado: $fileName');
       }
     }
   }
@@ -564,11 +553,9 @@ class _RrhhHiringDossierDetailViewState
     await _loadDossier();
     if (mounted) {
       setState(() => _isSaving = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Color(0xFF10B981),
-          content: Text('Cambios guardados en el Expediente'),
-        ),
+      RrhhSnackBar.showSuccess(
+        context,
+        'Cambios guardados en el Expediente',
       );
     }
   }
@@ -576,13 +563,9 @@ class _RrhhHiringDossierDetailViewState
   Future<void> _completeSection1() async {
     if (_dossier == null) return;
     if (!_dossier!.areAllRequiredDocumentsValidated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Color(0xFFF59E0B),
-          content: Text(
-            'No se puede completar: faltan documentos obligatorios por validar.',
-          ),
-        ),
+      RrhhSnackBar.showWarning(
+        context,
+        'No se puede completar: faltan documentos obligatorios por validar.',
       );
       return;
     }
@@ -598,14 +581,9 @@ class _RrhhHiringDossierDetailViewState
         _isSaving = false;
         _expandedSections.remove(1); // Colapsar sección tras completar
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Color(0xFF10B981),
-          duration: Duration(seconds: 4),
-          content: Text(
-            'Sección 1 completada. Puedes continuar con la Sección 2 (se habilitará en la próxima fase).',
-          ),
-        ),
+      RrhhSnackBar.showSuccess(
+        context,
+        'Sección 1 completada. Puedes continuar con la Sección 2 (se habilitará en la próxima fase).',
       );
     }
   }
@@ -616,13 +594,11 @@ class _RrhhHiringDossierDetailViewState
     await RrhhRepository.current.updateDossierStatus(_dossier!.id, newStatus);
     await _loadDossier();
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(newStatus == 'pausado'
-              ? 'Expediente pausado temporalmente'
-              : 'Expediente reanudado'),
-        ),
-      );
+      if (newStatus == 'pausado') {
+        RrhhSnackBar.showWarning(context, 'Expediente pausado temporalmente');
+      } else {
+        RrhhSnackBar.showSuccess(context, 'Expediente reanudado');
+      }
     }
   }
 
@@ -1327,14 +1303,15 @@ class _RrhhHiringDossierDetailViewState
           separatorBuilder: (_, _) =>
               const Divider(height: 1, color: Color(0xFF1E293B)),
           itemBuilder: (context, idx) {
-            return _buildDocumentRow(docsList[idx]);
+            return _buildDocumentRow(docsList[idx],
+                isClosed: d.status == 'cerrado');
           },
         ),
       ],
     );
   }
 
-  Widget _buildDocumentRow(RrhhDossierDocument doc) {
+  Widget _buildDocumentRow(RrhhDossierDocument doc, {bool isClosed = false}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Row(
@@ -1456,9 +1433,14 @@ class _RrhhHiringDossierDetailViewState
           // Acciones — fixed 72 (primary icon + overflow menu)
           SizedBox(
             width: 72,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
+            child: isClosed
+                ? const Center(
+                    child: Icon(Icons.lock_outline,
+                        size: 14, color: Color(0xFF64748B)),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
                 // Primary action: contextual to document status
                 if (doc.status == 'pendiente' || doc.status == 'rechazado')
                   _actionIconButton(
@@ -1792,6 +1774,8 @@ class _RrhhHiringDossierDetailViewState
   Widget _buildSection2Accordion(RrhhHiringDossier d, bool isDark) {
     final isExpanded = _expandedSections.contains(2);
     final isComplete = d.section2Status == 'completa';
+    final isClosed = d.status == 'cerrado';
+    final isReadOnly = isComplete || isClosed;
 
     return Container(
       decoration: BoxDecoration(
@@ -1895,7 +1879,7 @@ class _RrhhHiringDossierDetailViewState
                                       fontSize: 12.5, color: Colors.white)),
                             ))
                         .toList(),
-                    onChanged: isComplete
+                    onChanged: isReadOnly
                         ? null
                         : (val) {
                             final item =
@@ -1914,7 +1898,7 @@ class _RrhhHiringDossierDetailViewState
                   _buildTextField(
                     controller: _s2AfpNumberCtrl,
                     hint: 'Ej: GP-1234567',
-                    enabled: !isComplete,
+                    enabled: !isReadOnly,
                   ),
                   if (_s2AfpNumberCtrl.text.isNotEmpty &&
                       _s2AfpNumberCtrl.text.trim().length < 6)
@@ -1942,7 +1926,7 @@ class _RrhhHiringDossierDetailViewState
                                       fontSize: 12.5, color: Colors.white)),
                             ))
                         .toList(),
-                    onChanged: isComplete
+                    onChanged: isReadOnly
                         ? null
                         : (val) {
                             final item = _healthInsuranceItems
@@ -1963,12 +1947,12 @@ class _RrhhHiringDossierDetailViewState
                     hint:
                         'Ej: Pendiente de actualización de datos...',
                     maxLines: 2,
-                    enabled: !isComplete,
+                    enabled: !isReadOnly,
                   ),
                   const SizedBox(height: 20),
 
                   // Action buttons
-                  if (!isComplete)
+                  if (!isReadOnly)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -2038,11 +2022,9 @@ class _RrhhHiringDossierDetailViewState
       );
       if (mounted) {
         setState(() => _dossier = updated);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sección 2 guardada'),
-            duration: Duration(seconds: 2),
-          ),
+        RrhhSnackBar.showInfo(
+          context,
+          'Sección 2 guardada',
         );
       }
     } finally {
@@ -2066,12 +2048,9 @@ class _RrhhHiringDossierDetailViewState
       );
       if (mounted) {
         setState(() => _dossier = updated);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Sección 2 completada'),
-            duration: Duration(seconds: 2),
-            backgroundColor: Color(0xFF10B981),
-          ),
+        RrhhSnackBar.showSuccess(
+          context,
+          '✅ Sección 2 completada',
         );
       }
     } finally {
@@ -2113,6 +2092,8 @@ class _RrhhHiringDossierDetailViewState
   Widget _buildSection3Accordion(RrhhHiringDossier d, bool isDark) {
     final isExpanded = _expandedSections.contains(3);
     final isComplete = d.section3Status == 'completa';
+    final isClosed = d.status == 'cerrado';
+    final isReadOnly = isComplete || isClosed;
 
     return Container(
       decoration: BoxDecoration(
@@ -2227,7 +2208,7 @@ class _RrhhHiringDossierDetailViewState
                   _buildTextField(
                     controller: _s3AddressCtrl,
                     hint: 'Barrio Sirari, C/ Las Begonias #24, Santa Cruz',
-                    enabled: !isComplete,
+                    enabled: !isReadOnly,
                   ),
                   const SizedBox(height: 14),
 
@@ -2254,7 +2235,7 @@ class _RrhhHiringDossierDetailViewState
                                                 color: Colors.white)),
                                       ))
                                   .toList(),
-                              onChanged: isComplete
+                              onChanged: isReadOnly
                                   ? null
                                   : (val) =>
                                       setState(() => _s3MaritalStatus = val),
@@ -2273,7 +2254,7 @@ class _RrhhHiringDossierDetailViewState
                             _buildTextField(
                               controller: _s3ChildrenCtrl,
                               hint: '0',
-                              enabled: !isComplete,
+                              enabled: !isReadOnly,
                               keyboardType: TextInputType.number,
                             ),
                           ],
@@ -2317,7 +2298,7 @@ class _RrhhHiringDossierDetailViewState
                             _buildTextField(
                               controller: _s3EmergNameCtrl,
                               hint: 'Nombre completo',
-                              enabled: !isComplete,
+                              enabled: !isReadOnly,
                             ),
                           ],
                         ),
@@ -2341,7 +2322,7 @@ class _RrhhHiringDossierDetailViewState
                             _buildTextField(
                               controller: _s3EmergPhoneCtrl,
                               hint: '77712345',
-                              enabled: !isComplete,
+                              enabled: !isReadOnly,
                               keyboardType: TextInputType.phone,
                             ),
                             if (_s3EmergPhoneCtrl.text.isNotEmpty &&
@@ -2376,14 +2357,14 @@ class _RrhhHiringDossierDetailViewState
                                       fontSize: 12.5, color: Colors.white)),
                             ))
                         .toList(),
-                    onChanged: isComplete
+                    onChanged: isReadOnly
                         ? null
                         : (val) => setState(() => _s3EmergRelation = val),
                   ),
                   const SizedBox(height: 20),
 
                   // Action buttons
-                  if (!isComplete)
+                  if (!isReadOnly)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -2453,11 +2434,9 @@ class _RrhhHiringDossierDetailViewState
       );
       if (mounted) {
         setState(() => _dossier = updated);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sección 3 guardada'),
-            duration: Duration(seconds: 2),
-          ),
+        RrhhSnackBar.showInfo(
+          context,
+          'Sección 3 guardada',
         );
       }
     } finally {
@@ -2481,12 +2460,9 @@ class _RrhhHiringDossierDetailViewState
       );
       if (mounted) {
         setState(() => _dossier = updated);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Sección 3 completada'),
-            duration: Duration(seconds: 2),
-            backgroundColor: Color(0xFF10B981),
-          ),
+        RrhhSnackBar.showSuccess(
+          context,
+          '✅ Sección 3 completada',
         );
       }
     } finally {
@@ -2545,12 +2521,9 @@ class _RrhhHiringDossierDetailViewState
       );
       if (mounted) {
         setState(() => _dossier = updated);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Borrador de Sección 4 guardado'),
-            duration: Duration(seconds: 2),
-            backgroundColor: Color(0xFF1E293B),
-          ),
+        RrhhSnackBar.showInfo(
+          context,
+          'Borrador de Sección 4 guardado',
         );
       }
     } finally {
@@ -2580,12 +2553,9 @@ class _RrhhHiringDossierDetailViewState
       );
       if (mounted) {
         setState(() => _dossier = updated);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Sección 4 completada'),
-            duration: Duration(seconds: 2),
-            backgroundColor: Color(0xFF10B981),
-          ),
+        RrhhSnackBar.showSuccess(
+          context,
+          '✅ Sección 4 completada',
         );
       }
     } finally {
@@ -2908,6 +2878,8 @@ class _RrhhHiringDossierDetailViewState
   Widget _buildSection4Accordion(RrhhHiringDossier d, bool isDark) {
     final isExpanded = _expandedSections.contains(4);
     final isComplete = d.section4Status == 'completa';
+    final isClosed = d.status == 'cerrado';
+    final isReadOnly = isComplete || isClosed;
 
     return Container(
       decoration: BoxDecoration(
@@ -3030,7 +3002,7 @@ class _RrhhHiringDossierDetailViewState
                                                 color: Colors.white)),
                                       ))
                                   .toList(),
-                              onChanged: isComplete
+                              onChanged: isReadOnly
                                   ? null
                                   : (val) {
                                       final item = _contractTypeItems
@@ -3055,7 +3027,7 @@ class _RrhhHiringDossierDetailViewState
                           children: [
                             _buildFormLabel('Jornada laboral *'),
                             const SizedBox(height: 6),
-                            _buildWorkdaySelector(!isComplete),
+                            _buildWorkdaySelector(!isReadOnly),
                           ],
                         ),
                       ),
@@ -3083,7 +3055,7 @@ class _RrhhHiringDossierDetailViewState
                           context: context,
                           label: 'Fecha de inicio de contrato *',
                           value: _s4StartDate,
-                          enabled: !isComplete,
+                          enabled: !isReadOnly,
                           onDateSelected: (picked) {
                             setState(() {
                               _s4StartDate = picked;
@@ -3102,7 +3074,7 @@ class _RrhhHiringDossierDetailViewState
                             context: context,
                             label: 'Fecha de fin de contrato *',
                             value: _s4EndDate,
-                            enabled: !isComplete,
+                            enabled: !isReadOnly,
                             firstDate: _s4StartDate ?? DateTime(2020),
                             errorText: (_s4EndDate != null &&
                                     _s4StartDate != null &&
@@ -3153,7 +3125,7 @@ class _RrhhHiringDossierDetailViewState
                                                 color: Colors.white)),
                                       ))
                                   .toList(),
-                              onChanged: isComplete
+                              onChanged: isReadOnly
                                   ? null
                                   : (val) {
                                       final item = _paymentModalityItems
@@ -3185,7 +3157,7 @@ class _RrhhHiringDossierDetailViewState
                             _buildTextField(
                               controller: _s4BaseSalaryCtrl,
                               hint: 'Ej: 3500',
-                              enabled: !isComplete,
+                              enabled: !isReadOnly,
                               keyboardType: TextInputType.number,
                             ),
                             if (_s4BaseSalaryCtrl.text.isNotEmpty &&
@@ -3224,7 +3196,7 @@ class _RrhhHiringDossierDetailViewState
                                                 color: Colors.white)),
                                       ))
                                   .toList(),
-                              onChanged: isComplete
+                              onChanged: isReadOnly
                                   ? null
                                   : (val) {
                                       if (val != null) {
@@ -3265,7 +3237,7 @@ class _RrhhHiringDossierDetailViewState
                           ),
                         ],
                       ),
-                      if (!isComplete)
+                      if (!isReadOnly)
                         TextButton.icon(
                           onPressed: _showAddCustomBonusDialog,
                           icon: const Icon(Icons.add, size: 14),
@@ -3281,7 +3253,7 @@ class _RrhhHiringDossierDetailViewState
                   ),
                   const SizedBox(height: 10),
 
-                  _buildBonusesSection(isComplete),
+                  _buildBonusesSection(isReadOnly),
                   const SizedBox(height: 22),
 
                   // ── Bloque E: Descuentos autorizados ──
@@ -3310,7 +3282,7 @@ class _RrhhHiringDossierDetailViewState
                           ),
                         ],
                       ),
-                      if (!isComplete)
+                      if (!isReadOnly)
                         TextButton.icon(
                           onPressed: _showAddCustomDeductionDialog,
                           icon: const Icon(Icons.add, size: 14),
@@ -3326,11 +3298,11 @@ class _RrhhHiringDossierDetailViewState
                   ),
                   const SizedBox(height: 10),
 
-                  _buildDeductionsSection(isComplete),
+                  _buildDeductionsSection(isReadOnly),
                   const SizedBox(height: 22),
 
                   // Action buttons
-                  if (!isComplete)
+                  if (!isReadOnly)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -3934,12 +3906,9 @@ class _RrhhHiringDossierDetailViewState
       );
       if (mounted) {
         setState(() => _dossier = updated);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Borrador de Sección 5 guardado'),
-            duration: Duration(seconds: 2),
-            backgroundColor: Color(0xFF1E293B),
-          ),
+        RrhhSnackBar.showInfo(
+          context,
+          'Borrador de Sección 5 guardado',
         );
       }
     } finally {
@@ -3969,12 +3938,9 @@ class _RrhhHiringDossierDetailViewState
       );
       if (mounted) {
         setState(() => _dossier = updated);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Sección 5 completada'),
-            duration: Duration(seconds: 2),
-            backgroundColor: Color(0xFF10B981),
-          ),
+        RrhhSnackBar.showSuccess(
+          context,
+          '✅ Sección 5 completada',
         );
       }
     } finally {
@@ -3985,6 +3951,8 @@ class _RrhhHiringDossierDetailViewState
   Widget _buildSection5Accordion(RrhhHiringDossier d, bool isDark) {
     final isExpanded = _expandedSections.contains(5);
     final isComplete = d.section5Status == 'completa';
+    final isClosed = d.status == 'cerrado';
+    final isReadOnly = isComplete || isClosed;
 
     return Container(
       decoration: BoxDecoration(
@@ -4115,7 +4083,7 @@ class _RrhhHiringDossierDetailViewState
                                                 color: Colors.white)),
                                       ))
                                   .toList(),
-                              onChanged: isComplete
+                              onChanged: isReadOnly
                                   ? null
                                   : (val) {
                                       final area =
@@ -4172,7 +4140,7 @@ class _RrhhHiringDossierDetailViewState
                                         ),
                                       ))
                                   .toList(),
-                              onChanged: (isComplete || _s5AreaId == null)
+                              onChanged: (isReadOnly || _s5AreaId == null)
                                   ? null
                                   : (val) {
                                       final pos = _positions
@@ -4225,7 +4193,7 @@ class _RrhhHiringDossierDetailViewState
                                         ),
                                       ))
                                   .toList(),
-                              onChanged: isComplete
+                              onChanged: isReadOnly
                                   ? null
                                   : (val) {
                                       final shift = _shifts.firstWhere(
@@ -4269,7 +4237,7 @@ class _RrhhHiringDossierDetailViewState
                                       ),
                                     )),
                               ],
-                              onChanged: isComplete
+                              onChanged: isReadOnly
                                   ? null
                                   : (val) {
                                       setState(() {
@@ -4307,11 +4275,11 @@ class _RrhhHiringDossierDetailViewState
                   _buildTextField(
                     controller: _s5BaseLocationCtrl,
                     hint: 'Ej: Oficina Central Santa Cruz, Sede Norte, Cliente X',
-                    enabled: !isComplete,
+                    enabled: !isReadOnly,
                   ),
                   const SizedBox(height: 6),
                   // Quick chips for base location
-                  if (!isComplete)
+                  if (!isReadOnly)
                     Wrap(
                       spacing: 6,
                       runSpacing: 4,
@@ -4377,7 +4345,7 @@ class _RrhhHiringDossierDetailViewState
                                       ),
                                     )),
                               ],
-                              onChanged: isComplete
+                              onChanged: isReadOnly
                                   ? null
                                   : (val) {
                                       setState(() {
@@ -4399,7 +4367,7 @@ class _RrhhHiringDossierDetailViewState
                           context: context,
                           label: 'Fecha de ingreso efectiva *',
                           value: _s5EffectiveStartDate,
-                          enabled: !isComplete,
+                          enabled: !isReadOnly,
                           firstDate: _s4StartDate ?? DateTime(2020),
                           errorText: (_s5EffectiveStartDate != null &&
                                   _s4StartDate != null &&
@@ -4424,7 +4392,7 @@ class _RrhhHiringDossierDetailViewState
                   const SizedBox(height: 22),
 
                   // Action buttons
-                  if (!isComplete)
+                  if (!isReadOnly)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -5629,14 +5597,7 @@ class _RrhhHiringDossierDetailViewState
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFFEF4444),
-          duration: const Duration(seconds: 4),
-          content: Text('Error al convertir empleado: $e'),
-        ),
-      );
+      RrhhSnackBar.showError(context, 'Error al convertir empleado: $e');
     }
   }
 }

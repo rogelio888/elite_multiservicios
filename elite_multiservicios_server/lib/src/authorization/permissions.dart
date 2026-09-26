@@ -66,6 +66,7 @@ abstract class AppPermissions {
   static const String rrhhDashboardView = 'rrhh.dashboard.view';
   static const String rrhhPersonalView = 'rrhh.personal.view';
   static const String rrhhPersonalManage = 'rrhh.personal.manage';
+  static const String rrhhPersonalContractModify = 'rrhh.personal.contract.modify';
   static const String rrhhOrganizationView = 'rrhh.organization.view';
   static const String rrhhOrganizationManage = 'rrhh.organization.manage';
   static const String rrhhAssignmentsView = 'rrhh.assignments.view';
@@ -118,6 +119,7 @@ abstract class AppPermissions {
     rrhhDashboardView,
     rrhhPersonalView,
     rrhhPersonalManage,
+    rrhhPersonalContractModify,
     rrhhOrganizationView,
     rrhhOrganizationManage,
     rrhhAssignmentsView,

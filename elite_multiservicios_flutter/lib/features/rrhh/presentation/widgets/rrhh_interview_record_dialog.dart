@@ -1,3 +1,4 @@
+import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -101,11 +102,9 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
     }
 
     if (interviewers.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Debes seleccionar al menos un entrevistador'),
-          backgroundColor: Color(0xFFEF4444),
-        ),
+      RrhhSnackBar.showError(
+        context,
+        'Debes seleccionar al menos un entrevistador',
       );
       return;
     }

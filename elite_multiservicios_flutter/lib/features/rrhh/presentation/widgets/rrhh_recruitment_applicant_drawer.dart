@@ -7,6 +7,7 @@ import '../../data/repositories/rrhh_repository.dart';
 import 'rrhh_applicant_evaluation_dialog.dart';
 import 'rrhh_interview_record_dialog.dart';
 import 'rrhh_rejection_dialog.dart';
+import 'rrhh_snack_bar.dart';
 import '../views/rrhh_hiring_dossier_detail_view.dart';
 
 /// Drawer lateral para evaluación integral en 3 fases y transiciones del postulante.
@@ -128,9 +129,7 @@ class _RrhhRecruitmentApplicantDrawerState
     } catch (e) {
       if (mounted) {
         setState(() => _isActionRunning = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al cambiar estado: $e')),
-        );
+        RrhhSnackBar.showError(context, 'Error al cambiar estado: $e');
       }
     }
   }
@@ -1163,7 +1162,6 @@ class _RrhhRecruitmentApplicantDrawerState
                         ? null
                         : () async {
                             final nav = Navigator.of(context);
-                            final sm = ScaffoldMessenger.of(context);
                             setState(() => _isActionRunning = true);
                             try {
                               var dossier = await RrhhRepository.current
@@ -1187,9 +1185,7 @@ class _RrhhRecruitmentApplicantDrawerState
                               );
                             } catch (e) {
                               if (mounted) {
-                                sm.showSnackBar(
-                                  SnackBar(content: Text('Error al abrir expediente: $e')),
-                                );
+                                RrhhSnackBar.showError(context, 'Error al abrir expediente: $e');
                               }
                             } finally {
                               if (mounted) setState(() => _isActionRunning = false);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/repositories/rrhh_repository.dart';
+import 'rrhh_snack_bar.dart';
 import 'rrhh_specialty_edit_dialog.dart';
 import 'rrhh_state_widgets.dart';
 
@@ -114,17 +115,13 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
         setState(() {
           _specialties = [..._specialties, saved];
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Especialidad "${saved.name}" creada exitosamente'),
-            backgroundColor: const Color(0xFF10B981),
-          ),
+        RrhhSnackBar.showSuccess(
+          context,
+          'Especialidad "${saved.name}" creada exitosamente',
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al crear especialidad: $e')),
-        );
+        RrhhSnackBar.showError(context, 'Error al crear especialidad: $e');
       }
     }
   }
@@ -144,17 +141,13 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
           final idx = _specialties.indexWhere((s) => s.id == saved.id);
           if (idx != -1) _specialties[idx] = saved;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Especialidad "${saved.name}" actualizada exitosamente'),
-            backgroundColor: const Color(0xFF2563EB),
-          ),
+        RrhhSnackBar.showInfo(
+          context,
+          'Especialidad "${saved.name}" actualizada exitosamente',
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al actualizar especialidad: $e')),
-        );
+        RrhhSnackBar.showError(context, 'Error al actualizar especialidad: $e');
       }
     }
   }
@@ -217,21 +210,20 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
         if (idx != -1) _specialties[idx] = saved;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            saved.isActive
-                ? 'Especialidad "${saved.name}" reactivada'
-                : 'Especialidad "${saved.name}" desactivada',
-          ),
-          backgroundColor: saved.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B),
-        ),
-      );
+      if (saved.isActive) {
+        RrhhSnackBar.showSuccess(
+          context,
+          'Especialidad "${saved.name}" reactivada',
+        );
+      } else {
+        RrhhSnackBar.showInfo(
+          context,
+          'Especialidad "${saved.name}" desactivada',
+        );
+      }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cambiar estado: $e')),
-      );
+      RrhhSnackBar.showError(context, 'Error al cambiar estado: $e');
     }
   }
 

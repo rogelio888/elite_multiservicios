@@ -4,19 +4,26 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/models/rrhh_employee_summary_dto.dart';
 import '../../data/repositories/rrhh_repository.dart';
+import 'rrhh_edit_employee_dialog.dart';
 import 'rrhh_employee_detail_dialog.dart';
 import 'rrhh_hire_wizard.dart';
 import 'rrhh_personal_filters_bar.dart';
 import 'rrhh_personal_table_constants.dart';
 import 'rrhh_personal_table_row.dart';
+import 'rrhh_snack_bar.dart';
 import 'rrhh_state_widgets.dart';
 
 /// Tab 1: Directorio / Nómina de Personal.
 /// Consulta, filtrado y apertura de expediente 360° con RrhhEmployeeDetailDialog.
 class RrhhPersonalDirectorioTab extends StatefulWidget {
   final bool canManage;
+  final bool canModifyContract;
 
-  const RrhhPersonalDirectorioTab({super.key, this.canManage = true});
+  const RrhhPersonalDirectorioTab({
+    super.key,
+    this.canManage = true,
+    this.canModifyContract = true,
+  });
 
   @override
   State<RrhhPersonalDirectorioTab> createState() => RrhhPersonalDirectorioTabState();
@@ -154,8 +161,23 @@ class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
                         else
                           ...pageItems.map((emp) => RrhhPersonalTableRow(
                                 employee: emp, widths: widths,
-                                onViewDetails: () => RrhhEmployeeDetailDialog.show(context, emp.id),
-                                onEdit: () => RrhhEmployeeDetailDialog.show(context, emp.id),
+                                onViewDetails: () => RrhhEmployeeDetailDialog.show(
+                                  context,
+                                  emp.id,
+                                  canEdit: widget.canManage,
+                                  canModifyContract: widget.canModifyContract,
+                                ),
+                                onEdit: () async {
+                                  final repo = RrhhRepository.current;
+                                  final fullEmp = await repo.getEmployeeById(emp.id);
+                                  if (context.mounted) {
+                                    final updated = await RrhhEditEmployeeDialog.show(context, fullEmp);
+                                    if (updated == true && context.mounted) {
+                                      loadEmployees();
+                                      RrhhSnackBar.showSuccess(context, 'Ficha actualizada correctamente');
+                                    }
+                                  }
+                                },
                                 onTerminate: () => RrhhEmployeeDetailDialog.show(context, emp.id),
                               )),
                       ],

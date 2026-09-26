@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/repositories/rrhh_repository.dart';
 import 'rrhh_position_edit_dialog.dart';
+import 'rrhh_snack_bar.dart';
 import 'rrhh_state_widgets.dart';
 
 /// Anchos proporcionales calculados para la tabla de Cargos de Trabajo.
@@ -118,11 +119,9 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
   Future<void> _openCreatePosition() async {
     final activeAreas = _areas.where((a) => a.isActive).toList();
     if (activeAreas.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Debe existir al menos un área activa para crear un cargo'),
-          backgroundColor: Color(0xFFEF4444),
-        ),
+      RrhhSnackBar.showError(
+        context,
+        'Debe existir al menos un área activa para crear un cargo',
       );
       return;
     }
@@ -140,17 +139,13 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
         setState(() {
           _positions = [..._positions, saved];
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Cargo "${saved.name}" creado exitosamente'),
-            backgroundColor: const Color(0xFF10B981),
-          ),
+        RrhhSnackBar.showSuccess(
+          context,
+          'Cargo "${saved.name}" creado exitosamente',
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al crear cargo: $e')),
-        );
+        RrhhSnackBar.showError(context, 'Error al crear cargo: $e');
       }
     }
   }
@@ -171,17 +166,13 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
           final idx = _positions.indexWhere((p) => p.id == saved.id);
           if (idx != -1) _positions[idx] = saved;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Cargo "${saved.name}" actualizado exitosamente'),
-            backgroundColor: const Color(0xFF2563EB),
-          ),
+        RrhhSnackBar.showInfo(
+          context,
+          'Cargo "${saved.name}" actualizado exitosamente',
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al actualizar cargo: $e')),
-        );
+        RrhhSnackBar.showError(context, 'Error al actualizar cargo: $e');
       }
     }
   }
@@ -244,21 +235,20 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
         if (idx != -1) _positions[idx] = saved;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            saved.isActive
-                ? 'Cargo "${saved.name}" reactivado'
-                : 'Cargo "${saved.name}" desactivado',
-          ),
-          backgroundColor: saved.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B),
-        ),
-      );
+      if (saved.isActive) {
+        RrhhSnackBar.showSuccess(
+          context,
+          'Cargo "${saved.name}" reactivado',
+        );
+      } else {
+        RrhhSnackBar.showInfo(
+          context,
+          'Cargo "${saved.name}" desactivado',
+        );
+      }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cambiar estado: $e')),
-      );
+      RrhhSnackBar.showError(context, 'Error al cambiar estado: $e');
     }
   }
 

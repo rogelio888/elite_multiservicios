@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/models/rrhh_hiring_dossier.dart';
 import '../../data/repositories/rrhh_repository.dart';
+import 'rrhh_snack_bar.dart';
 import 'rrhh_state_widgets.dart';
 
 /// Tab 3 del Submódulo Personal: "Contrataciones en Curso".
@@ -63,24 +64,18 @@ class _RrhhHiringDossiersTabState extends State<RrhhHiringDossiersTab> {
       await RrhhRepository.current.updateDossierStatus(dossier.id, newStatus);
       await _loadDossiers();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              newStatus == 'pausado'
-                  ? 'Expediente ${dossier.applicantCode} pausado'
-                  : 'Expediente ${dossier.applicantCode} reanudado',
-            ),
-            backgroundColor: const Color(0xFF1E293B),
-          ),
+        RrhhSnackBar.showInfo(
+          context,
+          newStatus == 'pausado'
+              ? 'Expediente ${dossier.applicantCode} pausado'
+              : 'Expediente ${dossier.applicantCode} reanudado',
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al cambiar estado del expediente: $e'),
-            backgroundColor: const Color(0xFFEF4444),
-          ),
+        RrhhSnackBar.showError(
+          context,
+          'Error al cambiar estado del expediente: $e',
         );
       }
     }

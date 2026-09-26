@@ -46,6 +46,7 @@ abstract class RrhhRepository {
   Future<RrhhEmployee> getEmployeeById(int id);
   Future<List<RrhhEmployeeDocument>> listDocuments(int employeeId);
   Future<List<RrhhTimelineEvent>> listTimelineEvents(int employeeId);
+  Future<RrhhTimelineEvent> addTimelineEvent(RrhhTimelineEvent event);
   /// Asignación activa reportada por Operaciones (Solo Lectura desde Operaciones)
   Future<RrhhAssignment?> getCurrentAssignment(int employeeId);
   Future<RrhhEmployee> updateEmployee(RrhhEmployee employee);

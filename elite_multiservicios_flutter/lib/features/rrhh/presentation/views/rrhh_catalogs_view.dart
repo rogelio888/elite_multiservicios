@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../data/models/rrhh_catalog_item.dart';
 import '../../data/repositories/rrhh_repository.dart';
 import '../widgets/rrhh_catalog_edit_dialog.dart';
+import '../widgets/rrhh_snack_bar.dart';
 import '../widgets/rrhh_state_widgets.dart';
 
 /// Anchos calculados adaptativamente para las tablas de catálogos auxiliares.
@@ -219,21 +220,13 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
         setState(() {
           _items.add(created);
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Registro ${created.code} creado exitosamente'),
-            backgroundColor: const Color(0xFF10B981),
-            behavior: SnackBarBehavior.floating,
-          ),
+        RrhhSnackBar.showSuccess(
+          context,
+          'Registro ${created.code} creado exitosamente',
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al guardar: $e'),
-            backgroundColor: const Color(0xFFEF4444),
-          ),
-        );
+        RrhhSnackBar.showError(context, 'Error al guardar: $e');
       }
     }
   }
@@ -254,21 +247,13 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
           final idx = _items.indexWhere((c) => c.id == saved.id);
           if (idx != -1) _items[idx] = saved;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Registro ${saved.code} actualizado'),
-            backgroundColor: const Color(0xFF2563EB),
-            behavior: SnackBarBehavior.floating,
-          ),
+        RrhhSnackBar.showInfo(
+          context,
+          'Registro ${saved.code} actualizado',
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al actualizar: $e'),
-            backgroundColor: const Color(0xFFEF4444),
-          ),
-        );
+        RrhhSnackBar.showError(context, 'Error al actualizar: $e');
       }
     }
   }
@@ -311,23 +296,14 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
         final idx = _items.indexWhere((c) => c.id == saved.id);
         if (idx != -1) _items[idx] = saved;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            saved.isActive ? '${saved.code} activado' : '${saved.code} desactivado',
-          ),
-          backgroundColor: saved.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      if (saved.isActive) {
+        RrhhSnackBar.showSuccess(context, '${saved.code} activado');
+      } else {
+        RrhhSnackBar.showInfo(context, '${saved.code} desactivado');
+      }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al cambiar estado: $e'),
-          backgroundColor: const Color(0xFFEF4444),
-        ),
-      );
+      RrhhSnackBar.showError(context, 'Error al cambiar estado: $e');
     }
   }
 

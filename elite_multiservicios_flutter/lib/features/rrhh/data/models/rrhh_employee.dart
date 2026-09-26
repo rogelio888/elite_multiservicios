@@ -13,6 +13,7 @@ class RrhhTimelineEvent {
   final String
   category; // 'CONTRATACION', 'ASIGNACION', 'HORARIO', 'PERMISO', 'INCIDENCIA', 'DESVINCULACION'
   final String registeredBy;
+  final DateTime createdAt;
 
   const RrhhTimelineEvent({
     required this.id,
@@ -21,18 +22,24 @@ class RrhhTimelineEvent {
     required this.description,
     required this.category,
     required this.registeredBy,
+    required this.createdAt,
   });
 
   factory RrhhTimelineEvent.fromJson(Map<String, dynamic> json) {
+    final now = DateTime.now();
+    final parsedDate = json['date'] != null
+        ? DateTime.tryParse(json['date'] as String) ?? now
+        : now;
     return RrhhTimelineEvent(
       id: json['id'] as String? ?? '',
-      date: json['date'] != null
-          ? DateTime.tryParse(json['date'] as String) ?? DateTime.now()
-          : DateTime.now(),
+      date: parsedDate,
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
       category: json['category'] as String? ?? 'CONTRATACION',
       registeredBy: json['registeredBy'] as String? ?? 'RRHH',
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'] as String) ?? parsedDate
+          : parsedDate,
     );
   }
 
@@ -44,6 +51,7 @@ class RrhhTimelineEvent {
       'description': description,
       'category': category,
       'registeredBy': registeredBy,
+      'createdAt': createdAt.toIso8601String(),
     };
   }
 }

@@ -685,13 +685,28 @@ class RrhhRepositoryMock implements RrhhRepository {
     ];
   }
 
+  final Map<int, List<RrhhTimelineEvent>> _mockTimelineEvents = {};
+
   @override
   Future<List<RrhhTimelineEvent>> listTimelineEvents(int employeeId) async {
-    final emp = await getEmployeeById(employeeId);
-    return [
-      RrhhTimelineEvent(id: 1, employeeId: employeeId, date: emp.realStartDate, title: 'Alta Institucional', description: 'Incorporación a nómina de ${emp.area}', category: 'CONTRATACION', registeredBy: 'Lic. Laura Mendoza', createdAt: emp.realStartDate),
-      RrhhTimelineEvent(id: 2, employeeId: employeeId, date: DateTime(2026, 9, 23), title: 'Actualización Salarial', description: 'Ajuste contractual autorizado por Gerencia', category: 'HORARIO', registeredBy: 'Gerencia General', createdAt: DateTime(2026, 9, 23)),
-    ];
+    if (!_mockTimelineEvents.containsKey(employeeId)) {
+      final emp = await getEmployeeById(employeeId);
+      _mockTimelineEvents[employeeId] = [
+        RrhhTimelineEvent(id: 1, employeeId: employeeId, date: emp.realStartDate, title: 'Alta Institucional', description: 'Incorporación a nómina de ${emp.area}', category: 'CONTRATACION', registeredBy: 'Lic. Laura Mendoza', createdAt: emp.realStartDate),
+        RrhhTimelineEvent(id: 2, employeeId: employeeId, date: DateTime(2026, 9, 23), title: 'Actualización Salarial', description: 'Ajuste contractual autorizado por Gerencia', category: 'HORARIO', registeredBy: 'Gerencia General', createdAt: DateTime(2026, 9, 23)),
+      ];
+    }
+    return List.from(_mockTimelineEvents[employeeId]!);
+  }
+
+  @override
+  Future<RrhhTimelineEvent> addTimelineEvent(RrhhTimelineEvent event) async {
+    await listTimelineEvents(event.employeeId);
+    final list = _mockTimelineEvents[event.employeeId] ?? [];
+    final newEvent = event.copyWith(id: list.length + 1);
+    list.insert(0, newEvent);
+    _mockTimelineEvents[event.employeeId] = list;
+    return newEvent;
   }
 
   @override

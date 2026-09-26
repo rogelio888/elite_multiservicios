@@ -2,7 +2,6 @@ import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/data/models/rrhh_hiring_dossier.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/data/repositories/rrhh_repository.dart';
-import 'package:elite_multiservicios_flutter/features/rrhh/data/repositories/rrhh_mock_dataset.dart';
 
 void main() {
   group('FASE C1: Modelo RrhhHiringDossier & RrhhDossierDocument', () {
@@ -152,11 +151,11 @@ void main() {
       final applicants = await repo.listApplicants();
       final selectedApp = applicants.firstWhere((a) => a.code == 'POST-014');
 
-      final existing = await repo.getDossierByApplicantId(selectedApp.id!);
+      final existing = await repo.getDossierByApplicantId(selectedApp.id);
       expect(existing, isNotNull);
 
       // Si llamamos a crear de nuevo para el mismo postulante:
-      final repeated = await repo.createDossierForApplicant(selectedApp.id!);
+      final repeated = await repo.createDossierForApplicant(selectedApp.id);
       expect(repeated.id, existing!.id);
 
       final list = await repo.listActiveDossiers();

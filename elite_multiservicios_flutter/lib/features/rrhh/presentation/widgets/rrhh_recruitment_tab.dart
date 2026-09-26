@@ -8,6 +8,7 @@ import 'rrhh_applicant_edit_dialog.dart';
 import 'rrhh_recruitment_applicant_drawer.dart';
 import 'rrhh_recruitment_kanban.dart';
 import 'rrhh_rejection_dialog.dart';
+import 'rrhh_snack_bar.dart';
 import 'rrhh_state_widgets.dart';
 
 /// Tab 2: Reclutamiento & Pipeline de Postulantes en formato Tablero Kanban.
@@ -89,15 +90,13 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
         final list = await RrhhRepository.current.listApplicants();
         if (mounted) {
           setState(() => _allApplicants = list);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Candidatura de ${applicant.fullName} descartada'),
-              backgroundColor: const Color(0xFFEF4444),
-            ),
+          RrhhSnackBar.showWarning(
+            context,
+            'Candidatura de ${applicant.fullName} descartada',
           );
         }
       } catch (e) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        if (mounted) RrhhSnackBar.showError(context, 'Error: $e');
       }
       return;
     }
@@ -118,24 +117,18 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
       final freshList = await RrhhRepository.current.listApplicants();
       if (mounted) {
         setState(() => _allApplicants = freshList);
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${applicant.fullName} movido a $targetStage'),
-            duration: const Duration(seconds: 2),
-            backgroundColor: const Color(0xFF1E293B),
-          ),
+        RrhhSnackBar.showInfo(
+          context,
+          '${applicant.fullName} movido a $targetStage',
         );
       }
     } catch (e) {
       // Revertir ante error
       if (mounted) {
         setState(() => _allApplicants = previousList);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al mover postulante: $e'),
-            backgroundColor: const Color(0xFFEF4444),
-          ),
+        RrhhSnackBar.showError(
+          context,
+          'Error al mover postulante: $e',
         );
       }
     }
@@ -210,9 +203,11 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
         FilledButton.icon(
           onPressed: _openCreateDialog,
           icon: const Icon(Icons.add, size: 16),
-          label: const Text('Registrar Postulante'),
+          label: Text('Registrar Postulante', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
           style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFF0284C7),
+            backgroundColor: const Color(0xFF2563EB),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           ),
         ),

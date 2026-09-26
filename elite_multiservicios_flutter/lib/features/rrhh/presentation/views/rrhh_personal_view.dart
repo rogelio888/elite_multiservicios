@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../widgets/rrhh_hiring_dossiers_tab.dart';
 import '../widgets/rrhh_personal_directorio_tab.dart';
 import '../widgets/rrhh_recruitment_tab.dart';
+import '../widgets/rrhh_snack_bar.dart';
 import '../widgets/rrhh_state_widgets.dart';
 import 'rrhh_hiring_dossier_detail_view.dart';
 
@@ -14,6 +15,7 @@ class RrhhPersonalView extends StatefulWidget {
   final int? initialDossierId;
   final bool hasPermission;
   final bool canManage;
+  final bool canModifyContract;
   final void Function(int index)? onNavigateToTab;
 
   const RrhhPersonalView({
@@ -22,6 +24,7 @@ class RrhhPersonalView extends StatefulWidget {
     this.initialDossierId,
     this.hasPermission = true,
     this.canManage = true,
+    this.canModifyContract = true,
     this.onNavigateToTab,
   });
 
@@ -109,37 +112,9 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
             _selectedDossierId = null;
             _tabController.animateTo(0);
           });
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              backgroundColor: const Color(0xFF065F46),
-              elevation: 6,
-              margin: const EdgeInsets.only(bottom: 24, right: 32, left: 32),
-              duration: const Duration(seconds: 4),
-              showCloseIcon: true,
-              closeIconColor: Colors.white70,
-              content: Row(
-                children: [
-                  const Icon(Icons.check_circle_rounded,
-                      color: Color(0xFF34D399), size: 20),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Empleado creado exitosamente con código $empCode',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          RrhhSnackBar.showSuccess(
+            context,
+            'Empleado creado exitosamente con código $empCode',
           );
         },
       );
@@ -153,7 +128,10 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
             controller: _tabController,
             children: [
               // Tab 1: Directorio (Pantalla 02)
-              RrhhPersonalDirectorioTab(canManage: widget.canManage),
+              RrhhPersonalDirectorioTab(
+                canManage: widget.canManage,
+                canModifyContract: widget.canModifyContract,
+              ),
 
               // Tab 2: Reclutamiento & Postulantes (Pantalla 04)
               const RrhhRecruitmentTab(),

@@ -10,15 +10,19 @@ import 'rrhh_personal_status_chip.dart';
 class RrhhEmployeeDetailHeader extends StatelessWidget {
   final RrhhEmployee employee;
   final bool canEdit;
+  final bool canModifyContract;
   final VoidCallback onClose;
   final VoidCallback onEdit;
+  final VoidCallback onModifyContract;
 
   const RrhhEmployeeDetailHeader({
     super.key,
     required this.employee,
     this.canEdit = true,
+    this.canModifyContract = true,
     required this.onClose,
     required this.onEdit,
+    required this.onModifyContract,
   });
 
   @override
@@ -76,12 +80,19 @@ class RrhhEmployeeDetailHeader extends StatelessWidget {
               ),
               Row(
                 children: [
-                  if (canEdit)
-                    OutlinedButton.icon(
-                      onPressed: onEdit,
+                  // Botón 1: [Editar Ficha]
+                  Tooltip(
+                    message: canEdit
+                        ? 'Editar datos personales y de contacto'
+                        : 'No tienes permisos para editar la ficha.',
+                    child: OutlinedButton.icon(
+                      onPressed: canEdit ? onEdit : null,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFFCBD5E1),
-                        side: const BorderSide(color: Color(0xFF334155)),
+                        disabledForegroundColor: const Color(0xFF64748B),
+                        side: BorderSide(
+                          color: canEdit ? const Color(0xFF334155) : const Color(0xFF1E293B),
+                        ),
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(7),
@@ -93,6 +104,34 @@ class RrhhEmployeeDetailHeader extends StatelessWidget {
                         style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w600),
                       ),
                     ),
+                  ),
+                  const SizedBox(width: 8),
+
+                  // Botón 2: [Modificar Datos Contractuales]
+                  Tooltip(
+                    message: canModifyContract
+                        ? 'Modificar condiciones contractuales y de asignación'
+                        : 'No tienes permisos para modificar datos contractuales.',
+                    child: OutlinedButton.icon(
+                      onPressed: canModifyContract ? onModifyContract : null,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFF59E0B),
+                        disabledForegroundColor: const Color(0xFF64748B),
+                        side: BorderSide(
+                          color: canModifyContract ? const Color(0xFFB45309) : const Color(0xFF1E293B),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                      ),
+                      icon: const Icon(Icons.history_edu_outlined, size: 14),
+                      label: Text(
+                        'Modificar Datos Contractuales',
+                        style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 8),
                   IconButton(
                     onPressed: onClose,

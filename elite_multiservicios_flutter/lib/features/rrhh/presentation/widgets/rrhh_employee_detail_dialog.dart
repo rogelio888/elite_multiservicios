@@ -4,12 +4,15 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/repositories/rrhh_repository.dart';
+import 'rrhh_contract_modification_dialog.dart';
+import 'rrhh_edit_employee_dialog.dart';
 import 'rrhh_employee_detail_header.dart';
 import 'rrhh_employee_detail_tab_assignment.dart';
 import 'rrhh_employee_detail_tab_contract.dart';
 import 'rrhh_employee_detail_tab_documents.dart';
 import 'rrhh_employee_detail_tab_history.dart';
 import 'rrhh_employee_detail_tab_personal.dart';
+import 'rrhh_snack_bar.dart';
 import 'rrhh_state_widgets.dart';
 
 /// Modal Raíz del Expediente del Colaborador (Pantalla 03 - Detalle 360°).
@@ -19,6 +22,7 @@ class RrhhEmployeeDetailDialog extends StatefulWidget {
   final bool hasPermission;
   final bool hasCompensationPermission;
   final bool canEdit;
+  final bool canModifyContract;
 
   const RrhhEmployeeDetailDialog({
     super.key,
@@ -26,6 +30,7 @@ class RrhhEmployeeDetailDialog extends StatefulWidget {
     this.hasPermission = true,
     this.hasCompensationPermission = true,
     this.canEdit = true,
+    this.canModifyContract = true,
   });
 
   static Future<void> show(
@@ -34,6 +39,7 @@ class RrhhEmployeeDetailDialog extends StatefulWidget {
     bool hasPermission = true,
     bool hasCompensationPermission = true,
     bool canEdit = true,
+    bool canModifyContract = true,
   }) {
     return showDialog<void>(
       context: context,
@@ -43,6 +49,7 @@ class RrhhEmployeeDetailDialog extends StatefulWidget {
         hasPermission: hasPermission,
         hasCompensationPermission: hasCompensationPermission,
         canEdit: canEdit,
+        canModifyContract: canModifyContract,
       ),
     );
   }
@@ -181,14 +188,41 @@ class _RrhhEmployeeDetailDialogState extends State<RrhhEmployeeDetailDialog>
         RrhhEmployeeDetailHeader(
           employee: _employee!,
           canEdit: widget.canEdit,
+          canModifyContract: widget.canModifyContract,
           onClose: () => Navigator.of(context).pop(),
-          onEdit: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                backgroundColor: Color(0xFF1E293B),
-                content: Text('Edición rápida de ficha habilitada para administradores.'),
-              ),
-            );
+          onEdit: () async {
+            final updated =
+                await RrhhEditEmployeeDialog.show(context, _employee!);
+            if (updated == true) {
+              await _loadEmployeeData();
+              if (mounted) {
+                RrhhSnackBar.showSuccess(
+                    context, 'Ficha actualizada correctamente');
+              }
+            }
+          },
+          onModifyContract: () async {
+            final result =
+                await RrhhContractModificationDialog.show(context, _employee!);
+            if (result != null && result.success) {
+              await _loadEmployeeData();
+              if (mounted) {
+                RrhhSnackBar.showSuccess(
+                  context,
+                  'Datos contractuales modificados correctamente. El cambio quedó registrado en el historial.',
+                );
+                if (result.isSensitive) {
+                  Future.delayed(const Duration(milliseconds: 500), () {
+                    if (mounted) {
+                      RrhhSnackBar.showWarning(
+                        context,
+                        'Este cambio será notificado a Contabilidad para su procesamiento.',
+                      );
+                    }
+                  });
+                }
+              }
+            }
           },
         ),
 
