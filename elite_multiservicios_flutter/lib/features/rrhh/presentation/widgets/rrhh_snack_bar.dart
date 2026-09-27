@@ -39,26 +39,32 @@ class RrhhSnackBar {
         behavior: SnackBarBehavior.floating,
         padding: EdgeInsets.zero,
         duration: effectiveDuration,
-        content: Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFF1E293B), // Slate oscuro sólido
-            borderRadius: BorderRadius.circular(8),
-            border: Border(
-              left: BorderSide(color: typeColor, width: 4),
-              top: const BorderSide(color: Color(0xFF334155), width: 1),
-              right: const BorderSide(color: Color(0xFF334155), width: 1),
-              bottom: const BorderSide(color: Color(0xFF334155), width: 1),
+        content: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E293B), // Slate oscuro sólido
+              border: Border.all(color: const Color(0xFF334155), width: 1),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.5),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
+            child: IntrinsicHeight(
+              child: Row(
+                children: [
+                  Container(width: 4, color: typeColor),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      child: Row(
             children: [
               Icon(iconData, color: typeColor, size: 20),
               const SizedBox(width: 12),
@@ -89,12 +95,18 @@ class RrhhSnackBar {
                   ),
                 ),
               ],
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  ),
+);
+}
 
   static void showSuccess(BuildContext context, String message, {Duration? duration, SnackBarAction? action}) =>
       show(context, message: message, type: RrhhSnackBarType.success, duration: duration, action: action);

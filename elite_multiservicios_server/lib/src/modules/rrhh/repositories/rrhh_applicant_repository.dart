@@ -177,8 +177,11 @@ class RrhhRecruitmentRepository {
 
     final validStatuses = [
       'NUEVO',
+      'EN_REVISION',
       'EN_EVALUACION',
+      'ENTREVISTA',
       'ENTREVISTADO',
+      'PRUEBAS',
       'SELECCIONADO',
       'RECHAZADO',
       'CONTRATADO',
