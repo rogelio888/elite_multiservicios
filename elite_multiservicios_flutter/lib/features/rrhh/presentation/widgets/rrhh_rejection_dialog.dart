@@ -247,7 +247,6 @@ class _RrhhRejectionDialogState extends State<RrhhRejectionDialog> {
                 // Checkbox elegible para rehire
                 Material(
                   color: const Color(0xFF1E293B).withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                     side: const BorderSide(color: Color(0xFF334155)),

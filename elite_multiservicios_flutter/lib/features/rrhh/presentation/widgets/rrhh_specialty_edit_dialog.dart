@@ -219,7 +219,6 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
   Widget _buildActiveSwitch() {
     return Material(
       color: const Color(0xFF111C30),
-      borderRadius: BorderRadius.circular(8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: const BorderSide(color: Color(0xFF1E293B)),

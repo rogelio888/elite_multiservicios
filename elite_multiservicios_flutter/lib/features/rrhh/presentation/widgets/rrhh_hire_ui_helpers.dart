@@ -140,7 +140,6 @@ Widget buildHireDocumentCheckTile({
 }) {
   return Material(
     color: const Color(0xFF111827),
-    borderRadius: BorderRadius.circular(8),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(8),
       side: BorderSide(

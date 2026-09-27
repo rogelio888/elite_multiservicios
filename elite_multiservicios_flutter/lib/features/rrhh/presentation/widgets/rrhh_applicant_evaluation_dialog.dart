@@ -255,7 +255,6 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
                           _sectionTitle('CONDICIONES OPERATIVAS DECLARADAS'),
                           Material(
                             color: const Color(0xFF1E293B),
-                            borderRadius: BorderRadius.circular(8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                               side: const BorderSide(color: Color(0xFF334155)),
