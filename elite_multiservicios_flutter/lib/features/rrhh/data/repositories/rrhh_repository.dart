@@ -58,7 +58,12 @@ abstract class RrhhRepository {
   // PANTALLA 03: Expediente del Empleado (Detalle 360°)
   // ---------------------------------------------------------------------------
   Future<RrhhEmployee> getEmployeeById(int id);
+  Future<RrhhEmployee?> getEmployeeByCode(String code);
+  Future<RrhhEmployee> createEmployee(RrhhEmployee employee);
+  Future<bool> deleteEmployee(int id);
   Future<List<RrhhEmployeeDocument>> listDocuments(int employeeId);
+  Future<RrhhEmployeeDocument> uploadEmployeeDocument(RrhhEmployeeDocument document);
+  Future<bool> deleteEmployeeDocument(int documentId);
   Future<List<RrhhTimelineEvent>> listTimelineEvents({
     int? employeeId,
     String? category,
@@ -148,6 +153,8 @@ abstract class RrhhRepository {
     RrhhApplicant applicant, {
     RrhhApplicantCompanion? companion,
   });
+  Future<RrhhApplicant> updateApplicant(RrhhApplicant applicant);
+  Future<bool> deleteApplicant(int id);
   Future<RrhhApplicant> updateApplicantStatus(
     int applicantId,
     String newStatus, {
@@ -222,7 +229,14 @@ abstract class RrhhRepository {
     DateTime? effectiveStartDate,
     required String sectionStatus,
   });
+  Future<RrhhHiringDossier> updateDossierSection6(
+    int id, {
+    String? closingNotes,
+    String? approvedBy,
+    required String sectionStatus,
+  });
   Future<RrhhHiringDossier> updateDossierStatus(int id, String status);
+  Future<bool> deleteDossier(int id);
 
   /// Convierte un expediente formalizado en empleado activo y actualiza el postulante.
   Future<RrhhEmployee> convertDossierToEmployee(int dossierId, {String? notes});
