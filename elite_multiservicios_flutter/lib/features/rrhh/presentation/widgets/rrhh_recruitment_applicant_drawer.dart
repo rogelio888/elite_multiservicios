@@ -127,7 +127,13 @@ class _RrhhRecruitmentApplicantDrawerState
         isEligibleForRehire: isEligibleForRehire,
       );
       if (newStatus == 'SELECCIONADO') {
-        await RrhhRepository.current.createDossierForApplicant(widget.applicantId);
+        try {
+          var dossier = await RrhhRepository.current.getDossierByApplicantId(widget.applicantId);
+          dossier ??= await RrhhRepository.current.createDossierForApplicant(widget.applicantId);
+        } catch (_) {}
+        if (_companion != null) {
+          await RrhhRepository.current.saveApplicantCompanion(widget.applicantId, _companion!);
+        }
       }
       final comp = await RrhhRepository.current.getApplicantCompanion(widget.applicantId);
 

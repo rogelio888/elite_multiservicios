@@ -9,6 +9,7 @@ import '../models/rrhh_applicant_summary_dto.dart';
 import '../models/rrhh_catalog_item.dart';
 import '../models/rrhh_payroll_export_dto.dart';
 import '../models/rrhh_shift.dart';
+import '../../presentation/extensions/rrhh_model_extensions.dart';
 import 'rrhh_repository.dart';
 
 /// Implementación remota del repositorio de RRHH conectada a Serverpod.
@@ -592,6 +593,15 @@ class RrhhRepositoryRemote implements RrhhRepository {
 
     try {
       final appApplicant = await getApplicantById(applicantId);
+
+      // Si existe un expediente de contratación para este postulante, recuperar los documentos validados
+      RrhhHiringDossier? dossier;
+      try {
+        dossier = await getDossierByApplicantId(applicantId);
+      } catch (_) {}
+
+      final docsMap = dossier?.documents ?? {};
+
       final initial = RrhhApplicantCompanion(
         applicantId: applicantId,
         evaluation: RrhhApplicantEvaluation(
@@ -605,7 +615,12 @@ class RrhhRepositoryRemote implements RrhhRepository {
           salaryExpectation: appApplicant.expectedSalary,
         ),
         documents: RrhhApplicantDocumentsChecklist(
-          hasCiCopy: appApplicant.hasIdentityCardCopy,
+          hasCiCopy: appApplicant.hasIdentityCardCopy || (docsMap['CI']?.status != null && docsMap['CI']!.status != 'pendiente'),
+          hasFelcc: docsMap['FELCC']?.status != null && docsMap['FELCC']!.status != 'pendiente',
+          hasUtilityBill: docsMap['AVISO_LUZ_AGUA']?.status != null && docsMap['AVISO_LUZ_AGUA']!.status != 'pendiente',
+          hasHomeSketch: docsMap['CROQUIS']?.status != null && docsMap['CROQUIS']!.status != 'pendiente',
+          hasPhoto3x4: docsMap['FOTO']?.status != null && docsMap['FOTO']!.status != 'pendiente',
+          hasSus: docsMap['SUS']?.status != null && docsMap['SUS']!.status != 'pendiente',
         ),
       );
       _companions[applicantId] = initial;
@@ -622,7 +637,7 @@ class RrhhRepositoryRemote implements RrhhRepository {
   ) async {
     _companions[applicantId] = companion;
 
-    // Persistir campos de evaluación y documentos en la tabla rrhh_applicant de Serverpod
+    // 1. Persistir campos de evaluación y documentos en la tabla rrhh_applicant de Serverpod
     try {
       final existing = await getApplicantById(applicantId);
       final eval = companion.evaluation;
@@ -641,6 +656,30 @@ class RrhhRepositoryRemote implements RrhhRepository {
       );
 
       await updateApplicant(updated);
+    } catch (_) {}
+
+    // 2. Si ya existe un expediente de contratación (RrhhHiringDossier) en PostgreSQL, sincronizar los documentos
+    try {
+      final dossier = await getDossierByApplicantId(applicantId);
+      if (dossier != null && dossier.id != null) {
+        final docsMap = Map<String, RrhhDossierDocument>.from(dossier.documents);
+        final d = companion.documents;
+        void syncDoc(String key, bool hasDoc) {
+          if (docsMap.containsKey(key)) {
+            docsMap[key] = docsMap[key]!.copyWith(
+              status: hasDoc ? 'recibido' : 'pendiente',
+              receivedAt: hasDoc ? (docsMap[key]!.receivedAt ?? DateTime.now()) : null,
+            );
+          }
+        }
+        syncDoc('CI', d.hasCiCopy);
+        syncDoc('FELCC', d.hasFelcc);
+        syncDoc('AVISO_LUZ_AGUA', d.hasUtilityBill);
+        syncDoc('CROQUIS', d.hasHomeSketch);
+        syncDoc('FOTO', d.hasPhoto3x4);
+        syncDoc('SUS', d.hasSus);
+        await updateDossierSection1(dossier.id!, docsMap);
+      }
     } catch (_) {}
   }
 
