@@ -1,4 +1,5 @@
-import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
+    hide RrhhLeaveRequest;
 import '../models/crm_client_ref_dto.dart';
 import '../models/ops_attendance_summary_dto.dart';
 import '../models/rrhh_applicant_companion.dart';
@@ -428,12 +429,23 @@ class RrhhRepositoryRemote implements RrhhRepository {
     throw UnimplementedError(_pendingMsg);
   }
 
+  // ---------------------------------------------------------------------------
+  // PANTALLA 08: Permisos y Licencias Médicas (Bloque 3)
+  // ---------------------------------------------------------------------------
   @override
   Future<List<RrhhLeaveRequest>> listLeaveRequests({
+    String? search,
+    String? leaveType,
     String? status,
-    String? type,
-    DateTime? month,
+    bool? isPaid,
+    DateTime? fromDate,
+    DateTime? toDate,
   }) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhLeaveRequest?> getLeaveRequestById(int id) async {
     throw UnimplementedError(_pendingMsg);
   }
 
@@ -443,11 +455,95 @@ class RrhhRepositoryRemote implements RrhhRepository {
   }
 
   @override
-  Future<RrhhLeaveRequest> resolveLeaveRequest(
-    int requestId,
+  Future<RrhhLeaveRequest> updateLeaveRequest(RrhhLeaveRequest request) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhLeaveRequest> updateLeaveStatus(
+    int id,
     String newStatus, {
-    String? resolutionNotes,
+    String? reason,
+    String? approvedBy,
   }) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<bool> deleteLeaveRequest(int id) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<List<RrhhLeaveRequest>> listPayrollAffectingLeaves(
+    DateTime fromDate,
+    DateTime toDate,
+  ) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  // ---------------------------------------------------------------------------
+  // PANTALLA 09: Control de Vacaciones (Ley Laboral Bolivia)
+  // ---------------------------------------------------------------------------
+  @override
+  Future<List<RrhhVacationRecord>> listVacationRecords({
+    String? search,
+    String? status,
+    int? employeeId,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhVacationRecord?> getVacationRecordById(int id) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhVacationRecord> createVacationRecord(RrhhVacationRecord record) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhVacationRecord> updateVacationRecord(RrhhVacationRecord record) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhVacationRecord> updateVacationStatus(
+    int id,
+    String newStatus, {
+    String? reason,
+  }) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<bool> deleteVacationRecord(int id) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<List<RrhhVacationBalance>> listVacationBalances({
+    String? search,
+    String? balanceStatus,
+    int? areaId,
+  }) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhVacationBalance?> getVacationBalanceByEmployee(int employeeId) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<List<RrhhVacationRecord>> listPayrollAffectingVacations(
+    DateTime fromDate,
+    DateTime toDate,
+  ) async {
     throw UnimplementedError(_pendingMsg);
   }
 
@@ -469,6 +565,67 @@ class RrhhRepositoryRemote implements RrhhRepository {
     throw UnimplementedError(_pendingMsg);
   }
 
+  // ---------------------------------------------------------------------------
+  // PANTALLA 10: Régimen Disciplinario e Incidencias (Ley Laboral Bolivia)
+  // ---------------------------------------------------------------------------
+  @override
+  Future<List<RrhhDisciplinaryRecord>> listDisciplinaryRecords({
+    String? status,
+    String? faultType,
+    String? sanctionType,
+    String? search,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhDisciplinaryRecord?> getDisciplinaryRecordById(int id) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhDisciplinaryRecord> createDisciplinaryRecord(
+    RrhhDisciplinaryRecord record,
+  ) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhDisciplinaryRecord> updateDisciplinaryRecord(
+    RrhhDisciplinaryRecord record,
+  ) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<bool> updateDisciplinaryStatus(
+    int id,
+    String newStatus, {
+    String? reason,
+    String? dischargeText,
+    String? sanctionType,
+    int? suspensionDays,
+    double? salaryDeduction,
+    String? sanctionDescription,
+  }) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<bool> deleteDisciplinaryRecord(int id) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<List<RrhhDisciplinaryRecord>> listPayrollAffectingDisciplinary(
+    DateTime fromDate,
+    DateTime toDate,
+  ) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
   @override
   Future<List<RrhhIncident>> listIncidents({
     String? severity,
@@ -479,6 +636,60 @@ class RrhhRepositoryRemote implements RrhhRepository {
 
   @override
   Future<RrhhIncident> recordIncident(RrhhIncident incident) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<List<RrhhTerminationRecord>> listTerminationRecords({
+    String? status,
+    String? terminationType,
+    String? search,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhTerminationRecord?> getTerminationRecordById(int id) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhTerminationRecord> createTerminationRecord(
+    RrhhTerminationRecord record,
+  ) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhTerminationRecord> updateTerminationRecord(
+    RrhhTerminationRecord record,
+  ) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<bool> updateTerminationStatus(
+    int id,
+    String newStatus, {
+    String? reason,
+    bool? paymentCompleted,
+    DateTime? paymentCompletedAt,
+  }) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<bool> deleteTerminationRecord(int id) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<List<RrhhTerminationRecord>> listPayrollAffectingTerminations(
+    DateTime fromDate,
+    DateTime toDate,
+  ) async {
     throw UnimplementedError(_pendingMsg);
   }
 

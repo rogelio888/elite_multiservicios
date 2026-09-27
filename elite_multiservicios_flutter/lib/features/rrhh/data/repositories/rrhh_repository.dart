@@ -1,4 +1,5 @@
-import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
+    hide RrhhLeaveRequest;
 import '../models/crm_client_ref_dto.dart';
 import '../models/ops_attendance_summary_dto.dart';
 import '../models/rrhh_applicant_companion.dart';
@@ -6,8 +7,17 @@ import '../models/rrhh_applicant_summary_dto.dart';
 import '../models/rrhh_catalog_item.dart';
 import '../models/rrhh_employee_summary_dto.dart';
 import '../models/rrhh_hiring_dossier.dart';
+import '../models/rrhh_leave_request.dart';
 import '../models/rrhh_payroll_export_dto.dart';
 import '../models/rrhh_shift.dart';
+import '../models/rrhh_vacation.dart';
+import '../models/rrhh_disciplinary_record.dart';
+import '../models/rrhh_termination_record.dart';
+
+export '../models/rrhh_leave_request.dart';
+export '../models/rrhh_vacation.dart';
+export '../models/rrhh_disciplinary_record.dart';
+export '../models/rrhh_termination_record.dart';
 
 import 'rrhh_repository_mock.dart';
 
@@ -250,23 +260,60 @@ abstract class RrhhRepository {
   Future<RrhhCatalogItem> updateCatalogItem(RrhhCatalogItem item);
 
   // ---------------------------------------------------------------------------
-  // PANTALLA 08: Permisos y Licencias Médicas
+  // PANTALLA 08: Permisos y Licencias Médicas (Bloque 3)
   // ---------------------------------------------------------------------------
   Future<List<RrhhLeaveRequest>> listLeaveRequests({
+    String? search,
+    String? leaveType,
     String? status,
-    String? type,
-    DateTime? month,
+    bool? isPaid,
+    DateTime? fromDate,
+    DateTime? toDate,
   });
+  Future<RrhhLeaveRequest?> getLeaveRequestById(int id);
   Future<RrhhLeaveRequest> createLeaveRequest(RrhhLeaveRequest request);
-  Future<RrhhLeaveRequest> resolveLeaveRequest(
-    int requestId,
+  Future<RrhhLeaveRequest> updateLeaveRequest(RrhhLeaveRequest request);
+  Future<RrhhLeaveRequest> updateLeaveStatus(
+    int id,
     String newStatus, {
-    String? resolutionNotes,
+    String? reason,
+    String? approvedBy,
   });
+  Future<bool> deleteLeaveRequest(int id);
+  Future<List<RrhhLeaveRequest>> listPayrollAffectingLeaves(
+    DateTime fromDate,
+    DateTime toDate,
+  );
 
   // ---------------------------------------------------------------------------
   // PANTALLA 09: Control de Vacaciones (Ley Laboral Bolivia)
   // ---------------------------------------------------------------------------
+  Future<List<RrhhVacationRecord>> listVacationRecords({
+    String? search,
+    String? status,
+    int? employeeId,
+    DateTime? fromDate,
+    DateTime? toDate,
+  });
+  Future<RrhhVacationRecord?> getVacationRecordById(int id);
+  Future<RrhhVacationRecord> createVacationRecord(RrhhVacationRecord record);
+  Future<RrhhVacationRecord> updateVacationRecord(RrhhVacationRecord record);
+  Future<RrhhVacationRecord> updateVacationStatus(
+    int id,
+    String newStatus, {
+    String? reason,
+  });
+  Future<bool> deleteVacationRecord(int id);
+  Future<List<RrhhVacationBalance>> listVacationBalances({
+    String? search,
+    String? balanceStatus,
+    int? areaId,
+  });
+  Future<RrhhVacationBalance?> getVacationBalanceByEmployee(int employeeId);
+  Future<List<RrhhVacationRecord>> listPayrollAffectingVacations(
+    DateTime fromDate,
+    DateTime toDate,
+  );
   Future<List<RrhhVacation>> listVacations();
   Future<RrhhVacation> requestVacation(RrhhVacation vacation);
   Future<RrhhVacation> approveVacation(
@@ -275,8 +322,39 @@ abstract class RrhhRepository {
   });
 
   // ---------------------------------------------------------------------------
-  // PANTALLA 10: Régimen Disciplinario e Incidencias
+  // PANTALLA 10: Régimen Disciplinario e Incidencias (Ley Laboral Bolivia)
   // ---------------------------------------------------------------------------
+  Future<List<RrhhDisciplinaryRecord>> listDisciplinaryRecords({
+    String? status,
+    String? faultType,
+    String? sanctionType,
+    String? search,
+    DateTime? fromDate,
+    DateTime? toDate,
+  });
+  Future<RrhhDisciplinaryRecord?> getDisciplinaryRecordById(int id);
+  Future<RrhhDisciplinaryRecord> createDisciplinaryRecord(
+    RrhhDisciplinaryRecord record,
+  );
+  Future<RrhhDisciplinaryRecord> updateDisciplinaryRecord(
+    RrhhDisciplinaryRecord record,
+  );
+  Future<bool> updateDisciplinaryStatus(
+    int id,
+    String newStatus, {
+    String? reason,
+    String? dischargeText,
+    String? sanctionType,
+    int? suspensionDays,
+    double? salaryDeduction,
+    String? sanctionDescription,
+  });
+  Future<bool> deleteDisciplinaryRecord(int id);
+  Future<List<RrhhDisciplinaryRecord>> listPayrollAffectingDisciplinary(
+    DateTime fromDate,
+    DateTime toDate,
+  );
+
   Future<List<RrhhIncident>> listIncidents({
     String? severity,
     String? search,
@@ -284,8 +362,36 @@ abstract class RrhhRepository {
   Future<RrhhIncident> recordIncident(RrhhIncident incident);
 
   // ---------------------------------------------------------------------------
-  // PANTALLA 11: Desvinculación & Bajas Laborales (Regla de Oro Inactivo)
+  // PANTALLA 11: Desvinculación & Bajas Laborales (Regla de Oro Inactivo / LGT Bolivia)
   // ---------------------------------------------------------------------------
+  Future<List<RrhhTerminationRecord>> listTerminationRecords({
+    String? status,
+    String? terminationType,
+    String? search,
+    DateTime? fromDate,
+    DateTime? toDate,
+  });
+  Future<RrhhTerminationRecord?> getTerminationRecordById(int id);
+  Future<RrhhTerminationRecord> createTerminationRecord(
+    RrhhTerminationRecord record,
+  );
+  Future<RrhhTerminationRecord> updateTerminationRecord(
+    RrhhTerminationRecord record,
+  );
+  Future<bool> updateTerminationStatus(
+    int id,
+    String newStatus, {
+    String? reason,
+    bool? paymentCompleted,
+    DateTime? paymentCompletedAt,
+  });
+  Future<bool> deleteTerminationRecord(int id);
+  Future<List<RrhhTerminationRecord>> listPayrollAffectingTerminations(
+    DateTime fromDate,
+    DateTime toDate,
+  );
+
+  // Métodos legacy conservados para retrocompatibilidad
   Future<List<RrhhTermination>> listTerminations();
   Future<RrhhTermination> terminateEmployee({
     required int employeeId,

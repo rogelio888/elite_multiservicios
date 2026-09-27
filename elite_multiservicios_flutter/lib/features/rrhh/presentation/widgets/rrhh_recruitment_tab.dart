@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../data/models/rrhh_applicant_summary_dto.dart';
 import '../../data/repositories/rrhh_repository.dart';
 import 'rrhh_applicant_edit_dialog.dart';
+import 'rrhh_primary_action_button.dart';
 import 'rrhh_recruitment_applicant_drawer.dart';
 import 'rrhh_recruitment_kanban.dart';
 import 'rrhh_rejection_dialog.dart';
@@ -200,16 +201,9 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
             ),
           ],
         ),
-        FilledButton.icon(
+        RrhhPrimaryActionButton(
+          label: 'Registrar Postulante',
           onPressed: _openCreateDialog,
-          icon: const Icon(Icons.add, size: 16),
-          label: Text('Registrar Postulante', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
-          style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFF2563EB),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          ),
         ),
       ],
     );

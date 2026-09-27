@@ -8,7 +8,11 @@ import 'presentation/views/rrhh_placeholder_view.dart';
 import 'presentation/views/rrhh_reportes_tabs_view.dart';
 import 'presentation/views/rrhh_turnos_view.dart';
 import 'presentation/views/rrhh_hiring_dossier_detail_view.dart';
+import 'presentation/widgets/rrhh_disciplinary_view.dart';
 import 'presentation/widgets/rrhh_employee_detail_dialog.dart';
+import 'presentation/widgets/rrhh_leave_requests_view.dart';
+import 'presentation/widgets/rrhh_vacations_view.dart';
+import 'presentation/widgets/rrhh_terminations_view.dart';
 
 /// Rutas oficiales para el módulo RRHH.
 /// Estructura organizada en 7 entradas de menú superior con tabs internos
@@ -37,9 +41,13 @@ class RrhhRoutes {
   static const String areas = '/rrhh/organizacion/areas';
   static const String turnos = '/rrhh/turnos';
   static const String permisos = '/rrhh/permisos';
+  static const String novedadesPermisos = '/rrhh/novedades/permisos';
   static const String vacaciones = '/rrhh/vacaciones';
+  static const String novedadesVacaciones = '/rrhh/novedades/vacaciones';
   static const String disciplina = '/rrhh/disciplina';
+  static const String novedadesDisciplina = '/rrhh/novedades/disciplina';
   static const String bajas = '/rrhh/bajas';
+  static const String novedadesDesvinculaciones = '/rrhh/novedades/desvinculaciones';
   static const String novedadesNomina = '/rrhh/novedades-nomina';
   static const String asistenciaCampo = '/rrhh/asistencia-campo';
   static const String bitacora = '/rrhh/bitacora';
@@ -67,8 +75,11 @@ class RrhhRoutes {
     organizacion,
     turnos,
     permisos,
+    novedadesPermisos,
     vacaciones,
+    novedadesVacaciones,
     disciplina,
+    novedadesDisciplina,
     bajas,
     novedadesNomina,
     asistenciaCampo,
@@ -103,6 +114,12 @@ class RrhhRoutes {
           initialTab: tab,
           onNavigateToTab: onNavigateToTab,
         );
+      case novedadesPermisos:
+      case permisos:
+        return const RrhhLeaveRequestsView();
+      case novedadesVacaciones:
+      case vacaciones:
+        return const RrhhVacationsView();
       case asistencia:
       case asistenciaCampo:
         return buildView(asistenciaCampo, onNavigateToTab: onNavigateToTab);
@@ -160,37 +177,17 @@ class RrhhRoutes {
       case turnos:
         return const RrhhTurnosView();
       case permisos:
-        return const RrhhPlaceholderView(
-          title: '08. Permisos y Licencias Médicas',
-          blockName: 'Bloque 3',
-          description:
-              'Recepción, validación de certificados médicos (CNS) y resolución (Aprobación/Rechazo) de licencias laborales.',
-          icon: Icons.fact_check_outlined,
-        );
+      case novedadesPermisos:
+        return const RrhhLeaveRequestsView();
       case vacaciones:
-        return const RrhhPlaceholderView(
-          title: '09. Control de Vacaciones (Ley Laboral Bolivia)',
-          blockName: 'Bloque 3',
-          description:
-              'Cómputo legal de días de vacación según antigüedad en Bolivia, registro de solicitudes y control de saldo de días.',
-          icon: Icons.beach_access_outlined,
-        );
+      case novedadesVacaciones:
+        return const RrhhVacationsView();
       case disciplina:
-        return const RrhhPlaceholderView(
-          title: '10. Régimen Disciplinario e Incidencias',
-          blockName: 'Bloque 3',
-          description:
-              'Emisión y registro de sanciones, memorándums de llamada de atención y felicitaciones por desempeño.',
-          icon: Icons.gavel_outlined,
-        );
+      case novedadesDisciplina:
+        return const RrhhDisciplinaryView();
       case bajas:
-        return const RrhhPlaceholderView(
-          title: '11. Desvinculación & Bajas Laborales',
-          blockName: 'Bloque 3',
-          description:
-              'Proceso de egreso laboral definitivo, cálculo de antigüedad para finiquito y congelamiento del expediente sin borrado físico (Regla de Oro Inactivo).',
-          icon: Icons.person_remove_outlined,
-        );
+      case novedadesDesvinculaciones:
+        return const RrhhTerminationsView();
       case novedadesNomina:
         return const RrhhPlaceholderView(
           title: '12. Novedades para Nómina (Entrega a Contabilidad)',

@@ -1,4 +1,5 @@
-import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
+    hide RrhhLeaveRequest;
 import '../models/crm_client_ref_dto.dart';
 import '../models/ops_attendance_summary_dto.dart';
 import '../models/rrhh_applicant_companion.dart';
@@ -36,8 +37,11 @@ class RrhhRepositoryMock implements RrhhRepository {
   late Map<int, RrhhApplicantCompanion> _applicantCompanions;
   late List<RrhhHiringDossier> _dossiers;
   late List<RrhhLeaveRequest> _leaves;
+  late List<RrhhVacationRecord> _vacationRecords;
   late List<RrhhVacation> _vacations;
+  late List<RrhhDisciplinaryRecord> _disciplinaryRecords;
   late List<RrhhIncident> _incidents;
+  late List<RrhhTerminationRecord> _terminationRecords;
   late List<RrhhTermination> _terminations;
   late List<RrhhMovementHistory> _movements;
   late List<OpsAttendanceSummaryDto> _attendances;
@@ -57,11 +61,27 @@ class RrhhRepositoryMock implements RrhhRepository {
     _attendances = RrhhMockDataset.initialAttendance();
     _clientRefs = RrhhMockDataset.initialClientRefs();
     _leaves = RrhhMockDataset.initialLeaves();
+    _vacationRecords = RrhhMockDataset.initialVacationRecords();
     _vacations = RrhhMockDataset.initialVacations();
+    _disciplinaryRecords = RrhhMockDataset.initialDisciplinaryRecords();
     _incidents = RrhhMockDataset.initialIncidents();
+    _terminationRecords = RrhhMockDataset.initialTerminationRecords();
     _terminations = RrhhMockDataset.initialTerminations();
     _movements = RrhhMockDataset.initialMovements();
     _dossiers = _buildInitialDossiers();
+
+    // Sincronizar empleado de BAJA-001 (Fernando Roca, id: 18) a estado BAJA
+    final rocaIdx = _employees.indexWhere((e) => e.id == 18);
+    if (rocaIdx != -1) {
+      _employees[rocaIdx] = _employees[rocaIdx].copyWith(
+        status: 'BAJA',
+        availabilityStatus: 'INACTIVO',
+        exitDate: DateTime(2026, 9, 10),
+        exitReason: 'Renuncia voluntaria',
+        exitObservations: 'Finiquito liquidado y firmado en Ministerio de Trabajo',
+        exitRegisteredBy: 'Lic. Laura Mendoza',
+      );
+    }
   }
 
   List<RrhhHiringDossier> _buildInitialDossiers() {
@@ -1677,25 +1697,351 @@ class RrhhRepositoryMock implements RrhhRepository {
   }
 
   // ---------------------------------------------------------------------------
-  // Permisos, Vacaciones, Incidencias y Bajas
+  // PANTALLA 08: Permisos y Licencias Médicas (Bloque 3)
   // ---------------------------------------------------------------------------
   @override
-  Future<List<RrhhLeaveRequest>> listLeaveRequests({String? status, String? type, DateTime? month}) async => _leaves;
+  Future<List<RrhhLeaveRequest>> listLeaveRequests({
+    String? search,
+    String? leaveType,
+    String? status,
+    bool? isPaid,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    return _leaves.where((l) {
+      if (search != null && search.trim().isNotEmpty) {
+        final query = search.trim().toLowerCase();
+        final matchesEmployee = l.employeeName.toLowerCase().contains(query);
+        final matchesEmpCode = l.employeeCode.toLowerCase().contains(query);
+        final matchesCode = l.code.toLowerCase().contains(query);
+        final matchesReason = l.reason.toLowerCase().contains(query);
+        if (!matchesEmployee && !matchesEmpCode && !matchesCode && !matchesReason) {
+          return false;
+        }
+      }
+      if (leaveType != null && leaveType.isNotEmpty && leaveType != 'TODOS') {
+        if (l.leaveType.toUpperCase() != leaveType.toUpperCase()) return false;
+      }
+      if (status != null && status.isNotEmpty && status != 'TODOS') {
+        if (l.status.toLowerCase() != status.toLowerCase()) return false;
+      }
+      if (isPaid != null) {
+        if (l.isPaid != isPaid) return false;
+      }
+      if (fromDate != null) {
+        if (l.endDate.isBefore(fromDate)) return false;
+      }
+      if (toDate != null) {
+        if (l.startDate.isAfter(toDate)) return false;
+      }
+      return true;
+    }).toList();
+  }
+
+  @override
+  Future<RrhhLeaveRequest?> getLeaveRequestById(int id) async {
+    try {
+      return _leaves.firstWhere((l) => l.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   Future<RrhhLeaveRequest> createLeaveRequest(RrhhLeaveRequest request) async {
-    final c = request.copyWith(id: _leaves.length + 1);
-    _leaves.insert(0, c);
-    return c;
+    int maxNum = 0;
+    for (final l in _leaves) {
+      final match = RegExp(r'PERM-(\d+)').firstMatch(l.code);
+      if (match != null) {
+        final val = int.tryParse(match.group(1)!) ?? 0;
+        if (val > maxNum) maxNum = val;
+      }
+    }
+    final nextId = _leaves.isEmpty ? 1 : _leaves.map((l) => l.id).reduce((a, b) => a > b ? a : b) + 1;
+    final code = 'PERM-${(maxNum + 1).toString().padLeft(3, '0')}';
+    final now = DateTime.now();
+
+    final newRequest = request.copyWith(
+      id: nextId,
+      code: code,
+      createdAt: now,
+      updatedAt: now,
+    );
+    _leaves.insert(0, newRequest);
+    return newRequest;
   }
+
   @override
-  Future<RrhhLeaveRequest> resolveLeaveRequest(int requestId, String newStatus, {String? resolutionNotes}) async {
-    final idx = _leaves.indexWhere((l) => l.id == requestId);
+  Future<RrhhLeaveRequest> updateLeaveRequest(RrhhLeaveRequest request) async {
+    final idx = _leaves.indexWhere((l) => l.id == request.id);
     if (idx != -1) {
-      final updated = _leaves[idx].copyWith(status: newStatus, resolutionNotes: resolutionNotes, resolvedAt: DateTime.now());
+      final updated = request.copyWith(updatedAt: DateTime.now());
+      _leaves[idx] = updated;
+      return updated;
+    }
+    throw StateError('Permiso no encontrado para actualizar');
+  }
+
+  @override
+  Future<RrhhLeaveRequest> updateLeaveStatus(
+    int id,
+    String newStatus, {
+    String? reason,
+    String? approvedBy,
+  }) async {
+    final idx = _leaves.indexWhere((l) => l.id == id);
+    if (idx != -1) {
+      final current = _leaves[idx];
+      final now = DateTime.now();
+      final updated = current.copyWith(
+        status: newStatus,
+        updatedAt: now,
+        rejectionReason: reason ?? current.rejectionReason,
+        approvedAt: newStatus == RrhhLeaveStatus.aprobado ? now : current.approvedAt,
+        approvedBy: newStatus == RrhhLeaveStatus.aprobado ? (approvedBy ?? 'RRHH') : current.approvedBy,
+      );
       _leaves[idx] = updated;
       return updated;
     }
     throw StateError('Permiso no encontrado');
+  }
+
+  @override
+  Future<bool> deleteLeaveRequest(int id) async {
+    final initialLength = _leaves.length;
+    _leaves.removeWhere((l) => l.id == id);
+    return _leaves.length < initialLength;
+  }
+
+  @override
+  Future<List<RrhhLeaveRequest>> listPayrollAffectingLeaves(
+    DateTime fromDate,
+    DateTime toDate,
+  ) async {
+    return _leaves.where((l) {
+      final isApprovedOrDone = l.status == RrhhLeaveStatus.aprobado ||
+          l.status == RrhhLeaveStatus.finalizado ||
+          l.status == RrhhLeaveStatus.enCurso;
+      if (!isApprovedOrDone) return false;
+      final overlaps = !(l.endDate.isBefore(fromDate) || l.startDate.isAfter(toDate));
+      return overlaps;
+    }).toList();
+  }
+
+  // ---------------------------------------------------------------------------
+  // PANTALLA 09: Control de Vacaciones (Ley Laboral Bolivia)
+  // ---------------------------------------------------------------------------
+  @override
+  Future<List<RrhhVacationRecord>> listVacationRecords({
+    String? search,
+    String? status,
+    int? employeeId,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    return _vacationRecords.where((r) {
+      if (employeeId != null && r.employeeId != employeeId) return false;
+      if (status != null && status.isNotEmpty && status.toUpperCase() != 'TODOS') {
+        if (r.status.toLowerCase() != status.toLowerCase()) return false;
+      }
+      if (search != null && search.trim().isNotEmpty) {
+        final q = search.trim().toLowerCase();
+        final matches = r.code.toLowerCase().contains(q) ||
+            r.employeeCode.toLowerCase().contains(q) ||
+            r.employeeName.toLowerCase().contains(q) ||
+            (r.notes?.toLowerCase().contains(q) ?? false);
+        if (!matches) return false;
+      }
+      if (fromDate != null && r.endDate.isBefore(fromDate)) return false;
+      if (toDate != null && r.startDate.isAfter(toDate)) return false;
+      return true;
+    }).toList();
+  }
+
+  @override
+  Future<RrhhVacationRecord?> getVacationRecordById(int id) async {
+    try {
+      return _vacationRecords.firstWhere((r) => r.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<RrhhVacationRecord> createVacationRecord(RrhhVacationRecord record) async {
+    int maxNum = 0;
+    for (final v in _vacationRecords) {
+      final match = RegExp(r'VAC-(\d+)').firstMatch(v.code);
+      if (match != null) {
+        final val = int.tryParse(match.group(1)!) ?? 0;
+        if (val > maxNum) maxNum = val;
+      }
+    }
+    final nextId = _vacationRecords.isEmpty
+        ? 1
+        : _vacationRecords.map((v) => v.id).reduce((a, b) => a > b ? a : b) + 1;
+    final code = 'VAC-${(maxNum + 1).toString().padLeft(3, '0')}';
+    final now = DateTime.now();
+
+    final newRecord = record.copyWith(
+      id: nextId,
+      code: code,
+      createdAt: now,
+      updatedAt: now,
+    );
+    _vacationRecords.insert(0, newRecord);
+    return newRecord;
+  }
+
+  @override
+  Future<RrhhVacationRecord> updateVacationRecord(RrhhVacationRecord record) async {
+    final idx = _vacationRecords.indexWhere((r) => r.id == record.id);
+    if (idx != -1) {
+      final updated = record.copyWith(updatedAt: DateTime.now());
+      _vacationRecords[idx] = updated;
+      return updated;
+    }
+    throw StateError('Registro de vacación no encontrado');
+  }
+
+  @override
+  Future<RrhhVacationRecord> updateVacationStatus(
+    int id,
+    String newStatus, {
+    String? reason,
+  }) async {
+    final idx = _vacationRecords.indexWhere((r) => r.id == id);
+    if (idx != -1) {
+      final current = _vacationRecords[idx];
+      final now = DateTime.now();
+      String? notes = current.notes;
+      if (reason != null && reason.trim().isNotEmpty) {
+        notes = (notes != null && notes.isNotEmpty)
+            ? '$notes | Motivo cambio estado ($newStatus): $reason'
+            : 'Motivo cambio estado ($newStatus): $reason';
+      }
+      final updated = current.copyWith(
+        status: newStatus,
+        notes: notes,
+        updatedAt: now,
+      );
+      _vacationRecords[idx] = updated;
+      return updated;
+    }
+    throw StateError('Registro de vacación no encontrado');
+  }
+
+  @override
+  Future<bool> deleteVacationRecord(int id) async {
+    final initialLength = _vacationRecords.length;
+    _vacationRecords.removeWhere((r) => r.id == id);
+    return _vacationRecords.length < initialLength;
+  }
+
+  @override
+  Future<List<RrhhVacationBalance>> listVacationBalances({
+    String? search,
+    String? balanceStatus,
+    int? areaId,
+  }) async {
+    final now = DateTime(2026, 9, 26);
+    final balances = <RrhhVacationBalance>[];
+
+    for (final emp in _employees) {
+      if (emp.status != 'ACTIVO') continue;
+      if (areaId != null && emp.areaId != areaId) continue;
+
+      final balance = _computeEmployeeBalance(emp, now);
+
+      if (balanceStatus != null &&
+          balanceStatus.isNotEmpty &&
+          balanceStatus.toUpperCase() != 'TODOS') {
+        if (balance.balanceStatus.toLowerCase() != balanceStatus.toLowerCase()) {
+          continue;
+        }
+      }
+
+      if (search != null && search.trim().isNotEmpty) {
+        final q = search.trim().toLowerCase();
+        final matches = balance.employeeName.toLowerCase().contains(q) ||
+            balance.employeeCode.toLowerCase().contains(q);
+        if (!matches) continue;
+      }
+
+      balances.add(balance);
+    }
+
+    return balances;
+  }
+
+  @override
+  Future<RrhhVacationBalance?> getVacationBalanceByEmployee(int employeeId) async {
+    final now = DateTime(2026, 9, 26);
+    try {
+      final emp = _employees.firstWhere((e) => e.id == employeeId);
+      return _computeEmployeeBalance(emp, now);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  RrhhVacationBalance _computeEmployeeBalance(RrhhEmployee emp, DateTime asOfDate) {
+    final hireDate = emp.realStartDate;
+    final antiquity = asOfDate.difference(hireDate);
+    final years = RrhhVacationCalculator.getCompletedYears(hireDate, asOfDate);
+    final assignedDays = RrhhVacationCalculator.getAssignedDays(hireDate, asOfDate);
+
+    // Sum of used days in current period (status gozado or en_curso)
+    final usedDays = _vacationRecords.where((r) {
+      if (r.employeeId != emp.id) return false;
+      return r.status == RrhhVacationRecordStatus.gozado ||
+          r.status == RrhhVacationRecordStatus.enCurso;
+    }).fold<int>(0, (sum, r) => sum + r.daysCounted);
+
+    final pendingDays = (assignedDays - usedDays).clamp(0, 999);
+
+    final nextAnniv = RrhhVacationCalculator.getNextAnniversary(hireDate, asOfDate);
+    final daysUntilAnniv = nextAnniv.difference(asOfDate).inDays;
+
+    String status;
+    if (years < 1) {
+      status = RrhhVacationBalanceStatus.sinDerecho;
+    } else if (pendingDays == 0) {
+      status = RrhhVacationBalanceStatus.agotado;
+    } else if (daysUntilAnniv <= 30) {
+      status = RrhhVacationBalanceStatus.parcial;
+    } else {
+      status = RrhhVacationBalanceStatus.disponible;
+    }
+
+    return RrhhVacationBalance(
+      employeeId: emp.id ?? 0,
+      employeeCode: emp.code,
+      employeeName: emp.fullName,
+      hireDate: hireDate,
+      antiquity: antiquity,
+      assignedDays: assignedDays,
+      usedDays: usedDays,
+      pendingDays: pendingDays,
+      balanceStatus: status,
+      nextAnniversary: nextAnniv,
+      daysUntilAnniversary: daysUntilAnniv,
+    );
+  }
+
+  @override
+  Future<List<RrhhVacationRecord>> listPayrollAffectingVacations(
+    DateTime fromDate,
+    DateTime toDate,
+  ) async {
+    return _vacationRecords.where((r) {
+      final affects = r.status == RrhhVacationRecordStatus.gozado ||
+          r.status == RrhhVacationRecordStatus.enCurso ||
+          r.status == RrhhVacationRecordStatus.programado;
+      if (!affects) return false;
+      final overlaps = !(r.endDate.isBefore(fromDate) || r.startDate.isAfter(toDate));
+      return overlaps;
+    }).toList();
   }
 
   @override
@@ -1722,6 +2068,153 @@ class RrhhRepositoryMock implements RrhhRepository {
     throw StateError('Vacación no encontrada');
   }
 
+  // ---------------------------------------------------------------------------
+  // PANTALLA 10: Régimen Disciplinario e Incidencias (Ley Laboral Bolivia)
+  // ---------------------------------------------------------------------------
+  @override
+  Future<List<RrhhDisciplinaryRecord>> listDisciplinaryRecords({
+    String? status,
+    String? faultType,
+    String? sanctionType,
+    String? search,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    return _disciplinaryRecords.where((r) {
+      if (status != null && status.isNotEmpty && status.toUpperCase() != 'TODOS') {
+        if (r.status.toLowerCase() != status.toLowerCase()) return false;
+      }
+      if (faultType != null && faultType.isNotEmpty && faultType.toUpperCase() != 'TODOS') {
+        if (r.faultType.toLowerCase() != faultType.toLowerCase()) return false;
+      }
+      if (sanctionType != null && sanctionType.isNotEmpty && sanctionType.toUpperCase() != 'TODOS') {
+        if (r.sanctionType?.toLowerCase() != sanctionType.toLowerCase()) return false;
+      }
+      if (search != null && search.trim().isNotEmpty) {
+        final q = search.trim().toLowerCase();
+        final matches = r.code.toLowerCase().contains(q) ||
+            r.employeeCode.toLowerCase().contains(q) ||
+            r.employeeName.toLowerCase().contains(q) ||
+            r.incidentDescription.toLowerCase().contains(q) ||
+            (r.notes?.toLowerCase().contains(q) ?? false);
+        if (!matches) return false;
+      }
+      if (fromDate != null && r.incidentDate.isBefore(fromDate)) return false;
+      if (toDate != null && r.incidentDate.isAfter(toDate)) return false;
+      return true;
+    }).toList();
+  }
+
+  @override
+  Future<RrhhDisciplinaryRecord?> getDisciplinaryRecordById(int id) async {
+    try {
+      return _disciplinaryRecords.firstWhere((r) => r.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<RrhhDisciplinaryRecord> createDisciplinaryRecord(
+    RrhhDisciplinaryRecord record,
+  ) async {
+    int maxNum = 0;
+    for (final r in _disciplinaryRecords) {
+      final match = RegExp(r'INC-(\d+)').firstMatch(r.code);
+      if (match != null) {
+        final val = int.tryParse(match.group(1)!) ?? 0;
+        if (val > maxNum) maxNum = val;
+      }
+    }
+    final nextCode = 'INC-${(maxNum + 1).toString().padLeft(3, '0')}';
+    final nextId = _disciplinaryRecords.fold<int>(0, (max, r) => r.id > max ? r.id : max) + 1;
+
+    final created = record.copyWith(
+      id: nextId,
+      code: nextCode,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    _disciplinaryRecords.insert(0, created);
+    return created;
+  }
+
+  @override
+  Future<RrhhDisciplinaryRecord> updateDisciplinaryRecord(
+    RrhhDisciplinaryRecord record,
+  ) async {
+    final idx = _disciplinaryRecords.indexWhere((r) => r.id == record.id);
+    if (idx != -1) {
+      final updated = record.copyWith(updatedAt: DateTime.now());
+      _disciplinaryRecords[idx] = updated;
+      return updated;
+    }
+    throw StateError('Registro disciplinario no encontrado');
+  }
+
+  @override
+  Future<bool> updateDisciplinaryStatus(
+    int id,
+    String newStatus, {
+    String? reason,
+    String? dischargeText,
+    String? sanctionType,
+    int? suspensionDays,
+    double? salaryDeduction,
+    String? sanctionDescription,
+  }) async {
+    final idx = _disciplinaryRecords.indexWhere((r) => r.id == id);
+    if (idx != -1) {
+      final current = _disciplinaryRecords[idx];
+      final updated = current.copyWith(
+        status: newStatus,
+        updatedAt: DateTime.now(),
+        notes: reason ?? current.notes,
+        dischargeText: dischargeText ?? current.dischargeText,
+        dischargeDate: dischargeText != null ? DateTime.now() : current.dischargeDate,
+        sanctionType: sanctionType ?? current.sanctionType,
+        suspensionDays: suspensionDays ?? current.suspensionDays,
+        salaryDeduction: salaryDeduction ?? current.salaryDeduction,
+        sanctionDescription: sanctionDescription ?? current.sanctionDescription,
+        sanctionedAt: newStatus == RrhhDisciplinaryStatus.sancionada ? DateTime.now() : current.sanctionedAt,
+        sanctionedBy: newStatus == RrhhDisciplinaryStatus.sancionada ? 'Gerencia de RRHH' : current.sanctionedBy,
+      );
+      _disciplinaryRecords[idx] = updated;
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  Future<bool> deleteDisciplinaryRecord(int id) async {
+    final idx = _disciplinaryRecords.indexWhere((r) => r.id == id);
+    if (idx != -1) {
+      final record = _disciplinaryRecords[idx];
+      if (record.status != RrhhDisciplinaryStatus.registrada) {
+        throw StateError('Solo se pueden eliminar incidencias en estado registrada.');
+      }
+      _disciplinaryRecords.removeAt(idx);
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  Future<List<RrhhDisciplinaryRecord>> listPayrollAffectingDisciplinary(
+    DateTime fromDate,
+    DateTime toDate,
+  ) async {
+    return _disciplinaryRecords.where((r) {
+      if (r.status != RrhhDisciplinaryStatus.sancionada) return false;
+      final hasDeduction = (r.salaryDeduction != null && r.salaryDeduction! > 0) ||
+          r.sanctionType == RrhhSanctionTypes.suspension ||
+          r.sanctionType == RrhhSanctionTypes.pecuniaria;
+      if (!hasDeduction) return false;
+      if (r.incidentDate.isBefore(fromDate) || r.incidentDate.isAfter(toDate)) return false;
+      return true;
+    }).toList();
+  }
+
   @override
   Future<List<RrhhIncident>> listIncidents({String? severity, String? search}) async => _incidents;
   @override
@@ -1729,6 +2222,180 @@ class RrhhRepositoryMock implements RrhhRepository {
     final c = incident.copyWith(id: _incidents.length + 1);
     _incidents.insert(0, c);
     return c;
+  }
+
+  // ---------------------------------------------------------------------------
+  // PANTALLA 11: Desvinculación & Bajas Laborales (Regla de Oro Inactivo / LGT Bolivia)
+  // ---------------------------------------------------------------------------
+  @override
+  Future<List<RrhhTerminationRecord>> listTerminationRecords({
+    String? status,
+    String? terminationType,
+    String? search,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    return _terminationRecords.where((r) {
+      if (status != null && status.isNotEmpty && status.toUpperCase() != 'TODOS') {
+        if (r.status.toLowerCase() != status.toLowerCase()) return false;
+      }
+      if (terminationType != null && terminationType.isNotEmpty && terminationType.toUpperCase() != 'TODOS') {
+        if (r.terminationType.toLowerCase() != terminationType.toLowerCase()) return false;
+      }
+      if (search != null && search.trim().isNotEmpty) {
+        final q = search.trim().toLowerCase();
+        final matches = r.code.toLowerCase().contains(q) ||
+            r.employeeCode.toLowerCase().contains(q) ||
+            r.employeeName.toLowerCase().contains(q) ||
+            r.reason.toLowerCase().contains(q) ||
+            (r.notes?.toLowerCase().contains(q) ?? false);
+        if (!matches) return false;
+      }
+      if (fromDate != null && r.terminationDate.isBefore(fromDate)) return false;
+      if (toDate != null && r.terminationDate.isAfter(toDate)) return false;
+      return true;
+    }).toList();
+  }
+
+  @override
+  Future<RrhhTerminationRecord?> getTerminationRecordById(int id) async {
+    try {
+      return _terminationRecords.firstWhere((r) => r.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<RrhhTerminationRecord> createTerminationRecord(
+    RrhhTerminationRecord record,
+  ) async {
+    int maxNum = 0;
+    for (final r in _terminationRecords) {
+      final match = RegExp(r'BAJA-(\d+)').firstMatch(r.code);
+      if (match != null) {
+        final val = int.tryParse(match.group(1)!) ?? 0;
+        if (val > maxNum) maxNum = val;
+      }
+    }
+    final nextCode = 'BAJA-${(maxNum + 1).toString().padLeft(3, '0')}';
+    final nextId = _terminationRecords.fold<int>(0, (max, r) => r.id > max ? r.id : max) + 1;
+    final deadline = record.paymentDeadline ?? record.lastWorkDay.add(const Duration(days: 15));
+
+    final created = record.copyWith(
+      id: nextId,
+      code: nextCode,
+      paymentDeadline: deadline,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    _terminationRecords.insert(0, created);
+
+    if (created.status == RrhhTerminationStatus.finalizada) {
+      _applyTerminationToEmployee(created);
+    }
+
+    return created;
+  }
+
+  @override
+  Future<RrhhTerminationRecord> updateTerminationRecord(
+    RrhhTerminationRecord record,
+  ) async {
+    final idx = _terminationRecords.indexWhere((r) => r.id == record.id);
+    if (idx != -1) {
+      final deadline = record.paymentDeadline ?? record.lastWorkDay.add(const Duration(days: 15));
+      final updated = record.copyWith(
+        paymentDeadline: deadline,
+        updatedAt: DateTime.now(),
+      );
+      _terminationRecords[idx] = updated;
+
+      if (updated.status == RrhhTerminationStatus.finalizada) {
+        _applyTerminationToEmployee(updated);
+      }
+      return updated;
+    }
+    throw StateError('Registro de desvinculación no encontrado');
+  }
+
+  @override
+  Future<bool> updateTerminationStatus(
+    int id,
+    String newStatus, {
+    String? reason,
+    bool? paymentCompleted,
+    DateTime? paymentCompletedAt,
+  }) async {
+    final idx = _terminationRecords.indexWhere((r) => r.id == id);
+    if (idx != -1) {
+      final current = _terminationRecords[idx];
+      final isFinalizing = newStatus == RrhhTerminationStatus.finalizada;
+      final now = DateTime.now();
+
+      final updated = current.copyWith(
+        status: newStatus,
+        updatedAt: now,
+        notes: reason ?? current.notes,
+        paymentCompleted: paymentCompleted ?? current.paymentCompleted,
+        paymentCompletedAt: (paymentCompleted == true)
+            ? (paymentCompletedAt ?? now)
+            : (paymentCompleted == false ? null : current.paymentCompletedAt),
+        processedAt: isFinalizing ? now : current.processedAt,
+        processedBy: isFinalizing ? 'Gerencia de RRHH' : current.processedBy,
+      );
+      _terminationRecords[idx] = updated;
+
+      if (isFinalizing) {
+        _applyTerminationToEmployee(updated);
+      }
+
+      return true;
+    }
+    return false;
+  }
+
+  void _applyTerminationToEmployee(RrhhTerminationRecord record) {
+    final empIdx = _employees.indexWhere((e) => e.id == record.employeeId);
+    if (empIdx != -1) {
+      final emp = _employees[empIdx];
+      _employees[empIdx] = emp.copyWith(
+        status: 'BAJA',
+        availabilityStatus: 'INACTIVO',
+        exitDate: record.terminationDate,
+        exitReason: record.reason,
+        exitObservations: record.justifiedCause ?? record.notes,
+        exitRegisteredBy: record.createdBy,
+      );
+    }
+  }
+
+  @override
+  Future<bool> deleteTerminationRecord(int id) async {
+    final idx = _terminationRecords.indexWhere((r) => r.id == id);
+    if (idx != -1) {
+      final record = _terminationRecords[idx];
+      if (record.status != RrhhTerminationStatus.registrada) {
+        throw StateError('Solo se pueden eliminar desvinculaciones en estado registrada.');
+      }
+      _terminationRecords.removeAt(idx);
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  Future<List<RrhhTerminationRecord>> listPayrollAffectingTerminations(
+    DateTime fromDate,
+    DateTime toDate,
+  ) async {
+    return _terminationRecords.where((r) {
+      if (r.status == RrhhTerminationStatus.cancelada) return false;
+      if (r.terminationDate.isBefore(fromDate) || r.terminationDate.isAfter(toDate)) {
+        return false;
+      }
+      return true;
+    }).toList();
   }
 
   @override

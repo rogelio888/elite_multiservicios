@@ -10,6 +10,7 @@ import 'rrhh_hire_wizard.dart';
 import 'rrhh_personal_filters_bar.dart';
 import 'rrhh_personal_table_constants.dart';
 import 'rrhh_personal_table_row.dart';
+import 'rrhh_primary_action_button.dart';
 import 'rrhh_snack_bar.dart';
 import 'rrhh_state_widgets.dart';
 
@@ -222,15 +223,10 @@ class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
           ],
         ),
         if (widget.canManage)
-          FilledButton.icon(
+          RrhhPrimaryActionButton(
+            label: 'Contratar Colaborador',
+            icon: Icons.person_add_alt_1,
             onPressed: () => RrhhEmployeeHireWizard.show(context, onCompleted: loadEmployees),
-            icon: const Icon(Icons.person_add_alt_1, size: 15),
-            label: Text('+ Contratar Colaborador', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
-            style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-            ),
           ),
       ],
     );

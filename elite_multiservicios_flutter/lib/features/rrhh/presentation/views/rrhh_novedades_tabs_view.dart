@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'rrhh_placeholder_view.dart';
+import '../widgets/rrhh_disciplinary_view.dart';
+import '../widgets/rrhh_leave_requests_view.dart';
+import '../widgets/rrhh_vacations_view.dart';
+import '../widgets/rrhh_terminations_view.dart';
 
 /// Vista contenedora de Novedades Laborales (Entrada 04 del menú RRHH).
 /// Agrupa:
@@ -60,12 +63,13 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
       children: [
         // Encabezado y Barra de Pestañas
         Container(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF0F172A) : Colors.white,
+            color: isDark ? const Color(0xFF090D16) : Colors.white,
             border: Border(
               bottom: BorderSide(
                 color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                width: 1,
               ),
             ),
           ),
@@ -77,7 +81,7 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2563EB).withValues(alpha: 0.1),
+                      color: const Color(0xFF2563EB).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
@@ -91,25 +95,29 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '04. Novedades Laborales',
+                        'Novedades Laborales',
                         style: GoogleFonts.inter(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          fontSize: 19,
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                          letterSpacing: -0.4,
                         ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
-                        'Control de permisos, vacaciones, incidencias y egresos del personal',
+                        'Control de permisos, vacaciones, incidencias y desvinculaciones',
                         style: GoogleFonts.inter(
-                          fontSize: 12,
+                          fontSize: 12.5,
                           color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
               TabBar(
                 controller: _tabController,
                 isScrollable: true,
@@ -117,25 +125,62 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
                 indicatorColor: const Color(0xFF2563EB),
                 indicatorWeight: 2.5,
                 labelColor: const Color(0xFF2563EB),
-                unselectedLabelColor: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
-                labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700),
-                unselectedLabelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500),
+                unselectedLabelColor: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
+                labelStyle: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                ),
+                unselectedLabelStyle: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w500,
+                ),
+                dividerColor: Colors.transparent,
                 tabs: const [
                   Tab(
-                    icon: Icon(Icons.fact_check_outlined, size: 18),
-                    text: 'Permisos y Licencias',
+                    height: 38,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.fact_check_outlined, size: 15),
+                        SizedBox(width: 6),
+                        Text('1. Permisos'),
+                      ],
+                    ),
                   ),
                   Tab(
-                    icon: Icon(Icons.beach_access_outlined, size: 18),
-                    text: 'Vacaciones',
+                    height: 38,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.beach_access_outlined, size: 15),
+                        SizedBox(width: 6),
+                        Text('2. Vacaciones'),
+                      ],
+                    ),
                   ),
                   Tab(
-                    icon: Icon(Icons.gavel_outlined, size: 18),
-                    text: 'Incidencias y Disciplina',
+                    height: 38,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.gavel_outlined, size: 15),
+                        SizedBox(width: 6),
+                        Text('3. Incidencias'),
+                      ],
+                    ),
                   ),
                   Tab(
-                    icon: Icon(Icons.person_remove_outlined, size: 18),
-                    text: 'Desvinculaciones',
+                    height: 38,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.person_remove_outlined, size: 15),
+                        SizedBox(width: 6),
+                        Text('4. Desvinculaciones'),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -148,34 +193,10 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
           child: TabBarView(
             controller: _tabController,
             children: const [
-              RrhhPlaceholderView(
-                title: '08. Permisos y Licencias Médicas',
-                blockName: 'Bloque 3',
-                description:
-                    'Recepción, validación de certificados médicos (CNS) y resolución de licencias.',
-                icon: Icons.fact_check_outlined,
-              ),
-              RrhhPlaceholderView(
-                title: '09. Control de Vacaciones (Ley Laboral Bolivia)',
-                blockName: 'Bloque 3',
-                description:
-                    'Cómputo legal de días de vacación según antigüedad en Bolivia y control de saldos.',
-                icon: Icons.beach_access_outlined,
-              ),
-              RrhhPlaceholderView(
-                title: '10. Régimen Disciplinario e Incidencias',
-                blockName: 'Bloque 3',
-                description:
-                    'Emisión y registro de sanciones, memorándums de llamada de atención y felicitaciones.',
-                icon: Icons.gavel_outlined,
-              ),
-              RrhhPlaceholderView(
-                title: '11. Desvinculación & Bajas Laborales',
-                blockName: 'Bloque 3',
-                description:
-                    'Proceso de egreso laboral, cálculo para finiquito y congelamiento (Regla de Oro Inactivo).',
-                icon: Icons.person_remove_outlined,
-              ),
+              RrhhLeaveRequestsView(),
+              RrhhVacationsView(),
+              RrhhDisciplinaryView(),
+              RrhhTerminationsView(),
             ],
           ),
         ),
@@ -183,3 +204,4 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
     );
   }
 }
+

@@ -162,11 +162,14 @@ class RrhhEmployee {
   final String? corporateEmail;
   final String? temporaryPassword;
 
-  // Datos de Desvinculación (si está INACTIVO)
+  // Datos de Desvinculación (si está INACTIVO / BAJA)
   final DateTime? exitDate;
   final String? exitReason;
   final String? exitObservations;
   final String? exitRegisteredBy;
+  final DateTime? terminationDate;
+  final String? terminationType;
+  final int? terminationRecordId;
 
   // Línea de tiempo / Historial laboral conservado
   final List<RrhhTimelineEvent> timeline;
@@ -251,6 +254,9 @@ class RrhhEmployee {
     this.exitReason,
     this.exitObservations,
     this.exitRegisteredBy,
+    this.terminationDate,
+    this.terminationType,
+    this.terminationRecordId,
     this.timeline = const [],
     // Nuevos campos opcionales Fase B
     this.bankName,
@@ -411,6 +417,9 @@ class RrhhEmployee {
     String? exitReason,
     String? exitObservations,
     String? exitRegisteredBy,
+    DateTime? terminationDate,
+    String? terminationType,
+    int? terminationRecordId,
     List<RrhhTimelineEvent>? timeline,
     // Nuevos campos Fase B
     String? bankName,
@@ -476,6 +485,9 @@ class RrhhEmployee {
       exitReason: exitReason ?? this.exitReason,
       exitObservations: exitObservations ?? this.exitObservations,
       exitRegisteredBy: exitRegisteredBy ?? this.exitRegisteredBy,
+      terminationDate: terminationDate ?? this.terminationDate,
+      terminationType: terminationType ?? this.terminationType,
+      terminationRecordId: terminationRecordId ?? this.terminationRecordId,
       timeline: timeline ?? this.timeline,
       bankName: bankName ?? this.bankName,
       accountType: accountType ?? this.accountType,
@@ -558,6 +570,11 @@ class RrhhEmployee {
       exitReason: json['exitReason'] as String?,
       exitObservations: json['exitObservations'] as String?,
       exitRegisteredBy: json['exitRegisteredBy'] as String?,
+      terminationDate: json['terminationDate'] != null
+          ? DateTime.tryParse(json['terminationDate'] as String)
+          : null,
+      terminationType: json['terminationType'] as String?,
+      terminationRecordId: json['terminationRecordId'] as int?,
       timeline: (json['timeline'] as List<dynamic>?)
               ?.map((e) => RrhhTimelineEvent.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -636,6 +653,11 @@ class RrhhEmployee {
       if (exitReason != null) 'exitReason': exitReason,
       if (exitObservations != null) 'exitObservations': exitObservations,
       if (exitRegisteredBy != null) 'exitRegisteredBy': exitRegisteredBy,
+      if (terminationDate != null)
+        'terminationDate': terminationDate!.toIso8601String(),
+      if (terminationType != null) 'terminationType': terminationType,
+      if (terminationRecordId != null)
+        'terminationRecordId': terminationRecordId,
       'timeline': timeline.map((e) => e.toJson()).toList(),
       if (bankName != null) 'bankName': bankName,
       if (accountType != null) 'accountType': accountType,
