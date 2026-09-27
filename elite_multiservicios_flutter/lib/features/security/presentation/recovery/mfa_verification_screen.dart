@@ -118,10 +118,10 @@ class _MfaVerificationScreenState extends State<MfaVerificationScreen> {
       );
 
       if (mounted && response.success) {
+        // Notificar al padre que el 2FA fue exitoso.
+        // main.dart decide la siguiente pantalla (declarativo).
+        // NO hacer Navigator.pop porque esta pantalla NO fue empujada por nosotros.
         widget.onMfaSuccess?.call();
-        if (mounted && Navigator.of(context).canPop()) {
-          Navigator.of(context).pop(true);
-        }
       }
     } catch (e) {
       if (!mounted) return;

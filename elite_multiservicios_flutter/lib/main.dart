@@ -68,16 +68,17 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
 
   void _onAuthChanged() {
     final currentSignedIn = client.auth.isAuthenticated;
-    if (currentSignedIn != _lastSignedIn ||
-        (currentSignedIn && _authStateFuture == null)) {
-      _lastSignedIn = currentSignedIn;
+    _lastSignedIn = currentSignedIn;
+
+    // Recalcular SIEMPRE que haya cambio de estado de auth o notificación.
+    // Incluso si sigue autenticado (porque el estado de MFA puede haber cambiado).
+    setState(() {
       if (currentSignedIn) {
         _authStateFuture = _resolveAuthState();
       } else {
         _authStateFuture = null;
       }
-    }
-    setState(() {});
+    });
   }
 
   void _refreshAuthState() {
@@ -231,6 +232,7 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
 
         // 3. Dashboard
         return SecurityShellScreen(
+          authService: _authService,
           isDarkMode: isDark,
           onToggleTheme: _toggleTheme,
         );

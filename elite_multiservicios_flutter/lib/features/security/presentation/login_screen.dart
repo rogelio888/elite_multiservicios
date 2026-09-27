@@ -3,7 +3,6 @@ import '../../../../core/theme/app_theme.dart';
 import '../domain/exceptions/auth_exception.dart';
 import '../services/auth_service.dart';
 import 'recovery/forgot_password_screen.dart';
-import 'recovery/mfa_verification_screen.dart';
 import 'widgets/auth_branding_panel.dart';
 
 /// Pantalla de inicio de sesión empresarial diseñada según los tokens y estructura
@@ -95,30 +94,10 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = false;
       });
 
-      if (_authService.isMfaPending &&
-          _authService.currentMfaChallenge != null) {
-        final challenge = _authService.currentMfaChallenge!;
-        final verified = await Navigator.of(context).push<bool>(
-          MaterialPageRoute(
-            builder: (_) => MfaVerificationScreen(
-              authService: _authService,
-              challengeId: challenge.challengeId,
-              emailHint: challenge.emailHint,
-              rememberMe: _rememberMe,
-              onMfaSuccess: () {
-                _authService.clearMfaPending();
-                _authService.markSessionMfaVerified();
-                widget.onLoginSuccess?.call();
-              },
-            ),
-          ),
-        );
-        if (verified == true && mounted) {
-          widget.onLoginSuccess?.call();
-        }
-      } else {
-        widget.onLoginSuccess?.call();
-      }
+      // Después de login exitoso, SOLO notificar al padre.
+      // main.dart decide qué pantalla mostrar (declarativo).
+      // NO hacer Navigator.push a MFA.
+      widget.onLoginSuccess?.call();
     } catch (e) {
       if (mounted) {
         final errorStr = e.toString();
@@ -334,41 +313,40 @@ class _LoginScreenState extends State<LoginScreen> {
             Row(
               children: [
                 Expanded(
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(4),
-                    onTap: () {
-                      final newVal = !_rememberMe;
-                      setState(() => _rememberMe = newVal);
-                      _authService.saveRememberMePreference(
-                        rememberMe: newVal,
-                        email: _emailController.text,
-                      );
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: Checkbox(
-                            value: _rememberMe,
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            onChanged: (v) {
-                              final newVal = v ?? false;
-                              setState(() => _rememberMe = newVal);
-                              _authService.saveRememberMePreference(
-                                rememberMe: newVal,
-                                email: _emailController.text,
-                              );
-                            },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: Checkbox(
+                          value: _rememberMe,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
                           ),
+                          onChanged: (v) {
+                            final newVal = v ?? false;
+                            setState(() => _rememberMe = newVal);
+                            _authService.saveRememberMePreference(
+                              rememberMe: newVal,
+                              email: _emailController.text,
+                            );
+                          },
                         ),
-                        const SizedBox(width: 8),
-                        Text(
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () {
+                          final newVal = !_rememberMe;
+                          setState(() => _rememberMe = newVal);
+                          _authService.saveRememberMePreference(
+                            rememberMe: newVal,
+                            email: _emailController.text,
+                          );
+                        },
+                        child: Text(
                           'Recordarme',
                           style: TextStyle(
                             fontSize: 13,
@@ -377,8 +355,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 : const Color(0xFF64748B),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
                 Flexible(
