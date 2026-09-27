@@ -187,7 +187,7 @@ class _RrhhHiringDossierDetailViewState
     _s4PaymentModalityId = d.paymentModalityId;
     _s4PaymentModalityName = d.paymentModalityName;
     _s4BaseSalaryCtrl.text = d.baseSalary != null ? d.baseSalary!.toStringAsFixed(0) : '';
-    _s4Currency = d.currency ?? 'BOB';
+    _s4Currency = d.currency;
     _s4StartDate = d.contractStartDate;
     _s4EndDate = d.contractEndDate;
     _s4Bonuses = d.bonuses != null ? List<RrhhEmployeeBonus>.from(d.bonuses!) : [];
@@ -195,9 +195,9 @@ class _RrhhHiringDossierDetailViewState
   }
 
   void _populateSection5From(RrhhHiringDossier d) {
-    _s5AreaId = d.areaId;
+    _s5AreaId = d.areaId?.toString();
     _s5AreaName = d.areaName ?? d.targetArea;
-    _s5PositionId = d.positionId;
+    _s5PositionId = d.positionId?.toString();
     _s5PositionName = d.positionName ?? d.targetPosition;
     _s5ShiftId = d.shiftId;
     _s5ShiftName = d.shiftName;
@@ -215,10 +215,10 @@ class _RrhhHiringDossierDetailViewState
     final d = await RrhhRepository.current.getDossierById(widget.dossierId);
     RrhhApplicant? app;
     RrhhApplicantCompanion? comp;
-    if (d != null) {
+    if (d != null && d.applicantId != null) {
       try {
-        app = await RrhhRepository.current.getApplicantById(d.applicantId);
-        comp = await RrhhRepository.current.getApplicantCompanion(d.applicantId);
+        app = await RrhhRepository.current.getApplicantById(d.applicantId!);
+        comp = await RrhhRepository.current.getApplicantCompanion(d.applicantId!);
       } catch (_) {}
     }
 
@@ -317,10 +317,10 @@ class _RrhhHiringDossierDetailViewState
     docs[updated.code] = updated;
 
     setState(() {
-      _dossier = _dossier!.copyWith(documents: docs);
+      _dossier = _dossier!.copyWith(documentChecklist: docs.values.toList());
     });
 
-    await RrhhRepository.current.updateDossierSection1(_dossier!.id, docs);
+    await RrhhRepository.current.updateDossierSection1(_dossier!.id ?? widget.dossierId, docs);
   }
 
   Future<void> _markDocumentReceived(RrhhDossierDocument doc) async {
@@ -542,7 +542,7 @@ class _RrhhHiringDossierDetailViewState
     if (_dossier == null) return;
     setState(() => _isSaving = true);
     await RrhhRepository.current
-        .updateDossierSection1(_dossier!.id, _dossier!.documents);
+        .updateDossierSection1(_dossier!.id ?? widget.dossierId, _dossier!.documents);
     await _loadDossier();
     if (mounted) {
       setState(() => _isSaving = false);
@@ -566,7 +566,7 @@ class _RrhhHiringDossierDetailViewState
     setState(() => _isSaving = true);
     final updated = _dossier!.copyWith(section1Status: 'completa');
     await RrhhRepository.current
-        .updateDossierSection1(updated.id, updated.documents);
+        .updateDossierSection1(updated.id ?? widget.dossierId, updated.documents);
     await _loadDossier();
 
     if (mounted) {
@@ -584,7 +584,7 @@ class _RrhhHiringDossierDetailViewState
   Future<void> _toggleDossierStatus() async {
     if (_dossier == null) return;
     final newStatus = _dossier!.status == 'pausado' ? 'abierto' : 'pausado';
-    await RrhhRepository.current.updateDossierStatus(_dossier!.id, newStatus);
+    await RrhhRepository.current.updateDossierStatus(_dossier!.id ?? widget.dossierId, newStatus);
     await _loadDossier();
     if (mounted) {
       if (newStatus == 'pausado') {
@@ -2004,7 +2004,7 @@ class _RrhhHiringDossierDetailViewState
     setState(() => _isSaving = true);
     try {
       final updated = await RrhhRepository.current.updateDossierSection2(
-        _dossier!.id,
+        _dossier!.id ?? widget.dossierId,
         afpId: _s2AfpId,
         afpName: _s2AfpName,
         afpNumber: _s2AfpNumberCtrl.text.trim(),
@@ -2030,7 +2030,7 @@ class _RrhhHiringDossierDetailViewState
     setState(() => _isSaving = true);
     try {
       final updated = await RrhhRepository.current.updateDossierSection2(
-        _dossier!.id,
+        _dossier!.id ?? widget.dossierId,
         afpId: _s2AfpId,
         afpName: _s2AfpName,
         afpNumber: _s2AfpNumberCtrl.text.trim(),
@@ -2416,7 +2416,7 @@ class _RrhhHiringDossierDetailViewState
     setState(() => _isSaving = true);
     try {
       final updated = await RrhhRepository.current.updateDossierSection3(
-        _dossier!.id,
+        _dossier!.id ?? widget.dossierId,
         fullAddress: _s3AddressCtrl.text.trim(),
         maritalStatus: _s3MaritalStatus,
         childrenCount: int.tryParse(_s3ChildrenCtrl.text) ?? 0,
@@ -2442,7 +2442,7 @@ class _RrhhHiringDossierDetailViewState
     setState(() => _isSaving = true);
     try {
       final updated = await RrhhRepository.current.updateDossierSection3(
-        _dossier!.id,
+        _dossier!.id ?? widget.dossierId,
         fullAddress: _s3AddressCtrl.text.trim(),
         maritalStatus: _s3MaritalStatus,
         childrenCount: int.tryParse(_s3ChildrenCtrl.text) ?? 0,
@@ -2496,7 +2496,7 @@ class _RrhhHiringDossierDetailViewState
     try {
       final salary = double.tryParse(_s4BaseSalaryCtrl.text.trim());
       final updated = await RrhhRepository.current.updateDossierSection4(
-        _dossier!.id,
+        _dossier!.id ?? widget.dossierId,
         contractTypeId: _s4ContractTypeId,
         contractTypeName: _s4ContractTypeName,
         workdayType: _s4WorkdayType,
@@ -2530,7 +2530,7 @@ class _RrhhHiringDossierDetailViewState
     try {
       final salary = double.tryParse(_s4BaseSalaryCtrl.text.trim());
       final updated = await RrhhRepository.current.updateDossierSection4(
-        _dossier!.id,
+        _dossier!.id ?? widget.dossierId,
         contractTypeId: _s4ContractTypeId,
         contractTypeName: _s4ContractTypeName,
         workdayType: _s4WorkdayType,
@@ -2932,7 +2932,7 @@ class _RrhhHiringDossierDetailViewState
                         ),
                         Text(
                           d.contractTypeName != null
-                              ? '${d.contractTypeName} (${d.workdayType ?? "Completa"}) · ${d.currency ?? "BOB"} ${d.baseSalary != null ? d.baseSalary!.toStringAsFixed(0) : "0"} · ${d.paymentModalityName ?? "Sin modalidad"}'
+                              ? '${d.contractTypeName} (${d.workdayType ?? "Completa"}) · ${d.currency} ${d.baseSalary != null ? d.baseSalary!.toStringAsFixed(0) : "0"} · ${d.paymentModalityName ?? "Sin modalidad"}'
                               : 'Define tipo de contrato, jornada laboral, fechas, salario y bonificaciones.',
                           style: GoogleFonts.inter(
                             fontSize: 11,
@@ -3880,7 +3880,7 @@ class _RrhhHiringDossierDetailViewState
     setState(() => _isSaving = true);
     try {
       final updated = await RrhhRepository.current.updateDossierSection5(
-        _dossier!.id,
+        _dossier!.id ?? widget.dossierId,
         areaId: _s5AreaId,
         areaName: _s5AreaName,
         positionId: _s5PositionId,
@@ -3914,7 +3914,7 @@ class _RrhhHiringDossierDetailViewState
     setState(() => _isSaving = true);
     try {
       final updated = await RrhhRepository.current.updateDossierSection5(
-        _dossier!.id,
+        _dossier!.id ?? widget.dossierId,
         areaId: _s5AreaId,
         areaName: _s5AreaName,
         positionId: _s5PositionId,
@@ -5577,7 +5577,7 @@ class _RrhhHiringDossierDetailViewState
     setState(() => _isSaving = true);
     try {
       final employee = await RrhhRepository.current.convertDossierToEmployee(
-        d.id,
+        d.id ?? widget.dossierId,
         notes:
             _s6NotesCtrl.text.trim().isEmpty ? null : _s6NotesCtrl.text.trim(),
       );

@@ -112,6 +112,8 @@ extension RrhhHiringDossierUiExtension on RrhhHiringDossier {
 
   double get progressFraction => completedSectionsCount / 6.0;
 
+  String get progressLabel => '${(progressFraction * 100).toInt()}%';
+
   String get dossierStatusLabel {
     switch (status.toLowerCase()) {
       case 'abierto':
@@ -124,6 +126,53 @@ extension RrhhHiringDossierUiExtension on RrhhHiringDossier {
         return status;
     }
   }
+
+  Map<String, RrhhDossierDocument> get documents {
+    final map = <String, RrhhDossierDocument>{};
+    for (final doc in documentChecklist ?? <RrhhDossierDocument>[]) {
+      map[doc.code] = doc;
+    }
+    return map;
+  }
+
+  int get totalRequiredDocsCount =>
+      (documentChecklist ?? []).where((d) => d.isRequired).length;
+
+  int get validatedRequiredDocsCount =>
+      (documentChecklist ?? []).where((d) => d.isRequired && d.status == 'validado').length;
+
+  bool get areAllRequiredDocumentsValidated =>
+      totalRequiredDocsCount > 0 && validatedRequiredDocsCount >= totalRequiredDocsCount;
+
+  bool get isReadyForEmployeeCreation =>
+      section1Status == 'completa' &&
+      section2Status == 'completa' &&
+      section3Status == 'completa' &&
+      section4Status == 'completa' &&
+      section5Status == 'completa';
+
+  String get applicantFullName => applicantName;
+  String get applicantCi => '---';
+  String get applicantPhone => '---';
+  String? get applicantEmail => null;
+  DateTime get applicationDate => createdAt;
+  double? get applicantExpectedSalary => baseSalary;
+  String? get healthInsuranceName => healthInsurance;
+  String? get healthInsuranceId => healthInsurance;
+  String? get afpId => afpName;
+  String? get contractTypeName => contractType;
+  String? get contractTypeId => contractType;
+  String get currency => 'BOB';
+  String? get paymentModalityId => paymentModality;
+  String? get paymentModalityName => paymentModality;
+  String? get areaName => areaId != null ? 'Área #$areaId' : null;
+  String? get targetArea => areaName;
+  String? get positionName => positionId != null ? 'Cargo #$positionId' : null;
+  String? get targetPosition => positionName;
+  String? get shiftName => shiftId != null ? 'Turno #$shiftId' : null;
+  String? get scheduleName => scheduleId != null ? 'Horario #$scheduleId' : null;
+  String? get supervisorName => supervisorEmployeeId != null ? 'Supervisor #$supervisorEmployeeId' : null;
+  String? get workplaceType => baseLocation;
 }
 
 /// 5. Extensión para RrhhDossierDocument (Serverpod)
@@ -132,4 +181,5 @@ extension RrhhDossierDocumentUiExtension on RrhhDossierDocument {
   bool get isReceived => status == 'recibido';
   bool get isRejected => status == 'rechazado';
   bool get isPending => status == 'pendiente';
+  String get requirementType => isRequired ? 'obligatorio' : 'condicional';
 }
