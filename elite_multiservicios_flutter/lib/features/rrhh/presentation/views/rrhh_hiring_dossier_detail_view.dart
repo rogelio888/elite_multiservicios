@@ -102,6 +102,7 @@ class _RrhhHiringDossierDetailViewState
   String? _applicantEmergPhone;
   String? _applicantTargetArea;
   String? _applicantTargetPosition;
+  String? _applicantTargetType;
   double? _applicantExpectedSalary;
 
   @override
@@ -237,6 +238,7 @@ class _RrhhHiringDossierDetailViewState
               app?.emergencyPhone;
           _applicantTargetArea = app?.targetArea;
           _applicantTargetPosition = app?.targetPosition;
+          _applicantTargetType = app?.targetType;
           _applicantExpectedSalary = comp?.evaluation.salaryExpectation ??
               d?.applicantExpectedSalary ??
               (app != null &&
@@ -813,7 +815,7 @@ class _RrhhHiringDossierDetailViewState
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${d.applicantCode} · ${d.targetArea} / ${d.targetPosition} (${d.workplaceType})',
+                      '${d.applicantCode} · ${_applicantTargetArea ?? d.targetArea ?? "Área no asignada"} / ${_applicantTargetPosition ?? d.targetPosition ?? "Cargo no asignado"} (${_applicantTargetType ?? d.workplaceType ?? "CAMPO"})',
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         color: isDark
