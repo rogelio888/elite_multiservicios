@@ -60,9 +60,11 @@ class _RrhhHiringDossiersTabState extends State<RrhhHiringDossiersTab> {
   }
 
   Future<void> _togglePauseStatus(RrhhHiringDossier dossier) async {
+    final dossierId = dossier.id;
+    if (dossierId == null) return;
     final newStatus = dossier.status == 'pausado' ? 'abierto' : 'pausado';
     try {
-      await RrhhRepository.current.updateDossierStatus(dossier.id, newStatus);
+      await RrhhRepository.current.updateDossierStatus(dossierId, newStatus);
       await _loadDossiers();
       if (mounted) {
         RrhhSnackBar.showInfo(
@@ -88,8 +90,8 @@ class _RrhhHiringDossiersTabState extends State<RrhhHiringDossiersTab> {
         final q = _searchQuery!.trim().toLowerCase();
         final matchesCode = d.applicantCode.toLowerCase().contains(q);
         final matchesName = d.applicantName.toLowerCase().contains(q);
-        final matchesArea = d.targetArea.toLowerCase().contains(q);
-        final matchesPos = d.targetPosition.toLowerCase().contains(q);
+        final matchesArea = (d.targetArea ?? '').toLowerCase().contains(q);
+        final matchesPos = (d.targetPosition ?? '').toLowerCase().contains(q);
         if (!matchesCode && !matchesName && !matchesArea && !matchesPos) {
           return false;
         }
@@ -399,8 +401,8 @@ class _RrhhHiringDossiersTabState extends State<RrhhHiringDossiersTab> {
     return _DossierTableRow(
       dossier: dossier,
       onOpen: () {
-        if (widget.onOpenDossier != null) {
-          widget.onOpenDossier!(dossier.id);
+        if (widget.onOpenDossier != null && dossier.id != null) {
+          widget.onOpenDossier!(dossier.id!);
         }
       },
       onTogglePause: () => _togglePauseStatus(dossier),
@@ -549,7 +551,7 @@ class _DossierTableRowState extends State<_DossierTableRow> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      d.targetPosition,
+                      d.targetPosition ?? '---',
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -559,7 +561,7 @@ class _DossierTableRowState extends State<_DossierTableRow> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      '${d.targetArea} · ${d.workplaceType}',
+                      '${d.targetArea ?? '---'} · ${d.workplaceType ?? '---'}',
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         color: const Color(0xFF64748B),

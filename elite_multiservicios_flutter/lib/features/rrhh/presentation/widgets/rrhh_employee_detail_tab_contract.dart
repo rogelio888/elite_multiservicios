@@ -19,7 +19,9 @@ class RrhhEmployeeDetailTabContract extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formattedSalary = 'Bs. ${_formatCurrency(employee.agreedSalary)}';
+    final formattedSalary = employee.agreedSalary != null
+        ? 'Bs. ${_formatCurrency(employee.agreedSalary!)}'
+        : '---';
     final contractEndStr = employee.contractEndDate != null
         ? _formatDate(employee.contractEndDate!)
         : 'Indefinido (Sin vencimiento)';

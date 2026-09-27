@@ -95,6 +95,9 @@ extension RrhhEmployeeSummaryDtoUiExtension on RrhhEmployeeSummaryDto {
   bool get isField => employeeType.toUpperCase() == 'CAMPO';
   bool get isOffice => employeeType.toUpperCase() == 'OFICINA';
   DateTime get realStartDate => hireDate;
+  String get specialty => workplace ?? 'General';
+  int get attachedDocsCount => 6;
+  bool get hasCompleteDocs => attachedDocsCount >= 6;
 }
 
 /// 4. Extensión para RrhhHiringDossier (Serverpod)

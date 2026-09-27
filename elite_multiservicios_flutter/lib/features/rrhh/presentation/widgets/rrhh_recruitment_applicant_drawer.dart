@@ -1176,7 +1176,7 @@ class _RrhhRecruitmentApplicantDrawerState
                                     backgroundColor: const Color(0xFF090D16),
                                     body: SafeArea(
                                       child: RrhhHiringDossierDetailView(
-                                        dossierId: dossier!.id,
+                                        dossierId: dossier!.id ?? 0,
                                         onBack: () => Navigator.of(ctx).pop(),
                                       ),
                                     ),

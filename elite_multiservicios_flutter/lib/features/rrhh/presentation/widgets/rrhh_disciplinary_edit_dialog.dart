@@ -431,12 +431,12 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Cargo: ${_selectedEmployee!.position} | Área: ${_selectedEmployee!.area}',
+                    'Cargo: ${_selectedEmployee!.position ?? '---'} | Área: ${_selectedEmployee!.area ?? '---'}',
                     style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFFCBD5E1)),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Supervisor directo: ${_getSupervisorForArea(_selectedEmployee!.area)}',
+                    'Supervisor directo: ${_getSupervisorForArea(_selectedEmployee!.area ?? '')}',
                     style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF94A3B8)),
                   ),
                 ],

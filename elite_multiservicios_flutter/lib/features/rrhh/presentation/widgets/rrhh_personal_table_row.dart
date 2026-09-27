@@ -109,8 +109,8 @@ class _RrhhPersonalTableRowState extends State<RrhhPersonalTableRow> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(e.position, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: const Color(0xFFCBD5E1)), maxLines: 1, overflow: TextOverflow.ellipsis),
-                      Text(e.area, style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFF64748B)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(e.position ?? '---', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: const Color(0xFFCBD5E1)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(e.area ?? '---', style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFF64748B)), maxLines: 1, overflow: TextOverflow.ellipsis),
                     ],
                   ),
                 ),

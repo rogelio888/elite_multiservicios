@@ -2,6 +2,7 @@ import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
     hide RrhhLeaveRequest, RrhhVacation;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../extensions/rrhh_model_extensions.dart';
 import '../../data/repositories/rrhh_repository.dart';
 import 'rrhh_snack_bar.dart';
 
@@ -459,7 +460,7 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
                   Expanded(
                     child: _buildInfoItem(
                       'Salario Base',
-                      _employeeDetail != null ? 'Bs. ${_employeeDetail!.agreedSalary.toStringAsFixed(2)}' : '—',
+                      _employeeDetail != null ? 'Bs. ${(_employeeDetail!.agreedSalary ?? 0.0).toStringAsFixed(2)}' : '—',
                     ),
                   ),
                 ],

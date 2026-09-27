@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
+    hide RrhhLeaveRequest;
 import '../../data/repositories/rrhh_repository.dart';
 import 'rrhh_snack_bar.dart';
 

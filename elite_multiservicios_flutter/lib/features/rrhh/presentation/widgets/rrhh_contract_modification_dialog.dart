@@ -139,7 +139,7 @@ class _RrhhContractModificationDialogState
 
     // Bloque C
     _salaryController = TextEditingController(
-      text: emp.agreedSalary.toStringAsFixed(2),
+      text: (emp.agreedSalary ?? 0.0).toStringAsFixed(2),
     );
     _currency = 'BOB';
     _paymentModality = emp.paymentModality.isNotEmpty
@@ -265,7 +265,8 @@ class _RrhhContractModificationDialogState
     final emp = widget.employee;
 
     final newSalary = double.tryParse(_salaryController.text.trim()) ??
-        emp.agreedSalary;
+        emp.agreedSalary ??
+        0.0;
     final newFullName = _fullNameController.text.trim();
     final newCi = _ciController.text.trim();
     final newBaseLocation = _baseLocationController.text.trim();
@@ -308,7 +309,7 @@ class _RrhhContractModificationDialogState
     if (newSalary != emp.agreedSalary) {
       hasSalaryChange = true;
       diffLines.add(
-        '• Salario base: ${emp.agreedSalary.toStringAsFixed(2)} → ${newSalary.toStringAsFixed(2)} $_currency',
+        '• Salario base: ${(emp.agreedSalary ?? 0.0).toStringAsFixed(2)} → ${newSalary.toStringAsFixed(2)} $_currency',
       );
     }
     if (_contractType != _normalizeContractType(emp.contractType)) {
