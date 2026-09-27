@@ -52,6 +52,15 @@ class ValidationException extends AppException {
   }) : super(code: 'VALIDATION_FAILED', details: fieldErrors);
 }
 
+/// Excepción para conflictos de estado, recursos duplicados o violaciones de idempotencia.
+class ConflictException extends AppException {
+  const ConflictException(
+    super.message, {
+    String code = 'CONFLICT',
+    dynamic details,
+  }) : super(code: code, details: details);
+}
+
 /// Excepción para cuentas temporalmente bloqueadas por exceso de intentos fallidos.
 class AccountLockedException extends AppException {
   final int minutesRemaining;

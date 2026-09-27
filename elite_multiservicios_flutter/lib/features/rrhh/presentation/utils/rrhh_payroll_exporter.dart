@@ -1,4 +1,4 @@
-import '../../data/models/rrhh_employee.dart';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'rrhh_payroll_exporter_stub.dart'
     if (dart.library.html) 'rrhh_payroll_exporter_web.dart';
 

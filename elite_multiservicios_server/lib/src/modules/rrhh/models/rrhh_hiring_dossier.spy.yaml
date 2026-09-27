@@ -1,0 +1,88 @@
+### Expediente de Contratación (FASE C). Conecta la etapa SELECCIONADO con el alta en Nómina.
+class: RrhhHiringDossier
+table: rrhh_hiring_dossier
+
+fields:
+  ### Identificación
+  code: String
+
+  ### Referencias
+  applicantId: int?, relation(parent=rrhh_applicant)
+  applicantCode: String
+  applicantName: String
+
+  employeeId: int?, relation(parent=rrhh_employee)
+  convertedEmployeeCode: String?
+
+  ### Estado general del expediente
+  ### 'abierto' | 'en_proceso' | 'listo_para_convertir' | 'convertido' | 'pausado' | 'cancelado'
+  status: String, default='abierto'
+
+  ### Estados por sección ('pendiente' | 'en_proceso' | 'completa')
+  section1Status: String, default='pendiente'
+  section2Status: String, default='pendiente'
+  section3Status: String, default='pendiente'
+  section4Status: String, default='pendiente'
+  section5Status: String, default='pendiente'
+  section6Status: String, default='pendiente'
+
+  ### Sección 1: Documentos (checklist estructurado)
+  documentChecklist: List<RrhhDossierDocument>?
+
+  ### Sección 2: Afiliación seguridad social
+  afpName: String?
+  afpNumber: String?
+  healthInsurance: String?
+  section2Notes: String?
+
+  ### Sección 3: Datos personales complementarios
+  fullAddress: String?
+  maritalStatus: String?
+  childrenCount: int?
+  emergencyContactName: String?
+  emergencyContactPhone: String?
+  emergencyContactRelation: String?
+
+  ### Sección 4: Condiciones contractuales
+  contractType: String?
+  workdayType: String?
+  paymentModality: String?
+  baseSalary: double?
+  contractStartDate: DateTime?
+  contractEndDate: DateTime?
+  bonuses: List<RrhhEmployeeBonus>?
+  deductions: List<RrhhEmployeeDeduction>?
+  section4Notes: String?
+
+  ### Sección 5: Asignación organizacional
+  areaId: int?, relation(parent=rrhh_area)
+  positionId: int?, relation(parent=rrhh_position)
+  shiftId: String?
+  scheduleId: String?
+  baseLocation: String?
+  supervisorEmployeeId: String?
+  effectiveStartDate: DateTime?
+  section5Notes: String?
+
+  ### Sección 6: Cierre
+  closingNotes: String?
+  approvedBy: String?
+  approvedAt: DateTime?
+
+  ### Auditoría
+  createdBy: String?
+  createdAt: DateTime
+  updatedAt: DateTime
+  closedAt: DateTime?
+  isDeleted: bool, default=false
+  deletedAt: DateTime?
+
+indexes:
+  rrhh_hiring_dossier_code_unique_idx:
+    fields: code
+    unique: true
+  rrhh_hiring_dossier_status_idx:
+    fields: status
+  rrhh_hiring_dossier_applicant_idx:
+    fields: applicantId
+

@@ -27,10 +27,13 @@ abstract class RrhhEmployeeDocument implements _i1.SerializableModel {
     bool? isVerified,
     this.verifiedBy,
     this.verifiedAt,
+    bool? isDeleted,
+    this.deletedAt,
     required this.createdAt,
     required this.updatedAt,
   }) : fileSizeBytes = fileSizeBytes ?? 0,
-       isVerified = isVerified ?? true;
+       isVerified = isVerified ?? true,
+       isDeleted = isDeleted ?? false;
 
   factory RrhhEmployeeDocument({
     int? id,
@@ -44,6 +47,8 @@ abstract class RrhhEmployeeDocument implements _i1.SerializableModel {
     bool? isVerified,
     String? verifiedBy,
     DateTime? verifiedAt,
+    bool? isDeleted,
+    DateTime? deletedAt,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _RrhhEmployeeDocumentImpl;
@@ -67,6 +72,12 @@ abstract class RrhhEmployeeDocument implements _i1.SerializableModel {
       verifiedAt: jsonSerialization['verifiedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['verifiedAt']),
+      isDeleted: jsonSerialization['isDeleted'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['isDeleted']),
+      deletedAt: jsonSerialization['deletedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['deletedAt']),
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
@@ -111,6 +122,11 @@ abstract class RrhhEmployeeDocument implements _i1.SerializableModel {
   /// Fecha de verificación.
   DateTime? verifiedAt;
 
+  /// Eliminación lógica y auditoría
+  bool isDeleted;
+
+  DateTime? deletedAt;
+
   DateTime createdAt;
 
   DateTime updatedAt;
@@ -130,6 +146,8 @@ abstract class RrhhEmployeeDocument implements _i1.SerializableModel {
     bool? isVerified,
     String? verifiedBy,
     DateTime? verifiedAt,
+    bool? isDeleted,
+    DateTime? deletedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -148,6 +166,8 @@ abstract class RrhhEmployeeDocument implements _i1.SerializableModel {
       'isVerified': isVerified,
       if (verifiedBy != null) 'verifiedBy': verifiedBy,
       if (verifiedAt != null) 'verifiedAt': verifiedAt?.toJson(),
+      'isDeleted': isDeleted,
+      if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
       'createdAt': createdAt.toJson(),
       'updatedAt': updatedAt.toJson(),
     };
@@ -174,6 +194,8 @@ class _RrhhEmployeeDocumentImpl extends RrhhEmployeeDocument {
     bool? isVerified,
     String? verifiedBy,
     DateTime? verifiedAt,
+    bool? isDeleted,
+    DateTime? deletedAt,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) : super._(
@@ -188,6 +210,8 @@ class _RrhhEmployeeDocumentImpl extends RrhhEmployeeDocument {
          isVerified: isVerified,
          verifiedBy: verifiedBy,
          verifiedAt: verifiedAt,
+         isDeleted: isDeleted,
+         deletedAt: deletedAt,
          createdAt: createdAt,
          updatedAt: updatedAt,
        );
@@ -208,6 +232,8 @@ class _RrhhEmployeeDocumentImpl extends RrhhEmployeeDocument {
     bool? isVerified,
     Object? verifiedBy = _Undefined,
     Object? verifiedAt = _Undefined,
+    bool? isDeleted,
+    Object? deletedAt = _Undefined,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -223,6 +249,8 @@ class _RrhhEmployeeDocumentImpl extends RrhhEmployeeDocument {
       isVerified: isVerified ?? this.isVerified,
       verifiedBy: verifiedBy is String? ? verifiedBy : this.verifiedBy,
       verifiedAt: verifiedAt is DateTime? ? verifiedAt : this.verifiedAt,
+      isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

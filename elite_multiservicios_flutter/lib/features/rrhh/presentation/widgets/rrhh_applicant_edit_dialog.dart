@@ -186,7 +186,7 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
 
       final applicant = RrhhApplicant(
         id: widget.applicant?.id,
-        code: widget.applicant?.code ?? 'POST-NEW',
+        code: widget.applicant?.code ?? '',
         fullName: _nameCtrl.text.trim(),
         identityCard: fullCi,
         phone: _phoneCtrl.text.trim(),

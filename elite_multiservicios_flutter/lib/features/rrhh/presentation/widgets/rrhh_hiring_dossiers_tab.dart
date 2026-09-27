@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../data/models/rrhh_hiring_dossier.dart';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
+import '../extensions/rrhh_model_extensions.dart';
 import '../../data/repositories/rrhh_repository.dart';
 import 'rrhh_snack_bar.dart';
 import 'rrhh_state_widgets.dart';

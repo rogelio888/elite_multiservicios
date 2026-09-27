@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../data/models/rrhh_employee_summary_dto.dart';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 
 /// Diálogo de previsualización de colaborador para el Directorio de Personal.
 class RrhhEmployeePreviewDialog extends StatelessWidget {

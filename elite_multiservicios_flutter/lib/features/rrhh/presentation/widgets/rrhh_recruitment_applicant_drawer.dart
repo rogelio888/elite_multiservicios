@@ -241,7 +241,7 @@ class _RrhhRecruitmentApplicantDrawerState
     if (confirm != true) return;
 
     final newApp = RrhhApplicant(
-      code: 'POST-NEW',
+      code: '',
       fullName: _applicant!.fullName,
       identityCard: _applicant!.identityCard,
       phone: _applicant!.phone,

@@ -2,7 +2,7 @@ import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../data/models/rrhh_employee_summary_dto.dart';
+import '../extensions/rrhh_model_extensions.dart';
 import '../../data/repositories/rrhh_repository.dart';
 import 'rrhh_edit_employee_dialog.dart';
 import 'rrhh_employee_detail_dialog.dart';

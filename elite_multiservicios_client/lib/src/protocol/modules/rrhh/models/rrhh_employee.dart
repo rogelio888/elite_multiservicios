@@ -14,7 +14,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../../modules/rrhh/models/rrhh_employee_bonus.dart' as _i2;
 import '../../../modules/rrhh/models/rrhh_employee_deduction.dart' as _i3;
-import 'package:elite_multiservicios_client/src/protocol/protocol.dart' as _i4;
+import '../../../modules/rrhh/models/rrhh_dossier_document.dart' as _i4;
+import 'package:elite_multiservicios_client/src/protocol/protocol.dart' as _i5;
 
 /// Expediente maestro del Colaborador / Empleado de Elite Multiservicios.
 abstract class RrhhEmployee implements _i1.SerializableModel {
@@ -42,7 +43,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
     this.supervisorId,
     required this.realStartDate,
     required this.fiscalStartDate,
-    required this.agreedSalary,
+    this.agreedSalary,
     required this.contractType,
     this.contractEndDate,
     this.observations,
@@ -126,7 +127,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
     int? supervisorId,
     required DateTime realStartDate,
     required DateTime fiscalStartDate,
-    required double agreedSalary,
+    double? agreedSalary,
     required String contractType,
     DateTime? contractEndDate,
     String? observations,
@@ -169,7 +170,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
     String? shiftId,
     String? baseLocation,
     String? supervisorEmployeeId,
-    Map<String, String>? documentChecklist,
+    List<_i4.RrhhDossierDocument>? documentChecklist,
     bool? isDeleted,
     DateTime? deletedAt,
     required DateTime createdAt,
@@ -207,7 +208,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
       fiscalStartDate: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['fiscalStartDate'],
       ),
-      agreedSalary: (jsonSerialization['agreedSalary'] as num).toDouble(),
+      agreedSalary: (jsonSerialization['agreedSalary'] as num?)?.toDouble(),
       contractType: jsonSerialization['contractType'] as String,
       contractEndDate: jsonSerialization['contractEndDate'] == null
           ? null
@@ -218,7 +219,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
       status: jsonSerialization['status'] as String?,
       skills: jsonSerialization['skills'] == null
           ? null
-          : _i4.Protocol().deserialize<List<String>>(
+          : _i5.Protocol().deserialize<List<String>>(
               jsonSerialization['skills'],
             ),
       availabilityStatus: jsonSerialization['availabilityStatus'] as String?,
@@ -279,12 +280,12 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
           jsonSerialization['contractSignedPdfUrl'] as String?,
       bonuses: jsonSerialization['bonuses'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i2.RrhhEmployeeBonus>>(
+          : _i5.Protocol().deserialize<List<_i2.RrhhEmployeeBonus>>(
               jsonSerialization['bonuses'],
             ),
       deductions: jsonSerialization['deductions'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.RrhhEmployeeDeduction>>(
+          : _i5.Protocol().deserialize<List<_i3.RrhhEmployeeDeduction>>(
               jsonSerialization['deductions'],
             ),
       shiftId: jsonSerialization['shiftId'] as String?,
@@ -293,7 +294,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
           jsonSerialization['supervisorEmployeeId'] as String?,
       documentChecklist: jsonSerialization['documentChecklist'] == null
           ? null
-          : _i4.Protocol().deserialize<Map<String, String>>(
+          : _i5.Protocol().deserialize<List<_i4.RrhhDossierDocument>>(
               jsonSerialization['documentChecklist'],
             ),
       isDeleted: jsonSerialization['isDeleted'] == null
@@ -378,7 +379,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
 
   DateTime fiscalStartDate;
 
-  double agreedSalary;
+  double? agreedSalary;
 
   /// Modalidad de contrato: 'Indefinido', 'Plazo Fijo', 'Servicios'.
   String contractType;
@@ -482,7 +483,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
   String? supervisorEmployeeId;
 
   /// Checklist de documentos (FASE B)
-  Map<String, String>? documentChecklist;
+  List<_i4.RrhhDossierDocument>? documentChecklist;
 
   /// Eliminación lógica y auditoría
   bool isDeleted;
@@ -563,7 +564,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
     String? shiftId,
     String? baseLocation,
     String? supervisorEmployeeId,
-    Map<String, String>? documentChecklist,
+    List<_i4.RrhhDossierDocument>? documentChecklist,
     bool? isDeleted,
     DateTime? deletedAt,
     DateTime? createdAt,
@@ -596,7 +597,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
       if (supervisorId != null) 'supervisorId': supervisorId,
       'realStartDate': realStartDate.toJson(),
       'fiscalStartDate': fiscalStartDate.toJson(),
-      'agreedSalary': agreedSalary,
+      if (agreedSalary != null) 'agreedSalary': agreedSalary,
       'contractType': contractType,
       if (contractEndDate != null) 'contractEndDate': contractEndDate?.toJson(),
       if (observations != null) 'observations': observations,
@@ -648,7 +649,9 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
       if (supervisorEmployeeId != null)
         'supervisorEmployeeId': supervisorEmployeeId,
       if (documentChecklist != null)
-        'documentChecklist': documentChecklist?.toJson(),
+        'documentChecklist': documentChecklist?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       'isDeleted': isDeleted,
       if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
       'createdAt': createdAt.toJson(),
@@ -689,7 +692,7 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
     int? supervisorId,
     required DateTime realStartDate,
     required DateTime fiscalStartDate,
-    required double agreedSalary,
+    double? agreedSalary,
     required String contractType,
     DateTime? contractEndDate,
     String? observations,
@@ -732,7 +735,7 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
     String? shiftId,
     String? baseLocation,
     String? supervisorEmployeeId,
-    Map<String, String>? documentChecklist,
+    List<_i4.RrhhDossierDocument>? documentChecklist,
     bool? isDeleted,
     DateTime? deletedAt,
     required DateTime createdAt,
@@ -839,7 +842,7 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
     Object? supervisorId = _Undefined,
     DateTime? realStartDate,
     DateTime? fiscalStartDate,
-    double? agreedSalary,
+    Object? agreedSalary = _Undefined,
     String? contractType,
     Object? contractEndDate = _Undefined,
     Object? observations = _Undefined,
@@ -912,7 +915,7 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
       supervisorId: supervisorId is int? ? supervisorId : this.supervisorId,
       realStartDate: realStartDate ?? this.realStartDate,
       fiscalStartDate: fiscalStartDate ?? this.fiscalStartDate,
-      agreedSalary: agreedSalary ?? this.agreedSalary,
+      agreedSalary: agreedSalary is double? ? agreedSalary : this.agreedSalary,
       contractType: contractType ?? this.contractType,
       contractEndDate: contractEndDate is DateTime?
           ? contractEndDate
@@ -989,17 +992,9 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
       supervisorEmployeeId: supervisorEmployeeId is String?
           ? supervisorEmployeeId
           : this.supervisorEmployeeId,
-      documentChecklist: documentChecklist is Map<String, String>?
+      documentChecklist: documentChecklist is List<_i4.RrhhDossierDocument>?
           ? documentChecklist
-          : this.documentChecklist?.map(
-              (
-                key0,
-                value0,
-              ) => MapEntry(
-                key0,
-                value0,
-              ),
-            ),
+          : this.documentChecklist?.map((e0) => e0.copyWith()).toList(),
       isDeleted: isDeleted ?? this.isDeleted,
       deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
       createdAt: createdAt ?? this.createdAt,

@@ -9,20 +9,17 @@ import 'rrhh_snack_bar.dart';
 /// Modal de éxito mostrado al formalizar la contratación y generar el expediente.
 class RrhhHireSuccessDialog extends StatelessWidget {
   final RrhhEmployee employee;
-  final String tempPassword;
   final VoidCallback? onFinished;
 
   const RrhhHireSuccessDialog({
     super.key,
     required this.employee,
-    this.tempPassword = 'Elite.2026!Temp',
     this.onFinished,
   });
 
   static Future<void> show(
     BuildContext context, {
     required RrhhEmployee employee,
-    String tempPassword = 'Elite.2026!Temp',
     VoidCallback? onFinished,
   }) {
     return showDialog<void>(
@@ -30,7 +27,6 @@ class RrhhHireSuccessDialog extends StatelessWidget {
       barrierDismissible: false,
       builder: (ctx) => RrhhHireSuccessDialog(
         employee: employee,
-        tempPassword: tempPassword,
         onFinished: onFinished,
       ),
     );
@@ -38,8 +34,9 @@ class RrhhHireSuccessDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final apkUsername = employee.corporateEmail ??
-        '${employee.fullName.toLowerCase().replaceAll(' ', '.')}@elitemultiservicios.com';
+    final corporateEmail = (employee.corporateEmail != null && employee.corporateEmail!.trim().isNotEmpty)
+        ? employee.corporateEmail!.trim()
+        : 'Pendiente de generación';
     final isCampo = employee.employeeType == 'CAMPO';
 
     return Dialog(
@@ -135,8 +132,8 @@ class RrhhHireSuccessDialog extends StatelessWidget {
               ),
               const SizedBox(height: 18),
 
-              // Credenciales Aprovisionadas para APK
-              _buildSectionTitle('CREDENCIALES PARA LA APK MÓVIL DE CAMPO'),
+              // Identificador y Correo Institucional
+              _buildSectionTitle('CUENTA INSTITUCIONAL ASIGNADA'),
               const SizedBox(height: 8),
 
               // Usuario / Email
@@ -145,56 +142,26 @@ class RrhhHireSuccessDialog extends StatelessWidget {
                 decoration: BoxDecoration(color: const Color(0xFF111827), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFF1E293B))),
                 child: Row(
                   children: [
-                    const Icon(Icons.person_pin_outlined, size: 16, color: Color(0xFF60A5FA)),
+                    const Icon(Icons.alternate_email, size: 16, color: Color(0xFF60A5FA)),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Usuario / Correo APK', style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B))),
-                          Text(apkUsername, style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w500, color: const Color(0xFFF8FAFC))),
+                          Text('Correo Corporativo', style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B))),
+                          Text(corporateEmail, style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w500, color: const Color(0xFFF8FAFC))),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              // Contraseña Temporal con botón de copia
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(color: const Color(0xFF0B1120), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFF334155))),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Contraseña Temporal Inicial', style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B))),
-                        const SizedBox(height: 2),
-                        Text(
-                          tempPassword,
-                          style: GoogleFonts.jetBrainsMono(fontSize: 14.5, fontWeight: FontWeight.w600, color: const Color(0xFF38BDF8), letterSpacing: 0.5),
-                        ),
-                      ],
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: 'Usuario: $apkUsername\nContraseña: $tempPassword'));
-                        RrhhSnackBar.showSuccess(
-                          context,
-                          'Credenciales copiadas al portapapeles',
-                        );
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFF334155)),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    if (employee.corporateEmail != null && employee.corporateEmail!.trim().isNotEmpty)
+                      IconButton(
+                        icon: const Icon(Icons.copy_outlined, size: 16, color: Color(0xFF94A3B8)),
+                        tooltip: 'Copiar correo',
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: employee.corporateEmail!));
+                          RrhhSnackBar.showSuccess(context, 'Correo copiado al portapapeles');
+                        },
                       ),
-                      icon: const Icon(Icons.copy_outlined, size: 14, color: Color(0xFF94A3B8)),
-                      label: Text('Copiar', style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF94A3B8))),
-                    ),
                   ],
                 ),
               ),

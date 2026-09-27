@@ -4,8 +4,6 @@ import '../models/crm_client_ref_dto.dart';
 import '../models/rrhh_applicant_companion.dart';
 import '../models/rrhh_applicant_summary_dto.dart';
 import '../models/rrhh_catalog_item.dart';
-import '../models/rrhh_employee_summary_dto.dart';
-import '../models/rrhh_hiring_dossier.dart';
 import '../models/rrhh_payroll_export_dto.dart';
 import '../models/rrhh_shift.dart';
 import 'package:flutter/material.dart';

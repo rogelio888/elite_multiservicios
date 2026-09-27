@@ -25,11 +25,13 @@ abstract class RrhhEmployeeContractData
     required this.fullName,
     required this.status,
     required this.contractType,
-    required this.baseSalary,
+    this.baseSalary,
     required this.paymentModality,
+    this.workdayType,
     this.bonuses,
     this.deductions,
     this.contractStartDate,
+    this.contractEndDate,
     this.terminationDate,
   });
 
@@ -39,11 +41,13 @@ abstract class RrhhEmployeeContractData
     required String fullName,
     required String status,
     required String contractType,
-    required double baseSalary,
+    double? baseSalary,
     required String paymentModality,
+    String? workdayType,
     List<_i2.RrhhEmployeeBonus>? bonuses,
     List<_i3.RrhhEmployeeDeduction>? deductions,
     DateTime? contractStartDate,
+    DateTime? contractEndDate,
     DateTime? terminationDate,
   }) = _RrhhEmployeeContractDataImpl;
 
@@ -56,8 +60,9 @@ abstract class RrhhEmployeeContractData
       fullName: jsonSerialization['fullName'] as String,
       status: jsonSerialization['status'] as String,
       contractType: jsonSerialization['contractType'] as String,
-      baseSalary: (jsonSerialization['baseSalary'] as num).toDouble(),
+      baseSalary: (jsonSerialization['baseSalary'] as num?)?.toDouble(),
       paymentModality: jsonSerialization['paymentModality'] as String,
+      workdayType: jsonSerialization['workdayType'] as String?,
       bonuses: jsonSerialization['bonuses'] == null
           ? null
           : _i4.Protocol().deserialize<List<_i2.RrhhEmployeeBonus>>(
@@ -72,6 +77,11 @@ abstract class RrhhEmployeeContractData
           ? null
           : _i1.DateTimeJsonExtension.fromJson(
               jsonSerialization['contractStartDate'],
+            ),
+      contractEndDate: jsonSerialization['contractEndDate'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['contractEndDate'],
             ),
       terminationDate: jsonSerialization['terminationDate'] == null
           ? null
@@ -91,15 +101,19 @@ abstract class RrhhEmployeeContractData
 
   String contractType;
 
-  double baseSalary;
+  double? baseSalary;
 
   String paymentModality;
+
+  String? workdayType;
 
   List<_i2.RrhhEmployeeBonus>? bonuses;
 
   List<_i3.RrhhEmployeeDeduction>? deductions;
 
   DateTime? contractStartDate;
+
+  DateTime? contractEndDate;
 
   DateTime? terminationDate;
 
@@ -114,9 +128,11 @@ abstract class RrhhEmployeeContractData
     String? contractType,
     double? baseSalary,
     String? paymentModality,
+    String? workdayType,
     List<_i2.RrhhEmployeeBonus>? bonuses,
     List<_i3.RrhhEmployeeDeduction>? deductions,
     DateTime? contractStartDate,
+    DateTime? contractEndDate,
     DateTime? terminationDate,
   });
   @override
@@ -128,14 +144,16 @@ abstract class RrhhEmployeeContractData
       'fullName': fullName,
       'status': status,
       'contractType': contractType,
-      'baseSalary': baseSalary,
+      if (baseSalary != null) 'baseSalary': baseSalary,
       'paymentModality': paymentModality,
+      if (workdayType != null) 'workdayType': workdayType,
       if (bonuses != null)
         'bonuses': bonuses?.toJson(valueToJson: (v) => v.toJson()),
       if (deductions != null)
         'deductions': deductions?.toJson(valueToJson: (v) => v.toJson()),
       if (contractStartDate != null)
         'contractStartDate': contractStartDate?.toJson(),
+      if (contractEndDate != null) 'contractEndDate': contractEndDate?.toJson(),
       if (terminationDate != null) 'terminationDate': terminationDate?.toJson(),
     };
   }
@@ -149,8 +167,9 @@ abstract class RrhhEmployeeContractData
       'fullName': fullName,
       'status': status,
       'contractType': contractType,
-      'baseSalary': baseSalary,
+      if (baseSalary != null) 'baseSalary': baseSalary,
       'paymentModality': paymentModality,
+      if (workdayType != null) 'workdayType': workdayType,
       if (bonuses != null)
         'bonuses': bonuses?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (deductions != null)
@@ -159,6 +178,7 @@ abstract class RrhhEmployeeContractData
         ),
       if (contractStartDate != null)
         'contractStartDate': contractStartDate?.toJson(),
+      if (contractEndDate != null) 'contractEndDate': contractEndDate?.toJson(),
       if (terminationDate != null) 'terminationDate': terminationDate?.toJson(),
     };
   }
@@ -178,11 +198,13 @@ class _RrhhEmployeeContractDataImpl extends RrhhEmployeeContractData {
     required String fullName,
     required String status,
     required String contractType,
-    required double baseSalary,
+    double? baseSalary,
     required String paymentModality,
+    String? workdayType,
     List<_i2.RrhhEmployeeBonus>? bonuses,
     List<_i3.RrhhEmployeeDeduction>? deductions,
     DateTime? contractStartDate,
+    DateTime? contractEndDate,
     DateTime? terminationDate,
   }) : super._(
          employeeId: employeeId,
@@ -192,9 +214,11 @@ class _RrhhEmployeeContractDataImpl extends RrhhEmployeeContractData {
          contractType: contractType,
          baseSalary: baseSalary,
          paymentModality: paymentModality,
+         workdayType: workdayType,
          bonuses: bonuses,
          deductions: deductions,
          contractStartDate: contractStartDate,
+         contractEndDate: contractEndDate,
          terminationDate: terminationDate,
        );
 
@@ -208,11 +232,13 @@ class _RrhhEmployeeContractDataImpl extends RrhhEmployeeContractData {
     String? fullName,
     String? status,
     String? contractType,
-    double? baseSalary,
+    Object? baseSalary = _Undefined,
     String? paymentModality,
+    Object? workdayType = _Undefined,
     Object? bonuses = _Undefined,
     Object? deductions = _Undefined,
     Object? contractStartDate = _Undefined,
+    Object? contractEndDate = _Undefined,
     Object? terminationDate = _Undefined,
   }) {
     return RrhhEmployeeContractData(
@@ -221,8 +247,9 @@ class _RrhhEmployeeContractDataImpl extends RrhhEmployeeContractData {
       fullName: fullName ?? this.fullName,
       status: status ?? this.status,
       contractType: contractType ?? this.contractType,
-      baseSalary: baseSalary ?? this.baseSalary,
+      baseSalary: baseSalary is double? ? baseSalary : this.baseSalary,
       paymentModality: paymentModality ?? this.paymentModality,
+      workdayType: workdayType is String? ? workdayType : this.workdayType,
       bonuses: bonuses is List<_i2.RrhhEmployeeBonus>?
           ? bonuses
           : this.bonuses?.map((e0) => e0.copyWith()).toList(),
@@ -232,6 +259,9 @@ class _RrhhEmployeeContractDataImpl extends RrhhEmployeeContractData {
       contractStartDate: contractStartDate is DateTime?
           ? contractStartDate
           : this.contractStartDate,
+      contractEndDate: contractEndDate is DateTime?
+          ? contractEndDate
+          : this.contractEndDate,
       terminationDate: terminationDate is DateTime?
           ? terminationDate
           : this.terminationDate,

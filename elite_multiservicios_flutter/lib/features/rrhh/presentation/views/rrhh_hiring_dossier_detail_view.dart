@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
-    show
-        RrhhArea,
-        RrhhPosition,
-        RrhhEmployeeBonus,
-        RrhhEmployeeDeduction,
-        RrhhApplicant;
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import '../../data/models/rrhh_applicant_companion.dart';
-import '../../data/models/rrhh_hiring_dossier.dart';
 import '../../data/models/rrhh_catalog_item.dart';
 import '../../data/models/rrhh_shift.dart';
-import '../../data/models/rrhh_employee_summary_dto.dart';
+import '../extensions/rrhh_model_extensions.dart';
 import '../../data/repositories/rrhh_repository.dart';
 import '../widgets/rrhh_snack_bar.dart';
 

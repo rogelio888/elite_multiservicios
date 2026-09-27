@@ -2,7 +2,6 @@ import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
     hide RrhhLeaveRequest, RrhhVacation;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../data/models/rrhh_employee_summary_dto.dart';
 import '../../data/repositories/rrhh_repository.dart';
 import 'rrhh_snack_bar.dart';
 

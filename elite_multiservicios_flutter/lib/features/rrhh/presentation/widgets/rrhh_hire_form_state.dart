@@ -216,7 +216,7 @@ class RrhhHireFormState {
         : (employeeType == 'OFICINA' ? 'Lic. Laura Mendoza' : 'Ricardo Montaño');
 
     return RrhhEmployee(
-      code: 'EMP-TEMP',
+      code: '',
       fullName: fullName.trim(),
       birthDate: birthDate,
       birthPlace: birthPlace.trim(),

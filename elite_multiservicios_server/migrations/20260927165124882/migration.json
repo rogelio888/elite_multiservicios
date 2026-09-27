@@ -1,0 +1,112 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "alterTable",
+      "alterTable": {
+        "__className__": "serverpod.TableMigration",
+        "name": "rrhh_employee",
+        "schema": "public",
+        "addColumns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "documentChecklist",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "List<protocol:RrhhDossierDocument>?"
+          }
+        ],
+        "deleteColumns": [
+          "documentChecklist"
+        ],
+        "modifyColumns": [
+          {
+            "__className__": "serverpod.ColumnMigration",
+            "columnName": "agreedSalary",
+            "addNullable": true,
+            "removeNullable": false,
+            "changeDefault": false
+          }
+        ],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "columnDropped",
+            "message": "Column \"documentChecklist\" of table \"rrhh_employee\" is modified in a way that it must be deleted and recreated.",
+            "table": "rrhh_employee",
+            "columns": [
+              "documentChecklist"
+            ],
+            "destrucive": true
+          }
+        ]
+      }
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "alterTable",
+      "alterTable": {
+        "__className__": "serverpod.TableMigration",
+        "name": "rrhh_hiring_dossier",
+        "schema": "public",
+        "addColumns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "documentChecklist",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "List<protocol:RrhhDossierDocument>?"
+          }
+        ],
+        "deleteColumns": [
+          "documentChecklist"
+        ],
+        "modifyColumns": [],
+        "addIndexes": [],
+        "deleteIndexes": [],
+        "addForeignKeys": [],
+        "deleteForeignKeys": [],
+        "warnings": [
+          {
+            "__className__": "serverpod.DatabaseMigrationWarning",
+            "type": "columnDropped",
+            "message": "Column \"documentChecklist\" of table \"rrhh_hiring_dossier\" is modified in a way that it must be deleted and recreated.",
+            "table": "rrhh_hiring_dossier",
+            "columns": [
+              "documentChecklist"
+            ],
+            "destrucive": true
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "columnDropped",
+      "message": "Column \"documentChecklist\" of table \"rrhh_employee\" is modified in a way that it must be deleted and recreated.",
+      "table": "rrhh_employee",
+      "columns": [
+        "documentChecklist"
+      ],
+      "destrucive": true
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationWarning",
+      "type": "columnDropped",
+      "message": "Column \"documentChecklist\" of table \"rrhh_hiring_dossier\" is modified in a way that it must be deleted and recreated.",
+      "table": "rrhh_hiring_dossier",
+      "columns": [
+        "documentChecklist"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}

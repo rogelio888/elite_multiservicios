@@ -89,6 +89,25 @@ class RbacGuard {
     );
   }
 
+  /// Comprueba de forma segura y no bloqueante si el usuario autenticado posee el permiso requerido.
+  /// Retorna `true` si lo posee o es admin, `false` en caso contrario o si no está autenticado.
+  static Future<bool> hasPermission(
+    Session session,
+    String requiredPermission, {
+    Set<String>? userPermissions,
+  }) async {
+    try {
+      await requirePermission(
+        session,
+        requiredPermission,
+        userPermissions: userPermissions,
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// Verifica que la sesión actual tenga MFA verificado para usuarios con MFA habilitado.
   /// Si no está verificado, lanza [MfaRequiredException].
   static Future<void> requireMfaVerified(Session session) async {

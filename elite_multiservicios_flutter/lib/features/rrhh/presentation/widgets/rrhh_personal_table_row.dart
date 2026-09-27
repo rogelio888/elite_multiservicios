@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../data/models/rrhh_employee_summary_dto.dart';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
+import '../extensions/rrhh_model_extensions.dart';
 import 'rrhh_personal_status_chip.dart';
 import 'rrhh_personal_table_constants.dart';
 

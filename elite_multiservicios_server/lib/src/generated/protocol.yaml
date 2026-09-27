@@ -101,6 +101,20 @@ rrhhAssignment:
 rrhhDashboard:
   - getMetrics:
   - getRecentMovements:
+rrhhHiring:
+  - createDossier:
+  - getDossierById:
+  - getDossierByApplicantId:
+  - listActiveDossiers:
+  - updateDossierSection1:
+  - updateDossierSection2:
+  - updateDossierSection3:
+  - updateDossierSection4:
+  - updateDossierSection5:
+  - updateDossierSection6:
+  - updateDossierStatus:
+  - convertDossierToEmployee:
+  - deleteDossier:
 rrhhLabor:
   - listLeaveRequests:
   - getLeaveRequestById:
@@ -134,6 +148,8 @@ rrhhOrganization:
   - seedInitialData:
 rrhhPersonnel:
   - listEmployees:
+  - listEmployeeSummaries:
+  - countEmployees:
   - getEmployeeById:
   - getEmployeeByCode:
   - createEmployee:
@@ -142,6 +158,15 @@ rrhhPersonnel:
   - updateAvailabilityStatus:
   - terminateEmployee:
   - deleteEmployee:
+  - getEmployeeContractData:
+  - updateEmployeeBankInfo:
+  - updateEmployeeSocialSecurity:
+  - updateEmployeePersonalInfo:
+  - updateEmployeeContract:
+  - updateEmployeeBonuses:
+  - updateEmployeeDeductions:
+  - updateEmployeeAssignment:
+  - updateEmployeeDocuments:
   - listDocuments:
   - addDocument:
   - deleteDocument:

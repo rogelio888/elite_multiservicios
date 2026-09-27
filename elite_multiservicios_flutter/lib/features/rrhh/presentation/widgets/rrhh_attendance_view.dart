@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../data/repositories/rrhh_repository.dart';
-import '../../data/repositories/rrhh_repository_mock.dart';
 import 'rrhh_attendance_detail_drawer.dart';
 import 'rrhh_attendance_kpis.dart';
 import 'rrhh_attendance_record_row.dart';
@@ -48,7 +47,7 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
   @override
   void initState() {
     super.initState();
-    _repository = widget.repository ?? RrhhRepositoryMock();
+    _repository = widget.repository ?? RrhhRepository.current;
     _loadRecords();
   }
 

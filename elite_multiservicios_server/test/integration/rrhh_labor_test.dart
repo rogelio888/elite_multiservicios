@@ -56,6 +56,20 @@ void main() {
               contractType: 'Indefinido',
               status: 'ACTIVO',
               availabilityStatus: 'DISPONIBLE',
+              documentChecklist: [
+                RrhhDossierDocument(
+                  code: 'CI',
+                  name: 'Cédula de Identidad',
+                  isRequired: true,
+                  status: 'validado',
+                ),
+                RrhhDossierDocument(
+                  code: 'FELCC',
+                  name: 'Certificado FELCC',
+                  isRequired: true,
+                  status: 'validado',
+                ),
+              ],
               createdAt: now,
               updatedAt: now,
             ),

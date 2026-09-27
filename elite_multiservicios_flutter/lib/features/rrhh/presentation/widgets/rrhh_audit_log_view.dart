@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../../data/models/rrhh_employee_summary_dto.dart';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import '../../data/repositories/rrhh_repository.dart';
-import '../../data/repositories/rrhh_repository_mock.dart';
 import 'rrhh_audit_kpis.dart';
 import 'rrhh_audit_log_detail_drawer.dart';
 import 'rrhh_audit_log_event_row.dart';
@@ -52,7 +51,7 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
   @override
   void initState() {
     super.initState();
-    _repository = widget.repository ?? RrhhRepositoryMock();
+    _repository = widget.repository ?? RrhhRepository.current;
     _initDefaultDateRange();
     _loadInitialData();
   }

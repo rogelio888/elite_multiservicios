@@ -39,91 +39,104 @@ import 'modules/rrhh/models/rrhh_applicant.dart' as _i23;
 import 'modules/rrhh/models/rrhh_area.dart' as _i24;
 import 'modules/rrhh/models/rrhh_assignment.dart' as _i25;
 import 'modules/rrhh/models/rrhh_dashboard_metrics_response.dart' as _i26;
-import 'modules/rrhh/models/rrhh_employee.dart' as _i27;
-import 'modules/rrhh/models/rrhh_employee_bonus.dart' as _i28;
-import 'modules/rrhh/models/rrhh_employee_contract_data.dart' as _i29;
-import 'modules/rrhh/models/rrhh_employee_deduction.dart' as _i30;
-import 'modules/rrhh/models/rrhh_employee_document.dart' as _i31;
-import 'modules/rrhh/models/rrhh_incident.dart' as _i32;
-import 'modules/rrhh/models/rrhh_leave_request.dart' as _i33;
-import 'modules/rrhh/models/rrhh_movement_history.dart' as _i34;
-import 'modules/rrhh/models/rrhh_position.dart' as _i35;
-import 'modules/rrhh/models/rrhh_recent_movement_dto.dart' as _i36;
-import 'modules/rrhh/models/rrhh_schedule.dart' as _i37;
-import 'modules/rrhh/models/rrhh_specialty.dart' as _i38;
-import 'modules/rrhh/models/rrhh_termination.dart' as _i39;
-import 'modules/rrhh/models/rrhh_timeline_event.dart' as _i40;
-import 'modules/rrhh/models/rrhh_vacation.dart' as _i41;
-import 'modules/security/models/app_permission.dart' as _i42;
-import 'modules/security/models/app_role.dart' as _i43;
-import 'modules/security/models/app_user.dart' as _i44;
-import 'modules/security/models/audit_log.dart' as _i45;
-import 'modules/security/models/audit_log_page_response.dart' as _i46;
-import 'modules/security/models/mfa_challenge.dart' as _i47;
-import 'modules/security/models/mfa_challenge_response.dart' as _i48;
-import 'modules/security/models/mfa_verify_response.dart' as _i49;
-import 'modules/security/models/role_permission.dart' as _i50;
-import 'modules/security/models/trusted_device.dart' as _i51;
-import 'modules/security/models/user_role.dart' as _i52;
-import 'modules/security/models/user_session.dart' as _i53;
+import 'modules/rrhh/models/rrhh_dossier_document.dart' as _i27;
+import 'modules/rrhh/models/rrhh_employee.dart' as _i28;
+import 'modules/rrhh/models/rrhh_employee_bonus.dart' as _i29;
+import 'modules/rrhh/models/rrhh_employee_contract_data.dart' as _i30;
+import 'modules/rrhh/models/rrhh_employee_deduction.dart' as _i31;
+import 'modules/rrhh/models/rrhh_employee_document.dart' as _i32;
+import 'modules/rrhh/models/rrhh_employee_summary_dto.dart' as _i33;
+import 'modules/rrhh/models/rrhh_hiring_dossier.dart' as _i34;
+import 'modules/rrhh/models/rrhh_incident.dart' as _i35;
+import 'modules/rrhh/models/rrhh_leave_request.dart' as _i36;
+import 'modules/rrhh/models/rrhh_movement_history.dart' as _i37;
+import 'modules/rrhh/models/rrhh_position.dart' as _i38;
+import 'modules/rrhh/models/rrhh_recent_movement_dto.dart' as _i39;
+import 'modules/rrhh/models/rrhh_schedule.dart' as _i40;
+import 'modules/rrhh/models/rrhh_specialty.dart' as _i41;
+import 'modules/rrhh/models/rrhh_termination.dart' as _i42;
+import 'modules/rrhh/models/rrhh_timeline_event.dart' as _i43;
+import 'modules/rrhh/models/rrhh_vacation.dart' as _i44;
+import 'modules/security/models/app_permission.dart' as _i45;
+import 'modules/security/models/app_role.dart' as _i46;
+import 'modules/security/models/app_user.dart' as _i47;
+import 'modules/security/models/audit_log.dart' as _i48;
+import 'modules/security/models/audit_log_page_response.dart' as _i49;
+import 'modules/security/models/mfa_challenge.dart' as _i50;
+import 'modules/security/models/mfa_challenge_response.dart' as _i51;
+import 'modules/security/models/mfa_verify_response.dart' as _i52;
+import 'modules/security/models/role_permission.dart' as _i53;
+import 'modules/security/models/trusted_device.dart' as _i54;
+import 'modules/security/models/user_role.dart' as _i55;
+import 'modules/security/models/user_session.dart' as _i56;
 import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_task.dart'
-    as _i54;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
-    as _i55;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
-    as _i56;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
     as _i57;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
     as _i58;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
     as _i59;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
     as _i60;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
     as _i61;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
     as _i62;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
     as _i63;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_applicant.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
     as _i64;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_schedule.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
     as _i65;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_assignment.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
     as _i66;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_recent_movement_dto.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_applicant.dart'
     as _i67;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_leave_request.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_schedule.dart'
     as _i68;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_vacation.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_assignment.dart'
     as _i69;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_incident.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_recent_movement_dto.dart'
     as _i70;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_movement_history.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_hiring_dossier.dart'
     as _i71;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_area.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_dossier_document.dart'
     as _i72;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_position.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_bonus.dart'
     as _i73;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_specialty.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_deduction.dart'
     as _i74;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_leave_request.dart'
     as _i75;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_document.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_vacation.dart'
     as _i76;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_timeline_event.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_incident.dart'
     as _i77;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_movement_history.dart'
     as _i78;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_area.dart'
     as _i79;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_position.dart'
     as _i80;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_specialty.dart'
     as _i81;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee.dart'
     as _i82;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_summary_dto.dart'
+    as _i83;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_document.dart'
+    as _i84;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_timeline_event.dart'
+    as _i85;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
+    as _i86;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
+    as _i87;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
+    as _i88;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
+    as _i89;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
+    as _i90;
 export 'greetings/greeting.dart';
 export 'modules/crm/models/crm_agenda_metrics_response.dart';
 export 'modules/crm/models/crm_catalog_item.dart';
@@ -146,11 +159,14 @@ export 'modules/rrhh/models/rrhh_applicant.dart';
 export 'modules/rrhh/models/rrhh_area.dart';
 export 'modules/rrhh/models/rrhh_assignment.dart';
 export 'modules/rrhh/models/rrhh_dashboard_metrics_response.dart';
+export 'modules/rrhh/models/rrhh_dossier_document.dart';
 export 'modules/rrhh/models/rrhh_employee.dart';
 export 'modules/rrhh/models/rrhh_employee_bonus.dart';
 export 'modules/rrhh/models/rrhh_employee_contract_data.dart';
 export 'modules/rrhh/models/rrhh_employee_deduction.dart';
 export 'modules/rrhh/models/rrhh_employee_document.dart';
+export 'modules/rrhh/models/rrhh_employee_summary_dto.dart';
+export 'modules/rrhh/models/rrhh_hiring_dossier.dart';
 export 'modules/rrhh/models/rrhh_incident.dart';
 export 'modules/rrhh/models/rrhh_leave_request.dart';
 export 'modules/rrhh/models/rrhh_movement_history.dart';
@@ -3866,8 +3882,8 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'agreedSalary',
           columnType: _i2.ColumnType.doublePrecision,
-          isNullable: false,
-          dartType: 'double',
+          isNullable: true,
+          dartType: 'double?',
         ),
         _i2.ColumnDefinition(
           name: 'contractType',
@@ -4135,7 +4151,7 @@ class Protocol extends _i1.SerializationManagerServer {
           name: 'documentChecklist',
           columnType: _i2.ColumnType.json,
           isNullable: true,
-          dartType: 'Map<String,String>?',
+          dartType: 'List<protocol:RrhhDossierDocument>?',
         ),
         _i2.ColumnDefinition(
           name: 'isDeleted',
@@ -4373,6 +4389,19 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'DateTime?',
         ),
         _i2.ColumnDefinition(
+          name: 'isDeleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
           name: 'createdAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
@@ -4422,6 +4451,426 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'documentType',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'rrhh_hiring_dossier',
+      dartName: 'RrhhHiringDossier',
+      schema: 'public',
+      module: 'elite_multiservicios',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'rrhh_hiring_dossier_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'code',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'applicantId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'applicantCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'applicantName',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'employeeId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'convertedEmployeeCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'abierto\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'section1Status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'pendiente\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'section2Status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'pendiente\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'section3Status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'pendiente\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'section4Status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'pendiente\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'section5Status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'pendiente\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'section6Status',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+          columnDefault: '\'pendiente\'::text',
+        ),
+        _i2.ColumnDefinition(
+          name: 'documentChecklist',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'List<protocol:RrhhDossierDocument>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'afpName',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'afpNumber',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'healthInsurance',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'section2Notes',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'fullAddress',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'maritalStatus',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'childrenCount',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'emergencyContactName',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'emergencyContactPhone',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'emergencyContactRelation',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'contractType',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'workdayType',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'paymentModality',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'baseSalary',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: true,
+          dartType: 'double?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'contractStartDate',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'contractEndDate',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'bonuses',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'List<protocol:RrhhEmployeeBonus>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deductions',
+          columnType: _i2.ColumnType.json,
+          isNullable: true,
+          dartType: 'List<protocol:RrhhEmployeeDeduction>?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'section4Notes',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'areaId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'positionId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'shiftId',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'scheduleId',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'baseLocation',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'supervisorEmployeeId',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'effectiveStartDate',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'section5Notes',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'closingNotes',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'approvedBy',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'approvedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdBy',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'closedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'isDeleted',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deletedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'rrhh_hiring_dossier_fk_0',
+          columns: ['applicantId'],
+          referenceTable: 'rrhh_applicant',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'rrhh_hiring_dossier_fk_1',
+          columns: ['employeeId'],
+          referenceTable: 'rrhh_employee',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'rrhh_hiring_dossier_fk_2',
+          columns: ['areaId'],
+          referenceTable: 'rrhh_area',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'rrhh_hiring_dossier_fk_3',
+          columns: ['positionId'],
+          referenceTable: 'rrhh_position',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'rrhh_hiring_dossier_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'rrhh_hiring_dossier_code_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'code',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'rrhh_hiring_dossier_status_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'status',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'rrhh_hiring_dossier_applicant_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'applicantId',
             ),
           ],
           type: 'btree',
@@ -6269,86 +6718,95 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i26.RrhhDashboardMetricsResponse) {
       return _i26.RrhhDashboardMetricsResponse.fromJson(data) as T;
     }
-    if (t == _i27.RrhhEmployee) {
-      return _i27.RrhhEmployee.fromJson(data) as T;
+    if (t == _i27.RrhhDossierDocument) {
+      return _i27.RrhhDossierDocument.fromJson(data) as T;
     }
-    if (t == _i28.RrhhEmployeeBonus) {
-      return _i28.RrhhEmployeeBonus.fromJson(data) as T;
+    if (t == _i28.RrhhEmployee) {
+      return _i28.RrhhEmployee.fromJson(data) as T;
     }
-    if (t == _i29.RrhhEmployeeContractData) {
-      return _i29.RrhhEmployeeContractData.fromJson(data) as T;
+    if (t == _i29.RrhhEmployeeBonus) {
+      return _i29.RrhhEmployeeBonus.fromJson(data) as T;
     }
-    if (t == _i30.RrhhEmployeeDeduction) {
-      return _i30.RrhhEmployeeDeduction.fromJson(data) as T;
+    if (t == _i30.RrhhEmployeeContractData) {
+      return _i30.RrhhEmployeeContractData.fromJson(data) as T;
     }
-    if (t == _i31.RrhhEmployeeDocument) {
-      return _i31.RrhhEmployeeDocument.fromJson(data) as T;
+    if (t == _i31.RrhhEmployeeDeduction) {
+      return _i31.RrhhEmployeeDeduction.fromJson(data) as T;
     }
-    if (t == _i32.RrhhIncident) {
-      return _i32.RrhhIncident.fromJson(data) as T;
+    if (t == _i32.RrhhEmployeeDocument) {
+      return _i32.RrhhEmployeeDocument.fromJson(data) as T;
     }
-    if (t == _i33.RrhhLeaveRequest) {
-      return _i33.RrhhLeaveRequest.fromJson(data) as T;
+    if (t == _i33.RrhhEmployeeSummaryDto) {
+      return _i33.RrhhEmployeeSummaryDto.fromJson(data) as T;
     }
-    if (t == _i34.RrhhMovementHistory) {
-      return _i34.RrhhMovementHistory.fromJson(data) as T;
+    if (t == _i34.RrhhHiringDossier) {
+      return _i34.RrhhHiringDossier.fromJson(data) as T;
     }
-    if (t == _i35.RrhhPosition) {
-      return _i35.RrhhPosition.fromJson(data) as T;
+    if (t == _i35.RrhhIncident) {
+      return _i35.RrhhIncident.fromJson(data) as T;
     }
-    if (t == _i36.RrhhRecentMovementDto) {
-      return _i36.RrhhRecentMovementDto.fromJson(data) as T;
+    if (t == _i36.RrhhLeaveRequest) {
+      return _i36.RrhhLeaveRequest.fromJson(data) as T;
     }
-    if (t == _i37.RrhhSchedule) {
-      return _i37.RrhhSchedule.fromJson(data) as T;
+    if (t == _i37.RrhhMovementHistory) {
+      return _i37.RrhhMovementHistory.fromJson(data) as T;
     }
-    if (t == _i38.RrhhSpecialty) {
-      return _i38.RrhhSpecialty.fromJson(data) as T;
+    if (t == _i38.RrhhPosition) {
+      return _i38.RrhhPosition.fromJson(data) as T;
     }
-    if (t == _i39.RrhhTermination) {
-      return _i39.RrhhTermination.fromJson(data) as T;
+    if (t == _i39.RrhhRecentMovementDto) {
+      return _i39.RrhhRecentMovementDto.fromJson(data) as T;
     }
-    if (t == _i40.RrhhTimelineEvent) {
-      return _i40.RrhhTimelineEvent.fromJson(data) as T;
+    if (t == _i40.RrhhSchedule) {
+      return _i40.RrhhSchedule.fromJson(data) as T;
     }
-    if (t == _i41.RrhhVacation) {
-      return _i41.RrhhVacation.fromJson(data) as T;
+    if (t == _i41.RrhhSpecialty) {
+      return _i41.RrhhSpecialty.fromJson(data) as T;
     }
-    if (t == _i42.AppPermission) {
-      return _i42.AppPermission.fromJson(data) as T;
+    if (t == _i42.RrhhTermination) {
+      return _i42.RrhhTermination.fromJson(data) as T;
     }
-    if (t == _i43.AppRole) {
-      return _i43.AppRole.fromJson(data) as T;
+    if (t == _i43.RrhhTimelineEvent) {
+      return _i43.RrhhTimelineEvent.fromJson(data) as T;
     }
-    if (t == _i44.AppUser) {
-      return _i44.AppUser.fromJson(data) as T;
+    if (t == _i44.RrhhVacation) {
+      return _i44.RrhhVacation.fromJson(data) as T;
     }
-    if (t == _i45.AuditLog) {
-      return _i45.AuditLog.fromJson(data) as T;
+    if (t == _i45.AppPermission) {
+      return _i45.AppPermission.fromJson(data) as T;
     }
-    if (t == _i46.AuditLogPageResponse) {
-      return _i46.AuditLogPageResponse.fromJson(data) as T;
+    if (t == _i46.AppRole) {
+      return _i46.AppRole.fromJson(data) as T;
     }
-    if (t == _i47.MfaChallenge) {
-      return _i47.MfaChallenge.fromJson(data) as T;
+    if (t == _i47.AppUser) {
+      return _i47.AppUser.fromJson(data) as T;
     }
-    if (t == _i48.MfaChallengeResponse) {
-      return _i48.MfaChallengeResponse.fromJson(data) as T;
+    if (t == _i48.AuditLog) {
+      return _i48.AuditLog.fromJson(data) as T;
     }
-    if (t == _i49.MfaVerifyResponse) {
-      return _i49.MfaVerifyResponse.fromJson(data) as T;
+    if (t == _i49.AuditLogPageResponse) {
+      return _i49.AuditLogPageResponse.fromJson(data) as T;
     }
-    if (t == _i50.RolePermission) {
-      return _i50.RolePermission.fromJson(data) as T;
+    if (t == _i50.MfaChallenge) {
+      return _i50.MfaChallenge.fromJson(data) as T;
     }
-    if (t == _i51.TrustedDevice) {
-      return _i51.TrustedDevice.fromJson(data) as T;
+    if (t == _i51.MfaChallengeResponse) {
+      return _i51.MfaChallengeResponse.fromJson(data) as T;
     }
-    if (t == _i52.UserRole) {
-      return _i52.UserRole.fromJson(data) as T;
+    if (t == _i52.MfaVerifyResponse) {
+      return _i52.MfaVerifyResponse.fromJson(data) as T;
     }
-    if (t == _i53.UserSession) {
-      return _i53.UserSession.fromJson(data) as T;
+    if (t == _i53.RolePermission) {
+      return _i53.RolePermission.fromJson(data) as T;
+    }
+    if (t == _i54.TrustedDevice) {
+      return _i54.TrustedDevice.fromJson(data) as T;
+    }
+    if (t == _i55.UserRole) {
+      return _i55.UserRole.fromJson(data) as T;
+    }
+    if (t == _i56.UserSession) {
+      return _i56.UserSession.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.Greeting?>()) {
       return (data != null ? _i5.Greeting.fromJson(data) : null) as T;
@@ -6433,95 +6891,106 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == _i1.getType<_i27.RrhhEmployee?>()) {
-      return (data != null ? _i27.RrhhEmployee.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i27.RrhhDossierDocument?>()) {
+      return (data != null ? _i27.RrhhDossierDocument.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i28.RrhhEmployeeBonus?>()) {
-      return (data != null ? _i28.RrhhEmployeeBonus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i28.RrhhEmployee?>()) {
+      return (data != null ? _i28.RrhhEmployee.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i29.RrhhEmployeeContractData?>()) {
+    if (t == _i1.getType<_i29.RrhhEmployeeBonus?>()) {
+      return (data != null ? _i29.RrhhEmployeeBonus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i30.RrhhEmployeeContractData?>()) {
       return (data != null
-              ? _i29.RrhhEmployeeContractData.fromJson(data)
+              ? _i30.RrhhEmployeeContractData.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i30.RrhhEmployeeDeduction?>()) {
-      return (data != null ? _i30.RrhhEmployeeDeduction.fromJson(data) : null)
+    if (t == _i1.getType<_i31.RrhhEmployeeDeduction?>()) {
+      return (data != null ? _i31.RrhhEmployeeDeduction.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i31.RrhhEmployeeDocument?>()) {
-      return (data != null ? _i31.RrhhEmployeeDocument.fromJson(data) : null)
+    if (t == _i1.getType<_i32.RrhhEmployeeDocument?>()) {
+      return (data != null ? _i32.RrhhEmployeeDocument.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i32.RrhhIncident?>()) {
-      return (data != null ? _i32.RrhhIncident.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i33.RrhhLeaveRequest?>()) {
-      return (data != null ? _i33.RrhhLeaveRequest.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i34.RrhhMovementHistory?>()) {
-      return (data != null ? _i34.RrhhMovementHistory.fromJson(data) : null)
+    if (t == _i1.getType<_i33.RrhhEmployeeSummaryDto?>()) {
+      return (data != null ? _i33.RrhhEmployeeSummaryDto.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i35.RrhhPosition?>()) {
-      return (data != null ? _i35.RrhhPosition.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i34.RrhhHiringDossier?>()) {
+      return (data != null ? _i34.RrhhHiringDossier.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i36.RrhhRecentMovementDto?>()) {
-      return (data != null ? _i36.RrhhRecentMovementDto.fromJson(data) : null)
+    if (t == _i1.getType<_i35.RrhhIncident?>()) {
+      return (data != null ? _i35.RrhhIncident.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i36.RrhhLeaveRequest?>()) {
+      return (data != null ? _i36.RrhhLeaveRequest.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i37.RrhhMovementHistory?>()) {
+      return (data != null ? _i37.RrhhMovementHistory.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i37.RrhhSchedule?>()) {
-      return (data != null ? _i37.RrhhSchedule.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i38.RrhhPosition?>()) {
+      return (data != null ? _i38.RrhhPosition.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i38.RrhhSpecialty?>()) {
-      return (data != null ? _i38.RrhhSpecialty.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i39.RrhhTermination?>()) {
-      return (data != null ? _i39.RrhhTermination.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i40.RrhhTimelineEvent?>()) {
-      return (data != null ? _i40.RrhhTimelineEvent.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i41.RrhhVacation?>()) {
-      return (data != null ? _i41.RrhhVacation.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i42.AppPermission?>()) {
-      return (data != null ? _i42.AppPermission.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i43.AppRole?>()) {
-      return (data != null ? _i43.AppRole.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i44.AppUser?>()) {
-      return (data != null ? _i44.AppUser.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i45.AuditLog?>()) {
-      return (data != null ? _i45.AuditLog.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i46.AuditLogPageResponse?>()) {
-      return (data != null ? _i46.AuditLogPageResponse.fromJson(data) : null)
+    if (t == _i1.getType<_i39.RrhhRecentMovementDto?>()) {
+      return (data != null ? _i39.RrhhRecentMovementDto.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i47.MfaChallenge?>()) {
-      return (data != null ? _i47.MfaChallenge.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i40.RrhhSchedule?>()) {
+      return (data != null ? _i40.RrhhSchedule.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i48.MfaChallengeResponse?>()) {
-      return (data != null ? _i48.MfaChallengeResponse.fromJson(data) : null)
+    if (t == _i1.getType<_i41.RrhhSpecialty?>()) {
+      return (data != null ? _i41.RrhhSpecialty.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i42.RrhhTermination?>()) {
+      return (data != null ? _i42.RrhhTermination.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i43.RrhhTimelineEvent?>()) {
+      return (data != null ? _i43.RrhhTimelineEvent.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i44.RrhhVacation?>()) {
+      return (data != null ? _i44.RrhhVacation.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i45.AppPermission?>()) {
+      return (data != null ? _i45.AppPermission.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i46.AppRole?>()) {
+      return (data != null ? _i46.AppRole.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i47.AppUser?>()) {
+      return (data != null ? _i47.AppUser.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i48.AuditLog?>()) {
+      return (data != null ? _i48.AuditLog.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i49.AuditLogPageResponse?>()) {
+      return (data != null ? _i49.AuditLogPageResponse.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i49.MfaVerifyResponse?>()) {
-      return (data != null ? _i49.MfaVerifyResponse.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i50.MfaChallenge?>()) {
+      return (data != null ? _i50.MfaChallenge.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i50.RolePermission?>()) {
-      return (data != null ? _i50.RolePermission.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i51.MfaChallengeResponse?>()) {
+      return (data != null ? _i51.MfaChallengeResponse.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i51.TrustedDevice?>()) {
-      return (data != null ? _i51.TrustedDevice.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i52.MfaVerifyResponse?>()) {
+      return (data != null ? _i52.MfaVerifyResponse.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i52.UserRole?>()) {
-      return (data != null ? _i52.UserRole.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i53.RolePermission?>()) {
+      return (data != null ? _i53.RolePermission.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i53.UserSession?>()) {
-      return (data != null ? _i53.UserSession.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i54.TrustedDevice?>()) {
+      return (data != null ? _i54.TrustedDevice.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i55.UserRole?>()) {
+      return (data != null ? _i55.UserRole.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i56.UserSession?>()) {
+      return (data != null ? _i56.UserSession.fromJson(data) : null) as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
@@ -6550,219 +7019,264 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == List<_i28.RrhhEmployeeBonus>) {
+    if (t == List<_i29.RrhhEmployeeBonus>) {
       return (data as List)
-              .map((e) => deserialize<_i28.RrhhEmployeeBonus>(e))
+              .map((e) => deserialize<_i29.RrhhEmployeeBonus>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i28.RrhhEmployeeBonus>?>()) {
+    if (t == _i1.getType<List<_i29.RrhhEmployeeBonus>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i28.RrhhEmployeeBonus>(e))
+                    .map((e) => deserialize<_i29.RrhhEmployeeBonus>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i30.RrhhEmployeeDeduction>) {
+    if (t == List<_i31.RrhhEmployeeDeduction>) {
       return (data as List)
-              .map((e) => deserialize<_i30.RrhhEmployeeDeduction>(e))
+              .map((e) => deserialize<_i31.RrhhEmployeeDeduction>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i30.RrhhEmployeeDeduction>?>()) {
+    if (t == _i1.getType<List<_i31.RrhhEmployeeDeduction>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i30.RrhhEmployeeDeduction>(e))
+                    .map((e) => deserialize<_i31.RrhhEmployeeDeduction>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == Map<String, String>) {
-      return (data as Map).map(
-            (k, v) => MapEntry(deserialize<String>(k), deserialize<String>(v)),
-          )
+    if (t == List<_i27.RrhhDossierDocument>) {
+      return (data as List)
+              .map((e) => deserialize<_i27.RrhhDossierDocument>(e))
+              .toList()
           as T;
     }
-    if (t == _i1.getType<Map<String, String>?>()) {
+    if (t == _i1.getType<List<_i27.RrhhDossierDocument>?>()) {
       return (data != null
-              ? (data as Map).map(
-                  (k, v) =>
-                      MapEntry(deserialize<String>(k), deserialize<String>(v)),
-                )
+              ? (data as List)
+                    .map((e) => deserialize<_i27.RrhhDossierDocument>(e))
+                    .toList()
               : null)
           as T;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
-    if (t == List<_i45.AuditLog>) {
-      return (data as List).map((e) => deserialize<_i45.AuditLog>(e)).toList()
+    if (t == List<_i48.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i48.AuditLog>(e)).toList()
           as T;
     }
-    if (t == List<_i54.CrmTask>) {
-      return (data as List).map((e) => deserialize<_i54.CrmTask>(e)).toList()
+    if (t == List<_i57.CrmTask>) {
+      return (data as List).map((e) => deserialize<_i57.CrmTask>(e)).toList()
           as T;
     }
-    if (t == List<_i55.CrmSector>) {
-      return (data as List).map((e) => deserialize<_i55.CrmSector>(e)).toList()
+    if (t == List<_i58.CrmSector>) {
+      return (data as List).map((e) => deserialize<_i58.CrmSector>(e)).toList()
           as T;
     }
-    if (t == List<_i56.CrmServiceLine>) {
+    if (t == List<_i59.CrmServiceLine>) {
       return (data as List)
-              .map((e) => deserialize<_i56.CrmServiceLine>(e))
+              .map((e) => deserialize<_i59.CrmServiceLine>(e))
               .toList()
           as T;
     }
-    if (t == List<_i57.CrmCatalogItem>) {
+    if (t == List<_i60.CrmCatalogItem>) {
       return (data as List)
-              .map((e) => deserialize<_i57.CrmCatalogItem>(e))
+              .map((e) => deserialize<_i60.CrmCatalogItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i58.CrmCatalogItemScope>) {
+    if (t == List<_i61.CrmCatalogItemScope>) {
       return (data as List)
-              .map((e) => deserialize<_i58.CrmCatalogItemScope>(e))
+              .map((e) => deserialize<_i61.CrmCatalogItemScope>(e))
               .toList()
           as T;
     }
-    if (t == List<_i59.CrmCustomer>) {
+    if (t == List<_i62.CrmCustomer>) {
       return (data as List)
-              .map((e) => deserialize<_i59.CrmCustomer>(e))
+              .map((e) => deserialize<_i62.CrmCustomer>(e))
               .toList()
           as T;
     }
-    if (t == List<_i60.CrmContractBudgetItem>) {
+    if (t == List<_i63.CrmContractBudgetItem>) {
       return (data as List)
-              .map((e) => deserialize<_i60.CrmContractBudgetItem>(e))
+              .map((e) => deserialize<_i63.CrmContractBudgetItem>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i60.CrmContractBudgetItem>?>()) {
+    if (t == _i1.getType<List<_i63.CrmContractBudgetItem>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i60.CrmContractBudgetItem>(e))
+                    .map((e) => deserialize<_i63.CrmContractBudgetItem>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i61.CrmLead>) {
-      return (data as List).map((e) => deserialize<_i61.CrmLead>(e)).toList()
+    if (t == List<_i64.CrmLead>) {
+      return (data as List).map((e) => deserialize<_i64.CrmLead>(e)).toList()
           as T;
     }
-    if (t == List<_i62.CrmOpportunity>) {
+    if (t == List<_i65.CrmOpportunity>) {
       return (data as List)
-              .map((e) => deserialize<_i62.CrmOpportunity>(e))
+              .map((e) => deserialize<_i65.CrmOpportunity>(e))
               .toList()
           as T;
     }
-    if (t == List<_i63.CrmQuoteItem>) {
+    if (t == List<_i66.CrmQuoteItem>) {
       return (data as List)
-              .map((e) => deserialize<_i63.CrmQuoteItem>(e))
+              .map((e) => deserialize<_i66.CrmQuoteItem>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i63.CrmQuoteItem>?>()) {
+    if (t == _i1.getType<List<_i66.CrmQuoteItem>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i63.CrmQuoteItem>(e))
+                    .map((e) => deserialize<_i66.CrmQuoteItem>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i64.RrhhApplicant>) {
+    if (t == List<_i67.RrhhApplicant>) {
       return (data as List)
-              .map((e) => deserialize<_i64.RrhhApplicant>(e))
+              .map((e) => deserialize<_i67.RrhhApplicant>(e))
               .toList()
           as T;
     }
-    if (t == List<_i65.RrhhSchedule>) {
+    if (t == List<_i68.RrhhSchedule>) {
       return (data as List)
-              .map((e) => deserialize<_i65.RrhhSchedule>(e))
+              .map((e) => deserialize<_i68.RrhhSchedule>(e))
               .toList()
           as T;
     }
-    if (t == List<_i66.RrhhAssignment>) {
+    if (t == List<_i69.RrhhAssignment>) {
       return (data as List)
-              .map((e) => deserialize<_i66.RrhhAssignment>(e))
+              .map((e) => deserialize<_i69.RrhhAssignment>(e))
               .toList()
           as T;
     }
-    if (t == List<_i67.RrhhRecentMovementDto>) {
+    if (t == List<_i70.RrhhRecentMovementDto>) {
       return (data as List)
-              .map((e) => deserialize<_i67.RrhhRecentMovementDto>(e))
+              .map((e) => deserialize<_i70.RrhhRecentMovementDto>(e))
               .toList()
           as T;
     }
-    if (t == List<_i68.RrhhLeaveRequest>) {
+    if (t == List<_i71.RrhhHiringDossier>) {
       return (data as List)
-              .map((e) => deserialize<_i68.RrhhLeaveRequest>(e))
+              .map((e) => deserialize<_i71.RrhhHiringDossier>(e))
               .toList()
           as T;
     }
-    if (t == List<_i69.RrhhVacation>) {
+    if (t == List<_i72.RrhhDossierDocument>) {
       return (data as List)
-              .map((e) => deserialize<_i69.RrhhVacation>(e))
+              .map((e) => deserialize<_i72.RrhhDossierDocument>(e))
               .toList()
           as T;
     }
-    if (t == List<_i70.RrhhIncident>) {
+    if (t == List<_i73.RrhhEmployeeBonus>) {
       return (data as List)
-              .map((e) => deserialize<_i70.RrhhIncident>(e))
+              .map((e) => deserialize<_i73.RrhhEmployeeBonus>(e))
               .toList()
           as T;
     }
-    if (t == List<_i71.RrhhMovementHistory>) {
+    if (t == _i1.getType<List<_i73.RrhhEmployeeBonus>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_i73.RrhhEmployeeBonus>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_i74.RrhhEmployeeDeduction>) {
       return (data as List)
-              .map((e) => deserialize<_i71.RrhhMovementHistory>(e))
+              .map((e) => deserialize<_i74.RrhhEmployeeDeduction>(e))
               .toList()
           as T;
     }
-    if (t == List<_i72.RrhhArea>) {
-      return (data as List).map((e) => deserialize<_i72.RrhhArea>(e)).toList()
+    if (t == _i1.getType<List<_i74.RrhhEmployeeDeduction>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_i74.RrhhEmployeeDeduction>(e))
+                    .toList()
+              : null)
           as T;
     }
-    if (t == List<_i73.RrhhPosition>) {
+    if (t == List<_i75.RrhhLeaveRequest>) {
       return (data as List)
-              .map((e) => deserialize<_i73.RrhhPosition>(e))
+              .map((e) => deserialize<_i75.RrhhLeaveRequest>(e))
               .toList()
           as T;
     }
-    if (t == List<_i74.RrhhSpecialty>) {
+    if (t == List<_i76.RrhhVacation>) {
       return (data as List)
-              .map((e) => deserialize<_i74.RrhhSpecialty>(e))
+              .map((e) => deserialize<_i76.RrhhVacation>(e))
               .toList()
           as T;
     }
-    if (t == List<_i75.RrhhEmployee>) {
+    if (t == List<_i77.RrhhIncident>) {
       return (data as List)
-              .map((e) => deserialize<_i75.RrhhEmployee>(e))
+              .map((e) => deserialize<_i77.RrhhIncident>(e))
               .toList()
           as T;
     }
-    if (t == List<_i76.RrhhEmployeeDocument>) {
+    if (t == List<_i78.RrhhMovementHistory>) {
       return (data as List)
-              .map((e) => deserialize<_i76.RrhhEmployeeDocument>(e))
+              .map((e) => deserialize<_i78.RrhhMovementHistory>(e))
               .toList()
           as T;
     }
-    if (t == List<_i77.RrhhTimelineEvent>) {
+    if (t == List<_i79.RrhhArea>) {
+      return (data as List).map((e) => deserialize<_i79.RrhhArea>(e)).toList()
+          as T;
+    }
+    if (t == List<_i80.RrhhPosition>) {
       return (data as List)
-              .map((e) => deserialize<_i77.RrhhTimelineEvent>(e))
+              .map((e) => deserialize<_i80.RrhhPosition>(e))
               .toList()
           as T;
     }
-    if (t == List<_i78.AuditLog>) {
-      return (data as List).map((e) => deserialize<_i78.AuditLog>(e)).toList()
-          as T;
-    }
-    if (t == List<_i79.AppRole>) {
-      return (data as List).map((e) => deserialize<_i79.AppRole>(e)).toList()
-          as T;
-    }
-    if (t == List<_i80.AppPermission>) {
+    if (t == List<_i81.RrhhSpecialty>) {
       return (data as List)
-              .map((e) => deserialize<_i80.AppPermission>(e))
+              .map((e) => deserialize<_i81.RrhhSpecialty>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i82.RrhhEmployee>) {
+      return (data as List)
+              .map((e) => deserialize<_i82.RrhhEmployee>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i83.RrhhEmployeeSummaryDto>) {
+      return (data as List)
+              .map((e) => deserialize<_i83.RrhhEmployeeSummaryDto>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i84.RrhhEmployeeDocument>) {
+      return (data as List)
+              .map((e) => deserialize<_i84.RrhhEmployeeDocument>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i85.RrhhTimelineEvent>) {
+      return (data as List)
+              .map((e) => deserialize<_i85.RrhhTimelineEvent>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i86.AuditLog>) {
+      return (data as List).map((e) => deserialize<_i86.AuditLog>(e)).toList()
+          as T;
+    }
+    if (t == List<_i87.AppRole>) {
+      return (data as List).map((e) => deserialize<_i87.AppRole>(e)).toList()
+          as T;
+    }
+    if (t == List<_i88.AppPermission>) {
+      return (data as List)
+              .map((e) => deserialize<_i88.AppPermission>(e))
               .toList()
           as T;
     }
@@ -6772,14 +7286,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
-    if (t == List<_i81.UserSession>) {
+    if (t == List<_i89.UserSession>) {
       return (data as List)
-              .map((e) => deserialize<_i81.UserSession>(e))
+              .map((e) => deserialize<_i89.UserSession>(e))
               .toList()
           as T;
     }
-    if (t == List<_i82.AppUser>) {
-      return (data as List).map((e) => deserialize<_i82.AppUser>(e)).toList()
+    if (t == List<_i90.AppUser>) {
+      return (data as List).map((e) => deserialize<_i90.AppUser>(e)).toList()
           as T;
     }
     try {
@@ -6818,33 +7332,36 @@ class Protocol extends _i1.SerializationManagerServer {
       _i24.RrhhArea => 'RrhhArea',
       _i25.RrhhAssignment => 'RrhhAssignment',
       _i26.RrhhDashboardMetricsResponse => 'RrhhDashboardMetricsResponse',
-      _i27.RrhhEmployee => 'RrhhEmployee',
-      _i28.RrhhEmployeeBonus => 'RrhhEmployeeBonus',
-      _i29.RrhhEmployeeContractData => 'RrhhEmployeeContractData',
-      _i30.RrhhEmployeeDeduction => 'RrhhEmployeeDeduction',
-      _i31.RrhhEmployeeDocument => 'RrhhEmployeeDocument',
-      _i32.RrhhIncident => 'RrhhIncident',
-      _i33.RrhhLeaveRequest => 'RrhhLeaveRequest',
-      _i34.RrhhMovementHistory => 'RrhhMovementHistory',
-      _i35.RrhhPosition => 'RrhhPosition',
-      _i36.RrhhRecentMovementDto => 'RrhhRecentMovementDto',
-      _i37.RrhhSchedule => 'RrhhSchedule',
-      _i38.RrhhSpecialty => 'RrhhSpecialty',
-      _i39.RrhhTermination => 'RrhhTermination',
-      _i40.RrhhTimelineEvent => 'RrhhTimelineEvent',
-      _i41.RrhhVacation => 'RrhhVacation',
-      _i42.AppPermission => 'AppPermission',
-      _i43.AppRole => 'AppRole',
-      _i44.AppUser => 'AppUser',
-      _i45.AuditLog => 'AuditLog',
-      _i46.AuditLogPageResponse => 'AuditLogPageResponse',
-      _i47.MfaChallenge => 'MfaChallenge',
-      _i48.MfaChallengeResponse => 'MfaChallengeResponse',
-      _i49.MfaVerifyResponse => 'MfaVerifyResponse',
-      _i50.RolePermission => 'RolePermission',
-      _i51.TrustedDevice => 'TrustedDevice',
-      _i52.UserRole => 'UserRole',
-      _i53.UserSession => 'UserSession',
+      _i27.RrhhDossierDocument => 'RrhhDossierDocument',
+      _i28.RrhhEmployee => 'RrhhEmployee',
+      _i29.RrhhEmployeeBonus => 'RrhhEmployeeBonus',
+      _i30.RrhhEmployeeContractData => 'RrhhEmployeeContractData',
+      _i31.RrhhEmployeeDeduction => 'RrhhEmployeeDeduction',
+      _i32.RrhhEmployeeDocument => 'RrhhEmployeeDocument',
+      _i33.RrhhEmployeeSummaryDto => 'RrhhEmployeeSummaryDto',
+      _i34.RrhhHiringDossier => 'RrhhHiringDossier',
+      _i35.RrhhIncident => 'RrhhIncident',
+      _i36.RrhhLeaveRequest => 'RrhhLeaveRequest',
+      _i37.RrhhMovementHistory => 'RrhhMovementHistory',
+      _i38.RrhhPosition => 'RrhhPosition',
+      _i39.RrhhRecentMovementDto => 'RrhhRecentMovementDto',
+      _i40.RrhhSchedule => 'RrhhSchedule',
+      _i41.RrhhSpecialty => 'RrhhSpecialty',
+      _i42.RrhhTermination => 'RrhhTermination',
+      _i43.RrhhTimelineEvent => 'RrhhTimelineEvent',
+      _i44.RrhhVacation => 'RrhhVacation',
+      _i45.AppPermission => 'AppPermission',
+      _i46.AppRole => 'AppRole',
+      _i47.AppUser => 'AppUser',
+      _i48.AuditLog => 'AuditLog',
+      _i49.AuditLogPageResponse => 'AuditLogPageResponse',
+      _i50.MfaChallenge => 'MfaChallenge',
+      _i51.MfaChallengeResponse => 'MfaChallengeResponse',
+      _i52.MfaVerifyResponse => 'MfaVerifyResponse',
+      _i53.RolePermission => 'RolePermission',
+      _i54.TrustedDevice => 'TrustedDevice',
+      _i55.UserRole => 'UserRole',
+      _i56.UserSession => 'UserSession',
       _ => null,
     };
   }
@@ -6906,59 +7423,65 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'RrhhAssignment';
       case _i26.RrhhDashboardMetricsResponse():
         return 'RrhhDashboardMetricsResponse';
-      case _i27.RrhhEmployee():
+      case _i27.RrhhDossierDocument():
+        return 'RrhhDossierDocument';
+      case _i28.RrhhEmployee():
         return 'RrhhEmployee';
-      case _i28.RrhhEmployeeBonus():
+      case _i29.RrhhEmployeeBonus():
         return 'RrhhEmployeeBonus';
-      case _i29.RrhhEmployeeContractData():
+      case _i30.RrhhEmployeeContractData():
         return 'RrhhEmployeeContractData';
-      case _i30.RrhhEmployeeDeduction():
+      case _i31.RrhhEmployeeDeduction():
         return 'RrhhEmployeeDeduction';
-      case _i31.RrhhEmployeeDocument():
+      case _i32.RrhhEmployeeDocument():
         return 'RrhhEmployeeDocument';
-      case _i32.RrhhIncident():
+      case _i33.RrhhEmployeeSummaryDto():
+        return 'RrhhEmployeeSummaryDto';
+      case _i34.RrhhHiringDossier():
+        return 'RrhhHiringDossier';
+      case _i35.RrhhIncident():
         return 'RrhhIncident';
-      case _i33.RrhhLeaveRequest():
+      case _i36.RrhhLeaveRequest():
         return 'RrhhLeaveRequest';
-      case _i34.RrhhMovementHistory():
+      case _i37.RrhhMovementHistory():
         return 'RrhhMovementHistory';
-      case _i35.RrhhPosition():
+      case _i38.RrhhPosition():
         return 'RrhhPosition';
-      case _i36.RrhhRecentMovementDto():
+      case _i39.RrhhRecentMovementDto():
         return 'RrhhRecentMovementDto';
-      case _i37.RrhhSchedule():
+      case _i40.RrhhSchedule():
         return 'RrhhSchedule';
-      case _i38.RrhhSpecialty():
+      case _i41.RrhhSpecialty():
         return 'RrhhSpecialty';
-      case _i39.RrhhTermination():
+      case _i42.RrhhTermination():
         return 'RrhhTermination';
-      case _i40.RrhhTimelineEvent():
+      case _i43.RrhhTimelineEvent():
         return 'RrhhTimelineEvent';
-      case _i41.RrhhVacation():
+      case _i44.RrhhVacation():
         return 'RrhhVacation';
-      case _i42.AppPermission():
+      case _i45.AppPermission():
         return 'AppPermission';
-      case _i43.AppRole():
+      case _i46.AppRole():
         return 'AppRole';
-      case _i44.AppUser():
+      case _i47.AppUser():
         return 'AppUser';
-      case _i45.AuditLog():
+      case _i48.AuditLog():
         return 'AuditLog';
-      case _i46.AuditLogPageResponse():
+      case _i49.AuditLogPageResponse():
         return 'AuditLogPageResponse';
-      case _i47.MfaChallenge():
+      case _i50.MfaChallenge():
         return 'MfaChallenge';
-      case _i48.MfaChallengeResponse():
+      case _i51.MfaChallengeResponse():
         return 'MfaChallengeResponse';
-      case _i49.MfaVerifyResponse():
+      case _i52.MfaVerifyResponse():
         return 'MfaVerifyResponse';
-      case _i50.RolePermission():
+      case _i53.RolePermission():
         return 'RolePermission';
-      case _i51.TrustedDevice():
+      case _i54.TrustedDevice():
         return 'TrustedDevice';
-      case _i52.UserRole():
+      case _i55.UserRole():
         return 'UserRole';
-      case _i53.UserSession():
+      case _i56.UserSession():
         return 'UserSession';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -7048,86 +7571,95 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'RrhhDashboardMetricsResponse') {
       return deserialize<_i26.RrhhDashboardMetricsResponse>(data['data']);
     }
+    if (dataClassName == 'RrhhDossierDocument') {
+      return deserialize<_i27.RrhhDossierDocument>(data['data']);
+    }
     if (dataClassName == 'RrhhEmployee') {
-      return deserialize<_i27.RrhhEmployee>(data['data']);
+      return deserialize<_i28.RrhhEmployee>(data['data']);
     }
     if (dataClassName == 'RrhhEmployeeBonus') {
-      return deserialize<_i28.RrhhEmployeeBonus>(data['data']);
+      return deserialize<_i29.RrhhEmployeeBonus>(data['data']);
     }
     if (dataClassName == 'RrhhEmployeeContractData') {
-      return deserialize<_i29.RrhhEmployeeContractData>(data['data']);
+      return deserialize<_i30.RrhhEmployeeContractData>(data['data']);
     }
     if (dataClassName == 'RrhhEmployeeDeduction') {
-      return deserialize<_i30.RrhhEmployeeDeduction>(data['data']);
+      return deserialize<_i31.RrhhEmployeeDeduction>(data['data']);
     }
     if (dataClassName == 'RrhhEmployeeDocument') {
-      return deserialize<_i31.RrhhEmployeeDocument>(data['data']);
+      return deserialize<_i32.RrhhEmployeeDocument>(data['data']);
+    }
+    if (dataClassName == 'RrhhEmployeeSummaryDto') {
+      return deserialize<_i33.RrhhEmployeeSummaryDto>(data['data']);
+    }
+    if (dataClassName == 'RrhhHiringDossier') {
+      return deserialize<_i34.RrhhHiringDossier>(data['data']);
     }
     if (dataClassName == 'RrhhIncident') {
-      return deserialize<_i32.RrhhIncident>(data['data']);
+      return deserialize<_i35.RrhhIncident>(data['data']);
     }
     if (dataClassName == 'RrhhLeaveRequest') {
-      return deserialize<_i33.RrhhLeaveRequest>(data['data']);
+      return deserialize<_i36.RrhhLeaveRequest>(data['data']);
     }
     if (dataClassName == 'RrhhMovementHistory') {
-      return deserialize<_i34.RrhhMovementHistory>(data['data']);
+      return deserialize<_i37.RrhhMovementHistory>(data['data']);
     }
     if (dataClassName == 'RrhhPosition') {
-      return deserialize<_i35.RrhhPosition>(data['data']);
+      return deserialize<_i38.RrhhPosition>(data['data']);
     }
     if (dataClassName == 'RrhhRecentMovementDto') {
-      return deserialize<_i36.RrhhRecentMovementDto>(data['data']);
+      return deserialize<_i39.RrhhRecentMovementDto>(data['data']);
     }
     if (dataClassName == 'RrhhSchedule') {
-      return deserialize<_i37.RrhhSchedule>(data['data']);
+      return deserialize<_i40.RrhhSchedule>(data['data']);
     }
     if (dataClassName == 'RrhhSpecialty') {
-      return deserialize<_i38.RrhhSpecialty>(data['data']);
+      return deserialize<_i41.RrhhSpecialty>(data['data']);
     }
     if (dataClassName == 'RrhhTermination') {
-      return deserialize<_i39.RrhhTermination>(data['data']);
+      return deserialize<_i42.RrhhTermination>(data['data']);
     }
     if (dataClassName == 'RrhhTimelineEvent') {
-      return deserialize<_i40.RrhhTimelineEvent>(data['data']);
+      return deserialize<_i43.RrhhTimelineEvent>(data['data']);
     }
     if (dataClassName == 'RrhhVacation') {
-      return deserialize<_i41.RrhhVacation>(data['data']);
+      return deserialize<_i44.RrhhVacation>(data['data']);
     }
     if (dataClassName == 'AppPermission') {
-      return deserialize<_i42.AppPermission>(data['data']);
+      return deserialize<_i45.AppPermission>(data['data']);
     }
     if (dataClassName == 'AppRole') {
-      return deserialize<_i43.AppRole>(data['data']);
+      return deserialize<_i46.AppRole>(data['data']);
     }
     if (dataClassName == 'AppUser') {
-      return deserialize<_i44.AppUser>(data['data']);
+      return deserialize<_i47.AppUser>(data['data']);
     }
     if (dataClassName == 'AuditLog') {
-      return deserialize<_i45.AuditLog>(data['data']);
+      return deserialize<_i48.AuditLog>(data['data']);
     }
     if (dataClassName == 'AuditLogPageResponse') {
-      return deserialize<_i46.AuditLogPageResponse>(data['data']);
+      return deserialize<_i49.AuditLogPageResponse>(data['data']);
     }
     if (dataClassName == 'MfaChallenge') {
-      return deserialize<_i47.MfaChallenge>(data['data']);
+      return deserialize<_i50.MfaChallenge>(data['data']);
     }
     if (dataClassName == 'MfaChallengeResponse') {
-      return deserialize<_i48.MfaChallengeResponse>(data['data']);
+      return deserialize<_i51.MfaChallengeResponse>(data['data']);
     }
     if (dataClassName == 'MfaVerifyResponse') {
-      return deserialize<_i49.MfaVerifyResponse>(data['data']);
+      return deserialize<_i52.MfaVerifyResponse>(data['data']);
     }
     if (dataClassName == 'RolePermission') {
-      return deserialize<_i50.RolePermission>(data['data']);
+      return deserialize<_i53.RolePermission>(data['data']);
     }
     if (dataClassName == 'TrustedDevice') {
-      return deserialize<_i51.TrustedDevice>(data['data']);
+      return deserialize<_i54.TrustedDevice>(data['data']);
     }
     if (dataClassName == 'UserRole') {
-      return deserialize<_i52.UserRole>(data['data']);
+      return deserialize<_i55.UserRole>(data['data']);
     }
     if (dataClassName == 'UserSession') {
-      return deserialize<_i53.UserSession>(data['data']);
+      return deserialize<_i56.UserSession>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -7195,46 +7727,48 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i24.RrhhArea.t;
       case _i25.RrhhAssignment:
         return _i25.RrhhAssignment.t;
-      case _i27.RrhhEmployee:
-        return _i27.RrhhEmployee.t;
-      case _i31.RrhhEmployeeDocument:
-        return _i31.RrhhEmployeeDocument.t;
-      case _i32.RrhhIncident:
-        return _i32.RrhhIncident.t;
-      case _i33.RrhhLeaveRequest:
-        return _i33.RrhhLeaveRequest.t;
-      case _i34.RrhhMovementHistory:
-        return _i34.RrhhMovementHistory.t;
-      case _i35.RrhhPosition:
-        return _i35.RrhhPosition.t;
-      case _i37.RrhhSchedule:
-        return _i37.RrhhSchedule.t;
-      case _i38.RrhhSpecialty:
-        return _i38.RrhhSpecialty.t;
-      case _i39.RrhhTermination:
-        return _i39.RrhhTermination.t;
-      case _i40.RrhhTimelineEvent:
-        return _i40.RrhhTimelineEvent.t;
-      case _i41.RrhhVacation:
-        return _i41.RrhhVacation.t;
-      case _i42.AppPermission:
-        return _i42.AppPermission.t;
-      case _i43.AppRole:
-        return _i43.AppRole.t;
-      case _i44.AppUser:
-        return _i44.AppUser.t;
-      case _i45.AuditLog:
-        return _i45.AuditLog.t;
-      case _i47.MfaChallenge:
-        return _i47.MfaChallenge.t;
-      case _i50.RolePermission:
-        return _i50.RolePermission.t;
-      case _i51.TrustedDevice:
-        return _i51.TrustedDevice.t;
-      case _i52.UserRole:
-        return _i52.UserRole.t;
-      case _i53.UserSession:
-        return _i53.UserSession.t;
+      case _i28.RrhhEmployee:
+        return _i28.RrhhEmployee.t;
+      case _i32.RrhhEmployeeDocument:
+        return _i32.RrhhEmployeeDocument.t;
+      case _i34.RrhhHiringDossier:
+        return _i34.RrhhHiringDossier.t;
+      case _i35.RrhhIncident:
+        return _i35.RrhhIncident.t;
+      case _i36.RrhhLeaveRequest:
+        return _i36.RrhhLeaveRequest.t;
+      case _i37.RrhhMovementHistory:
+        return _i37.RrhhMovementHistory.t;
+      case _i38.RrhhPosition:
+        return _i38.RrhhPosition.t;
+      case _i40.RrhhSchedule:
+        return _i40.RrhhSchedule.t;
+      case _i41.RrhhSpecialty:
+        return _i41.RrhhSpecialty.t;
+      case _i42.RrhhTermination:
+        return _i42.RrhhTermination.t;
+      case _i43.RrhhTimelineEvent:
+        return _i43.RrhhTimelineEvent.t;
+      case _i44.RrhhVacation:
+        return _i44.RrhhVacation.t;
+      case _i45.AppPermission:
+        return _i45.AppPermission.t;
+      case _i46.AppRole:
+        return _i46.AppRole.t;
+      case _i47.AppUser:
+        return _i47.AppUser.t;
+      case _i48.AuditLog:
+        return _i48.AuditLog.t;
+      case _i50.MfaChallenge:
+        return _i50.MfaChallenge.t;
+      case _i53.RolePermission:
+        return _i53.RolePermission.t;
+      case _i54.TrustedDevice:
+        return _i54.TrustedDevice.t;
+      case _i55.UserRole:
+        return _i55.UserRole.t;
+      case _i56.UserSession:
+        return _i56.UserSession.t;
     }
     return null;
   }

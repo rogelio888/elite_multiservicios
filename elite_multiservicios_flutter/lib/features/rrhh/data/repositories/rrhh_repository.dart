@@ -4,8 +4,6 @@ import '../models/crm_client_ref_dto.dart';
 import '../models/rrhh_applicant_companion.dart';
 import '../models/rrhh_applicant_summary_dto.dart';
 import '../models/rrhh_catalog_item.dart';
-import '../models/rrhh_employee_summary_dto.dart';
-import '../models/rrhh_hiring_dossier.dart';
 import '../models/rrhh_leave_request.dart';
 import '../models/rrhh_payroll_export_dto.dart';
 import '../models/rrhh_shift.dart';
@@ -25,15 +23,15 @@ export '../models/rrhh_termination_record.dart';
 export '../models/rrhh_payroll_period.dart';
 export '../models/rrhh_attendance_record.dart';
 
-import 'rrhh_repository_mock.dart';
+import 'rrhh_repository_remote.dart';
 
 /// Interfaz abstracta del repositorio de Recursos Humanos (RRHH).
 /// Define todos los contratos de datos y operaciones requeridos por las 14 pantallas.
 /// Regla R1: La UI NO llama directamente a Serverpod, todo pasa por RrhhRepository.
 /// Regla R2: La UI NO conoce si el repository es mock o remoto.
 abstract class RrhhRepository {
-  /// Instancia global activa. Por defecto apunta al Mock hasta el Paso 6.
-  static RrhhRepository current = RrhhRepositoryMock();
+  /// Instancia global activa apuntando al backend real (Serverpod).
+  static RrhhRepository current = RrhhRepositoryRemote();
 
   /// Identifica si el repositorio está operando en modo Mock/Simulado.
   bool get isMock;

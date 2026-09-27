@@ -14,7 +14,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../modules/rrhh/models/rrhh_employee_bonus.dart' as _i2;
 import '../../../modules/rrhh/models/rrhh_employee_deduction.dart' as _i3;
-import 'package:elite_multiservicios_server/src/generated/protocol.dart' as _i4;
+import '../../../modules/rrhh/models/rrhh_dossier_document.dart' as _i4;
+import 'package:elite_multiservicios_server/src/generated/protocol.dart' as _i5;
 
 /// Expediente maestro del Colaborador / Empleado de Elite Multiservicios.
 abstract class RrhhEmployee
@@ -43,7 +44,7 @@ abstract class RrhhEmployee
     this.supervisorId,
     required this.realStartDate,
     required this.fiscalStartDate,
-    required this.agreedSalary,
+    this.agreedSalary,
     required this.contractType,
     this.contractEndDate,
     this.observations,
@@ -127,7 +128,7 @@ abstract class RrhhEmployee
     int? supervisorId,
     required DateTime realStartDate,
     required DateTime fiscalStartDate,
-    required double agreedSalary,
+    double? agreedSalary,
     required String contractType,
     DateTime? contractEndDate,
     String? observations,
@@ -170,7 +171,7 @@ abstract class RrhhEmployee
     String? shiftId,
     String? baseLocation,
     String? supervisorEmployeeId,
-    Map<String, String>? documentChecklist,
+    List<_i4.RrhhDossierDocument>? documentChecklist,
     bool? isDeleted,
     DateTime? deletedAt,
     required DateTime createdAt,
@@ -208,7 +209,7 @@ abstract class RrhhEmployee
       fiscalStartDate: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['fiscalStartDate'],
       ),
-      agreedSalary: (jsonSerialization['agreedSalary'] as num).toDouble(),
+      agreedSalary: (jsonSerialization['agreedSalary'] as num?)?.toDouble(),
       contractType: jsonSerialization['contractType'] as String,
       contractEndDate: jsonSerialization['contractEndDate'] == null
           ? null
@@ -219,7 +220,7 @@ abstract class RrhhEmployee
       status: jsonSerialization['status'] as String?,
       skills: jsonSerialization['skills'] == null
           ? null
-          : _i4.Protocol().deserialize<List<String>>(
+          : _i5.Protocol().deserialize<List<String>>(
               jsonSerialization['skills'],
             ),
       availabilityStatus: jsonSerialization['availabilityStatus'] as String?,
@@ -280,12 +281,12 @@ abstract class RrhhEmployee
           jsonSerialization['contractSignedPdfUrl'] as String?,
       bonuses: jsonSerialization['bonuses'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i2.RrhhEmployeeBonus>>(
+          : _i5.Protocol().deserialize<List<_i2.RrhhEmployeeBonus>>(
               jsonSerialization['bonuses'],
             ),
       deductions: jsonSerialization['deductions'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.RrhhEmployeeDeduction>>(
+          : _i5.Protocol().deserialize<List<_i3.RrhhEmployeeDeduction>>(
               jsonSerialization['deductions'],
             ),
       shiftId: jsonSerialization['shiftId'] as String?,
@@ -294,7 +295,7 @@ abstract class RrhhEmployee
           jsonSerialization['supervisorEmployeeId'] as String?,
       documentChecklist: jsonSerialization['documentChecklist'] == null
           ? null
-          : _i4.Protocol().deserialize<Map<String, String>>(
+          : _i5.Protocol().deserialize<List<_i4.RrhhDossierDocument>>(
               jsonSerialization['documentChecklist'],
             ),
       isDeleted: jsonSerialization['isDeleted'] == null
@@ -381,7 +382,7 @@ abstract class RrhhEmployee
 
   DateTime fiscalStartDate;
 
-  double agreedSalary;
+  double? agreedSalary;
 
   /// Modalidad de contrato: 'Indefinido', 'Plazo Fijo', 'Servicios'.
   String contractType;
@@ -485,7 +486,7 @@ abstract class RrhhEmployee
   String? supervisorEmployeeId;
 
   /// Checklist de documentos (FASE B)
-  Map<String, String>? documentChecklist;
+  List<_i4.RrhhDossierDocument>? documentChecklist;
 
   /// Eliminación lógica y auditoría
   bool isDeleted;
@@ -569,7 +570,7 @@ abstract class RrhhEmployee
     String? shiftId,
     String? baseLocation,
     String? supervisorEmployeeId,
-    Map<String, String>? documentChecklist,
+    List<_i4.RrhhDossierDocument>? documentChecklist,
     bool? isDeleted,
     DateTime? deletedAt,
     DateTime? createdAt,
@@ -602,7 +603,7 @@ abstract class RrhhEmployee
       if (supervisorId != null) 'supervisorId': supervisorId,
       'realStartDate': realStartDate.toJson(),
       'fiscalStartDate': fiscalStartDate.toJson(),
-      'agreedSalary': agreedSalary,
+      if (agreedSalary != null) 'agreedSalary': agreedSalary,
       'contractType': contractType,
       if (contractEndDate != null) 'contractEndDate': contractEndDate?.toJson(),
       if (observations != null) 'observations': observations,
@@ -654,7 +655,9 @@ abstract class RrhhEmployee
       if (supervisorEmployeeId != null)
         'supervisorEmployeeId': supervisorEmployeeId,
       if (documentChecklist != null)
-        'documentChecklist': documentChecklist?.toJson(),
+        'documentChecklist': documentChecklist?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       'isDeleted': isDeleted,
       if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
       'createdAt': createdAt.toJson(),
@@ -689,7 +692,7 @@ abstract class RrhhEmployee
       if (supervisorId != null) 'supervisorId': supervisorId,
       'realStartDate': realStartDate.toJson(),
       'fiscalStartDate': fiscalStartDate.toJson(),
-      'agreedSalary': agreedSalary,
+      if (agreedSalary != null) 'agreedSalary': agreedSalary,
       'contractType': contractType,
       if (contractEndDate != null) 'contractEndDate': contractEndDate?.toJson(),
       if (observations != null) 'observations': observations,
@@ -743,7 +746,9 @@ abstract class RrhhEmployee
       if (supervisorEmployeeId != null)
         'supervisorEmployeeId': supervisorEmployeeId,
       if (documentChecklist != null)
-        'documentChecklist': documentChecklist?.toJson(),
+        'documentChecklist': documentChecklist?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
       'isDeleted': isDeleted,
       if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
       'createdAt': createdAt.toJson(),
@@ -808,7 +813,7 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
     int? supervisorId,
     required DateTime realStartDate,
     required DateTime fiscalStartDate,
-    required double agreedSalary,
+    double? agreedSalary,
     required String contractType,
     DateTime? contractEndDate,
     String? observations,
@@ -851,7 +856,7 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
     String? shiftId,
     String? baseLocation,
     String? supervisorEmployeeId,
-    Map<String, String>? documentChecklist,
+    List<_i4.RrhhDossierDocument>? documentChecklist,
     bool? isDeleted,
     DateTime? deletedAt,
     required DateTime createdAt,
@@ -958,7 +963,7 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
     Object? supervisorId = _Undefined,
     DateTime? realStartDate,
     DateTime? fiscalStartDate,
-    double? agreedSalary,
+    Object? agreedSalary = _Undefined,
     String? contractType,
     Object? contractEndDate = _Undefined,
     Object? observations = _Undefined,
@@ -1031,7 +1036,7 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
       supervisorId: supervisorId is int? ? supervisorId : this.supervisorId,
       realStartDate: realStartDate ?? this.realStartDate,
       fiscalStartDate: fiscalStartDate ?? this.fiscalStartDate,
-      agreedSalary: agreedSalary ?? this.agreedSalary,
+      agreedSalary: agreedSalary is double? ? agreedSalary : this.agreedSalary,
       contractType: contractType ?? this.contractType,
       contractEndDate: contractEndDate is DateTime?
           ? contractEndDate
@@ -1108,17 +1113,9 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
       supervisorEmployeeId: supervisorEmployeeId is String?
           ? supervisorEmployeeId
           : this.supervisorEmployeeId,
-      documentChecklist: documentChecklist is Map<String, String>?
+      documentChecklist: documentChecklist is List<_i4.RrhhDossierDocument>?
           ? documentChecklist
-          : this.documentChecklist?.map(
-              (
-                key0,
-                value0,
-              ) => MapEntry(
-                key0,
-                value0,
-              ),
-            ),
+          : this.documentChecklist?.map((e0) => e0.copyWith()).toList(),
       isDeleted: isDeleted ?? this.isDeleted,
       deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
       createdAt: createdAt ?? this.createdAt,
@@ -1245,10 +1242,11 @@ class RrhhEmployeeUpdateTable extends _i1.UpdateTable<RrhhEmployeeTable> {
         value,
       );
 
-  _i1.ColumnValue<double, double> agreedSalary(double value) => _i1.ColumnValue(
-    table.agreedSalary,
-    value,
-  );
+  _i1.ColumnValue<double, double> agreedSalary(double? value) =>
+      _i1.ColumnValue(
+        table.agreedSalary,
+        value,
+      );
 
   _i1.ColumnValue<String, String> contractType(String value) => _i1.ColumnValue(
     table.contractType,
@@ -1486,9 +1484,8 @@ class RrhhEmployeeUpdateTable extends _i1.UpdateTable<RrhhEmployeeTable> {
         value,
       );
 
-  _i1.ColumnValue<Map<String, String>, Map<String, String>> documentChecklist(
-    Map<String, String>? value,
-  ) => _i1.ColumnValue(
+  _i1.ColumnValue<List<_i4.RrhhDossierDocument>, List<_i4.RrhhDossierDocument>>
+  documentChecklist(List<_i4.RrhhDossierDocument>? value) => _i1.ColumnValue(
     table.documentChecklist,
     value,
   );
@@ -1790,7 +1787,7 @@ class RrhhEmployeeTable extends _i1.Table<int?> {
       'supervisorEmployeeId',
       this,
     );
-    documentChecklist = _i1.ColumnSerializable<Map<String, String>>(
+    documentChecklist = _i1.ColumnSerializable<List<_i4.RrhhDossierDocument>>(
       'documentChecklist',
       this,
     );
@@ -1981,7 +1978,8 @@ class RrhhEmployeeTable extends _i1.Table<int?> {
   late final _i1.ColumnString supervisorEmployeeId;
 
   /// Checklist de documentos (FASE B)
-  late final _i1.ColumnSerializable<Map<String, String>> documentChecklist;
+  late final _i1.ColumnSerializable<List<_i4.RrhhDossierDocument>>
+  documentChecklist;
 
   /// Eliminación lógica y auditoría
   late final _i1.ColumnBool isDeleted;

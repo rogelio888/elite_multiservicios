@@ -44,7 +44,7 @@ fields:
   ### Fechas y Contrato
   realStartDate: DateTime
   fiscalStartDate: DateTime
-  agreedSalary: double
+  agreedSalary: double?
   ### Modalidad de contrato: 'Indefinido', 'Plazo Fijo', 'Servicios'.
   contractType: String
   contractEndDate: DateTime?
@@ -117,7 +117,7 @@ fields:
   supervisorEmployeeId: String?
 
   ### Checklist de documentos (FASE B)
-  documentChecklist: Map<String, String>?
+  documentChecklist: List<RrhhDossierDocument>?
 
   ### Eliminación lógica y auditoría
   isDeleted: bool, default=false
