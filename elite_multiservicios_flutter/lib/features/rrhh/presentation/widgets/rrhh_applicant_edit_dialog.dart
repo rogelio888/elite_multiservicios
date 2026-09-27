@@ -389,6 +389,7 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                                 _fieldLabel('EXTENSIÓN *'),
                                 DropdownButtonFormField<String>(
                                   initialValue: _ciExt,
+                                  isExpanded: true,
                                   dropdownColor: const Color(0xFF1E293B),
                                   style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
                                   decoration: _inputDecoration(),
@@ -492,6 +493,7 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                                 _fieldLabel('ÁREA ASPIRADA *'),
                                 DropdownButtonFormField<RrhhArea>(
                                   initialValue: _selectedArea,
+                                  isExpanded: true,
                                   dropdownColor: const Color(0xFF1E293B),
                                   style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
                                   decoration: _inputDecoration(),
@@ -518,6 +520,7 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                                   _fieldLabel(_targetType == 'CAMPO' ? 'ESPECIALIDAD *' : 'ESPECIALIDAD (OPCIONAL)'),
                                   DropdownButtonFormField<RrhhSpecialty>(
                                     initialValue: _selectedSpecialty,
+                                    isExpanded: true,
                                     dropdownColor: const Color(0xFF1E293B),
                                     style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
                                     decoration: _inputDecoration(),
