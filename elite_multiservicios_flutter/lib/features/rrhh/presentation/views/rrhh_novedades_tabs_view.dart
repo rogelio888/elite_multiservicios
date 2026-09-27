@@ -4,6 +4,7 @@ import '../widgets/rrhh_disciplinary_view.dart';
 import '../widgets/rrhh_leave_requests_view.dart';
 import '../widgets/rrhh_vacations_view.dart';
 import '../widgets/rrhh_terminations_view.dart';
+import '../widgets/rrhh_payroll_view.dart';
 
 /// Vista contenedora de Novedades Laborales (Entrada 04 del menú RRHH).
 /// Agrupa:
@@ -11,6 +12,7 @@ import '../widgets/rrhh_terminations_view.dart';
 /// - Tab 2: Control de Vacaciones (Pantalla 09)
 /// - Tab 3: Régimen Disciplinario e Incidencias (Pantalla 10)
 /// - Tab 4: Desvinculaciones y Bajas (Pantalla 11)
+/// - Tab 5: Novedades para Nómina (Pantalla 12)
 class RrhhNovedadesTabsView extends StatefulWidget {
   final String? initialTab;
   final void Function(int index)? onNavigateToTab;
@@ -40,10 +42,12 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
       tabIndex = 2;
     } else if (tab == 'bajas' || tab == 'desvinculaciones' || tab == 'finiquitos') {
       tabIndex = 3;
+    } else if (tab == 'nomina' || tab == 'novedades_nomina' || tab == 'novedades-nomina') {
+      tabIndex = 4;
     }
 
     _tabController = TabController(
-      length: 4,
+      length: 5,
       vsync: this,
       initialIndex: tabIndex,
     );
@@ -182,6 +186,17 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
                       ],
                     ),
                   ),
+                  Tab(
+                    height: 38,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.receipt_long_outlined, size: 15),
+                        SizedBox(width: 6),
+                        Text('5. Novedades para Nómina'),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -197,6 +212,7 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
               RrhhVacationsView(),
               RrhhDisciplinaryView(),
               RrhhTerminationsView(),
+              RrhhPayrollView(),
             ],
           ),
         ),

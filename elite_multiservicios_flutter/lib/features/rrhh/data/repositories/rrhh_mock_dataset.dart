@@ -8,6 +8,7 @@ import '../models/rrhh_shift.dart';
 import '../models/rrhh_vacation.dart';
 import '../models/rrhh_disciplinary_record.dart';
 import '../models/rrhh_termination_record.dart';
+import '../models/rrhh_payroll_period.dart';
 
 /// Datos de prueba iniciales basados estrictamente en RRHH_WIREFRAMES.md y el PDF.
 class RrhhMockDataset {
@@ -1998,6 +1999,170 @@ class RrhhMockDataset {
       updatedAt: DateTime(2026, 9, 22, 11, 0),
       createdBy: 'Jefatura de RRHH',
       notes: 'Registro inicial pendiente de recepción de descargos de activos y liquidación contable.',
+    ),
+  ];
+
+  static List<RrhhPayrollPeriod> initialPayrollPeriods() => [
+    RrhhPayrollPeriod(
+      id: 1,
+      code: 'NOM-2026-08',
+      year: 2026,
+      month: 8,
+      status: RrhhPayrollPeriodStatus.enviado,
+      closedAt: DateTime(2026, 8, 31, 18, 0),
+      closedBy: 'Lic. Laura Mendoza',
+      sentAt: DateTime(2026, 9, 1, 9, 0),
+      sentBy: 'Lic. Laura Mendoza',
+      notes: 'Consolidado mensual de agosto cerrado y remitido formalmente a Contabilidad para procesamiento.',
+      createdAt: DateTime(2026, 8, 1, 8, 0),
+      updatedAt: DateTime(2026, 9, 1, 9, 0),
+    ),
+    RrhhPayrollPeriod(
+      id: 2,
+      code: 'NOM-2026-09',
+      year: 2026,
+      month: 9,
+      status: RrhhPayrollPeriodStatus.abierto,
+      notes: 'Período en curso de septiembre 2026. Consolidación preliminar de novedades laborales.',
+      createdAt: DateTime(2026, 9, 1, 8, 0),
+      updatedAt: DateTime(2026, 9, 24, 10, 0),
+    ),
+  ];
+
+  static List<RrhhPayrollItem> initialPayrollItems() => [
+    // -------------------------------------------------------------------------
+    // Período 2: Septiembre 2026 (NOM-2026-09)
+    // -------------------------------------------------------------------------
+    // 1. Permiso sin goce: EMP-003 Carlos Mamani
+    RrhhPayrollItem(
+      id: 1,
+      periodId: 2,
+      employeeId: 3,
+      employeeCode: 'EMP-003',
+      employeeName: 'Carlos E. Mamani Choque',
+      sourceType: RrhhPayrollSourceType.permiso,
+      sourceId: 3,
+      sourceCode: 'PERM-003',
+      effectiveDate: DateTime(2026, 9, 20),
+      description: 'Permiso sin goce de haberes por asuntos personales (2 días no remunerados)',
+      impactType: RrhhPayrollImpactType.descuento,
+      impactAmount: -200.0,
+      notes: 'Descuento proporcional a 2 jornales de trabajo según salario convenido.',
+    ),
+    // 2. Permiso con goce: EMP-002 María Elena Gómez
+    RrhhPayrollItem(
+      id: 2,
+      periodId: 2,
+      employeeId: 2,
+      employeeCode: 'EMP-002',
+      employeeName: 'María Elena Gómez',
+      sourceType: RrhhPayrollSourceType.permiso,
+      sourceId: 1,
+      sourceCode: 'PERM-001',
+      effectiveDate: DateTime(2026, 9, 12),
+      description: 'Licencia por duelo con goce de haberes (LGT Art. 45 y reglamentación interna)',
+      impactType: RrhhPayrollImpactType.sinImpacto,
+      impactAmount: 0.0,
+      notes: 'Justificado con certificado de defunción adjunto en RRHH.',
+    ),
+    // 3. Vacaciones gozadas: EMP-001 Juan Carlos Pérez
+    RrhhPayrollItem(
+      id: 3,
+      periodId: 2,
+      employeeId: 1,
+      employeeCode: 'EMP-001',
+      employeeName: 'Juan Carlos Pérez',
+      sourceType: RrhhPayrollSourceType.vacacion,
+      sourceId: 1,
+      sourceCode: 'VAC-001',
+      effectiveDate: DateTime(2026, 9, 1),
+      description: 'Vacaciones anuales remuneradas (15 días hábiles conforme antigüedad de ley)',
+      impactType: RrhhPayrollImpactType.sinImpacto,
+      impactAmount: 0.0,
+      notes: 'Días remunerados con cargo a la planilla regular sin variación de salario base.',
+    ),
+    // 4. Sanción pecuniaria: EMP-002 María Elena Gómez
+    RrhhPayrollItem(
+      id: 4,
+      periodId: 2,
+      employeeId: 2,
+      employeeCode: 'EMP-002',
+      employeeName: 'María Elena Gómez',
+      sourceType: RrhhPayrollSourceType.incidencia,
+      sourceId: 1,
+      sourceCode: 'INC-001',
+      effectiveDate: DateTime(2026, 9, 8),
+      description: 'Sanción pecuniaria por incumplimiento reiterado de libro de control y rondas',
+      impactType: RrhhPayrollImpactType.descuento,
+      impactAmount: -150.0,
+      notes: 'Deducción aplicable en papeleta de pago autorizada por supervisión.',
+    ),
+    // 5. Suspensión disciplinaria sin goce: EMP-001 Juan Carlos Pérez
+    RrhhPayrollItem(
+      id: 5,
+      periodId: 2,
+      employeeId: 1,
+      employeeCode: 'EMP-001',
+      employeeName: 'Juan Carlos Pérez',
+      sourceType: RrhhPayrollSourceType.incidencia,
+      sourceId: 3,
+      sourceCode: 'INC-003',
+      effectiveDate: DateTime(2026, 9, 15),
+      description: 'Suspensión disciplinaria de 2 días sin goce de haberes por falta grave comprobada',
+      impactType: RrhhPayrollImpactType.descuento,
+      impactAmount: -213.33,
+      notes: 'Deducción de 2 días sobre haber básico diario (Bs. 106.67/día).',
+    ),
+    // 6. Desvinculación / Finiquito pagado: EMP-018 Fernando Roca
+    RrhhPayrollItem(
+      id: 6,
+      periodId: 2,
+      employeeId: 18,
+      employeeCode: 'EMP-018',
+      employeeName: 'Fernando Roca',
+      sourceType: RrhhPayrollSourceType.desvinculacion,
+      sourceId: 1,
+      sourceCode: 'BAJA-001',
+      effectiveDate: DateTime(2026, 9, 10),
+      description: 'Liquidación de finiquito por renuncia voluntaria (antigüedad, duodécimas aguinaldo y vacación)',
+      impactType: RrhhPayrollImpactType.pagoExtra,
+      impactAmount: 5400.0,
+      notes: 'Finiquito visado por el Ministerio de Trabajo y liquidado en cheque de gerencia.',
+    ),
+    // 7. Desvinculación en proceso: EMP-014 Marcos Aguilera Soto
+    RrhhPayrollItem(
+      id: 7,
+      periodId: 2,
+      employeeId: 14,
+      employeeCode: 'EMP-014',
+      employeeName: 'Marcos Aguilera Soto',
+      sourceType: RrhhPayrollSourceType.desvinculacion,
+      sourceId: 2,
+      sourceCode: 'BAJA-002',
+      effectiveDate: DateTime(2026, 9, 25),
+      description: 'Liquidación legal en trámite Art. 16 LGT (duodécimas de aguinaldo pendientes)',
+      impactType: RrhhPayrollImpactType.pagoExtra,
+      impactAmount: 2100.0,
+      notes: 'Cálculo remitido para desembolso dentro del plazo de 15 días calendario.',
+    ),
+
+    // -------------------------------------------------------------------------
+    // Período 1: Agosto 2026 (NOM-2026-08)
+    // -------------------------------------------------------------------------
+    RrhhPayrollItem(
+      id: 8,
+      periodId: 1,
+      employeeId: 3,
+      employeeCode: 'EMP-003',
+      employeeName: 'Carlos E. Mamani Choque',
+      sourceType: RrhhPayrollSourceType.desvinculacion,
+      sourceId: 3,
+      sourceCode: 'BAJA-003',
+      effectiveDate: DateTime(2026, 8, 31),
+      description: 'Finiquito por conclusión de contrato de trabajo a plazo fijo',
+      impactType: RrhhPayrollImpactType.pagoExtra,
+      impactAmount: 4800.0,
+      notes: 'Liquidación pagada conforme a ley.',
     ),
   ];
 }

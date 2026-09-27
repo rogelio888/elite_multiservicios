@@ -13,6 +13,7 @@ import 'presentation/widgets/rrhh_employee_detail_dialog.dart';
 import 'presentation/widgets/rrhh_leave_requests_view.dart';
 import 'presentation/widgets/rrhh_vacations_view.dart';
 import 'presentation/widgets/rrhh_terminations_view.dart';
+import 'presentation/widgets/rrhh_payroll_view.dart';
 
 /// Rutas oficiales para el módulo RRHH.
 /// Estructura organizada en 7 entradas de menú superior con tabs internos
@@ -49,6 +50,7 @@ class RrhhRoutes {
   static const String bajas = '/rrhh/bajas';
   static const String novedadesDesvinculaciones = '/rrhh/novedades/desvinculaciones';
   static const String novedadesNomina = '/rrhh/novedades-nomina';
+  static const String novedadesNominaAlt = '/rrhh/novedades/nomina';
   static const String asistenciaCampo = '/rrhh/asistencia-campo';
   static const String bitacora = '/rrhh/bitacora';
 
@@ -82,6 +84,7 @@ class RrhhRoutes {
     novedadesDisciplina,
     bajas,
     novedadesNomina,
+    novedadesNominaAlt,
     asistenciaCampo,
     bitacora,
     catalogos,
@@ -189,13 +192,8 @@ class RrhhRoutes {
       case novedadesDesvinculaciones:
         return const RrhhTerminationsView();
       case novedadesNomina:
-        return const RrhhPlaceholderView(
-          title: '12. Novedades para Nómina (Entrega a Contabilidad)',
-          blockName: 'Bloque 4',
-          description:
-              'Consolidado administrativo mensual de días trabajados, salarios base pactados, bonos y descuentos para entrega formal a Contabilidad (PDF Sección 6.1).',
-          icon: Icons.request_quote_outlined,
-        );
+      case novedadesNominaAlt:
+        return const RrhhPayrollView();
       case asistenciaCampo:
         return const RrhhPlaceholderView(
           title: '13. Asistencia de Campo Consolidada (Recepción APK)',

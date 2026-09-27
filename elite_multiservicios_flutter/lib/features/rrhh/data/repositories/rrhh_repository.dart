@@ -13,11 +13,13 @@ import '../models/rrhh_shift.dart';
 import '../models/rrhh_vacation.dart';
 import '../models/rrhh_disciplinary_record.dart';
 import '../models/rrhh_termination_record.dart';
+import '../models/rrhh_payroll_period.dart';
 
 export '../models/rrhh_leave_request.dart';
 export '../models/rrhh_vacation.dart';
 export '../models/rrhh_disciplinary_record.dart';
 export '../models/rrhh_termination_record.dart';
+export '../models/rrhh_payroll_period.dart';
 
 import 'rrhh_repository_mock.dart';
 
@@ -405,6 +407,17 @@ abstract class RrhhRepository {
   // ---------------------------------------------------------------------------
   // PANTALLA 12: Novedades para Nómina (Entrega a Contabilidad)
   // ---------------------------------------------------------------------------
+  Future<List<RrhhPayrollPeriod>> listPayrollPeriods();
+  Future<RrhhPayrollPeriod?> getPayrollPeriodById(int id);
+  Future<RrhhPayrollPeriod?> getPayrollPeriodByMonth(int year, int month);
+  Future<RrhhPayrollPeriod> createPayrollPeriod(int year, int month, {String? notes});
+  Future<RrhhPayrollPeriod> closePayrollPeriod(int id, {String? closedBy, String? notes});
+  /// Este método será reemplazado por un endpoint HTTP cuando se conecte el backend real.
+  /// Contabilidad consumirá los datos consolidados a través de este endpoint.
+  Future<RrhhPayrollPeriod> sendPayrollPeriodToAccounting(int id, {String? sentBy});
+  Future<List<RrhhPayrollItem>> listPayrollItems(int periodId, {String? sourceType, String? impactType});
+  Future<List<RrhhPayrollItem>> generatePayrollItems(int periodId);
+  Future<String> exportPayrollPeriod(int periodId, String format);
   Future<List<RrhhPayrollExportDto>> getPayrollInputs(int month, int year);
 
   // ---------------------------------------------------------------------------

@@ -711,6 +711,51 @@ class RrhhRepositoryRemote implements RrhhRepository {
   }
 
   @override
+  Future<List<RrhhPayrollPeriod>> listPayrollPeriods() async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhPayrollPeriod?> getPayrollPeriodById(int id) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhPayrollPeriod?> getPayrollPeriodByMonth(int year, int month) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhPayrollPeriod> createPayrollPeriod(int year, int month, {String? notes}) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhPayrollPeriod> closePayrollPeriod(int id, {String? closedBy, String? notes}) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhPayrollPeriod> sendPayrollPeriodToAccounting(int id, {String? sentBy}) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<List<RrhhPayrollItem>> listPayrollItems(int periodId, {String? sourceType, String? impactType}) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<List<RrhhPayrollItem>> generatePayrollItems(int periodId) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<String> exportPayrollPeriod(int periodId, String format) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
   Future<List<RrhhPayrollExportDto>> getPayrollInputs(int month, int year) async {
     throw UnimplementedError(_pendingMsg);
   }

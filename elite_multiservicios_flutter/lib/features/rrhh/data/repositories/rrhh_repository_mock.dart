@@ -43,6 +43,8 @@ class RrhhRepositoryMock implements RrhhRepository {
   late List<RrhhIncident> _incidents;
   late List<RrhhTerminationRecord> _terminationRecords;
   late List<RrhhTermination> _terminations;
+  late List<RrhhPayrollPeriod> _payrollPeriods;
+  late List<RrhhPayrollItem> _payrollItems;
   late List<RrhhMovementHistory> _movements;
   late List<OpsAttendanceSummaryDto> _attendances;
   late List<CrmClientRefDto> _clientRefs;
@@ -67,6 +69,8 @@ class RrhhRepositoryMock implements RrhhRepository {
     _incidents = RrhhMockDataset.initialIncidents();
     _terminationRecords = RrhhMockDataset.initialTerminationRecords();
     _terminations = RrhhMockDataset.initialTerminations();
+    _payrollPeriods = RrhhMockDataset.initialPayrollPeriods();
+    _payrollItems = RrhhMockDataset.initialPayrollItems();
     _movements = RrhhMockDataset.initialMovements();
     _dossiers = _buildInitialDossiers();
 
@@ -2462,7 +2466,279 @@ class RrhhRepositoryMock implements RrhhRepository {
   }
 
   // ---------------------------------------------------------------------------
-  // Novedades para Nómina, Asistencia APK y Bitácora
+  // PANTALLA 12: Novedades para Nómina (Entrega a Contabilidad)
+  // ---------------------------------------------------------------------------
+  @override
+  Future<List<RrhhPayrollPeriod>> listPayrollPeriods() async {
+    final list = List<RrhhPayrollPeriod>.from(_payrollPeriods);
+    list.sort((a, b) {
+      final cmp = b.year.compareTo(a.year);
+      if (cmp != 0) return cmp;
+      return b.month.compareTo(a.month);
+    });
+    return list;
+  }
+
+  @override
+  Future<RrhhPayrollPeriod?> getPayrollPeriodById(int id) async {
+    final idx = _payrollPeriods.indexWhere((p) => p.id == id);
+    if (idx != -1) return _payrollPeriods[idx];
+    return null;
+  }
+
+  @override
+  Future<RrhhPayrollPeriod?> getPayrollPeriodByMonth(int year, int month) async {
+    final idx = _payrollPeriods.indexWhere((p) => p.year == year && p.month == month);
+    if (idx != -1) return _payrollPeriods[idx];
+    return null;
+  }
+
+  @override
+  Future<RrhhPayrollPeriod> createPayrollPeriod(int year, int month, {String? notes}) async {
+    final existing = await getPayrollPeriodByMonth(year, month);
+    if (existing != null) {
+      throw StateError('Ya existe un período registrado para el mes $month/$year');
+    }
+
+    final id = _payrollPeriods.isEmpty ? 1 : _payrollPeriods.map((p) => p.id).reduce((a, b) => a > b ? a : b) + 1;
+    final mStr = month.toString().padLeft(2, '0');
+    final code = 'NOM-$year-$mStr';
+    final now = DateTime.now();
+
+    final newPeriod = RrhhPayrollPeriod(
+      id: id,
+      code: code,
+      year: year,
+      month: month,
+      status: RrhhPayrollPeriodStatus.abierto,
+      notes: notes,
+      createdAt: now,
+      updatedAt: now,
+    );
+    _payrollPeriods.add(newPeriod);
+
+    // Generar automáticamente los items a partir de las novedades del mes
+    await generatePayrollItems(newPeriod.id);
+
+    return newPeriod;
+  }
+
+  @override
+  Future<RrhhPayrollPeriod> closePayrollPeriod(int id, {String? closedBy, String? notes}) async {
+    final idx = _payrollPeriods.indexWhere((p) => p.id == id);
+    if (idx == -1) throw StateError('Período de nómina no encontrado');
+
+    final current = _payrollPeriods[idx];
+    if (current.isClosed || current.isSent || current.isProcessed) {
+      throw StateError('El período ya se encuentra cerrado o procesado');
+    }
+
+    final now = DateTime.now();
+    final updated = current.copyWith(
+      status: RrhhPayrollPeriodStatus.cerrado,
+      closedAt: now,
+      closedBy: closedBy ?? 'Lic. Laura Mendoza',
+      notes: notes ?? current.notes,
+      updatedAt: now,
+    );
+    _payrollPeriods[idx] = updated;
+    return updated;
+  }
+
+  @override
+  Future<RrhhPayrollPeriod> sendPayrollPeriodToAccounting(int id, {String? sentBy}) async {
+    final idx = _payrollPeriods.indexWhere((p) => p.id == id);
+    if (idx == -1) throw StateError('Período de nómina no encontrado');
+
+    final current = _payrollPeriods[idx];
+    if (current.isOpen) {
+      throw StateError('Debe cerrar el período antes de enviarlo a Contabilidad');
+    }
+
+    final now = DateTime.now();
+    final updated = current.copyWith(
+      status: RrhhPayrollPeriodStatus.enviado,
+      sentAt: now,
+      sentBy: sentBy ?? 'Lic. Laura Mendoza',
+      updatedAt: now,
+    );
+    _payrollPeriods[idx] = updated;
+    return updated;
+  }
+
+  @override
+  Future<List<RrhhPayrollItem>> listPayrollItems(
+    int periodId, {
+    String? sourceType,
+    String? impactType,
+  }) async {
+    return _payrollItems.where((it) {
+      if (it.periodId != periodId) return false;
+      if (sourceType != null && sourceType.isNotEmpty && sourceType.toLowerCase() != 'todos') {
+        if (it.sourceType.toLowerCase() != sourceType.toLowerCase()) return false;
+      }
+      if (impactType != null && impactType.isNotEmpty && impactType.toLowerCase() != 'todos') {
+        if (it.impactType.toLowerCase() != impactType.toLowerCase()) return false;
+      }
+      return true;
+    }).toList();
+  }
+
+  @override
+  Future<List<RrhhPayrollItem>> generatePayrollItems(int periodId) async {
+    final period = await getPayrollPeriodById(periodId);
+    if (period == null) throw StateError('Período no encontrado');
+
+    final fromDate = DateTime(period.year, period.month, 1);
+    final toDate = (period.month == 12)
+        ? DateTime(period.year + 1, 1, 1).subtract(const Duration(seconds: 1))
+        : DateTime(period.year, period.month + 1, 1).subtract(const Duration(seconds: 1));
+
+    // Si ya tiene items pre-poblados y no queremos duplicar
+    final existingItems = _payrollItems.where((i) => i.periodId == periodId).toList();
+    if (existingItems.isNotEmpty) {
+      return existingItems;
+    }
+
+    final generated = <RrhhPayrollItem>[];
+    int nextId = _payrollItems.isEmpty ? 1 : _payrollItems.map((i) => i.id).reduce((a, b) => a > b ? a : b) + 1;
+
+    // 1. Permisos aprobados en el mes
+    final leaves = await listLeaveRequests(status: 'aprobado');
+    for (final l in leaves) {
+      if (l.startDate.isAfter(fromDate.subtract(const Duration(days: 1))) &&
+          l.startDate.isBefore(toDate.add(const Duration(days: 1)))) {
+        final isUnpaid = !l.isPaid;
+        final dailyRate = 100.0;
+        final deduction = isUnpaid ? -(l.durationDays * dailyRate) : null;
+        generated.add(
+          RrhhPayrollItem(
+            id: nextId++,
+            periodId: periodId,
+            employeeId: l.employeeId,
+            employeeCode: l.employeeCode,
+            employeeName: l.employeeName,
+            sourceType: RrhhPayrollSourceType.permiso,
+            sourceId: l.id,
+            sourceCode: l.code,
+            effectiveDate: l.startDate,
+            description: '${l.leaveType}: ${l.reason} (${l.durationDays} d)',
+            impactType: isUnpaid ? RrhhPayrollImpactType.descuento : RrhhPayrollImpactType.sinImpacto,
+            impactAmount: deduction ?? 0.0,
+            notes: isUnpaid ? 'Descuento proporcional a días no trabajados' : 'Con goce de haberes',
+          ),
+        );
+      }
+    }
+
+    // 2. Vacaciones gozadas en el mes
+    final vacations = await listVacationRecords(status: 'gozada');
+    for (final v in vacations) {
+      if (v.startDate.isAfter(fromDate.subtract(const Duration(days: 1))) &&
+          v.startDate.isBefore(toDate.add(const Duration(days: 1)))) {
+        generated.add(
+          RrhhPayrollItem(
+            id: nextId++,
+            periodId: periodId,
+            employeeId: v.employeeId,
+            employeeCode: v.employeeCode,
+            employeeName: v.employeeName,
+            sourceType: RrhhPayrollSourceType.vacacion,
+            sourceId: v.id,
+            sourceCode: v.code,
+            effectiveDate: v.startDate,
+            description: 'Uso de vacaciones anuales (${v.daysCounted} días hábiles)',
+            impactType: RrhhPayrollImpactType.sinImpacto,
+            impactAmount: 0.0,
+            notes: 'Días remunerados con cargo a la planilla regular',
+          ),
+        );
+      }
+    }
+
+    // 3. Incidencias sancionadas en el mes
+    final incidents = await listDisciplinaryRecords(status: 'sancionada');
+    for (final inc in incidents) {
+      if (inc.incidentDate.isAfter(fromDate.subtract(const Duration(days: 1))) &&
+          inc.incidentDate.isBefore(toDate.add(const Duration(days: 1)))) {
+        final amount = inc.salaryDeduction != null
+            ? -inc.salaryDeduction!
+            : (inc.suspensionDays != null ? -(inc.suspensionDays! * 100.0) : null);
+        generated.add(
+          RrhhPayrollItem(
+            id: nextId++,
+            periodId: periodId,
+            employeeId: inc.employeeId,
+            employeeCode: inc.employeeCode,
+            employeeName: inc.employeeName,
+            sourceType: RrhhPayrollSourceType.incidencia,
+            sourceId: inc.id,
+            sourceCode: inc.code,
+            effectiveDate: inc.incidentDate,
+            description: '${inc.sanctionType ?? "Sanción"}: ${inc.incidentDescription}',
+            impactType: (amount != null && amount < 0) ? RrhhPayrollImpactType.descuento : RrhhPayrollImpactType.sinImpacto,
+            impactAmount: amount ?? 0.0,
+            notes: inc.notes,
+          ),
+        );
+      }
+    }
+
+    // 4. Desvinculaciones efectivas en el mes
+    final terminations = await listPayrollAffectingTerminations(fromDate, toDate);
+    for (final term in terminations) {
+      generated.add(
+        RrhhPayrollItem(
+          id: nextId++,
+          periodId: periodId,
+          employeeId: term.employeeId,
+          employeeCode: term.employeeCode,
+          employeeName: term.employeeName,
+          sourceType: RrhhPayrollSourceType.desvinculacion,
+          sourceId: term.id,
+          sourceCode: term.code,
+          effectiveDate: term.terminationDate,
+          description: '${term.terminationType}: ${term.reason}',
+          impactType: RrhhPayrollImpactType.pagoExtra,
+          impactAmount: term.paymentCompleted ? 5000.0 : 2500.0,
+          notes: term.notes ?? 'Liquidación de beneficios sociales',
+        ),
+      );
+    }
+
+    _payrollItems.addAll(generated);
+    return generated;
+  }
+
+  @override
+  Future<String> exportPayrollPeriod(int periodId, String format) async {
+    final period = await getPayrollPeriodById(periodId);
+    if (period == null) throw StateError('Período no encontrado');
+    final items = await listPayrollItems(periodId);
+
+    if (format.toLowerCase() == 'csv') {
+      final buffer = StringBuffer();
+      buffer.writeln('PERIODO,EMPLEADO_CODIGO,EMPLEADO_NOMBRE,TIPO_NOVEDAD,CODIGO_ORIGEN,FECHA_EFECTIVA,DESCRIPCION,IMPACTO_TIPO,MONTO_BS');
+      for (final it in items) {
+        buffer.writeln('${period.code},"${it.employeeCode}","${it.employeeName}","${it.sourceType}","${it.sourceCode}","${it.effectiveDate.toIso8601String().substring(0, 10)}","${it.description}","${it.impactType}",${it.impactAmount ?? 0}');
+      }
+      return buffer.toString();
+    } else {
+      final buffer = StringBuffer();
+      buffer.writeln('REPORTE CONSOLIDADO DE NOVEDADES PARA NOMINA — ${period.code}');
+      buffer.writeln('Generado: ${DateTime.now().toIso8601String()}');
+      buffer.writeln('Estado: ${period.status.toUpperCase()}');
+      buffer.writeln('');
+      buffer.writeln('Empleado\tTipo\tCódigo\tFecha\tDescripción\tImpacto\tMonto (Bs)');
+      for (final it in items) {
+        buffer.writeln('${it.employeeName} (${it.employeeCode})\t${it.sourceType}\t${it.sourceCode}\t${it.effectiveDate.toIso8601String().substring(0, 10)}\t${it.description}\t${it.impactType}\t${it.impactAmount ?? 0}');
+      }
+      return buffer.toString();
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Asistencia APK y Bitácora
   // ---------------------------------------------------------------------------
   @override
   Future<List<RrhhPayrollExportDto>> getPayrollInputs(int month, int year) async {
