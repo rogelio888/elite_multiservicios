@@ -582,16 +582,67 @@ class RrhhRepositoryRemote implements RrhhRepository {
     }
   }
 
+  final Map<int, RrhhApplicantCompanion> _companions = {};
+
   @override
   Future<RrhhApplicantCompanion> getApplicantCompanion(int applicantId) async {
-    return RrhhApplicantCompanion(applicantId: applicantId);
+    if (_companions.containsKey(applicantId)) {
+      return _companions[applicantId]!;
+    }
+
+    try {
+      final appApplicant = await getApplicantById(applicantId);
+      final initial = RrhhApplicantCompanion(
+        applicantId: applicantId,
+        evaluation: RrhhApplicantEvaluation(
+          education: appApplicant.education,
+          experienceSummary: appApplicant.experienceSummary,
+          technicalSkills: appApplicant.skills != null && appApplicant.skills!.trim().isNotEmpty
+              ? appApplicant.skills!.split(',').map((s) => s.trim()).toList()
+              : const [],
+          personalReferenceName: appApplicant.referencePerson,
+          personalReferencePhone: appApplicant.referencePhone,
+          salaryExpectation: appApplicant.expectedSalary,
+        ),
+        documents: RrhhApplicantDocumentsChecklist(
+          hasCiCopy: appApplicant.hasIdentityCardCopy,
+        ),
+      );
+      _companions[applicantId] = initial;
+      return initial;
+    } catch (_) {
+      return RrhhApplicantCompanion(applicantId: applicantId);
+    }
   }
 
   @override
   Future<void> saveApplicantCompanion(
     int applicantId,
     RrhhApplicantCompanion companion,
-  ) async {}
+  ) async {
+    _companions[applicantId] = companion;
+
+    // Persistir campos de evaluación y documentos en la tabla rrhh_applicant de Serverpod
+    try {
+      final existing = await getApplicantById(applicantId);
+      final eval = companion.evaluation;
+      final docs = companion.documents;
+
+      final updated = existing.copyWith(
+        education: eval.education ?? eval.educationLevel ?? existing.education,
+        experienceSummary: eval.experienceSummary ?? existing.experienceSummary,
+        skills: eval.technicalSkills.isNotEmpty
+            ? eval.technicalSkills.join(', ')
+            : existing.skills,
+        referencePerson: eval.personalReferenceName ?? eval.workReferenceName ?? existing.referencePerson,
+        referencePhone: eval.personalReferencePhone ?? eval.workReferencePhone ?? existing.referencePhone,
+        expectedSalary: eval.salaryExpectation ?? existing.expectedSalary,
+        hasIdentityCardCopy: docs.hasCiCopy,
+      );
+
+      await updateApplicant(updated);
+    } catch (_) {}
+  }
 
   @override
   Future<List<RrhhApplicant>> findApplicantsByCi(String identityCard) async {
@@ -611,7 +662,19 @@ class RrhhRepositoryRemote implements RrhhRepository {
   Future<void> addInterviewRecord(
     int applicantId,
     RrhhInterviewRecord record,
-  ) async {}
+  ) async {
+    final comp = await getApplicantCompanion(applicantId);
+    final updatedComp = comp.copyWith(interviewRecord: record);
+    await saveApplicantCompanion(applicantId, updatedComp);
+
+    try {
+      final existing = await getApplicantById(applicantId);
+      final updated = existing.copyWith(
+        interviewNotes: record.notes,
+      );
+      await updateApplicant(updated);
+    } catch (_) {}
+  }
 
   // ===========================================================================
   // PANTALLA 05: Contratación Formal & Expedientes de Contratación (28 a 40)

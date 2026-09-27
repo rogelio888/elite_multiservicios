@@ -13,10 +13,19 @@ import '../views/rrhh_hiring_dossier_detail_view.dart';
 /// Drawer lateral para evaluación integral en 3 fases y transiciones del postulante.
 class RrhhRecruitmentApplicantDrawer extends StatefulWidget {
   final int applicantId;
+  final VoidCallback? onStatusChanged;
 
-  const RrhhRecruitmentApplicantDrawer({super.key, required this.applicantId});
+  const RrhhRecruitmentApplicantDrawer({
+    super.key,
+    required this.applicantId,
+    this.onStatusChanged,
+  });
 
-  static Future<bool?> show(BuildContext context, int applicantId) {
+  static Future<bool?> show(
+    BuildContext context,
+    int applicantId, {
+    VoidCallback? onStatusChanged,
+  }) {
     return showGeneralDialog<bool>(
       context: context,
       barrierDismissible: true,
@@ -32,7 +41,10 @@ class RrhhRecruitmentApplicantDrawer extends StatefulWidget {
         alignment: Alignment.centerRight,
         child: Material(
           color: Colors.transparent,
-          child: RrhhRecruitmentApplicantDrawer(applicantId: applicantId),
+          child: RrhhRecruitmentApplicantDrawer(
+            applicantId: applicantId,
+            onStatusChanged: onStatusChanged,
+          ),
         ),
       ),
     );
@@ -120,11 +132,19 @@ class _RrhhRecruitmentApplicantDrawerState
       final comp = await RrhhRepository.current.getApplicantCompanion(widget.applicantId);
 
       if (mounted) {
+        final st = updated.status.toUpperCase();
         setState(() {
           _applicant = updated;
           _companion = comp;
           _isActionRunning = false;
+          if (st == 'ENTREVISTA' || st == 'PRUEBAS' || st == 'SELECCIONADO') {
+            _expandFase2 = true;
+          }
+          if (st == 'SELECCIONADO') {
+            _expandFase3 = true;
+          }
         });
+        widget.onStatusChanged?.call();
       }
     } catch (e) {
       if (mounted) {
@@ -166,6 +186,7 @@ class _RrhhRecruitmentApplicantDrawerState
       final newComp = _companion!.copyWith(evaluation: updatedEval);
       await RrhhRepository.current.saveApplicantCompanion(widget.applicantId, newComp);
       setState(() => _companion = newComp);
+      widget.onStatusChanged?.call();
     }
   }
 

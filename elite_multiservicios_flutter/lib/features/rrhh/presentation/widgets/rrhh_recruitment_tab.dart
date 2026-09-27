@@ -65,8 +65,12 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
   }
 
   Future<void> _openDrawer(int applicantId) async {
-    final changed = await RrhhRecruitmentApplicantDrawer.show(context, applicantId);
-    if (changed == true) await loadApplicants();
+    await RrhhRecruitmentApplicantDrawer.show(
+      context,
+      applicantId,
+      onStatusChanged: loadApplicants,
+    );
+    await loadApplicants();
   }
 
   Future<void> _onApplicantDropped(RrhhApplicantSummaryDto applicant, String targetStage) async {
