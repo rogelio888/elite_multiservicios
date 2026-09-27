@@ -1,7 +1,6 @@
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
     hide RrhhLeaveRequest;
 import '../models/crm_client_ref_dto.dart';
-import '../models/ops_attendance_summary_dto.dart';
 import '../models/rrhh_applicant_companion.dart';
 import '../models/rrhh_applicant_summary_dto.dart';
 import '../models/rrhh_catalog_item.dart';
@@ -9,6 +8,7 @@ import '../models/rrhh_employee_summary_dto.dart';
 import '../models/rrhh_hiring_dossier.dart';
 import '../models/rrhh_payroll_export_dto.dart';
 import '../models/rrhh_shift.dart';
+import 'package:flutter/material.dart';
 import 'rrhh_repository.dart';
 
 /// Implementación remota del repositorio de RRHH conectada a Serverpod.
@@ -761,10 +761,27 @@ class RrhhRepositoryRemote implements RrhhRepository {
   }
 
   @override
-  Future<List<OpsAttendanceSummaryDto>> listAttendanceRecords(
-    DateTime date, {
+  Future<List<RrhhAttendanceRecord>> listAttendanceRecords({
+    String? query,
+    DateTimeRange? dateRange,
     String? status,
-    String? area,
+    String? clientName,
+    String? serviceName,
+  }) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhAttendanceRecord?> getAttendanceRecordById(int id) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<String> exportAttendanceReport({
+    String? query,
+    DateTimeRange? dateRange,
+    String? status,
+    String? clientName,
   }) async {
     throw UnimplementedError(_pendingMsg);
   }

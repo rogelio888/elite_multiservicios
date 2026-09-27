@@ -8,6 +8,7 @@ import 'presentation/views/rrhh_placeholder_view.dart';
 import 'presentation/views/rrhh_reportes_tabs_view.dart';
 import 'presentation/views/rrhh_turnos_view.dart';
 import 'presentation/views/rrhh_hiring_dossier_detail_view.dart';
+import 'presentation/widgets/rrhh_attendance_view.dart';
 import 'presentation/widgets/rrhh_disciplinary_view.dart';
 import 'presentation/widgets/rrhh_employee_detail_dialog.dart';
 import 'presentation/widgets/rrhh_leave_requests_view.dart';
@@ -195,13 +196,7 @@ class RrhhRoutes {
       case novedadesNominaAlt:
         return const RrhhPayrollView();
       case asistenciaCampo:
-        return const RrhhPlaceholderView(
-          title: '13. Asistencia de Campo Consolidada (Recepción APK)',
-          blockName: 'Bloque 4',
-          description:
-              'Visualización de solo lectura de la realidad operativa de campo recibida de la APK: entradas, salidas, horas y retrasos (PDF Sección 4.3).',
-          icon: Icons.pin_drop_outlined,
-        );
+        return const RrhhAttendanceView();
       case bitacora:
         return const RrhhPlaceholderView(
           title: '14. Bitácora / Auditoría de Movimientos',

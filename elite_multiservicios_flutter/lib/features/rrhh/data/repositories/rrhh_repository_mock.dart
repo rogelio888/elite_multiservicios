@@ -1,7 +1,6 @@
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
     hide RrhhLeaveRequest;
 import '../models/crm_client_ref_dto.dart';
-import '../models/ops_attendance_summary_dto.dart';
 import '../models/rrhh_applicant_companion.dart';
 import '../models/rrhh_applicant_summary_dto.dart';
 import '../models/rrhh_catalog_item.dart';
@@ -9,6 +8,7 @@ import '../models/rrhh_employee_summary_dto.dart';
 import '../models/rrhh_hiring_dossier.dart';
 import '../models/rrhh_payroll_export_dto.dart';
 import '../models/rrhh_shift.dart';
+import 'package:flutter/material.dart';
 import 'rrhh_mock_dataset.dart';
 import 'rrhh_repository.dart';
 
@@ -46,7 +46,7 @@ class RrhhRepositoryMock implements RrhhRepository {
   late List<RrhhPayrollPeriod> _payrollPeriods;
   late List<RrhhPayrollItem> _payrollItems;
   late List<RrhhMovementHistory> _movements;
-  late List<OpsAttendanceSummaryDto> _attendances;
+  late List<RrhhAttendanceRecord> _attendanceRecords;
   late List<CrmClientRefDto> _clientRefs;
 
   void _reset() {
@@ -60,7 +60,7 @@ class RrhhRepositoryMock implements RrhhRepository {
     _employees = RrhhMockDataset.initialEmployees();
     _applicants = RrhhMockDataset.initialApplicants();
     _applicantCompanions = _buildInitialCompanions();
-    _attendances = RrhhMockDataset.initialAttendance();
+    _attendanceRecords = RrhhMockDataset.initialAttendanceRecords();
     _clientRefs = RrhhMockDataset.initialClientRefs();
     _leaves = RrhhMockDataset.initialLeaves();
     _vacationRecords = RrhhMockDataset.initialVacationRecords();
@@ -2762,8 +2762,106 @@ class RrhhRepositoryMock implements RrhhRepository {
   }
 
   @override
-  Future<List<OpsAttendanceSummaryDto>> listAttendanceRecords(DateTime date, {String? status, String? area}) async {
-    return _attendances;
+  Future<List<RrhhAttendanceRecord>> listAttendanceRecords({
+    String? query,
+    DateTimeRange? dateRange,
+    String? status,
+    String? clientName,
+    String? serviceName,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 50));
+    var result = List<RrhhAttendanceRecord>.from(_attendanceRecords);
+
+    if (query != null && query.trim().isNotEmpty) {
+      final q = query.trim().toLowerCase();
+      result = result.where((r) {
+        return r.employeeName.toLowerCase().contains(q) ||
+            r.employeeCode.toLowerCase().contains(q) ||
+            r.code.toLowerCase().contains(q) ||
+            r.clientName.toLowerCase().contains(q) ||
+            r.serviceName.toLowerCase().contains(q) ||
+            r.location.toLowerCase().contains(q);
+      }).toList();
+    }
+
+    if (dateRange != null) {
+      result = result.where((r) {
+        final d = DateTime(r.date.year, r.date.month, r.date.day);
+        final start = DateTime(dateRange.start.year, dateRange.start.month, dateRange.start.day);
+        final end = DateTime(dateRange.end.year, dateRange.end.month, dateRange.end.day);
+        return (d.isAfter(start) || d.isAtSameMomentAs(start)) &&
+            (d.isBefore(end) || d.isAtSameMomentAs(end));
+      }).toList();
+    }
+
+    if (status != null && status.isNotEmpty && status.toUpperCase() != 'TODOS') {
+      result = result.where((r) => r.status.toLowerCase() == status.toLowerCase()).toList();
+    }
+
+    if (clientName != null && clientName.isNotEmpty && clientName.toUpperCase() != 'TODOS') {
+      result = result.where((r) => r.clientName.toLowerCase() == clientName.toLowerCase()).toList();
+    }
+
+    if (serviceName != null && serviceName.isNotEmpty && serviceName.toUpperCase() != 'TODOS') {
+      result = result.where((r) => r.serviceName.toLowerCase() == serviceName.toLowerCase()).toList();
+    }
+
+    result.sort((a, b) {
+      final cmp = b.date.compareTo(a.date);
+      if (cmp != 0) return cmp;
+      return a.code.compareTo(b.code);
+    });
+
+    return result;
+  }
+
+  @override
+  Future<RrhhAttendanceRecord?> getAttendanceRecordById(int id) async {
+    await Future.delayed(const Duration(milliseconds: 30));
+    try {
+      return _attendanceRecords.firstWhere((r) => r.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<String> exportAttendanceReport({
+    String? query,
+    DateTimeRange? dateRange,
+    String? status,
+    String? clientName,
+  }) async {
+    final records = await listAttendanceRecords(
+      query: query,
+      dateRange: dateRange,
+      status: status,
+      clientName: clientName,
+    );
+
+    final buffer = StringBuffer();
+    buffer.writeln('CÓDIGO,FECHA,EMPLEADO_ID,EMPLEADO,CLIENTE,SERVICIO,SEDE,ENTRADA_PROG,ENTRADA_REAL,SALIDA_PROG,SALIDA_REAL,HORAS_TRABAJADAS,TARDANZA_MIN,ESTADO,OBSERVACIONES');
+    for (final r in records) {
+      String fmtTime(TimeOfDay t) => '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+      buffer.writeln(
+        '${r.code},'
+        '${r.date.toIso8601String().substring(0, 10)},'
+        '${r.employeeCode},'
+        '"${r.employeeName}",'
+        '"${r.clientName}",'
+        '"${r.serviceName}",'
+        '"${r.location}",'
+        '${fmtTime(r.scheduledEntry)},'
+        '${r.actualEntry != null ? fmtTime(r.actualEntry!) : "-"},'
+        '${fmtTime(r.scheduledExit)},'
+        '${r.actualExit != null ? fmtTime(r.actualExit!) : "-"},'
+        '${r.workedHours ?? 0.0},'
+        '${r.lateMinutes ?? 0},'
+        '${r.status.toUpperCase()},'
+        '"${r.incidents ?? ""}"',
+      );
+    }
+    return buffer.toString();
   }
 
   @override

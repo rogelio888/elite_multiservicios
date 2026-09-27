@@ -1,7 +1,6 @@
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
     hide RrhhLeaveRequest;
 import '../models/crm_client_ref_dto.dart';
-import '../models/ops_attendance_summary_dto.dart';
 import '../models/rrhh_applicant_companion.dart';
 import '../models/rrhh_applicant_summary_dto.dart';
 import '../models/rrhh_catalog_item.dart';
@@ -14,12 +13,15 @@ import '../models/rrhh_vacation.dart';
 import '../models/rrhh_disciplinary_record.dart';
 import '../models/rrhh_termination_record.dart';
 import '../models/rrhh_payroll_period.dart';
+import '../models/rrhh_attendance_record.dart';
+import 'package:flutter/material.dart';
 
 export '../models/rrhh_leave_request.dart';
 export '../models/rrhh_vacation.dart';
 export '../models/rrhh_disciplinary_record.dart';
 export '../models/rrhh_termination_record.dart';
 export '../models/rrhh_payroll_period.dart';
+export '../models/rrhh_attendance_record.dart';
 
 import 'rrhh_repository_mock.dart';
 
@@ -423,10 +425,21 @@ abstract class RrhhRepository {
   // ---------------------------------------------------------------------------
   // PANTALLA 13: Asistencia de Campo Consolidada (Recepción APK)
   // ---------------------------------------------------------------------------
-  Future<List<OpsAttendanceSummaryDto>> listAttendanceRecords(
-    DateTime date, {
+  Future<List<RrhhAttendanceRecord>> listAttendanceRecords({
+    String? query,
+    DateTimeRange? dateRange,
     String? status,
-    String? area,
+    String? clientName,
+    String? serviceName,
+  });
+
+  Future<RrhhAttendanceRecord?> getAttendanceRecordById(int id);
+
+  Future<String> exportAttendanceReport({
+    String? query,
+    DateTimeRange? dateRange,
+    String? status,
+    String? clientName,
   });
 
   // ---------------------------------------------------------------------------
