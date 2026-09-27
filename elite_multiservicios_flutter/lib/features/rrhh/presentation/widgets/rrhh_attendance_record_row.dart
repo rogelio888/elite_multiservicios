@@ -57,13 +57,13 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
               bottom: BorderSide(color: Color(0xFF1E293B), width: 1),
             ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // 1. FECHA (flex: 10)
+              // 1. FECHA (flex: 9)
               Expanded(
-                flex: 10,
+                flex: 9,
                 child: Text(
                   dateStr,
                   style: GoogleFonts.inter(
@@ -152,9 +152,9 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
                 ),
               ),
 
-              // 4. SEDE (flex: 12)
+              // 4. SEDE (flex: 13)
               Expanded(
-                flex: 12,
+                flex: 13,
                 child: Tooltip(
                   message: r.location,
                   child: Text(
@@ -169,9 +169,9 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
                 ),
               ),
 
-              // 5. ENTRADA (PROG / REAL) (flex: 10)
+              // 5. ENTRADA (PROG / REAL) (flex: 9)
               Expanded(
-                flex: 10,
+                flex: 9,
                 child: RichText(
                   text: TextSpan(
                     style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF94A3B8)),
@@ -189,9 +189,9 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
                 ),
               ),
 
-              // 6. SALIDA (PROG / REAL) (flex: 10)
+              // 6. SALIDA (PROG / REAL) (flex: 9)
               Expanded(
-                flex: 10,
+                flex: 9,
                 child: RichText(
                   text: TextSpan(
                     style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF94A3B8)),
@@ -209,9 +209,9 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
                 ),
               ),
 
-              // 7. HORAS (flex: 8)
+              // 7. HORAS (flex: 7)
               Expanded(
-                flex: 8,
+                flex: 7,
                 child: Text(
                   r.workedHours != null && r.workedHours! > 0 ? '${r.workedHours!.toStringAsFixed(1)}h' : '—',
                   style: GoogleFonts.inter(
@@ -243,9 +243,9 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
                 ),
               ),
 
-              // 10. OBSERVACIONES (flex: 16)
+              // 10. OBSERVACIONES (flex: 18)
               Expanded(
-                flex: 16,
+                flex: 18,
                 child: Tooltip(
                   message: r.incidents ?? 'Sin observaciones',
                   child: Text(
@@ -260,15 +260,15 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
                 ),
               ),
 
-              // 11. ACCIONES (flex: 8)
+              // 11. ACCIONES (flex: 7)
               Expanded(
-                flex: 8,
+                flex: 7,
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: OutlinedButton(
                     onPressed: widget.onTap,
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       minimumSize: Size.zero,
                       side: const BorderSide(color: Color(0xFF334155)),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
@@ -276,12 +276,12 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.visibility_outlined, size: 13, color: Color(0xFF94A3B8)),
+                        const Icon(Icons.visibility_outlined, size: 12, color: Color(0xFF94A3B8)),
                         const SizedBox(width: 4),
                         Text(
                           'Ver',
                           style: GoogleFonts.inter(
-                            fontSize: 11.5,
+                            fontSize: 11,
                             fontWeight: FontWeight.w500,
                             color: const Color(0xFFCBD5E1),
                           ),

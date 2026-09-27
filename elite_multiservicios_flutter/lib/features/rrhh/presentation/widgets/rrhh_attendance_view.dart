@@ -206,21 +206,21 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 1. Header Compacto
                 _buildHeader(),
-                const SizedBox(height: 18),
+                const SizedBox(height: 14),
 
                 // 2. Panel de KPIs
                 RrhhAttendanceKpis(records: _records),
-                const SizedBox(height: 18),
+                const SizedBox(height: 14),
 
                 // 3. Barra de Filtros
                 _buildFiltersBar(),
-                const SizedBox(height: 18),
+                const SizedBox(height: 14),
 
                 // 4. Tabla de Registros
                 _buildTableCard(),
@@ -267,7 +267,7 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                   Text(
                     'Asistencia de Campo',
                     style: GoogleFonts.inter(
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFFF8FAFC),
                       letterSpacing: -0.3,
@@ -275,7 +275,7 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
                     decoration: BoxDecoration(
                       color: const Color(0xFF334155),
                       borderRadius: BorderRadius.circular(4),
@@ -283,7 +283,7 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                     child: Text(
                       'Solo lectura',
                       style: GoogleFonts.inter(
-                        fontSize: 10.5,
+                        fontSize: 9.5,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF94A3B8),
                       ),
@@ -295,7 +295,7 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
               Text(
                 'Consulta de asistencia registrada por Operaciones/APK (solo lectura)',
                 style: GoogleFonts.inter(
-                  fontSize: 12,
+                  fontSize: 11,
                   color: const Color(0xFF64748B),
                 ),
               ),
@@ -304,19 +304,19 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
         ),
         OutlinedButton.icon(
           onPressed: _handleExportReport,
-          icon: const Icon(Icons.download_rounded, size: 15, color: Color(0xFF94A3B8)),
+          icon: const Icon(Icons.download_rounded, size: 14, color: Color(0xFF94A3B8)),
           label: Text(
             'Exportar reporte',
             style: GoogleFonts.inter(
-              fontSize: 12.5,
+              fontSize: 11.5,
               fontWeight: FontWeight.w500,
               color: const Color(0xFFCBD5E1),
             ),
           ),
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Color(0xFF334155)),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
             backgroundColor: const Color(0xFF0D111C),
           ),
         ),
@@ -598,128 +598,133 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
 
   Widget _buildTableCard() {
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: const Color(0xFF0D111C),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: const Color(0xFF1E293B)),
       ),
       clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Scroll horizontal para pantallas menores a 1180px
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 1180),
-              child: SizedBox(
-                width: 1180,
-                child: Column(
-                  children: [
-                    // Header de columnas
-                    _buildTableHeader(),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          const minWidth = 1180.0;
+          final tableWidth = constraints.maxWidth > minWidth ? constraints.maxWidth : minWidth;
 
-                    // Filas de datos
-                    if (_isLoading)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 40),
-                        child: Center(
-                          child: CircularProgressIndicator(color: Color(0xFF2563EB)),
-                        ),
-                      )
-                    else if (_errorMessage != null)
-                      Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: RrhhErrorState(
-                          errorMessage: _errorMessage!,
-                          onRetry: _loadRecords,
-                        ),
-                      )
-                    else if (_records.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 48),
-                        child: Center(
-                          child: Column(
-                            children: [
-                              const Icon(Icons.inbox_outlined, size: 40, color: Color(0xFF64748B)),
-                              const SizedBox(height: 10),
-                              Text(
-                                'No se encontraron registros de asistencia de campo',
-                                style: GoogleFonts.inter(
-                                  fontSize: 13.5,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xFF94A3B8),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Intenta modificar los filtros de búsqueda o el rango de fechas.',
-                                style: GoogleFonts.inter(
-                                  fontSize: 11.5,
-                                  color: const Color(0xFF64748B),
-                                ),
-                              ),
-                            ],
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Scroll horizontal solo si la pantalla es menor a 1180px
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: tableWidth,
+                  child: Column(
+                    children: [
+                      // Header de columnas
+                      _buildTableHeader(),
+
+                      // Filas de datos
+                      if (_isLoading)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 40),
+                          child: Center(
+                            child: CircularProgressIndicator(color: Color(0xFF2563EB)),
                           ),
+                        )
+                      else if (_errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: RrhhErrorState(
+                            errorMessage: _errorMessage!,
+                            onRetry: _loadRecords,
+                          ),
+                        )
+                      else if (_records.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 48),
+                          child: Center(
+                            child: Column(
+                              children: [
+                                const Icon(Icons.inbox_outlined, size: 40, color: Color(0xFF64748B)),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'No se encontraron registros de asistencia de campo',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xFF94A3B8),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Intenta modificar los filtros de búsqueda o el rango de fechas.',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11.5,
+                                    color: const Color(0xFF64748B),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      else
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _records.length,
+                          itemBuilder: (context, index) {
+                            final item = _records[index];
+                            return RrhhAttendanceRecordRow(
+                              record: item,
+                              isEven: index.isEven,
+                              onTap: () {
+                                setState(() => _selectedRecord = item);
+                              },
+                            );
+                          },
                         ),
-                      )
-                    else
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _records.length,
-                        itemBuilder: (context, index) {
-                          final item = _records[index];
-                          return RrhhAttendanceRecordRow(
-                            record: item,
-                            isEven: index.isEven,
-                            onTap: () {
-                              setState(() => _selectedRecord = item);
-                            },
-                          );
-                        },
+                    ],
+                  ),
+                ),
+              ),
+
+              // Footer de la tabla
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF0D111C),
+                  border: Border(top: BorderSide(color: Color(0xFF1E293B))),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Mostrando ${_records.length} jornadas consolidadas desde la APK móvil',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: const Color(0xFF64748B),
                       ),
+                    ),
+                    Text(
+                      'Sincronización en tiempo real · Operaciones',
+                      style: GoogleFonts.inter(
+                        fontSize: 10.5,
+                        color: const Color(0xFF475569),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-          ),
-
-          // Footer de la tabla
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: const BoxDecoration(
-              color: Color(0xFF0D111C),
-              border: Border(top: BorderSide(color: Color(0xFF1E293B))),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Mostrando ${_records.length} jornadas consolidadas desde la APK móvil',
-                  style: GoogleFonts.inter(
-                    fontSize: 11.5,
-                    color: const Color(0xFF64748B),
-                  ),
-                ),
-                Text(
-                  'Sincronización en tiempo real · Operaciones',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: const Color(0xFF475569),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
 
   Widget _buildTableHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: const BoxDecoration(
         color: Color(0xFF111726),
         border: Border(
@@ -728,17 +733,17 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
       ),
       child: Row(
         children: [
-          _buildColumnHeader('FECHA', flex: 10),
+          _buildColumnHeader('FECHA', flex: 9),
           _buildColumnHeader('EMPLEADO', flex: 20),
           _buildColumnHeader('CLIENTE / SERVICIO', flex: 18),
-          _buildColumnHeader('SEDE', flex: 12),
-          _buildColumnHeader('ENTRADA (P/R)', flex: 10),
-          _buildColumnHeader('SALIDA (P/R)', flex: 10),
-          _buildColumnHeader('HORAS', flex: 8),
+          _buildColumnHeader('SEDE', flex: 13),
+          _buildColumnHeader('ENTRADA (P/R)', flex: 9),
+          _buildColumnHeader('SALIDA (P/R)', flex: 9),
+          _buildColumnHeader('HORAS', flex: 7),
           _buildColumnHeader('TARDANZA', flex: 11),
           _buildColumnHeader('ESTADO', flex: 11),
-          _buildColumnHeader('OBSERVACIONES', flex: 16),
-          _buildColumnHeader('ACCIONES', flex: 8, alignment: Alignment.centerRight),
+          _buildColumnHeader('OBSERVACIONES', flex: 18),
+          _buildColumnHeader('ACCIONES', flex: 7, alignment: Alignment.centerRight),
         ],
       ),
     );
@@ -756,10 +761,10 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
         child: Text(
           label,
           style: GoogleFonts.inter(
-            fontSize: 10.5,
+            fontSize: 9.5,
             fontWeight: FontWeight.w700,
             color: const Color(0xFF64748B),
-            letterSpacing: 0.5,
+            letterSpacing: 0.4,
           ),
         ),
       ),

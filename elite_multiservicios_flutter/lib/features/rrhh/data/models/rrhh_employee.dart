@@ -1,60 +1,14 @@
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
-    show RrhhEmployeeBonus, RrhhEmployeeDeduction;
+    show RrhhEmployeeBonus, RrhhEmployeeDeduction, RrhhTimelineEvent;
 
 export 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
-    show RrhhEmployeeBonus, RrhhEmployeeDeduction, RrhhEmployeeContractData;
+    show
+        RrhhEmployeeBonus,
+        RrhhEmployeeDeduction,
+        RrhhEmployeeContractData,
+        RrhhTimelineEvent;
 
-/// Evento o hito en la línea de tiempo del colaborador
-class RrhhTimelineEvent {
-  final String id;
-  final DateTime date;
-  final String title;
-  final String description;
-  final String
-  category; // 'CONTRATACION', 'ASIGNACION', 'HORARIO', 'PERMISO', 'INCIDENCIA', 'DESVINCULACION'
-  final String registeredBy;
-  final DateTime createdAt;
-
-  const RrhhTimelineEvent({
-    required this.id,
-    required this.date,
-    required this.title,
-    required this.description,
-    required this.category,
-    required this.registeredBy,
-    required this.createdAt,
-  });
-
-  factory RrhhTimelineEvent.fromJson(Map<String, dynamic> json) {
-    final now = DateTime.now();
-    final parsedDate = json['date'] != null
-        ? DateTime.tryParse(json['date'] as String) ?? now
-        : now;
-    return RrhhTimelineEvent(
-      id: json['id'] as String? ?? '',
-      date: parsedDate,
-      title: json['title'] as String? ?? '',
-      description: json['description'] as String? ?? '',
-      category: json['category'] as String? ?? 'CONTRATACION',
-      registeredBy: json['registeredBy'] as String? ?? 'RRHH',
-      createdAt: json['createdAt'] != null
-          ? DateTime.tryParse(json['createdAt'] as String) ?? parsedDate
-          : parsedDate,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'date': date.toIso8601String(),
-      'title': title,
-      'description': description,
-      'category': category,
-      'registeredBy': registeredBy,
-      'createdAt': createdAt.toIso8601String(),
-    };
-  }
-}
+export 'rrhh_timeline_event.dart';
 
 /// Elemento o ítem del checklist documental del empleado
 class RrhhEmployeeDocumentItem {

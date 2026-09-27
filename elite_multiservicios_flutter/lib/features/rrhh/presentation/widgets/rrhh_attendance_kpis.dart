@@ -88,23 +88,23 @@ class RrhhAttendanceKpis extends StatelessWidget {
   }) {
     return Container(
       width: width,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: const Color(0xFF0D111C),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: const Color(0xFF1E293B)),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: iconColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(6),
             ),
-            child: Icon(icon, color: iconColor, size: 22),
+            child: Icon(icon, color: iconColor, size: 20),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,21 +113,21 @@ class RrhhAttendanceKpis extends StatelessWidget {
                 Text(
                   title,
                   style: GoogleFonts.inter(
-                    fontSize: 11.5,
+                    fontSize: 11,
                     fontWeight: FontWeight.w500,
                     color: const Color(0xFF94A3B8),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 2),
                 Text(
                   value,
                   style: GoogleFonts.inter(
-                    fontSize: 17,
+                    fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
-                    letterSpacing: -0.4,
+                    letterSpacing: -0.3,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -136,7 +136,7 @@ class RrhhAttendanceKpis extends StatelessWidget {
                 Text(
                   subtitle,
                   style: GoogleFonts.inter(
-                    fontSize: 10.5,
+                    fontSize: 10,
                     color: const Color(0xFF64748B),
                   ),
                   maxLines: 1,

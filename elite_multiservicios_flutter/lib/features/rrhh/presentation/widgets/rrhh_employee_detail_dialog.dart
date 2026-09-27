@@ -96,7 +96,7 @@ class _RrhhEmployeeDetailDialogState extends State<RrhhEmployeeDetailDialog>
         repo.getEmployeeById(widget.employeeId),
         repo.listDocuments(widget.employeeId),
         repo.getCurrentAssignment(widget.employeeId),
-        repo.listTimelineEvents(widget.employeeId),
+        repo.listTimelineEvents(employeeId: widget.employeeId),
       ]);
 
       if (mounted) {

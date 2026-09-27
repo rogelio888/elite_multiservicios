@@ -15,6 +15,7 @@ import 'presentation/widgets/rrhh_leave_requests_view.dart';
 import 'presentation/widgets/rrhh_vacations_view.dart';
 import 'presentation/widgets/rrhh_terminations_view.dart';
 import 'presentation/widgets/rrhh_payroll_view.dart';
+import 'presentation/widgets/rrhh_audit_log_view.dart';
 
 /// Rutas oficiales para el módulo RRHH.
 /// Estructura organizada en 7 entradas de menú superior con tabs internos
@@ -54,6 +55,7 @@ class RrhhRoutes {
   static const String novedadesNominaAlt = '/rrhh/novedades/nomina';
   static const String asistenciaCampo = '/rrhh/asistencia-campo';
   static const String bitacora = '/rrhh/bitacora';
+  static const String reportesBitacora = '/rrhh/reportes/bitacora';
 
   /// Rutas canónicas del acordeón lateral
   static const List<String> topLevelRoutes = [
@@ -88,6 +90,7 @@ class RrhhRoutes {
     novedadesNominaAlt,
     asistenciaCampo,
     bitacora,
+    reportesBitacora,
     catalogos,
   ];
 
@@ -198,13 +201,8 @@ class RrhhRoutes {
       case asistenciaCampo:
         return const RrhhAttendanceView();
       case bitacora:
-        return const RrhhPlaceholderView(
-          title: '14. Bitácora / Auditoría de Movimientos',
-          blockName: 'Bloque 4',
-          description:
-              'Trazabilidad inmutable de todas las novedades laborales del sistema (ascensos, transferencias de área, ajustes salariales y bajas).',
-          icon: Icons.history_edu_outlined,
-        );
+      case reportesBitacora:
+        return const RrhhAuditLogView();
       case catalogos:
         return const RrhhCatalogsView();
       default:

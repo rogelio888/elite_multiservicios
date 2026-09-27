@@ -14,6 +14,8 @@ import '../models/rrhh_disciplinary_record.dart';
 import '../models/rrhh_termination_record.dart';
 import '../models/rrhh_payroll_period.dart';
 import '../models/rrhh_attendance_record.dart';
+
+export '../models/rrhh_timeline_event.dart';
 import 'package:flutter/material.dart';
 
 export '../models/rrhh_leave_request.dart';
@@ -59,8 +61,14 @@ abstract class RrhhRepository {
   // ---------------------------------------------------------------------------
   Future<RrhhEmployee> getEmployeeById(int id);
   Future<List<RrhhEmployeeDocument>> listDocuments(int employeeId);
-  Future<List<RrhhTimelineEvent>> listTimelineEvents(int employeeId);
-  Future<RrhhTimelineEvent> addTimelineEvent(RrhhTimelineEvent event);
+  Future<List<RrhhTimelineEvent>> listTimelineEvents({
+    int? employeeId,
+    String? category,
+    String? search,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? user,
+  });
   /// Asignación activa reportada por Operaciones (Solo Lectura desde Operaciones)
   Future<RrhhAssignment?> getCurrentAssignment(int employeeId);
   Future<RrhhEmployee> updateEmployee(RrhhEmployee employee);
@@ -443,8 +451,12 @@ abstract class RrhhRepository {
   });
 
   // ---------------------------------------------------------------------------
-  // PANTALLA 14: Bitácora de Movimientos y Auditoría
+  // PANTALLA 14: Bitácora de Movimientos y Auditoría (Trazabilidad Inmutable)
   // ---------------------------------------------------------------------------
+  Future<RrhhTimelineEvent?> getTimelineEventById(int id);
+  List<String> listTimelineCategories();
+  List<String> listActiveUsers();
+  Future<RrhhTimelineEvent> addTimelineEvent(RrhhTimelineEvent event);
   Future<List<RrhhMovementHistory>> listMovements({
     String? movementType,
     int? employeeId,

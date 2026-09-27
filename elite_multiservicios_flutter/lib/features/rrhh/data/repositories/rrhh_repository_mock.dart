@@ -48,6 +48,7 @@ class RrhhRepositoryMock implements RrhhRepository {
   late List<RrhhMovementHistory> _movements;
   late List<RrhhAttendanceRecord> _attendanceRecords;
   late List<CrmClientRefDto> _clientRefs;
+  late List<RrhhTimelineEvent> _timelineEvents;
 
   void _reset() {
     _areas = RrhhMockDataset.initialAreas();
@@ -72,6 +73,7 @@ class RrhhRepositoryMock implements RrhhRepository {
     _payrollPeriods = RrhhMockDataset.initialPayrollPeriods();
     _payrollItems = RrhhMockDataset.initialPayrollItems();
     _movements = RrhhMockDataset.initialMovements();
+    _timelineEvents = RrhhMockDataset.initialTimelineEvents();
     _dossiers = _buildInitialDossiers();
 
     // Sincronizar empleado de BAJA-001 (Fernando Roca, id: 18) a estado BAJA
@@ -709,28 +711,88 @@ class RrhhRepositoryMock implements RrhhRepository {
     ];
   }
 
-  final Map<int, List<RrhhTimelineEvent>> _mockTimelineEvents = {};
+  @override
+  Future<List<RrhhTimelineEvent>> listTimelineEvents({
+    int? employeeId,
+    String? category,
+    String? search,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? user,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 30));
+    final result = _timelineEvents.where((e) {
+      if (employeeId != null && e.employeeId != employeeId) return false;
+      if (category != null &&
+          category.isNotEmpty &&
+          category.toLowerCase() != 'todas') {
+        if (e.category.toLowerCase() != category.toLowerCase()) return false;
+      }
+      if (user != null && user.isNotEmpty && user.toLowerCase() != 'todos') {
+        if (e.registeredBy.toLowerCase() != user.toLowerCase()) return false;
+      }
+      if (startDate != null && e.date.isBefore(startDate)) return false;
+      if (endDate != null) {
+        final inclusiveEnd =
+            DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
+        if (e.date.isAfter(inclusiveEnd)) return false;
+      }
+      if (search != null && search.trim().isNotEmpty) {
+        final q = search.trim().toLowerCase();
+        final matchCode =
+            'EVT-${(e.id ?? 0).toString().padLeft(6, '0')}'.toLowerCase().contains(q);
+        final matchTitle = e.title.toLowerCase().contains(q);
+        final matchDesc = e.description.toLowerCase().contains(q);
+        final matchUser = e.registeredBy.toLowerCase().contains(q);
+        final matchEmpName = (e.employeeName ?? '').toLowerCase().contains(q);
+        final matchEmpCode = (e.employeeCode ?? '').toLowerCase().contains(q);
+        final matchSource = (e.sourceCode ?? '').toLowerCase().contains(q);
+        if (!matchCode &&
+            !matchTitle &&
+            !matchDesc &&
+            !matchUser &&
+            !matchEmpName &&
+            !matchEmpCode &&
+            !matchSource) {
+          return false;
+        }
+      }
+      return true;
+    }).toList();
+    result.sort((a, b) => b.date.compareTo(a.date));
+    return result;
+  }
 
   @override
-  Future<List<RrhhTimelineEvent>> listTimelineEvents(int employeeId) async {
-    if (!_mockTimelineEvents.containsKey(employeeId)) {
-      final emp = await getEmployeeById(employeeId);
-      _mockTimelineEvents[employeeId] = [
-        RrhhTimelineEvent(id: 1, employeeId: employeeId, date: emp.realStartDate, title: 'Alta Institucional', description: 'Incorporación a nómina de ${emp.area}', category: 'CONTRATACION', registeredBy: 'Lic. Laura Mendoza', createdAt: emp.realStartDate),
-        RrhhTimelineEvent(id: 2, employeeId: employeeId, date: DateTime(2026, 9, 23), title: 'Actualización Salarial', description: 'Ajuste contractual autorizado por Gerencia', category: 'HORARIO', registeredBy: 'Gerencia General', createdAt: DateTime(2026, 9, 23)),
-      ];
+  Future<RrhhTimelineEvent?> getTimelineEventById(int id) async {
+    await Future.delayed(const Duration(milliseconds: 20));
+    try {
+      return _timelineEvents.firstWhere((e) => e.id == id);
+    } catch (_) {
+      return null;
     }
-    return List.from(_mockTimelineEvents[employeeId]!);
+  }
+
+  @override
+  List<String> listTimelineCategories() {
+    return RrhhTimelineCategory.all;
+  }
+
+  @override
+  List<String> listActiveUsers() {
+    final users = _timelineEvents.map((e) => e.registeredBy).toSet().toList();
+    users.sort();
+    return users;
   }
 
   @override
   Future<RrhhTimelineEvent> addTimelineEvent(RrhhTimelineEvent event) async {
-    await listTimelineEvents(event.employeeId);
-    final list = _mockTimelineEvents[event.employeeId] ?? [];
-    final newEvent = event.copyWith(id: list.length + 1);
-    list.insert(0, newEvent);
-    _mockTimelineEvents[event.employeeId] = list;
-    return newEvent;
+    final nextId = _timelineEvents.isEmpty
+        ? 1
+        : _timelineEvents.map((e) => (e.id ?? 0)).reduce((a, b) => a > b ? a : b) + 1;
+    final saved = event.copyWith(id: nextId);
+    _timelineEvents.insert(0, saved);
+    return saved;
   }
 
   @override

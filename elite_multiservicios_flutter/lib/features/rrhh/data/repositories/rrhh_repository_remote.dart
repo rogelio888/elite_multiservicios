@@ -52,8 +52,36 @@ class RrhhRepositoryRemote implements RrhhRepository {
   }
 
   @override
-  Future<List<RrhhTimelineEvent>> listTimelineEvents(int employeeId) async {
+  Future<List<RrhhTimelineEvent>> listTimelineEvents({
+    int? employeeId,
+    String? category,
+    String? search,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? user,
+  }) async {
     throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  Future<RrhhTimelineEvent?> getTimelineEventById(int id) async {
+    throw UnimplementedError(_pendingMsg);
+  }
+
+  @override
+  List<String> listTimelineCategories() {
+    return RrhhTimelineCategory.all;
+  }
+
+  @override
+  List<String> listActiveUsers() {
+    return const [
+      'Lic. Laura Mendoza',
+      'Ing. Carlos Ramos',
+      'Dra. Mariana Flores',
+      'Lic. Roberto Torrez',
+      'Admin RRHH',
+    ];
   }
 
   @override
