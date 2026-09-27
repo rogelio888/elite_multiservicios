@@ -138,16 +138,18 @@ Widget buildHireDocumentCheckTile({
   bool isWarningBorder = false,
   bool isOptionalBadge = false,
 }) {
-  return Container(
-    decoration: BoxDecoration(
-      color: const Color(0xFF111827),
+  return Material(
+    color: const Color(0xFF111827),
+    borderRadius: BorderRadius.circular(8),
+    shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(8),
-      border: Border.all(
+      side: BorderSide(
         color: isWarningBorder
             ? const Color(0xFFDC2626)
             : (value ? const Color(0xFF10B981).withValues(alpha: 0.3) : const Color(0xFF1E293B)),
       ),
     ),
+    clipBehavior: Clip.antiAlias,
     child: CheckboxListTile(
       value: value,
       onChanged: onChanged,

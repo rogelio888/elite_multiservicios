@@ -245,27 +245,31 @@ class _RrhhRejectionDialogState extends State<RrhhRejectionDialog> {
                 const SizedBox(height: 14),
 
                 // Checkbox elegible para rehire
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B).withValues(alpha: 0.5),
+                Material(
+                  color: const Color(0xFF1E293B).withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(8),
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFF334155)),
+                    side: const BorderSide(color: Color(0xFF334155)),
                   ),
-                  child: CheckboxListTile(
-                    value: _isEligibleForRehire,
-                    contentPadding: EdgeInsets.zero,
-                    dense: true,
-                    activeColor: const Color(0xFF0284C7),
-                    title: Text(
-                      '¿Es elegible para re-postular en futuras convocatorias?',
-                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white),
+                  clipBehavior: Clip.antiAlias,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    child: CheckboxListTile(
+                      value: _isEligibleForRehire,
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      activeColor: const Color(0xFF0284C7),
+                      title: Text(
+                        '¿Es elegible para re-postular en futuras convocatorias?',
+                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white),
+                      ),
+                      subtitle: Text(
+                        'Si se desmarca, se emitirá una alerta preventiva si vuelve a postular.',
+                        style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B)),
+                      ),
+                      onChanged: (val) => setState(() => _isEligibleForRehire = val ?? true),
                     ),
-                    subtitle: Text(
-                      'Si se desmarca, se emitirá una alerta preventiva si vuelve a postular.',
-                      style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B)),
-                    ),
-                    onChanged: (val) => setState(() => _isEligibleForRehire = val ?? true),
                   ),
                 ),
 

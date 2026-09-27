@@ -253,12 +253,14 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
 
                           // Disponibilidades operativas
                           _sectionTitle('CONDICIONES OPERATIVAS DECLARADAS'),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1E293B),
+                          Material(
+                            color: const Color(0xFF1E293B),
+                            borderRadius: BorderRadius.circular(8),
+                            shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: const Color(0xFF334155)),
+                              side: const BorderSide(color: Color(0xFF334155)),
                             ),
+                            clipBehavior: Clip.antiAlias,
                             child: Column(
                               children: [
                                 CheckboxListTile(

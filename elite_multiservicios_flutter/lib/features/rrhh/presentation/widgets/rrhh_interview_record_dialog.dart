@@ -276,14 +276,17 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
 
                         // Entrevistadores (Multi-select)
                         _label('ENTREVISTADOR(ES) PARTICIPANTES *'),
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1E293B),
+                        Material(
+                          color: const Color(0xFF1E293B),
+                          borderRadius: BorderRadius.circular(8),
+                          shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: const Color(0xFF334155)),
+                            side: const BorderSide(color: Color(0xFF334155)),
                           ),
-                          child: Column(
+                          clipBehavior: Clip.antiAlias,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
                             children: [
                               Row(
                                 children: [
@@ -338,6 +341,7 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
                             ],
                           ),
                         ),
+                      ),
                         const SizedBox(height: 14),
 
                         // Notas de la entrevista

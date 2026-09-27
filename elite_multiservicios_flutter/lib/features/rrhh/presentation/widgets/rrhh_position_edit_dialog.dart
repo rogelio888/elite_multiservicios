@@ -249,8 +249,14 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
   Widget _buildReqsField() => TextFormField(controller: _reqsCtrl, maxLines: 2, style: GoogleFonts.inter(color: Colors.white, fontSize: 13), decoration: _inputDeco('Requisitos / Perfil (Opcional)', 'Experiencia, licencias'));
 
   Widget _buildActiveSwitch() {
-    return Container(
-      decoration: BoxDecoration(color: const Color(0xFF111C30), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFF1E293B))),
+    return Material(
+      color: const Color(0xFF111C30),
+      borderRadius: BorderRadius.circular(8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: Color(0xFF1E293B)),
+      ),
+      clipBehavior: Clip.antiAlias,
       child: SwitchListTile(
         title: Text('Estado del Puesto', style: GoogleFonts.inter(fontSize: 13, color: Colors.white, fontWeight: FontWeight.w600)),
         subtitle: Text(_isActive ? 'Puesto activo para contrataciones' : 'Puesto inactivo / congelado', style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF94A3B8))),

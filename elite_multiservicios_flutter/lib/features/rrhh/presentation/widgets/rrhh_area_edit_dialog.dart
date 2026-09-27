@@ -236,8 +236,14 @@ class _RrhhAreaEditDialogState extends State<RrhhAreaEditDialog> {
   }
 
   Widget _buildActiveSwitch() {
-    return Container(
-      decoration: BoxDecoration(color: const Color(0xFF111C30), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFF1E293B))),
+    return Material(
+      color: const Color(0xFF111C30),
+      borderRadius: BorderRadius.circular(8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: Color(0xFF1E293B)),
+      ),
+      clipBehavior: Clip.antiAlias,
       child: SwitchListTile(
         title: Text('Estado Operativo', style: GoogleFonts.inter(fontSize: 13, color: Colors.white, fontWeight: FontWeight.w600)),
         subtitle: Text(_isActive ? 'Área activa para asignaciones' : 'Área desactivada (Inactiva)', style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF94A3B8))),
