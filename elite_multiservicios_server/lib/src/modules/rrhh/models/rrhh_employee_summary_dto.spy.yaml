@@ -1,0 +1,16 @@
+### DTO optimizado para el Directorio y tablas de personal.
+class: RrhhEmployeeSummaryDto
+fields:
+  id: int
+  code: String
+  fullName: String
+  identityCard: String
+  phone: String
+  employeeType: String
+  area: String?
+  position: String?
+  workplace: String?
+  status: String
+  availabilityStatus: String
+  hireDate: DateTime
+  photoUrl: String?

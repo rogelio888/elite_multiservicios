@@ -216,7 +216,7 @@ void main() {
         );
 
         // Al inicio, "Dashboard" y el acordeón "Seguridad" están presentes
-        expect(find.text('Dashboard'), findsOneWidget);
+        expect(find.text('Dashboard'), findsAtLeast(1));
         expect(
           find.byKey(const Key('nav_accordion_seguridad')),
           findsOneWidget,

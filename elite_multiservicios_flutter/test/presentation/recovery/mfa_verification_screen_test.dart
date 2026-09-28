@@ -156,6 +156,7 @@ void main() {
                       challengeId: 'test-challenge-123',
                       emailHint: 'a***n@elitemultiservicios.com',
                       rememberMe: false,
+                      onMfaSuccess: () => Navigator.of(context).pop(true),
                     ),
                   ),
                 );

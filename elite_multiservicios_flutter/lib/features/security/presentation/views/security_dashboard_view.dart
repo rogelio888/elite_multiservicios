@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import '../../../../main.dart' as app;
-import '../../../rrhh/data/services/rrhh_state_service.dart';
+import '../../../rrhh/data/repositories/rrhh_repository.dart';
 import '../../services/security_api_service.dart';
 import '../../models/dashboard_operational_metrics.dart';
 import '../widgets/charts/operational_pipeline_bar_chart.dart';
@@ -83,7 +83,7 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView> {
       final customerRes = results[3] as CrmCustomerMetricsResponse?;
       final agendaRes = results[4] as CrmAgendaMetricsResponse?;
 
-      final rrhh = RrhhStateService();
+      final rrhhMetrics = await RrhhRepository.current.getDashboardMetrics();
       const int latency = 14;
 
       if (mounted) {
@@ -94,14 +94,15 @@ class _SecurityDashboardViewState extends State<SecurityDashboardView> {
             pipeline: pipelineRes,
             customers: customerRes,
             agenda: agendaRes,
-            activeEmployees: rrhh.activeEmployeesCount,
-            fieldEmployees: rrhh.fieldEmployeesCount,
-            officeEmployees: rrhh.officeEmployeesCount,
+            activeEmployees: rrhhMetrics.activeEmployeesCount,
+            fieldEmployees: rrhhMetrics.fieldEmployeesCount,
+            officeEmployees: rrhhMetrics.officeEmployeesCount,
             totalUsers: secMetrics.totalUsers,
             activeSessions: secMetrics.activeSessions,
             totalAuditLogs: secMetrics.totalAuditLogs,
             dbLatencyMs: latency,
           );
+
           _isLoading = false;
         });
       }

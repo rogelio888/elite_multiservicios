@@ -1,730 +1,924 @@
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../data/models/rrhh_employee.dart';
-import '../../data/services/rrhh_state_service.dart';
 
-/// Diálogo completo para editar datos del colaborador y completar su expediente físico
+import '../../../security/services/auth_service.dart';
+import '../../data/models/rrhh_catalog_item.dart';
+import '../../data/repositories/rrhh_repository.dart';
+import 'rrhh_snack_bar.dart';
+
+/// Modal para la edición de datos MUTABLES del colaborador (Feature 1).
+/// No permite alterar campos contractuales (éstos se gestionan con Modificar Datos Contractuales).
 class RrhhEditEmployeeDialog extends StatefulWidget {
   final RrhhEmployee employee;
 
-  const RrhhEditEmployeeDialog({super.key, required this.employee});
+  const RrhhEditEmployeeDialog({
+    super.key,
+    required this.employee,
+  });
+
+  static Future<bool?> show(BuildContext context, RrhhEmployee employee) {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => RrhhEditEmployeeDialog(employee: employee),
+    );
+  }
 
   @override
   State<RrhhEditEmployeeDialog> createState() => _RrhhEditEmployeeDialogState();
 }
 
 class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
-  final _stateService = RrhhStateService();
+  final _formKey = GlobalKey<FormState>();
+  bool _isSaving = false;
+  bool _isLoadingCatalogs = true;
 
-  // Controladores de texto
-  late TextEditingController _nameCtrl;
-  late TextEditingController _ciCtrl;
-  late TextEditingController _phoneCtrl;
-  late TextEditingController _addressCtrl;
-  late TextEditingController _refPersonCtrl;
-  late TextEditingController _refPhoneCtrl;
+  // Catálogos
+  List<RrhhCatalogItem> _afps = [];
+  List<RrhhCatalogItem> _healthInsurances = [];
+  List<RrhhCatalogItem> _banks = [];
 
-  // Laboral
-  late TextEditingController _positionCtrl;
-  late TextEditingController _workplaceCtrl;
-  late TextEditingController _salaryCtrl;
-  late String _status;
-  late String _employeeType;
+  // Controladores Bloque A: Datos Personales
+  late final TextEditingController _phoneController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _addressController;
+  String? _maritalStatus;
+  late final TextEditingController _childrenCountController;
 
-  // Documentos Físicos del Expediente
-  late bool _hasCiCopy;
-  late bool _hasUtilityBill;
-  late bool _hasHomeSketch;
-  late bool _hasFelccRecord;
-  late bool _hasPhoto3x4;
-  late bool _hasSusInsurance;
+  // Controladores Bloque B: Contacto de Emergencia
+  late final TextEditingController _emergencyNameController;
+  late final TextEditingController _emergencyPhoneController;
+  String? _emergencyRelation;
 
-  int _currentTab = 0;
+  // Controladores Bloque C: Seguridad Social
+  String? _selectedAfpName;
+  late final TextEditingController _afpNumberController;
+  String? _selectedHealthInsurance;
+
+  // Controladores Bloque D: Datos Bancarios
+  String? _selectedBankName;
+  String _accountType = 'Ahorro';
+  late final TextEditingController _accountNumberController;
+
+  // Controladores Bloque E: Notas Internas
+  late final TextEditingController _notesController;
+
+  final List<String> _maritalStatusOptions = [
+    'Soltero',
+    'Casado',
+    'Divorciado',
+    'Viudo',
+    'Unión Libre',
+  ];
+
+  final List<String> _relationOptions = [
+    'Cónyuge',
+    'Madre',
+    'Padre',
+    'Hermano/a',
+    'Hijo/a',
+    'Tío/a',
+    'Abuelo/a',
+    'Amigo/a',
+    'Otro',
+  ];
+
+  final List<String> _accountTypeOptions = [
+    'Ahorro',
+    'Corriente',
+  ];
 
   @override
   void initState() {
     super.initState();
-    final e = widget.employee;
+    final emp = widget.employee;
 
-    _nameCtrl = TextEditingController(text: e.fullName);
-    _ciCtrl = TextEditingController(text: e.identityCard);
-    _phoneCtrl = TextEditingController(text: e.phone);
-    _addressCtrl = TextEditingController(text: e.address);
-    _refPersonCtrl = TextEditingController(text: e.personalReference);
-    _refPhoneCtrl = TextEditingController(text: e.referencePhone);
-
-    _positionCtrl = TextEditingController(text: e.position);
-    _workplaceCtrl = TextEditingController(text: e.workplace);
-    _salaryCtrl = TextEditingController(
-      text: e.agreedSalary.toStringAsFixed(2),
+    // Inicializar Bloque A
+    _phoneController = TextEditingController(text: emp.phone);
+    _emailController = TextEditingController(text: emp.corporateEmail ?? '');
+    _addressController = TextEditingController(
+      text: emp.fullAddress ?? emp.address,
     );
-    _status = e.status;
-    _employeeType = e.employeeType;
+    _maritalStatus = emp.maritalStatus;
+    _childrenCountController = TextEditingController(
+      text: emp.childrenCount != null ? emp.childrenCount.toString() : '',
+    );
 
-    _hasCiCopy = e.hasCiCopy;
-    _hasUtilityBill = e.hasUtilityBill;
-    _hasHomeSketch = e.hasHomeSketch;
-    _hasFelccRecord = e.hasFelccRecord;
-    _hasPhoto3x4 = e.hasPhoto3x4;
-    _hasSusInsurance = e.hasSusInsurance;
+    // Inicializar Bloque B
+    _emergencyNameController = TextEditingController(
+      text: emp.emergencyContactName ?? '',
+    );
+    _emergencyPhoneController = TextEditingController(
+      text: emp.emergencyContactPhone ?? '',
+    );
+    _emergencyRelation = emp.emergencyContactRelation;
+
+    // Inicializar Bloque C
+    _selectedAfpName = emp.afpName;
+    _afpNumberController = TextEditingController(text: emp.afpNumber ?? '');
+    _selectedHealthInsurance = emp.healthInsurance;
+
+    // Inicializar Bloque D
+    _selectedBankName = emp.bankName;
+    _accountType =
+        (emp.accountType != null &&
+            emp.accountType!.toLowerCase().contains('corriente'))
+        ? 'Corriente'
+        : 'Ahorro';
+    _accountNumberController = TextEditingController(
+      text: emp.accountNumber ?? '',
+    );
+
+    // Inicializar Bloque E
+    _notesController = TextEditingController(text: emp.observations ?? '');
+
+    _loadCatalogs();
   }
 
   @override
   void dispose() {
-    _nameCtrl.dispose();
-    _ciCtrl.dispose();
-    _phoneCtrl.dispose();
-    _addressCtrl.dispose();
-    _refPersonCtrl.dispose();
-    _refPhoneCtrl.dispose();
-    _positionCtrl.dispose();
-    _workplaceCtrl.dispose();
-    _salaryCtrl.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _addressController.dispose();
+    _childrenCountController.dispose();
+    _emergencyNameController.dispose();
+    _emergencyPhoneController.dispose();
+    _afpNumberController.dispose();
+    _accountNumberController.dispose();
+    _notesController.dispose();
     super.dispose();
   }
 
-  int get _docCount {
-    int c = 0;
-    if (_hasCiCopy) c++;
-    if (_hasUtilityBill) c++;
-    if (_hasHomeSketch) c++;
-    if (_hasFelccRecord) c++;
-    if (_hasPhoto3x4) c++;
-    if (_hasSusInsurance) c++;
-    return c;
+  Future<void> _loadCatalogs() async {
+    try {
+      final repo = RrhhRepository.current;
+      final results = await Future.wait([
+        repo.listCatalogItems(RrhhCatalogType.afps),
+        repo.listCatalogItems(RrhhCatalogType.healthInsurances),
+        repo.listCatalogItems(RrhhCatalogType.banks),
+      ]);
+
+      if (mounted) {
+        setState(() {
+          _afps = results[0].where((e) => e.isActive).toList();
+          _healthInsurances = results[1].where((e) => e.isActive).toList();
+          _banks = results[2].where((e) => e.isActive).toList();
+          _isLoadingCatalogs = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isLoadingCatalogs = false);
+      }
+    }
   }
 
-  void _saveChanges() {
-    if (_nameCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('El nombre del colaborador es obligatorio.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
+  Future<void> _handleSave() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isSaving = true);
+    final repo = RrhhRepository.current;
+    final emp = widget.employee;
+
+    final newPhone = _phoneController.text.trim();
+    final newEmail = _emailController.text.trim();
+    final newAddress = _addressController.text.trim();
+    final newChildrenCount = int.tryParse(_childrenCountController.text.trim());
+    final newEmergencyName = _emergencyNameController.text.trim();
+    final newEmergencyPhone = _emergencyPhoneController.text.trim();
+    final newAfpNumber = _afpNumberController.text.trim();
+    final newAccountNumber = _accountNumberController.text.trim();
+    final newNotes = _notesController.text.trim();
+
+    // 1. Detectar cambios específicos para trazabilidad
+    final List<String> changeDetails = [];
+    if (newPhone != emp.phone) {
+      changeDetails.add('Teléfono cambiado de ${emp.phone} a $newPhone');
+    }
+    if (newEmail.isNotEmpty && newEmail != (emp.corporateEmail ?? '')) {
+      changeDetails.add('Email actualizado');
+    }
+    if (newAddress.isNotEmpty &&
+        newAddress != (emp.fullAddress ?? emp.address)) {
+      changeDetails.add('Dirección actualizada');
+    }
+    if (_maritalStatus != emp.maritalStatus && _maritalStatus != null) {
+      changeDetails.add('Estado civil: $_maritalStatus');
+    }
+    if (newChildrenCount != emp.childrenCount && newChildrenCount != null) {
+      changeDetails.add('Hijos: $newChildrenCount');
+    }
+    if (newEmergencyPhone.isNotEmpty &&
+        newEmergencyPhone != (emp.emergencyContactPhone ?? '')) {
+      changeDetails.add('Contacto de emergencia actualizado');
+    }
+    if (_selectedAfpName != null && _selectedAfpName != emp.afpName) {
+      changeDetails.add('AFP cambiada a $_selectedAfpName');
+    }
+    if (_selectedHealthInsurance != null &&
+        _selectedHealthInsurance != emp.healthInsurance) {
+      changeDetails.add('Seguro médico actualizado');
+    }
+    if (_selectedBankName != null && _selectedBankName != emp.bankName) {
+      changeDetails.add('Banco actualizado a $_selectedBankName');
+    }
+    if (newAccountNumber.isNotEmpty &&
+        newAccountNumber != (emp.accountNumber ?? '')) {
+      changeDetails.add('Nº de cuenta bancaria actualizado');
     }
 
-    final salary =
-        double.tryParse(_salaryCtrl.text.trim()) ??
-        widget.employee.agreedSalary;
+    try {
+      final updated = emp.copyWith(
+        phone: newPhone,
+        corporateEmail: newEmail.isNotEmpty ? newEmail : emp.corporateEmail,
+        address: newAddress.isNotEmpty ? newAddress : emp.address,
+        fullAddress: newAddress.isNotEmpty ? newAddress : emp.fullAddress,
+        maritalStatus: _maritalStatus,
+        childrenCount: newChildrenCount,
+        emergencyContactName: newEmergencyName.isNotEmpty
+            ? newEmergencyName
+            : null,
+        emergencyContactPhone: newEmergencyPhone.isNotEmpty
+            ? newEmergencyPhone
+            : null,
+        emergencyContactRelation: _emergencyRelation,
+        afpName: _selectedAfpName,
+        afpNumber: newAfpNumber.isNotEmpty ? newAfpNumber : null,
+        healthInsurance: _selectedHealthInsurance,
+        bankName: _selectedBankName,
+        accountType: _accountType,
+        accountNumber: newAccountNumber.isNotEmpty ? newAccountNumber : null,
+        observations: newNotes.isNotEmpty ? newNotes : null,
+        updatedAt: DateTime.now(),
+      );
 
-    final updatedEmployee = widget.employee.copyWith(
-      fullName: _nameCtrl.text.trim(),
-      identityCard: _ciCtrl.text.trim(),
-      phone: _phoneCtrl.text.trim(),
-      address: _addressCtrl.text.trim(),
-      personalReference: _refPersonCtrl.text.trim(),
-      referencePhone: _refPhoneCtrl.text.trim(),
-      position: _positionCtrl.text.trim(),
-      workplace: _workplaceCtrl.text.trim(),
-      agreedSalary: salary,
-      status: _status,
-      employeeType: _employeeType,
-      hasCiCopy: _hasCiCopy,
-      hasUtilityBill: _hasUtilityBill,
-      hasHomeSketch: _hasHomeSketch,
-      hasFelccRecord: _hasFelccRecord,
-      hasPhoto3x4: _hasPhoto3x4,
-      hasSusInsurance: _hasSusInsurance,
-    );
+      await repo.updateEmployee(updated);
 
-    _stateService.updateEmployee(updatedEmployee);
+      // Registrar en bitácora de historial
+      final now = DateTime.now();
+      final userName = AuthService().currentDisplayName ?? 'Administrador';
+      final formattedDate =
+          '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year}';
 
-    Navigator.pop(context, updatedEmployee);
+      final desc = changeDetails.isNotEmpty
+          ? 'Ficha actualizada — ${changeDetails.join(', ')} — $formattedDate por $userName'
+          : 'Ficha actualizada el $formattedDate por $userName';
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Ficha y expediente de ${updatedEmployee.fullName} actualizados ($_docCount/6 documentos).',
-        ),
-        backgroundColor: const Color(0xFF10B981),
-      ),
-    );
-  }
+      final timelineEvent = RrhhTimelineEvent(
+        employeeId: emp.id ?? 1,
+        date: now,
+        title: 'Ficha actualizada',
+        description: desc,
+        category: 'FICHA',
+        registeredBy: userName,
+        createdAt: now,
+      );
 
-  Widget _buildTabButton(
-    int index,
-    String title,
-    IconData icon,
-    bool isDark, {
-    String? badge,
-    Color? badgeColor,
-  }) {
-    final isSelected = _currentTab == index;
-    return Expanded(
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(8),
-          onTap: () => setState(() => _currentTab = index),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? (isDark ? const Color(0xFF2563EB) : Colors.white)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 1),
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  size: 15,
-                  color: isSelected
-                      ? (isDark ? Colors.white : const Color(0xFF2563EB))
-                      : const Color(0xFF64748B),
-                ),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: isSelected
-                          ? FontWeight.w700
-                          : FontWeight.w500,
-                      color: isSelected
-                          ? (isDark ? Colors.white : const Color(0xFF0F172A))
-                          : const Color(0xFF64748B),
-                    ),
-                  ),
-                ),
-                if (badge != null) ...[
-                  const SizedBox(width: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 1.5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: (badgeColor ?? const Color(0xFF2563EB)).withValues(
-                        alpha: isSelected ? 0.25 : 0.15,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      badge,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: badgeColor ?? const Color(0xFF2563EB),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+      await repo.addTimelineEvent(timelineEvent);
+
+      if (mounted) {
+        Navigator.of(context).pop(true);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+        RrhhSnackBar.showError(context, 'Error al guardar cambios: $e');
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Dialog(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
-      clipBehavior: Clip.antiAlias,
+      backgroundColor: const Color(0xFF0F172A),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-        ),
+        borderRadius: BorderRadius.circular(14),
+        side: const BorderSide(color: Color(0xFF1E293B)),
       ),
-      child: Container(
-        width: 700,
-        height: 640,
-        padding: const EdgeInsets.all(24),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 820, maxHeight: 780),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header del modal
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF6366F1).withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.edit_outlined,
-                    color: Color(0xFF6366F1),
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Editar Colaborador / Completar Expediente',
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: isDark
-                              ? Colors.white
-                              : const Color(0xFF0F172A),
-                        ),
-                      ),
-                      Text(
-                        '${widget.employee.code} • ${widget.employee.fullName}',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: const Color(0xFF64748B),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-
-            // Segmented Tab Selector (sin slide, sin desborde, instantáneo)
-            Container(
-              decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFF1E293B).withValues(alpha: 0.5)
-                    : const Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: isDark
-                      ? const Color(0xFF334155)
-                      : const Color(0xFFE2E8F0),
-                ),
-              ),
-              padding: const EdgeInsets.all(4),
-              child: Row(
-                children: [
-                  _buildTabButton(
-                    0,
-                    'Datos Personales',
-                    Icons.person_outline,
-                    isDark,
-                  ),
-                  const SizedBox(width: 4),
-                  _buildTabButton(
-                    1,
-                    'Información Laboral',
-                    Icons.work_outline,
-                    isDark,
-                  ),
-                  const SizedBox(width: 4),
-                  _buildTabButton(
-                    2,
-                    'Documentos Físicos',
-                    Icons.folder_open_outlined,
-                    isDark,
-                    badge: '$_docCount/6',
-                    badgeColor: _docCount == 6
-                        ? const Color(0xFF10B981)
-                        : const Color(0xFFF59E0B),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Contenido instantáneo sin deslizamiento lento ni desborde
+            _buildHeader(),
+            const Divider(height: 1, color: Color(0xFF1E293B)),
             Expanded(
-              child: IndexedStack(
-                index: _currentTab,
-                children: [
-                  _buildPersonalTab(),
-                  _buildLaborTab(),
-                  _buildDocumentsTab(isDark),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Acciones Footer
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'),
-                ),
-                const SizedBox(width: 12),
-                FilledButton.icon(
-                  onPressed: _saveChanges,
-                  icon: const Icon(Icons.check, size: 16),
-                  label: const Text('Guardar Cambios'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
+              child: _isLoadingCatalogs
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFF2563EB),
+                        ),
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      padding: const EdgeInsets.all(24),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildBlockA(),
+                            const SizedBox(height: 20),
+                            _buildBlockB(),
+                            const SizedBox(height: 20),
+                            _buildBlockC(),
+                            const SizedBox(height: 20),
+                            _buildBlockD(),
+                            const SizedBox(height: 20),
+                            _buildBlockE(),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ],
             ),
+            const Divider(height: 1, color: Color(0xFF1E293B)),
+            _buildFooter(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPersonalTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(top: 18, left: 4, right: 4, bottom: 16),
-      child: Column(
-        children: [
-          TextField(
-            controller: _nameCtrl,
-            decoration: const InputDecoration(
-              labelText: 'Nombre Completo y Apellidos',
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 14,
-              ),
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _ciCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Cédula de Identidad (CI)',
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: TextField(
-                  controller: _phoneCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Teléfono Móvil',
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _addressCtrl,
-            decoration: const InputDecoration(
-              labelText: 'Dirección Domiciliaria',
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 14,
-              ),
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _refPersonCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Referencia Personal (Nombre)',
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: TextField(
-                  controller: _refPhoneCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Teléfono de Referencia',
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+      decoration: const BoxDecoration(
+        color: Color(0xFF111827),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
       ),
-    );
-  }
-
-  Widget _buildLaborTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(top: 18, left: 4, right: 4, bottom: 16),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _positionCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Cargo / Puesto',
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: DropdownButtonFormField<String>(
-                  initialValue: _employeeType,
-                  decoration: const InputDecoration(
-                    labelText: 'Tipo de Empleado',
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 'OFICINA', child: Text('OFICINA')),
-                    DropdownMenuItem(value: 'CAMPO', child: Text('CAMPO')),
-                  ],
-                  onChanged: (val) {
-                    if (val != null) setState(() => _employeeType = val);
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _workplaceCtrl,
-            decoration: const InputDecoration(
-              labelText: 'Sede Asignada / Empresa Cliente',
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 14,
-              ),
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _salaryCtrl,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Sueldo Pactado (Bs.)',
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: DropdownButtonFormField<String>(
-                  initialValue: _status,
-                  decoration: const InputDecoration(
-                    labelText: 'Estado del Colaborador',
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 'ACTIVO', child: Text('ACTIVO')),
-                    DropdownMenuItem(
-                      value: 'INACTIVO',
-                      child: Text('INACTIVO'),
-                    ),
-                  ],
-                  onChanged: (val) {
-                    if (val != null) setState(() => _status = val);
-                  },
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDocumentsTab(bool isDark) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(top: 12, left: 4, right: 4, bottom: 16),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: _docCount == 6
-                  ? const Color(0xFF10B981).withValues(alpha: 0.1)
-                  : const Color(0xFFF59E0B).withValues(alpha: 0.1),
+              color: const Color(0xFF2563EB).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: _docCount == 6
-                    ? const Color(0xFF10B981).withValues(alpha: 0.3)
-                    : const Color(0xFFF59E0B).withValues(alpha: 0.3),
+                color: const Color(0xFF2563EB).withValues(alpha: 0.3),
               ),
             ),
-            child: Row(
+            child: const Icon(
+              Icons.edit_note_outlined,
+              color: Color(0xFF38BDF8),
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  _docCount == 6 ? Icons.verified : Icons.attachment,
-                  color: _docCount == 6
-                      ? const Color(0xFF10B981)
-                      : const Color(0xFFF59E0B),
-                  size: 20,
+                Text(
+                  'Editar Ficha — ${widget.employee.fullName}',
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFFF8FAFC),
+                  ),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Expediente Físico: $_docCount de 6 documentos presentados.',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
-                    ),
+                const SizedBox(height: 3),
+                Text(
+                  'Solo se editan datos personales y de contacto. Los datos contractuales se modifican con el botón [Modificar Datos Contractuales].',
+                  style: GoogleFonts.inter(
+                    fontSize: 11.5,
+                    color: const Color(0xFF94A3B8),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 10),
-          Text(
-            'Marca los documentos físicos que el colaborador ya presentó:',
-            style: GoogleFonts.inter(
-              fontSize: 11.5,
-              color: const Color(0xFF64748B),
-            ),
-          ),
-          const SizedBox(height: 6),
-          _buildCheckItem(
-            'Fotocopia de C.I. vigente',
-            _hasCiCopy,
-            (v) => setState(() => _hasCiCopy = v ?? false),
-            isDark,
-          ),
-          _buildCheckItem(
-            'Fotocopia de Factura Luz o Agua',
-            _hasUtilityBill,
-            (v) => setState(() => _hasUtilityBill = v ?? false),
-            isDark,
-          ),
-          _buildCheckItem(
-            'Croquis de Domicilio firmado',
-            _hasHomeSketch,
-            (v) => setState(() => _hasHomeSketch = v ?? false),
-            isDark,
-          ),
-          _buildCheckItem(
-            'Certificado de Antecedentes FELCC',
-            _hasFelccRecord,
-            (v) => setState(() => _hasFelccRecord = v ?? false),
-            isDark,
-          ),
-          _buildCheckItem(
-            'Fotografía 3×4 fondo rojo',
-            _hasPhoto3x4,
-            (v) => setState(() => _hasPhoto3x4 = v ?? false),
-            isDark,
-          ),
-          _buildCheckItem(
-            'Seguro Universal de Salud (SUS)',
-            _hasSusInsurance,
-            (v) => setState(() => _hasSusInsurance = v ?? false),
-            isDark,
+          IconButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            icon: const Icon(Icons.close, size: 20, color: Color(0xFF94A3B8)),
+            tooltip: 'Cerrar',
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCheckItem(
-    String title,
-    bool value,
-    ValueChanged<bool?> onChanged,
-    bool isDark,
-  ) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 2.5),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF161F30) : const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: value
-              ? const Color(0xFF10B981).withValues(alpha: 0.3)
-              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0)),
-        ),
-      ),
-      child: CheckboxListTile(
-        dense: true,
-        visualDensity: VisualDensity.compact,
-        value: value,
-        activeColor: const Color(0xFF10B981),
-        title: Text(
+  Widget _buildSectionTitle(String title, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: const Color(0xFF38BDF8)),
+        const SizedBox(width: 8),
+        Text(
           title,
           style: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: value ? FontWeight.w600 : FontWeight.w500,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFF38BDF8),
+            letterSpacing: 0.5,
           ),
         ),
-        subtitle: Text(
-          value ? 'Documento entregado' : 'Documento pendiente',
+      ],
+    );
+  }
+
+  Widget _buildCardContainer({required List<Widget> children}) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF111827),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFF1E293B)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      ),
+    );
+  }
+
+  // ── BLOQUE A: Datos Personales ──
+  Widget _buildBlockA() {
+    return _buildCardContainer(
+      children: [
+        _buildSectionTitle('BLOQUE A — DATOS PERSONALES', Icons.person_outline),
+        const SizedBox(height: 14),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 5,
+              child: _buildTextField(
+                controller: _phoneController,
+                label: 'Teléfono / Celular *',
+                hint: 'Ej: 77123456',
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return 'El teléfono es obligatorio';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              flex: 6,
+              child: _buildTextField(
+                controller: _emailController,
+                label: 'Email personal (opcional)',
+                hint: 'usuario@ejemplo.com',
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        _buildTextField(
+          controller: _addressController,
+          label: 'Dirección completa (opcional)',
+          hint: 'Zona, calle, número de vivienda y referencia',
+        ),
+        const SizedBox(height: 14),
+        Row(
+          children: [
+            Expanded(
+              child: _buildDropdown<String>(
+                label: 'Estado civil (opcional)',
+                value: _maritalStatus,
+                hint: 'Seleccionar estado civil',
+                items: _maritalStatusOptions
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e, overflow: TextOverflow.ellipsis),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (val) => setState(() => _maritalStatus = val),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: _buildTextField(
+                controller: _childrenCountController,
+                label: 'Número de hijos (opcional)',
+                hint: '0',
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── BLOQUE B: Contacto de Emergencia ──
+  Widget _buildBlockB() {
+    return _buildCardContainer(
+      children: [
+        _buildSectionTitle(
+          'BLOQUE B — CONTACTO DE EMERGENCIA',
+          Icons.emergency_outlined,
+        ),
+        const SizedBox(height: 14),
+        Row(
+          children: [
+            Expanded(
+              flex: 5,
+              child: _buildTextField(
+                controller: _emergencyNameController,
+                label: 'Nombre del contacto (opcional)',
+                hint: 'Ej: María Gonzales',
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              flex: 4,
+              child: _buildTextField(
+                controller: _emergencyPhoneController,
+                label: 'Teléfono del contacto (opcional)',
+                hint: 'Ej: 78901234',
+                keyboardType: TextInputType.phone,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              flex: 4,
+              child: _buildDropdown<String>(
+                label: 'Parentesco (opcional)',
+                value: _emergencyRelation,
+                hint: 'Seleccionar parentesco',
+                items: _relationOptions
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e, overflow: TextOverflow.ellipsis),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (val) => setState(() => _emergencyRelation = val),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── BLOQUE C: Seguridad Social ──
+  Widget _buildBlockC() {
+    return _buildCardContainer(
+      children: [
+        _buildSectionTitle(
+          'BLOQUE C — SEGURIDAD SOCIAL',
+          Icons.health_and_safety_outlined,
+        ),
+        const SizedBox(height: 14),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 5,
+              child: _buildDropdown<String>(
+                label: 'AFP / Gestora (opcional)',
+                value: _selectedAfpName,
+                hint: 'Seleccionar AFP',
+                items: [
+                  const DropdownMenuItem(
+                    value: null,
+                    child: Text(
+                      '(Ninguna seleccionada)',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  ..._afps.map(
+                    (e) => DropdownMenuItem(
+                      value: e.name,
+                      child: Text(e.name, overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                ],
+                onChanged: (val) => setState(() => _selectedAfpName = val),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              flex: 4,
+              child: _buildTextField(
+                controller: _afpNumberController,
+                label: 'Nº asegurado AFP (opcional)',
+                hint: 'Ej: GP-1234567',
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              flex: 5,
+              child: _buildDropdown<String>(
+                label: 'Caja médica / Seguro de salud',
+                value: _selectedHealthInsurance,
+                hint: 'Seleccionar caja o seguro',
+                items: [
+                  const DropdownMenuItem(
+                    value: null,
+                    child: Text(
+                      '(Ninguno seleccionado)',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  ..._healthInsurances.map(
+                    (e) => DropdownMenuItem(
+                      value: e.name,
+                      child: Text(e.name, overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                ],
+                onChanged: (val) =>
+                    setState(() => _selectedHealthInsurance = val),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── BLOQUE D: Datos Bancarios ──
+  Widget _buildBlockD() {
+    return _buildCardContainer(
+      children: [
+        _buildSectionTitle(
+          'BLOQUE D — DATOS BANCARIOS',
+          Icons.account_balance_outlined,
+        ),
+        const SizedBox(height: 14),
+        Row(
+          children: [
+            Expanded(
+              flex: 5,
+              child: _buildDropdown<String>(
+                label: 'Banco (opcional)',
+                value: _selectedBankName,
+                hint: 'Seleccionar banco',
+                items: [
+                  const DropdownMenuItem(
+                    value: null,
+                    child: Text(
+                      '(Sin banco asignado)',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  ..._banks.map(
+                    (e) => DropdownMenuItem(
+                      value: e.name,
+                      child: Text(e.name, overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                ],
+                onChanged: (val) => setState(() => _selectedBankName = val),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              flex: 3,
+              child: _buildDropdown<String>(
+                label: 'Tipo de cuenta',
+                value: _accountType,
+                items: _accountTypeOptions
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e, overflow: TextOverflow.ellipsis),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (val) {
+                  if (val != null) setState(() => _accountType = val);
+                },
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              flex: 5,
+              child: _buildTextField(
+                controller: _accountNumberController,
+                label: 'Número de cuenta (opcional)',
+                hint: 'Ej: 10000012345678',
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── BLOQUE E: Notas Internas ──
+  Widget _buildBlockE() {
+    return _buildCardContainer(
+      children: [
+        _buildSectionTitle('BLOQUE E — NOTAS INTERNAS', Icons.notes_outlined),
+        const SizedBox(height: 14),
+        _buildTextField(
+          controller: _notesController,
+          label: 'Notas internas / Observaciones de seguimiento (opcional)',
+          hint:
+              'Agrega anotaciones administrativas, seguimiento disciplinario o consideraciones especiales...',
+          maxLines: 3,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    String? hint,
+    int maxLines = 1,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+    String? Function(String?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
           style: GoogleFonts.inter(
-            fontSize: 10,
-            color: value ? const Color(0xFF10B981) : const Color(0xFFEF4444),
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFFCBD5E1),
           ),
         ),
-        secondary: Icon(
-          value ? Icons.check_circle : Icons.cancel,
-          color: value ? const Color(0xFF10B981) : const Color(0xFFEF4444),
-          size: 18,
+        const SizedBox(height: 6),
+        TextFormField(
+          controller: controller,
+          maxLines: maxLines,
+          keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
+          validator: validator,
+          style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: GoogleFonts.inter(
+              fontSize: 12.5,
+              color: const Color(0xFF64748B),
+            ),
+            filled: true,
+            fillColor: const Color(0xFF0F172A),
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 12,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF334155)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF334155)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(
+                color: Color(0xFF2563EB),
+                width: 1.5,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFFEF4444)),
+            ),
+          ),
         ),
-        onChanged: onChanged,
+      ],
+    );
+  }
+
+  Widget _buildDropdown<T>({
+    required String label,
+    required T? value,
+    required List<DropdownMenuItem<T>> items,
+    required ValueChanged<T?> onChanged,
+    String? hint,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFFCBD5E1),
+          ),
+        ),
+        const SizedBox(height: 6),
+        DropdownButtonFormField<T>(
+          initialValue: value,
+          isExpanded: true,
+          items: items,
+          onChanged: onChanged,
+          hint: hint != null
+              ? Text(
+                  hint,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    color: const Color(0xFF64748B),
+                  ),
+                )
+              : null,
+          dropdownColor: const Color(0xFF1E293B),
+          style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+          icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF94A3B8)),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: const Color(0xFF0F172A),
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 10,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF334155)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF334155)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(
+                color: Color(0xFF2563EB),
+                width: 1.5,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFooter() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      decoration: const BoxDecoration(
+        color: Color(0xFF111827),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(14)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          OutlinedButton(
+            onPressed: _isSaving
+                ? null
+                : () => Navigator.of(context).pop(false),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFF94A3B8),
+              side: const BorderSide(color: Color(0xFF334155)),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          ElevatedButton.icon(
+            onPressed: _isSaving ? null : _handleSave,
+            icon: _isSaving
+                ? const SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Icon(Icons.save_outlined, size: 16),
+            label: Text(
+              _isSaving ? 'Guardando...' : 'Guardar cambios',
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2563EB),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

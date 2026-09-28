@@ -1,4 +1,4 @@
-import '../../data/models/rrhh_employee.dart';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'rrhh_payroll_exporter_stub.dart'
     if (dart.library.html) 'rrhh_payroll_exporter_web.dart';
 
@@ -566,7 +566,7 @@ class RrhhPayrollExporter {
       final startDateStr =
           '${emp.fiscalStartDate.day.toString().padLeft(2, "0")}/${emp.fiscalStartDate.month.toString().padLeft(2, "0")}/${emp.fiscalStartDate.year}';
 
-      final sueldoBasico = emp.baseSalary;
+      final sueldoBasico = emp.agreedSalary ?? 0.0;
       const diasPagados = 30;
       const horasDias = 8;
       final salarioGanado = sueldoBasico; // Para 30 días

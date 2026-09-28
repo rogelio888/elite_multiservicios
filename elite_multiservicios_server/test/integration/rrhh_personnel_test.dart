@@ -128,7 +128,8 @@ void main() {
           expect(hiredEmployee.id, isNotNull);
           expect(hiredEmployee.applicantId, equals(applicant.id));
           expect(hiredEmployee.status, equals('ACTIVO'));
-          expect(hiredEmployee.agreedSalary, equals(2900.0));
+          // agreedSalary es null en sesión sin permiso rrhh.compensation.view
+          expect(hiredEmployee.agreedSalary, isNull);
 
           // Verificar que el postulante quedó marcado como 'CONTRATADO'
           final updatedApplicant = await applicantRepo.getApplicantById(
@@ -183,6 +184,235 @@ void main() {
           );
           expect(
             timelineAfterExit.any((e) => e.category == 'DESVINCULACION'),
+            isTrue,
+          );
+        },
+      );
+
+      test(
+        'Flujo de Fase B: Actualizaciones granulares de expediente y exposición contractual',
+        () async {
+          final session =
+              (sessionBuilder as dynamic).internalBuild(
+                    endpoint: 'rrhhPersonnel',
+                    method: 'listEmployees',
+                  )
+                  as Session;
+
+          final personnelRepo = RrhhPersonnelRepository(session);
+          final timestamp = DateTime.now().millisecondsSinceEpoch;
+
+          final employee = await personnelRepo.createEmployee(
+            RrhhEmployee(
+              code: 'AUTO',
+              fullName: 'Empleado Fase B $timestamp',
+              birthPlace: 'Santa Cruz',
+              identityCard: '$timestamp SCZ',
+              phone: '+591 70001122',
+              address: 'Av. Santos Dumont #400',
+              occupation: 'Técnico',
+              personalReference: 'Carlos Test',
+              referencePhone: '+591 71122334',
+              employeeType: 'CAMPO',
+              area: 'Operaciones',
+              position: 'Técnico de Limpieza',
+              specialty: 'Industrial',
+              workplace: 'Base Central',
+              supervisor: 'Supervisor General',
+              realStartDate: DateTime.now().toUtc(),
+              fiscalStartDate: DateTime.now().toUtc(),
+              agreedSalary: 3500.0,
+              contractType: 'INDEFINIDO',
+              status: 'ACTIVO',
+              createdAt: DateTime.now().toUtc(),
+              updatedAt: DateTime.now().toUtc(),
+            ),
+          );
+
+          final empId = employee.id!;
+
+          // 1. updateEmployeeBankInfo
+          final bankUpdated = await personnelRepo.updateEmployeeBankInfo(
+            id: empId,
+            bankName: 'Banco Mercantil Santa Cruz',
+            accountType: 'CAJA_AHORRO',
+            accountNumber: '4010203040',
+            registeredBy: 'Admin Test',
+          );
+          expect(bankUpdated.bankName, equals('Banco Mercantil Santa Cruz'));
+          expect(bankUpdated.accountType, equals('CAJA_AHORRO'));
+          expect(bankUpdated.accountNumber, equals('4010203040'));
+
+          // 2. updateEmployeeSocialSecurity
+          final ssUpdated = await personnelRepo.updateEmployeeSocialSecurity(
+            id: empId,
+            afpName: 'Gestora Pública',
+            afpNumber: '88776655',
+            healthInsurance: 'Caja Nacional de Salud',
+            registeredBy: 'Admin Test',
+          );
+          expect(ssUpdated.afpName, equals('Gestora Pública'));
+          expect(ssUpdated.afpNumber, equals('88776655'));
+          expect(ssUpdated.healthInsurance, equals('Caja Nacional de Salud'));
+
+          // 3. updateEmployeePersonalInfo
+          final piUpdated = await personnelRepo.updateEmployeePersonalInfo(
+            id: empId,
+            fullAddress: 'Calle Las Palmas #123, Barrio Sirari',
+            maritalStatus: 'CASADO',
+            childrenCount: 2,
+            emergencyContactName: 'Laura Mendoza',
+            emergencyContactPhone: '+591 79988776',
+            emergencyContactRelation: 'Cónyuge',
+            registeredBy: 'Admin Test',
+          );
+          expect(
+            piUpdated.fullAddress,
+            equals('Calle Las Palmas #123, Barrio Sirari'),
+          );
+          expect(piUpdated.maritalStatus, equals('CASADO'));
+          expect(piUpdated.childrenCount, equals(2));
+          expect(piUpdated.emergencyContactName, equals('Laura Mendoza'));
+
+          // 4. updateEmployeeContract
+          final contractStart = DateTime.now().toUtc();
+          final cUpdated = await personnelRepo.updateEmployeeContract(
+            id: empId,
+            contractType: 'PLAZO_FIJO',
+            workdayType: 'TIEMPO_COMPLETO_48H',
+            paymentModality: 'MENSUAL',
+            baseSalary: 4200.0,
+            contractStartDate: contractStart,
+            contractEndDate: null,
+            contractSignedPdfUrl:
+                'https://storage.example.com/contracts/EMP-999.pdf',
+            bonuses: [
+              RrhhEmployeeBonus(
+                code: 'BON-001',
+                name: 'Bono Productividad',
+                type: 'FIJO',
+                amount: 300.0,
+              ),
+            ],
+            deductions: [
+              RrhhEmployeeDeduction(
+                code: 'DED-001',
+                name: 'Aporte Sindical',
+                type: 'FIJO',
+                amount: 50.0,
+              ),
+            ],
+            justification:
+                'Modificación contractual debidamente aprobada por Gerencia General',
+            registeredBy: 'Admin Test',
+          );
+          expect(cUpdated.contractType, equals('PLAZO_FIJO'));
+          // agreedSalary es null en sesión sin permiso rrhh.compensation.view
+          expect(cUpdated.agreedSalary, isNull);
+          expect(cUpdated.contractSignedPdfUrl, contains('EMP-999.pdf'));
+
+          // 5. updateEmployeeBonuses
+          final bUpdated = await personnelRepo.updateEmployeeBonuses(
+            id: empId,
+            bonuses: [
+              RrhhEmployeeBonus(
+                code: 'BON-002',
+                name: 'Bono Asistencia',
+                type: 'FIJO',
+                amount: 250.0,
+              ),
+            ],
+            registeredBy: 'Admin Test',
+          );
+          expect(bUpdated.bonuses, isNull); // Enmascarado sin permiso
+
+          // 6. updateEmployeeDeductions
+          final dUpdated = await personnelRepo.updateEmployeeDeductions(
+            id: empId,
+            deductions: [
+              RrhhEmployeeDeduction(
+                code: 'DED-002',
+                name: 'Anticipo',
+                type: 'FIJO',
+                amount: 200.0,
+              ),
+            ],
+            registeredBy: 'Admin Test',
+          );
+          expect(dUpdated.deductions, isNull); // Enmascarado sin permiso
+
+          // 7. updateEmployeeAssignment
+          final aUpdated = await personnelRepo.updateEmployeeAssignment(
+            id: empId,
+            shiftId: 'TURNO_MANANA',
+            baseLocation: 'Parque Industrial Lote 8',
+            supervisorEmployeeId: 'EMP-005',
+            registeredBy: 'Admin Test',
+          );
+          expect(aUpdated.shiftId, equals('TURNO_MANANA'));
+          expect(aUpdated.baseLocation, equals('Parque Industrial Lote 8'));
+          expect(aUpdated.supervisorEmployeeId, equals('EMP-005'));
+
+          // 8. updateEmployeeDocuments
+          final docUpdated = await personnelRepo.updateEmployeeDocuments(
+            id: empId,
+            documentChecklist: [
+              RrhhDossierDocument(
+                code: 'CI',
+                name: 'Cédula de Identidad',
+                isRequired: true,
+                status: 'validado',
+              ),
+              RrhhDossierDocument(
+                code: 'AFP',
+                name: 'Certificado AFP',
+                isRequired: true,
+                status: 'validado',
+              ),
+            ],
+            registeredBy: 'Admin Test',
+          );
+          expect(
+            docUpdated.documentChecklist?.any((d) => d.code == 'CI'),
+            isTrue,
+          );
+
+          // 9. getEmployeeContractData
+          final contractData = await personnelRepo.getEmployeeContractData(
+            empId,
+          );
+          expect(contractData.employeeId, equals(empId));
+          expect(contractData.code, equals(employee.code));
+          expect(contractData.baseSalary, isNull); // Enmascarado sin permiso
+          expect(contractData.contractType, equals('PLAZO_FIJO'));
+          expect(contractData.paymentModality, equals('MENSUAL'));
+
+          // 10. Verificar que cada operación registró un evento en la línea de tiempo
+          final events = await personnelRepo.listTimelineEvents(empId);
+          expect(
+            events.any((e) => e.title.contains('datos bancarios')),
+            isTrue,
+          );
+          expect(
+            events.any((e) => e.title.contains('seguridad social')),
+            isTrue,
+          );
+          expect(
+            events.any((e) => e.title.contains('datos personales')),
+            isTrue,
+          );
+          expect(
+            events.any((e) => e.title.contains('datos contractuales')),
+            isTrue,
+          );
+          expect(events.any((e) => e.title.contains('bonificaciones')), isTrue);
+          expect(events.any((e) => e.title.contains('deducciones')), isTrue);
+          expect(
+            events.any((e) => e.title.contains('asignación organizacional')),
+            isTrue,
+          );
+          expect(
+            events.any((e) => e.title.contains('checklist documental')),
             isTrue,
           );
         },

@@ -1,4 +1,7 @@
 import 'package:serverpod/serverpod.dart';
+import '../../../authorization/permissions.dart';
+import '../../../authorization/rbac_guard.dart';
+import '../../../exceptions/app_exception.dart';
 import '../../../generated/protocol.dart';
 import 'rrhh_applicant_repository.dart';
 
@@ -8,6 +11,65 @@ class RrhhPersonnelRepository {
   final Session session;
 
   const RrhhPersonnelRepository(this.session);
+
+  /// Helper que identifica si un cargo, área o especialidad corresponde a Seguridad Física.
+  bool _isSecurityPosition({
+    String? position,
+    String? area,
+    String? specialty,
+  }) {
+    final combined = '${position ?? ''} ${area ?? ''} ${specialty ?? ''}'
+        .toLowerCase();
+    return combined.contains('seguridad') ||
+        combined.contains('guardia') ||
+        combined.contains('vigilante') ||
+        combined.contains('custodio') ||
+        combined.contains('sereno');
+  }
+
+  /// Helper único que enmascara salario y compensaciones si la sesión carece de rrhh.compensation.view.
+  Future<RrhhEmployee> _maskSensitiveCompensation(
+    RrhhEmployee employee, {
+    Set<String>? userPermissions,
+  }) async {
+    final canView = await RbacGuard.hasPermission(
+      session,
+      AppPermissions.rrhhCompensationView,
+      userPermissions: userPermissions,
+    );
+    if (canView) {
+      return employee;
+    }
+    return employee.copyWith(
+      agreedSalary: null,
+      bonuses: null,
+      deductions: null,
+    );
+  }
+
+  /// Helper único para enmascarar listas de colaboradores.
+  Future<List<RrhhEmployee>> _maskSensitiveCompensationList(
+    List<RrhhEmployee> employees, {
+    Set<String>? userPermissions,
+  }) async {
+    final canView = await RbacGuard.hasPermission(
+      session,
+      AppPermissions.rrhhCompensationView,
+      userPermissions: userPermissions,
+    );
+    if (canView) {
+      return employees;
+    }
+    return employees
+        .map(
+          (e) => e.copyWith(
+            agreedSalary: null,
+            bonuses: null,
+            deductions: null,
+          ),
+        )
+        .toList();
+  }
 
   // ===========================================================================
   // 1. EMPLEADOS / EXPEDIENTES
@@ -24,7 +86,7 @@ class RrhhPersonnelRepository {
     int offset = 0,
     bool includeDeleted = false,
   }) async {
-    return await RrhhEmployee.db.find(
+    final rows = await RrhhEmployee.db.find(
       session,
       where: (t) {
         var expr = includeDeleted
@@ -64,6 +126,7 @@ class RrhhPersonnelRepository {
       limit: limit,
       offset: offset,
     );
+    return await _maskSensitiveCompensationList(rows);
   }
 
   /// Obtiene un empleado por su ID.
@@ -71,12 +134,14 @@ class RrhhPersonnelRepository {
     int id, {
     bool includeDeleted = false,
   }) async {
-    return await RrhhEmployee.db.findFirstRow(
+    final row = await RrhhEmployee.db.findFirstRow(
       session,
       where: (t) =>
           t.id.equals(id) &
           (includeDeleted ? Constant.bool(true) : t.isDeleted.equals(false)),
     );
+    if (row == null) return null;
+    return await _maskSensitiveCompensation(row);
   }
 
   /// Obtiene un empleado por su código institucional (ej: EMP-001).
@@ -84,12 +149,14 @@ class RrhhPersonnelRepository {
     String code, {
     bool includeDeleted = false,
   }) async {
-    return await RrhhEmployee.db.findFirstRow(
+    final row = await RrhhEmployee.db.findFirstRow(
       session,
       where: (t) =>
           t.code.equals(code.trim().toUpperCase()) &
           (includeDeleted ? Constant.bool(true) : t.isDeleted.equals(false)),
     );
+    if (row == null) return null;
+    return await _maskSensitiveCompensation(row);
   }
 
   /// Genera el siguiente código institucional disponible (EMP-001, EMP-002, etc.).
@@ -160,6 +227,26 @@ class RrhhPersonnelRepository {
       }
     }
 
+    final isSecurity = _isSecurityPosition(
+      position: employee.position,
+      area: employee.area,
+      specialty: employee.specialty,
+    );
+    if (isSecurity) {
+      final felccDocValid =
+          employee.documentChecklist?.any(
+            (d) =>
+                d.code.toUpperCase() == 'FELCC' &&
+                d.status.toLowerCase() == 'validado',
+          ) ??
+          false;
+      if (!felccDocValid) {
+        throw ValidationException(
+          'El Certificado FELCC es obligatorio para cargos de seguridad.',
+        );
+      }
+    }
+
     final now = DateTime.now().toUtc();
     final toInsert = employee.copyWith(
       code: finalCode,
@@ -186,14 +273,14 @@ class RrhhPersonnelRepository {
         date: employee.realStartDate,
         title: 'Contratación e incorporación en nómina',
         description:
-            'Incorporación formal como ${employee.position} en modalidad ${employee.contractType}. Sueldo base: Bs. ${employee.agreedSalary.toStringAsFixed(2)}.',
+            'Incorporación formal como ${employee.position} en modalidad ${employee.contractType}. Sueldo base: Bs. ${(employee.agreedSalary ?? 0.0).toStringAsFixed(2)}.',
         category: 'CONTRATACION',
         registeredBy: registeredBy,
         createdAt: now,
       ),
     );
 
-    return inserted;
+    return await _maskSensitiveCompensation(inserted);
   }
 
   /// Actualiza los datos laborales o personales del empleado.
@@ -215,7 +302,8 @@ class RrhhPersonnelRepository {
       updatedAt: now,
     );
 
-    return await RrhhEmployee.db.updateRow(session, toUpdate);
+    final updated = await RrhhEmployee.db.updateRow(session, toUpdate);
+    return await _maskSensitiveCompensation(updated);
   }
 
   /// Contratación transaccional de un Postulante Seleccionado.
@@ -389,6 +477,502 @@ class RrhhPersonnelRepository {
   }
 
   // ===========================================================================
+  // 1.1 FASE B: ACTUALIZACIONES GRANULARES Y EXPOSICIÓN CONTRACTUAL
+  // ===========================================================================
+
+  /// Obtiene el resumen contractual y salarial de un empleado para exposición a Contabilidad.
+  Future<RrhhEmployeeContractData> getEmployeeContractData(int id) async {
+    final employee = await getEmployeeById(id);
+    if (employee == null) {
+      throw EntityNotFoundException('RrhhEmployee', id);
+    }
+
+    return RrhhEmployeeContractData(
+      employeeId: employee.id ?? id,
+      code: employee.code,
+      fullName: employee.fullName,
+      status: employee.status,
+      contractType: employee.contractType,
+      baseSalary: employee.agreedSalary,
+      paymentModality: employee.paymentModality,
+      workdayType: employee.workdayType,
+      bonuses: employee.bonuses,
+      deductions: employee.deductions,
+      contractStartDate: employee.contractStartDate ?? employee.realStartDate,
+      contractEndDate: employee.contractEndDate,
+      terminationDate: employee.exitDate,
+    );
+  }
+
+  /// Actualiza los datos de cuenta y entidad bancaria del empleado.
+  Future<RrhhEmployee> updateEmployeeBankInfo({
+    required int id,
+    String? bankName,
+    String? accountType,
+    String? accountNumber,
+    String registeredBy = 'Recursos Humanos',
+  }) async {
+    final employee = await getEmployeeById(id);
+    if (employee == null) {
+      throw EntityNotFoundException('RrhhEmployee', id);
+    }
+
+    final now = DateTime.now().toUtc();
+    final updated = employee.copyWith(
+      bankName: bankName,
+      accountType: accountType,
+      accountNumber: accountNumber,
+      updatedAt: now,
+    );
+
+    final saved = await RrhhEmployee.db.updateRow(session, updated);
+
+    await RrhhTimelineEvent.db.insertRow(
+      session,
+      RrhhTimelineEvent(
+        employeeId: id,
+        date: now,
+        title: 'Actualización de datos bancarios',
+        description:
+            'Actualización de datos bancarios: Banco ${bankName ?? "N/A"}, Cuenta ${accountNumber ?? "N/A"} (${accountType ?? "N/A"}).',
+        category: 'CONTRATO',
+        registeredBy: registeredBy,
+        createdAt: now,
+      ),
+    );
+
+    return await _maskSensitiveCompensation(saved);
+  }
+
+  /// Actualiza la información de seguridad social (AFP, CNS, etc.).
+  Future<RrhhEmployee> updateEmployeeSocialSecurity({
+    required int id,
+    String? afpName,
+    String? afpNumber,
+    String? healthInsurance,
+    String registeredBy = 'Recursos Humanos',
+  }) async {
+    final employee = await getEmployeeById(id);
+    if (employee == null) {
+      throw EntityNotFoundException('RrhhEmployee', id);
+    }
+
+    final now = DateTime.now().toUtc();
+    final updated = employee.copyWith(
+      afpName: afpName,
+      afpNumber: afpNumber,
+      healthInsurance: healthInsurance,
+      updatedAt: now,
+    );
+
+    final saved = await RrhhEmployee.db.updateRow(session, updated);
+
+    await RrhhTimelineEvent.db.insertRow(
+      session,
+      RrhhTimelineEvent(
+        employeeId: id,
+        date: now,
+        title: 'Actualización de seguridad social',
+        description:
+            'Actualización de seguridad social: AFP ${afpName ?? "N/A"} (#${afpNumber ?? "N/A"}), Seguro: ${healthInsurance ?? "N/A"}.',
+        category: 'CONTRATO',
+        registeredBy: registeredBy,
+        createdAt: now,
+      ),
+    );
+
+    return await _maskSensitiveCompensation(saved);
+  }
+
+  /// Actualiza los datos personales complementarios y contacto de emergencia.
+  Future<RrhhEmployee> updateEmployeePersonalInfo({
+    required int id,
+    String? fullAddress,
+    String? maritalStatus,
+    int? childrenCount,
+    String? emergencyContactName,
+    String? emergencyContactPhone,
+    String? emergencyContactRelation,
+    String registeredBy = 'Recursos Humanos',
+  }) async {
+    final employee = await getEmployeeById(id);
+    if (employee == null) {
+      throw EntityNotFoundException('RrhhEmployee', id);
+    }
+
+    final now = DateTime.now().toUtc();
+    final updated = employee.copyWith(
+      fullAddress: fullAddress,
+      address: fullAddress ?? employee.address,
+      maritalStatus: maritalStatus,
+      childrenCount: childrenCount,
+      emergencyContactName: emergencyContactName,
+      emergencyContactPhone: emergencyContactPhone,
+      emergencyContactRelation: emergencyContactRelation,
+      updatedAt: now,
+    );
+
+    final saved = await RrhhEmployee.db.updateRow(session, updated);
+
+    await RrhhTimelineEvent.db.insertRow(
+      session,
+      RrhhTimelineEvent(
+        employeeId: id,
+        date: now,
+        title: 'Actualización de datos personales',
+        description:
+            'Actualización de datos personales complementarios y contactos de emergencia.',
+        category: 'PERSONAL',
+        registeredBy: registeredBy,
+        createdAt: now,
+      ),
+    );
+
+    return await _maskSensitiveCompensation(saved);
+  }
+
+  /// Actualiza las condiciones contractuales y salariales del empleado.
+  Future<RrhhEmployee> updateEmployeeContract({
+    required int id,
+    required String justification,
+    String? contractType,
+    String? workdayType,
+    String? paymentModality,
+    double? baseSalary,
+    DateTime? contractStartDate,
+    DateTime? contractEndDate,
+    String? contractSignedPdfUrl,
+    List<RrhhEmployeeBonus>? bonuses,
+    List<RrhhEmployeeDeduction>? deductions,
+    String registeredBy = 'Recursos Humanos',
+  }) async {
+    // Validación 3.2: Justificación obligatoria >= 20 caracteres
+    if (justification.trim().length < 20) {
+      throw ValidationException(
+        'La justificación debe tener al menos 20 caracteres.',
+      );
+    }
+
+    // Validación 3.1: Fecha efectiva <= 30 días desde hoy
+    final maxFuture = DateTime.now().toUtc().add(const Duration(days: 30));
+    final checkDate = contractStartDate;
+    if (checkDate != null && checkDate.isAfter(maxFuture)) {
+      throw ValidationException(
+        'La fecha efectiva no puede superar los 30 días desde hoy.',
+      );
+    }
+
+    final employee = await getEmployeeById(id);
+    if (employee == null) {
+      throw EntityNotFoundException('RrhhEmployee', id);
+    }
+
+    final now = DateTime.now().toUtc();
+    final updated = employee.copyWith(
+      contractType: contractType,
+      workdayType: workdayType,
+      paymentModality: paymentModality,
+      agreedSalary: baseSalary ?? employee.agreedSalary,
+      contractStartDate: contractStartDate,
+      contractEndDate: contractEndDate,
+      contractSignedPdfUrl: contractSignedPdfUrl,
+      bonuses: bonuses,
+      deductions: deductions,
+      updatedAt: now,
+    );
+
+    final saved = await RrhhEmployee.db.updateRow(session, updated);
+
+    await RrhhTimelineEvent.db.insertRow(
+      session,
+      RrhhTimelineEvent(
+        employeeId: id,
+        date: now,
+        title: 'Actualización de datos contractuales',
+        description:
+            'Actualización contractual: Modalidad ${contractType ?? employee.contractType}, Jornada ${workdayType ?? employee.workdayType}, Sueldo Bs. ${(baseSalary ?? employee.agreedSalary ?? 0.0).toStringAsFixed(2)}. Justificación: ${justification.trim()}',
+        category: 'CONTRATO',
+        registeredBy: registeredBy,
+        createdAt: now,
+      ),
+    );
+
+    return await _maskSensitiveCompensation(saved);
+  }
+
+  /// Actualiza la lista de bonificaciones asignadas al colaborador.
+  Future<RrhhEmployee> updateEmployeeBonuses({
+    required int id,
+    required List<RrhhEmployeeBonus> bonuses,
+    String registeredBy = 'Recursos Humanos',
+  }) async {
+    final employee = await getEmployeeById(id);
+    if (employee == null) {
+      throw EntityNotFoundException('RrhhEmployee', id);
+    }
+
+    final now = DateTime.now().toUtc();
+    final updated = employee.copyWith(
+      bonuses: bonuses,
+      updatedAt: now,
+    );
+
+    final saved = await RrhhEmployee.db.updateRow(session, updated);
+
+    await RrhhTimelineEvent.db.insertRow(
+      session,
+      RrhhTimelineEvent(
+        employeeId: id,
+        date: now,
+        title: 'Actualización de bonificaciones',
+        description:
+            'Actualización de ${bonuses.length} bonificaciones asignadas al colaborador.',
+        category: 'CONTRATO',
+        registeredBy: registeredBy,
+        createdAt: now,
+      ),
+    );
+
+    return await _maskSensitiveCompensation(saved);
+  }
+
+  /// Actualiza la lista de deducciones asignadas al colaborador.
+  Future<RrhhEmployee> updateEmployeeDeductions({
+    required int id,
+    required List<RrhhEmployeeDeduction> deductions,
+    String registeredBy = 'Recursos Humanos',
+  }) async {
+    final employee = await getEmployeeById(id);
+    if (employee == null) {
+      throw EntityNotFoundException('RrhhEmployee', id);
+    }
+
+    final now = DateTime.now().toUtc();
+    final updated = employee.copyWith(
+      deductions: deductions,
+      updatedAt: now,
+    );
+
+    final saved = await RrhhEmployee.db.updateRow(session, updated);
+
+    await RrhhTimelineEvent.db.insertRow(
+      session,
+      RrhhTimelineEvent(
+        employeeId: id,
+        date: now,
+        title: 'Actualización de deducciones',
+        description:
+            'Actualización de ${deductions.length} deducciones asignadas al colaborador.',
+        category: 'CONTRATO',
+        registeredBy: registeredBy,
+        createdAt: now,
+      ),
+    );
+
+    return await _maskSensitiveCompensation(saved);
+  }
+
+  /// Actualiza la asignación operativa, base y supervisor del colaborador.
+  Future<RrhhEmployee> updateEmployeeAssignment({
+    required int id,
+    String? shiftId,
+    String? baseLocation,
+    String? supervisorEmployeeId,
+    String registeredBy = 'Recursos Humanos',
+  }) async {
+    final employee = await getEmployeeById(id);
+    if (employee == null) {
+      throw EntityNotFoundException('RrhhEmployee', id);
+    }
+
+    final now = DateTime.now().toUtc();
+    final updated = employee.copyWith(
+      shiftId: shiftId,
+      baseLocation: baseLocation,
+      supervisorEmployeeId: supervisorEmployeeId,
+      workplace: baseLocation ?? employee.workplace,
+      supervisor: supervisorEmployeeId ?? employee.supervisor,
+      updatedAt: now,
+    );
+
+    final saved = await RrhhEmployee.db.updateRow(session, updated);
+
+    await RrhhTimelineEvent.db.insertRow(
+      session,
+      RrhhTimelineEvent(
+        employeeId: id,
+        date: now,
+        title: 'Actualización de asignación organizacional',
+        description:
+            'Actualización de asignación: Turno ${shiftId ?? "N/A"}, Base ${baseLocation ?? "N/A"}, Supervisor ${supervisorEmployeeId ?? "N/A"}.',
+        category: 'MOVIMIENTO',
+        registeredBy: registeredBy,
+        createdAt: now,
+      ),
+    );
+
+    return await _maskSensitiveCompensation(saved);
+  }
+
+  /// Actualiza el checklist de documentación entregada por el empleado.
+  Future<RrhhEmployee> updateEmployeeDocuments({
+    required int id,
+    required List<RrhhDossierDocument> documentChecklist,
+    String registeredBy = 'Recursos Humanos',
+  }) async {
+    final employee = await getEmployeeById(id);
+    if (employee == null) {
+      throw EntityNotFoundException('RrhhEmployee', id);
+    }
+
+    final now = DateTime.now().toUtc();
+    final updated = employee.copyWith(
+      documentChecklist: documentChecklist,
+      updatedAt: now,
+    );
+
+    final saved = await RrhhEmployee.db.updateRow(session, updated);
+
+    await RrhhTimelineEvent.db.insertRow(
+      session,
+      RrhhTimelineEvent(
+        employeeId: id,
+        date: now,
+        title: 'Actualización de checklist documental',
+        description:
+            'Actualización de checklist documental (${documentChecklist.length} documentos registrados).',
+        category: 'PERSONAL',
+        registeredBy: registeredBy,
+        createdAt: now,
+      ),
+    );
+
+    return await _maskSensitiveCompensation(saved);
+  }
+
+  /// TAREA 4: Lista resumida y paginada de colaboradores para el Directorio de Personal.
+  /// No incluye campos sensibles salariales ni bancarios.
+  Future<List<RrhhEmployeeSummaryDto>> listEmployeeSummaries({
+    String? status,
+    String? employeeType,
+    String? availabilityStatus,
+    int? areaId,
+    String? search,
+    int limit = 50,
+    int offset = 0,
+    bool includeDeleted = false,
+  }) async {
+    final rows = await RrhhEmployee.db.find(
+      session,
+      where: (t) {
+        var expr = includeDeleted
+            ? Constant.bool(true)
+            : t.isDeleted.equals(false);
+        if (status != null && status.trim().isNotEmpty) {
+          expr = expr & t.status.equals(status.trim().toUpperCase());
+        }
+        if (employeeType != null && employeeType.trim().isNotEmpty) {
+          expr =
+              expr & t.employeeType.equals(employeeType.trim().toUpperCase());
+        }
+        if (availabilityStatus != null &&
+            availabilityStatus.trim().isNotEmpty) {
+          expr =
+              expr &
+              t.availabilityStatus.equals(
+                availabilityStatus.trim().toUpperCase(),
+              );
+        }
+        if (areaId != null) {
+          expr = expr & t.areaId.equals(areaId);
+        }
+        if (search != null && search.trim().isNotEmpty) {
+          final query = '%${search.trim()}%';
+          expr =
+              expr &
+              (t.fullName.ilike(query) |
+                  t.identityCard.ilike(query) |
+                  t.code.ilike(query) |
+                  t.position.ilike(query) |
+                  t.specialty.ilike(query));
+        }
+        return expr;
+      },
+      orderBy: (t) => t.code,
+      limit: limit,
+      offset: offset,
+    );
+
+    return rows
+        .map(
+          (e) => RrhhEmployeeSummaryDto(
+            id: e.id!,
+            code: e.code,
+            fullName: e.fullName,
+            identityCard: e.identityCard,
+            phone: e.phone,
+            employeeType: e.employeeType,
+            area: e.area,
+            position: e.position,
+            workplace: e.workplace,
+            status: e.status,
+            availabilityStatus: e.availabilityStatus,
+            hireDate: e.realStartDate,
+            photoUrl: e.photoUrl,
+          ),
+        )
+        .toList();
+  }
+
+  /// TAREA 4: Retorna el conteo total de empleados coincidentes con los filtros especificados.
+  Future<int> countEmployees({
+    String? status,
+    String? employeeType,
+    String? availabilityStatus,
+    int? areaId,
+    String? search,
+    bool includeDeleted = false,
+  }) async {
+    return await RrhhEmployee.db.count(
+      session,
+      where: (t) {
+        var expr = includeDeleted
+            ? Constant.bool(true)
+            : t.isDeleted.equals(false);
+        if (status != null && status.trim().isNotEmpty) {
+          expr = expr & t.status.equals(status.trim().toUpperCase());
+        }
+        if (employeeType != null && employeeType.trim().isNotEmpty) {
+          expr =
+              expr & t.employeeType.equals(employeeType.trim().toUpperCase());
+        }
+        if (availabilityStatus != null &&
+            availabilityStatus.trim().isNotEmpty) {
+          expr =
+              expr &
+              t.availabilityStatus.equals(
+                availabilityStatus.trim().toUpperCase(),
+              );
+        }
+        if (areaId != null) {
+          expr = expr & t.areaId.equals(areaId);
+        }
+        if (search != null && search.trim().isNotEmpty) {
+          final query = '%${search.trim()}%';
+          expr =
+              expr &
+              (t.fullName.ilike(query) |
+                  t.identityCard.ilike(query) |
+                  t.code.ilike(query) |
+                  t.position.ilike(query) |
+                  t.specialty.ilike(query));
+        }
+        return expr;
+      },
+    );
+  }
+
+  // ===========================================================================
   // 2. DOCUMENTOS ADJUNTOS AL EXPEDIENTE
   // ===========================================================================
 
@@ -429,7 +1013,7 @@ class RrhhPersonnelRepository {
     return await RrhhTimelineEvent.db.find(
       session,
       where: (t) => t.employeeId.equals(employeeId),
-      orderBy: (t) => t.date,
+      orderBy: (t) => t.createdAt,
       orderDescending: true,
     );
   }

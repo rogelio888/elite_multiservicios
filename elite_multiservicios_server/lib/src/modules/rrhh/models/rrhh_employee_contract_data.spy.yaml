@@ -1,0 +1,16 @@
+### Resumen contractual y remunerativo del empleado expuesto para Contabilidad.
+class: RrhhEmployeeContractData
+fields:
+  employeeId: int
+  code: String
+  fullName: String
+  status: String
+  contractType: String
+  baseSalary: double?
+  paymentModality: String
+  workdayType: String?
+  bonuses: List<RrhhEmployeeBonus>?
+  deductions: List<RrhhEmployeeDeduction>?
+  contractStartDate: DateTime?
+  contractEndDate: DateTime?
+  terminationDate: DateTime?

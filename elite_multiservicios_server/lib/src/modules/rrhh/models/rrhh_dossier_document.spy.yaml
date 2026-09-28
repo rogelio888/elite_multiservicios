@@ -1,0 +1,19 @@
+### Documento de checklist de un expediente de contratación (FASE C).
+class: RrhhDossierDocument
+fields:
+  ### Código identificador técnico del documento ('CI', 'FELCC', 'AVISO', etc.).
+  code: String
+  ### Nombre descriptivo legible del documento.
+  name: String
+  ### Si el documento es de presentación obligatoria para el cargo y tipo de puesto.
+  isRequired: bool
+  ### Estado: 'pendiente' | 'recibido' | 'validado' | 'rechazado'.
+  status: String, default='pendiente'
+  ### Fecha y hora en que se recibió formalmente el documento físico o digital.
+  receivedAt: DateTime?
+  ### Notas u observaciones del revisor.
+  notes: String?
+  ### URL del documento digitalizado o escaneado en el almacenamiento.
+  scannedFileUrl: String?
+  ### Indica si el documento ya fue validado en la etapa previa de reclutamiento.
+  validatedInRecruitment: bool, default=false

@@ -12,7 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:elite_multiservicios_client/src/protocol/protocol.dart' as _i2;
+import '../../../modules/rrhh/models/rrhh_employee_bonus.dart' as _i2;
+import '../../../modules/rrhh/models/rrhh_employee_deduction.dart' as _i3;
+import '../../../modules/rrhh/models/rrhh_dossier_document.dart' as _i4;
+import 'package:elite_multiservicios_client/src/protocol/protocol.dart' as _i5;
 
 /// Expediente maestro del Colaborador / Empleado de Elite Multiservicios.
 abstract class RrhhEmployee implements _i1.SerializableModel {
@@ -40,7 +43,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
     this.supervisorId,
     required this.realStartDate,
     required this.fiscalStartDate,
-    required this.agreedSalary,
+    this.agreedSalary,
     required this.contractType,
     this.contractEndDate,
     this.observations,
@@ -63,6 +66,27 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
     this.exitReason,
     this.exitObservations,
     this.exitRegisteredBy,
+    this.bankName,
+    this.accountType,
+    this.accountNumber,
+    this.afpName,
+    this.afpNumber,
+    this.healthInsurance,
+    this.fullAddress,
+    this.maritalStatus,
+    this.childrenCount,
+    this.emergencyContactName,
+    this.emergencyContactPhone,
+    this.emergencyContactRelation,
+    this.workdayType,
+    this.contractStartDate,
+    this.contractSignedPdfUrl,
+    this.bonuses,
+    this.deductions,
+    this.shiftId,
+    this.baseLocation,
+    this.supervisorEmployeeId,
+    this.documentChecklist,
     bool? isDeleted,
     this.deletedAt,
     required this.createdAt,
@@ -103,7 +127,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
     int? supervisorId,
     required DateTime realStartDate,
     required DateTime fiscalStartDate,
-    required double agreedSalary,
+    double? agreedSalary,
     required String contractType,
     DateTime? contractEndDate,
     String? observations,
@@ -126,6 +150,27 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
     String? exitReason,
     String? exitObservations,
     String? exitRegisteredBy,
+    String? bankName,
+    String? accountType,
+    String? accountNumber,
+    String? afpName,
+    String? afpNumber,
+    String? healthInsurance,
+    String? fullAddress,
+    String? maritalStatus,
+    int? childrenCount,
+    String? emergencyContactName,
+    String? emergencyContactPhone,
+    String? emergencyContactRelation,
+    String? workdayType,
+    DateTime? contractStartDate,
+    String? contractSignedPdfUrl,
+    List<_i2.RrhhEmployeeBonus>? bonuses,
+    List<_i3.RrhhEmployeeDeduction>? deductions,
+    String? shiftId,
+    String? baseLocation,
+    String? supervisorEmployeeId,
+    List<_i4.RrhhDossierDocument>? documentChecklist,
     bool? isDeleted,
     DateTime? deletedAt,
     required DateTime createdAt,
@@ -163,7 +208,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
       fiscalStartDate: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['fiscalStartDate'],
       ),
-      agreedSalary: (jsonSerialization['agreedSalary'] as num).toDouble(),
+      agreedSalary: (jsonSerialization['agreedSalary'] as num?)?.toDouble(),
       contractType: jsonSerialization['contractType'] as String,
       contractEndDate: jsonSerialization['contractEndDate'] == null
           ? null
@@ -174,7 +219,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
       status: jsonSerialization['status'] as String?,
       skills: jsonSerialization['skills'] == null
           ? null
-          : _i2.Protocol().deserialize<List<String>>(
+          : _i5.Protocol().deserialize<List<String>>(
               jsonSerialization['skills'],
             ),
       availabilityStatus: jsonSerialization['availabilityStatus'] as String?,
@@ -210,6 +255,48 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
       exitReason: jsonSerialization['exitReason'] as String?,
       exitObservations: jsonSerialization['exitObservations'] as String?,
       exitRegisteredBy: jsonSerialization['exitRegisteredBy'] as String?,
+      bankName: jsonSerialization['bankName'] as String?,
+      accountType: jsonSerialization['accountType'] as String?,
+      accountNumber: jsonSerialization['accountNumber'] as String?,
+      afpName: jsonSerialization['afpName'] as String?,
+      afpNumber: jsonSerialization['afpNumber'] as String?,
+      healthInsurance: jsonSerialization['healthInsurance'] as String?,
+      fullAddress: jsonSerialization['fullAddress'] as String?,
+      maritalStatus: jsonSerialization['maritalStatus'] as String?,
+      childrenCount: jsonSerialization['childrenCount'] as int?,
+      emergencyContactName:
+          jsonSerialization['emergencyContactName'] as String?,
+      emergencyContactPhone:
+          jsonSerialization['emergencyContactPhone'] as String?,
+      emergencyContactRelation:
+          jsonSerialization['emergencyContactRelation'] as String?,
+      workdayType: jsonSerialization['workdayType'] as String?,
+      contractStartDate: jsonSerialization['contractStartDate'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['contractStartDate'],
+            ),
+      contractSignedPdfUrl:
+          jsonSerialization['contractSignedPdfUrl'] as String?,
+      bonuses: jsonSerialization['bonuses'] == null
+          ? null
+          : _i5.Protocol().deserialize<List<_i2.RrhhEmployeeBonus>>(
+              jsonSerialization['bonuses'],
+            ),
+      deductions: jsonSerialization['deductions'] == null
+          ? null
+          : _i5.Protocol().deserialize<List<_i3.RrhhEmployeeDeduction>>(
+              jsonSerialization['deductions'],
+            ),
+      shiftId: jsonSerialization['shiftId'] as String?,
+      baseLocation: jsonSerialization['baseLocation'] as String?,
+      supervisorEmployeeId:
+          jsonSerialization['supervisorEmployeeId'] as String?,
+      documentChecklist: jsonSerialization['documentChecklist'] == null
+          ? null
+          : _i5.Protocol().deserialize<List<_i4.RrhhDossierDocument>>(
+              jsonSerialization['documentChecklist'],
+            ),
       isDeleted: jsonSerialization['isDeleted'] == null
           ? null
           : _i1.BoolJsonExtension.fromJson(jsonSerialization['isDeleted']),
@@ -292,7 +379,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
 
   DateTime fiscalStartDate;
 
-  double agreedSalary;
+  double? agreedSalary;
 
   /// Modalidad de contrato: 'Indefinido', 'Plazo Fijo', 'Servicios'.
   String contractType;
@@ -348,6 +435,55 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
   String? exitObservations;
 
   String? exitRegisteredBy;
+
+  /// Datos bancarios (FASE B)
+  String? bankName;
+
+  String? accountType;
+
+  String? accountNumber;
+
+  /// Seguridad social (FASE B)
+  String? afpName;
+
+  String? afpNumber;
+
+  String? healthInsurance;
+
+  /// Datos personales complementarios (FASE B)
+  String? fullAddress;
+
+  String? maritalStatus;
+
+  int? childrenCount;
+
+  String? emergencyContactName;
+
+  String? emergencyContactPhone;
+
+  String? emergencyContactRelation;
+
+  /// Datos contractuales complementarios (FASE B)
+  String? workdayType;
+
+  DateTime? contractStartDate;
+
+  String? contractSignedPdfUrl;
+
+  /// Bonificaciones y deducciones (FASE B)
+  List<_i2.RrhhEmployeeBonus>? bonuses;
+
+  List<_i3.RrhhEmployeeDeduction>? deductions;
+
+  /// Asignación organizacional (FASE B)
+  String? shiftId;
+
+  String? baseLocation;
+
+  String? supervisorEmployeeId;
+
+  /// Checklist de documentos (FASE B)
+  List<_i4.RrhhDossierDocument>? documentChecklist;
 
   /// Eliminación lógica y auditoría
   bool isDeleted;
@@ -408,6 +544,27 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
     String? exitReason,
     String? exitObservations,
     String? exitRegisteredBy,
+    String? bankName,
+    String? accountType,
+    String? accountNumber,
+    String? afpName,
+    String? afpNumber,
+    String? healthInsurance,
+    String? fullAddress,
+    String? maritalStatus,
+    int? childrenCount,
+    String? emergencyContactName,
+    String? emergencyContactPhone,
+    String? emergencyContactRelation,
+    String? workdayType,
+    DateTime? contractStartDate,
+    String? contractSignedPdfUrl,
+    List<_i2.RrhhEmployeeBonus>? bonuses,
+    List<_i3.RrhhEmployeeDeduction>? deductions,
+    String? shiftId,
+    String? baseLocation,
+    String? supervisorEmployeeId,
+    List<_i4.RrhhDossierDocument>? documentChecklist,
     bool? isDeleted,
     DateTime? deletedAt,
     DateTime? createdAt,
@@ -440,7 +597,7 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
       if (supervisorId != null) 'supervisorId': supervisorId,
       'realStartDate': realStartDate.toJson(),
       'fiscalStartDate': fiscalStartDate.toJson(),
-      'agreedSalary': agreedSalary,
+      if (agreedSalary != null) 'agreedSalary': agreedSalary,
       'contractType': contractType,
       if (contractEndDate != null) 'contractEndDate': contractEndDate?.toJson(),
       if (observations != null) 'observations': observations,
@@ -463,6 +620,38 @@ abstract class RrhhEmployee implements _i1.SerializableModel {
       if (exitReason != null) 'exitReason': exitReason,
       if (exitObservations != null) 'exitObservations': exitObservations,
       if (exitRegisteredBy != null) 'exitRegisteredBy': exitRegisteredBy,
+      if (bankName != null) 'bankName': bankName,
+      if (accountType != null) 'accountType': accountType,
+      if (accountNumber != null) 'accountNumber': accountNumber,
+      if (afpName != null) 'afpName': afpName,
+      if (afpNumber != null) 'afpNumber': afpNumber,
+      if (healthInsurance != null) 'healthInsurance': healthInsurance,
+      if (fullAddress != null) 'fullAddress': fullAddress,
+      if (maritalStatus != null) 'maritalStatus': maritalStatus,
+      if (childrenCount != null) 'childrenCount': childrenCount,
+      if (emergencyContactName != null)
+        'emergencyContactName': emergencyContactName,
+      if (emergencyContactPhone != null)
+        'emergencyContactPhone': emergencyContactPhone,
+      if (emergencyContactRelation != null)
+        'emergencyContactRelation': emergencyContactRelation,
+      if (workdayType != null) 'workdayType': workdayType,
+      if (contractStartDate != null)
+        'contractStartDate': contractStartDate?.toJson(),
+      if (contractSignedPdfUrl != null)
+        'contractSignedPdfUrl': contractSignedPdfUrl,
+      if (bonuses != null)
+        'bonuses': bonuses?.toJson(valueToJson: (v) => v.toJson()),
+      if (deductions != null)
+        'deductions': deductions?.toJson(valueToJson: (v) => v.toJson()),
+      if (shiftId != null) 'shiftId': shiftId,
+      if (baseLocation != null) 'baseLocation': baseLocation,
+      if (supervisorEmployeeId != null)
+        'supervisorEmployeeId': supervisorEmployeeId,
+      if (documentChecklist != null)
+        'documentChecklist': documentChecklist?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       'isDeleted': isDeleted,
       if (deletedAt != null) 'deletedAt': deletedAt?.toJson(),
       'createdAt': createdAt.toJson(),
@@ -503,7 +692,7 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
     int? supervisorId,
     required DateTime realStartDate,
     required DateTime fiscalStartDate,
-    required double agreedSalary,
+    double? agreedSalary,
     required String contractType,
     DateTime? contractEndDate,
     String? observations,
@@ -526,6 +715,27 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
     String? exitReason,
     String? exitObservations,
     String? exitRegisteredBy,
+    String? bankName,
+    String? accountType,
+    String? accountNumber,
+    String? afpName,
+    String? afpNumber,
+    String? healthInsurance,
+    String? fullAddress,
+    String? maritalStatus,
+    int? childrenCount,
+    String? emergencyContactName,
+    String? emergencyContactPhone,
+    String? emergencyContactRelation,
+    String? workdayType,
+    DateTime? contractStartDate,
+    String? contractSignedPdfUrl,
+    List<_i2.RrhhEmployeeBonus>? bonuses,
+    List<_i3.RrhhEmployeeDeduction>? deductions,
+    String? shiftId,
+    String? baseLocation,
+    String? supervisorEmployeeId,
+    List<_i4.RrhhDossierDocument>? documentChecklist,
     bool? isDeleted,
     DateTime? deletedAt,
     required DateTime createdAt,
@@ -577,6 +787,27 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
          exitReason: exitReason,
          exitObservations: exitObservations,
          exitRegisteredBy: exitRegisteredBy,
+         bankName: bankName,
+         accountType: accountType,
+         accountNumber: accountNumber,
+         afpName: afpName,
+         afpNumber: afpNumber,
+         healthInsurance: healthInsurance,
+         fullAddress: fullAddress,
+         maritalStatus: maritalStatus,
+         childrenCount: childrenCount,
+         emergencyContactName: emergencyContactName,
+         emergencyContactPhone: emergencyContactPhone,
+         emergencyContactRelation: emergencyContactRelation,
+         workdayType: workdayType,
+         contractStartDate: contractStartDate,
+         contractSignedPdfUrl: contractSignedPdfUrl,
+         bonuses: bonuses,
+         deductions: deductions,
+         shiftId: shiftId,
+         baseLocation: baseLocation,
+         supervisorEmployeeId: supervisorEmployeeId,
+         documentChecklist: documentChecklist,
          isDeleted: isDeleted,
          deletedAt: deletedAt,
          createdAt: createdAt,
@@ -611,7 +842,7 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
     Object? supervisorId = _Undefined,
     DateTime? realStartDate,
     DateTime? fiscalStartDate,
-    double? agreedSalary,
+    Object? agreedSalary = _Undefined,
     String? contractType,
     Object? contractEndDate = _Undefined,
     Object? observations = _Undefined,
@@ -634,6 +865,27 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
     Object? exitReason = _Undefined,
     Object? exitObservations = _Undefined,
     Object? exitRegisteredBy = _Undefined,
+    Object? bankName = _Undefined,
+    Object? accountType = _Undefined,
+    Object? accountNumber = _Undefined,
+    Object? afpName = _Undefined,
+    Object? afpNumber = _Undefined,
+    Object? healthInsurance = _Undefined,
+    Object? fullAddress = _Undefined,
+    Object? maritalStatus = _Undefined,
+    Object? childrenCount = _Undefined,
+    Object? emergencyContactName = _Undefined,
+    Object? emergencyContactPhone = _Undefined,
+    Object? emergencyContactRelation = _Undefined,
+    Object? workdayType = _Undefined,
+    Object? contractStartDate = _Undefined,
+    Object? contractSignedPdfUrl = _Undefined,
+    Object? bonuses = _Undefined,
+    Object? deductions = _Undefined,
+    Object? shiftId = _Undefined,
+    Object? baseLocation = _Undefined,
+    Object? supervisorEmployeeId = _Undefined,
+    Object? documentChecklist = _Undefined,
     bool? isDeleted,
     Object? deletedAt = _Undefined,
     DateTime? createdAt,
@@ -663,7 +915,7 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
       supervisorId: supervisorId is int? ? supervisorId : this.supervisorId,
       realStartDate: realStartDate ?? this.realStartDate,
       fiscalStartDate: fiscalStartDate ?? this.fiscalStartDate,
-      agreedSalary: agreedSalary ?? this.agreedSalary,
+      agreedSalary: agreedSalary is double? ? agreedSalary : this.agreedSalary,
       contractType: contractType ?? this.contractType,
       contractEndDate: contractEndDate is DateTime?
           ? contractEndDate
@@ -698,6 +950,51 @@ class _RrhhEmployeeImpl extends RrhhEmployee {
       exitRegisteredBy: exitRegisteredBy is String?
           ? exitRegisteredBy
           : this.exitRegisteredBy,
+      bankName: bankName is String? ? bankName : this.bankName,
+      accountType: accountType is String? ? accountType : this.accountType,
+      accountNumber: accountNumber is String?
+          ? accountNumber
+          : this.accountNumber,
+      afpName: afpName is String? ? afpName : this.afpName,
+      afpNumber: afpNumber is String? ? afpNumber : this.afpNumber,
+      healthInsurance: healthInsurance is String?
+          ? healthInsurance
+          : this.healthInsurance,
+      fullAddress: fullAddress is String? ? fullAddress : this.fullAddress,
+      maritalStatus: maritalStatus is String?
+          ? maritalStatus
+          : this.maritalStatus,
+      childrenCount: childrenCount is int? ? childrenCount : this.childrenCount,
+      emergencyContactName: emergencyContactName is String?
+          ? emergencyContactName
+          : this.emergencyContactName,
+      emergencyContactPhone: emergencyContactPhone is String?
+          ? emergencyContactPhone
+          : this.emergencyContactPhone,
+      emergencyContactRelation: emergencyContactRelation is String?
+          ? emergencyContactRelation
+          : this.emergencyContactRelation,
+      workdayType: workdayType is String? ? workdayType : this.workdayType,
+      contractStartDate: contractStartDate is DateTime?
+          ? contractStartDate
+          : this.contractStartDate,
+      contractSignedPdfUrl: contractSignedPdfUrl is String?
+          ? contractSignedPdfUrl
+          : this.contractSignedPdfUrl,
+      bonuses: bonuses is List<_i2.RrhhEmployeeBonus>?
+          ? bonuses
+          : this.bonuses?.map((e0) => e0.copyWith()).toList(),
+      deductions: deductions is List<_i3.RrhhEmployeeDeduction>?
+          ? deductions
+          : this.deductions?.map((e0) => e0.copyWith()).toList(),
+      shiftId: shiftId is String? ? shiftId : this.shiftId,
+      baseLocation: baseLocation is String? ? baseLocation : this.baseLocation,
+      supervisorEmployeeId: supervisorEmployeeId is String?
+          ? supervisorEmployeeId
+          : this.supervisorEmployeeId,
+      documentChecklist: documentChecklist is List<_i4.RrhhDossierDocument>?
+          ? documentChecklist
+          : this.documentChecklist?.map((e0) => e0.copyWith()).toList(),
       isDeleted: isDeleted ?? this.isDeleted,
       deletedAt: deletedAt is DateTime? ? deletedAt : this.deletedAt,
       createdAt: createdAt ?? this.createdAt,

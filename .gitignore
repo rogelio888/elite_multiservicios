@@ -5,6 +5,9 @@ pubspec_overrides.yaml
 build/
 doc/api/
 
+# Scratch directory
+scratch/
+
 # Secrets and sensitive configuration files
 **/config/passwords.yaml
 !**/config/passwords.yaml.example

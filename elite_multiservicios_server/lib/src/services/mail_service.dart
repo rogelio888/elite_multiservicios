@@ -156,21 +156,29 @@ class MailService {
         runMode == 'production' ||
         Platform.environment['SERVERPOD_ENV'] == 'production';
 
-    final forceBrevo =
-        Platform.environment['MAIL_DRIVER'] == 'brevo' ||
-        Platform.environment['FORCE_REAL_MAIL'] == 'true' ||
-        Platform.environment['SMTP_HOST']?.contains('brevo') == true;
+    final mailDriver = Platform.environment['MAIL_DRIVER']
+        ?.toLowerCase()
+        .trim();
 
-    final brevoApiKey =
-        Platform.environment['BREVO_API_KEY'] ??
-        session.passwords['brevoApiKey'] ??
-        (Platform.environment['MAIL_DRIVER'] == 'brevo' ||
-                Platform.environment['SMTP_HOST']?.contains('brevo') == true ||
-                Platform.environment['SMTP_USERNAME']?.contains('brevo') == true
-            ? Platform.environment['SMTP_PASSWORD']
-            : null);
+    // Regla estricta:
+    // - En localhost / desarrollo (o si MAIL_DRIVER=mailtrap): Usar MAILTRAP.
+    // - En producción (o si MAIL_DRIVER=brevo): Usar BREVO.
+    // MAIL_DRIVER=mailtrap tiene prioridad absoluta en local/desarrollo, incluso si existe BREVO_API_KEY.
+    final bool useBrevo;
+    if (mailDriver == 'mailtrap') {
+      useBrevo = false;
+    } else if (mailDriver == 'brevo') {
+      useBrevo = true;
+    } else {
+      // Si no se especifica MAIL_DRIVER: producción usa Brevo, localhost/desarrollo usa Mailtrap
+      useBrevo = isProduction;
+    }
 
-    if (isProduction || forceBrevo || brevoApiKey != null) {
+    if (useBrevo) {
+      final brevoApiKey =
+          Platform.environment['BREVO_API_KEY'] ??
+          session.passwords['brevoApiKey'];
+
       if (brevoApiKey != null && brevoApiKey.isNotEmpty) {
         try {
           await _sendViaBrevo(
@@ -199,7 +207,7 @@ class MailService {
         textFallback: textFallback,
       );
     } else {
-      // Desarrollo local: Mailtrap SMTP Sandbox
+      // Desarrollo local / localhost: Mailtrap SMTP Sandbox
       await _sendViaMailtrap(
         session: session,
         to: to,

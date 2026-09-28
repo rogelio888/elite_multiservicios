@@ -37,6 +37,54 @@ class RrhhPersonnelEndpoint extends Endpoint {
     );
   }
 
+  /// TAREA 4: Lista resumida y paginada de colaboradores para el Directorio.
+  Future<List<RrhhEmployeeSummaryDto>> listEmployeeSummaries(
+    Session session, {
+    String? status,
+    String? employeeType,
+    String? availabilityStatus,
+    int? areaId,
+    String? search,
+    int limit = 50,
+    int offset = 0,
+    bool includeDeleted = false,
+  }) async {
+    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalView);
+    final repo = RrhhPersonnelRepository(session);
+    return await repo.listEmployeeSummaries(
+      status: status,
+      employeeType: employeeType,
+      availabilityStatus: availabilityStatus,
+      areaId: areaId,
+      search: search,
+      limit: limit,
+      offset: offset,
+      includeDeleted: includeDeleted,
+    );
+  }
+
+  /// TAREA 4: Retorna el conteo total de empleados coincidentes para paginación y métricas.
+  Future<int> countEmployees(
+    Session session, {
+    String? status,
+    String? employeeType,
+    String? availabilityStatus,
+    int? areaId,
+    String? search,
+    bool includeDeleted = false,
+  }) async {
+    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalView);
+    final repo = RrhhPersonnelRepository(session);
+    return await repo.countEmployees(
+      status: status,
+      employeeType: employeeType,
+      availabilityStatus: availabilityStatus,
+      areaId: areaId,
+      search: search,
+      includeDeleted: includeDeleted,
+    );
+  }
+
   /// Obtiene un colaborador por su ID.
   Future<RrhhEmployee?> getEmployeeById(
     Session session,
@@ -164,6 +212,204 @@ class RrhhPersonnelEndpoint extends Endpoint {
     );
     final repo = RrhhPersonnelRepository(session);
     return await repo.deleteEmployee(id);
+  }
+
+  // ===========================================================================
+  // 1.1 FASE B: ACTUALIZACIONES GRANULARES Y EXPOSICIÓN CONTRACTUAL
+  // ===========================================================================
+
+  /// Obtiene el resumen contractual y salarial de un empleado para exposición a Contabilidad.
+  Future<RrhhEmployeeContractData> getEmployeeContractData(
+    Session session,
+    int id,
+  ) async {
+    await RbacGuard.requirePermission(session, AppPermissions.rrhhPersonalView);
+    final repo = RrhhPersonnelRepository(session);
+    return await repo.getEmployeeContractData(id);
+  }
+
+  /// Actualiza los datos bancarios del empleado (banco, tipo y número de cuenta).
+  Future<RrhhEmployee> updateEmployeeBankInfo(
+    Session session, {
+    required int id,
+    String? bankName,
+    String? accountType,
+    String? accountNumber,
+  }) async {
+    final userId = await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
+    final repo = RrhhPersonnelRepository(session);
+    return await repo.updateEmployeeBankInfo(
+      id: id,
+      bankName: bankName,
+      accountType: accountType,
+      accountNumber: accountNumber,
+      registeredBy: userId,
+    );
+  }
+
+  /// Actualiza la información de seguridad social (AFP, Seguro de Salud).
+  Future<RrhhEmployee> updateEmployeeSocialSecurity(
+    Session session, {
+    required int id,
+    String? afpName,
+    String? afpNumber,
+    String? healthInsurance,
+  }) async {
+    final userId = await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
+    final repo = RrhhPersonnelRepository(session);
+    return await repo.updateEmployeeSocialSecurity(
+      id: id,
+      afpName: afpName,
+      afpNumber: afpNumber,
+      healthInsurance: healthInsurance,
+      registeredBy: userId,
+    );
+  }
+
+  /// Actualiza datos personales complementarios y contacto de emergencia.
+  Future<RrhhEmployee> updateEmployeePersonalInfo(
+    Session session, {
+    required int id,
+    String? fullAddress,
+    String? maritalStatus,
+    int? childrenCount,
+    String? emergencyContactName,
+    String? emergencyContactPhone,
+    String? emergencyContactRelation,
+  }) async {
+    final userId = await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
+    final repo = RrhhPersonnelRepository(session);
+    return await repo.updateEmployeePersonalInfo(
+      id: id,
+      fullAddress: fullAddress,
+      maritalStatus: maritalStatus,
+      childrenCount: childrenCount,
+      emergencyContactName: emergencyContactName,
+      emergencyContactPhone: emergencyContactPhone,
+      emergencyContactRelation: emergencyContactRelation,
+      registeredBy: userId,
+    );
+  }
+
+  /// Actualiza las condiciones contractuales y de remuneración.
+  Future<RrhhEmployee> updateEmployeeContract(
+    Session session, {
+    required int id,
+    required String justification,
+    String? contractType,
+    String? workdayType,
+    String? paymentModality,
+    double? baseSalary,
+    DateTime? contractStartDate,
+    DateTime? contractEndDate,
+    String? contractSignedPdfUrl,
+    List<RrhhEmployeeBonus>? bonuses,
+    List<RrhhEmployeeDeduction>? deductions,
+  }) async {
+    final userId = await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
+    final repo = RrhhPersonnelRepository(session);
+    return await repo.updateEmployeeContract(
+      id: id,
+      justification: justification,
+      contractType: contractType,
+      workdayType: workdayType,
+      paymentModality: paymentModality,
+      baseSalary: baseSalary,
+      contractStartDate: contractStartDate,
+      contractEndDate: contractEndDate,
+      contractSignedPdfUrl: contractSignedPdfUrl,
+      bonuses: bonuses,
+      deductions: deductions,
+      registeredBy: userId,
+    );
+  }
+
+  /// Actualiza la lista de bonificaciones asignadas al colaborador.
+  Future<RrhhEmployee> updateEmployeeBonuses(
+    Session session, {
+    required int id,
+    required List<RrhhEmployeeBonus> bonuses,
+  }) async {
+    final userId = await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
+    final repo = RrhhPersonnelRepository(session);
+    return await repo.updateEmployeeBonuses(
+      id: id,
+      bonuses: bonuses,
+      registeredBy: userId,
+    );
+  }
+
+  /// Actualiza la lista de deducciones aplicadas al colaborador.
+  Future<RrhhEmployee> updateEmployeeDeductions(
+    Session session, {
+    required int id,
+    required List<RrhhEmployeeDeduction> deductions,
+  }) async {
+    final userId = await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
+    final repo = RrhhPersonnelRepository(session);
+    return await repo.updateEmployeeDeductions(
+      id: id,
+      deductions: deductions,
+      registeredBy: userId,
+    );
+  }
+
+  /// Actualiza la asignación operativa, ubicación base y supervisor.
+  Future<RrhhEmployee> updateEmployeeAssignment(
+    Session session, {
+    required int id,
+    String? shiftId,
+    String? baseLocation,
+    String? supervisorEmployeeId,
+  }) async {
+    final userId = await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
+    final repo = RrhhPersonnelRepository(session);
+    return await repo.updateEmployeeAssignment(
+      id: id,
+      shiftId: shiftId,
+      baseLocation: baseLocation,
+      supervisorEmployeeId: supervisorEmployeeId,
+      registeredBy: userId,
+    );
+  }
+
+  /// Actualiza el checklist de documentación digital del colaborador.
+  Future<RrhhEmployee> updateEmployeeDocuments(
+    Session session, {
+    required int id,
+    required List<RrhhDossierDocument> documentChecklist,
+  }) async {
+    final userId = await RbacGuard.requirePermission(
+      session,
+      AppPermissions.rrhhPersonalManage,
+    );
+    final repo = RrhhPersonnelRepository(session);
+    return await repo.updateEmployeeDocuments(
+      id: id,
+      documentChecklist: documentChecklist,
+      registeredBy: userId,
+    );
   }
 
   // ===========================================================================

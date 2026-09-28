@@ -7762,145 +7762,161 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
           );
           final stageCol = _getStageColor(stage);
 
-          return Container(
-            width: 310,
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF090D16) : const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isDark
-                    ? const Color(0xFF1E293B)
-                    : const Color(0xFFE2E8F0),
-              ),
-            ),
-            child: Column(
-              children: [
-                // Cabecera de la columna Kanban
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 12,
+          return DragTarget<OpportunityItem>(
+            onWillAcceptWithDetails: (details) => details.data.stage != stage,
+            onAcceptWithDetails: (details) =>
+                _requestMoveDeal(details.data, stage),
+            builder: (context, candidateData, rejectedData) {
+              final isTargetHovered = candidateData.isNotEmpty;
+              return Container(
+                width: 310,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? const Color(0xFF090D16)
+                      : const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isTargetHovered
+                        ? stageCol
+                        : (isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFE2E8F0)),
+                    width: isTargetHovered ? 1.5 : 1,
                   ),
-                  decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF0F172A) : Colors.white,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(12),
-                    ),
-                    border: Border(
-                      bottom: BorderSide(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : const Color(0xFFE2E8F0),
+                ),
+                child: Column(
+                  children: [
+                    // Cabecera de la columna Kanban
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
                       ),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: stageCol,
-                              shape: BoxShape.circle,
-                            ),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(12),
+                        ),
+                        border: Border(
+                          bottom: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFE2E8F0),
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            stage,
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: stageCol,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                stage,
+                                style: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF0F172A),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 7,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
                               color: isDark
-                                  ? Colors.white
-                                  : const Color(0xFF0F172A),
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFFF1F5F9),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              '${stageDeals.length}',
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 7,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? const Color(0xFF1E293B)
-                              : const Color(0xFFF1F5F9),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          '${stageDeals.length}',
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: isDark
-                                ? Colors.white
-                                : const Color(0xFF0F172A),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
 
-                // Sub-total de la columna
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Subtotal:',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          color: const Color(0xFF64748B),
-                        ),
+                    // Sub-total de la columna
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
                       ),
-                      Text(
-                        'Bs. ${stageAmount.toStringAsFixed(2)}',
-                        style: GoogleFonts.jetBrainsMono(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF10B981),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Lista de tarjetas en esta columna
-                Expanded(
-                  child: stageDeals.isEmpty
-                      ? Center(
-                          child: Text(
-                            'Sin oportunidades',
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Subtotal:',
                             style: GoogleFonts.inter(
-                              fontSize: 12,
+                              fontSize: 11,
                               color: const Color(0xFF64748B),
                             ),
                           ),
-                        )
-                      : ListView.separated(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
+                          Text(
+                            'Bs. ${stageAmount.toStringAsFixed(2)}',
+                            style: GoogleFonts.jetBrainsMono(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF10B981),
+                            ),
                           ),
-                          itemCount: stageDeals.length,
-                          separatorBuilder: (_, index) =>
-                              const SizedBox(height: 10),
-                          itemBuilder: (context, cardIdx) {
-                            return _buildDealCard(stageDeals[cardIdx], isDark);
-                          },
-                        ),
+                        ],
+                      ),
+                    ),
+
+                    // Lista de tarjetas en esta columna
+                    Expanded(
+                      child: stageDeals.isEmpty
+                          ? Center(
+                              child: Text(
+                                'Sin oportunidades',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: const Color(0xFF64748B),
+                                ),
+                              ),
+                            )
+                          : ListView.separated(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              itemCount: stageDeals.length,
+                              separatorBuilder: (_, index) =>
+                                  const SizedBox(height: 10),
+                              itemBuilder: (context, cardIdx) {
+                                return _buildDealCard(
+                                  stageDeals[cardIdx],
+                                  isDark,
+                                );
+                              },
+                            ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           );
         },
       ),
@@ -7952,489 +7968,500 @@ class _CrmPipelineViewState extends State<CrmPipelineView> {
     final serviceCol = _getServiceColor(deal.serviceType);
     final stageCol = _getStageColor(deal.stage);
     final curStageIdx = _stages.indexOf(deal.stage);
-
-    return InkWell(
-      onTap: () => _showDealDetailsDialog(deal),
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF0F172A) : Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+    final cardContent = Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Cabecera de la tarjeta: Rubro y Menú
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Wrap(
-                    spacing: 5,
-                    runSpacing: 4,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: serviceCol.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _getServiceIcon(deal.serviceType),
-                              size: 12,
-                              color: serviceCol,
-                            ),
-                            const SizedBox(width: 4),
-                            Flexible(
-                              child: Text(
-                                deal.serviceType,
-                                style: GoogleFonts.inter(
-                                  fontSize: 10.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: serviceCol,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ),
-                          ],
-                        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Cabecera de la tarjeta: Rubro y Menú
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Wrap(
+                  spacing: 5,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
                       ),
+                      decoration: BoxDecoration(
+                        color: serviceCol.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getServiceIcon(deal.serviceType),
+                            size: 12,
+                            color: serviceCol,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              deal.serviceType,
+                              style: GoogleFonts.inter(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w600,
+                                color: serviceCol,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getContractTypeColor(
+                          deal.contractType,
+                        ).withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getContractTypeIcon(deal.contractType),
+                            size: 10,
+                            color: _getContractTypeColor(deal.contractType),
+                          ),
+                          const SizedBox(width: 3),
+                          Flexible(
+                            child: Text(
+                              deal.contractType == 'Recurrente Mensual'
+                                  ? 'Mensual'
+                                  : (deal.contractType == 'Proyecto Único'
+                                        ? 'Obra Única'
+                                        : 'Híbrido'),
+                              style: GoogleFonts.inter(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w700,
+                                color: _getContractTypeColor(
+                                  deal.contractType,
+                                ),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (deal.contractType == 'Recurrente Mensual')
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
+                          horizontal: 5,
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: _getContractTypeColor(
-                            deal.contractType,
+                          color: const Color(
+                            0xFF64748B,
                           ).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _getContractTypeIcon(deal.contractType),
-                              size: 10,
-                              color: _getContractTypeColor(deal.contractType),
-                            ),
-                            const SizedBox(width: 3),
-                            Flexible(
-                              child: Text(
-                                deal.contractType == 'Recurrente Mensual'
-                                    ? 'Mensual'
-                                    : (deal.contractType == 'Proyecto Único'
-                                          ? 'Obra Única'
-                                          : 'Híbrido'),
-                                style: GoogleFonts.inter(
-                                  fontSize: 9.5,
-                                  fontWeight: FontWeight.w700,
-                                  color: _getContractTypeColor(
-                                    deal.contractType,
-                                  ),
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (deal.contractType == 'Recurrente Mensual')
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 5,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFF64748B,
-                            ).withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            deal.serviceFrequency == 'Lunes a Viernes'
-                                ? 'L-V'
-                                : (deal.serviceFrequency == '24/7 (Continuo)'
-                                      ? '24/7'
-                                      : (deal.serviceFrequency ==
-                                                'Lunes a Sábado'
-                                            ? 'L-S'
-                                            : deal.serviceFrequency)),
-                            style: GoogleFonts.inter(
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF64748B),
-                            ),
+                        child: Text(
+                          deal.serviceFrequency == 'Lunes a Viernes'
+                              ? 'L-V'
+                              : (deal.serviceFrequency == '24/7 (Continuo)'
+                                    ? '24/7'
+                                    : (deal.serviceFrequency == 'Lunes a Sábado'
+                                          ? 'L-S'
+                                          : deal.serviceFrequency)),
+                          style: GoogleFonts.inter(
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF64748B),
                           ),
                         ),
-                      Text(
-                        deal.id,
-                        style: GoogleFonts.jetBrainsMono(
-                          fontSize: 10,
-                          color: const Color(0xFF64748B),
-                          fontWeight: FontWeight.w600,
-                        ),
                       ),
-                    ],
-                  ),
-                ),
-                PopupMenuButton<String>(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  icon: const Icon(
-                    Icons.more_horiz,
-                    size: 16,
-                    color: Color(0xFF94A3B8),
-                  ),
-                  tooltip: 'Opciones de oportunidad',
-                  onSelected: (action) {
-                    if (action == 'quote') {
-                      _showQuotationBuilderDialog(deal);
-                    } else if (action == 'proposal') {
-                      _showProposalPreviewDialog(deal);
-                    } else if (action == 'customer360') {
-                      if (widget.onNavigateToTab != null) {
-                        widget.onNavigateToTab!(7);
-                      } else {
-                        _showPromoteToCustomerDialog(deal);
-                      }
-                    } else if (action.startsWith('move:')) {
-                      final targetStage = action.replaceFirst('move:', '');
-                      _requestMoveDeal(deal, targetStage);
-                    }
-                  },
-                  itemBuilder: (ctx) => [
-                    if (deal.stage == 'Ganada')
-                      PopupMenuItem(
-                        value: 'customer360',
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.badge_outlined,
-                              size: 16,
-                              color: Color(0xFF10B981),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Ver en Clientes 360°',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF10B981),
-                              ),
-                            ),
-                          ],
-                        ),
+                    Text(
+                      deal.id,
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 10,
+                        color: const Color(0xFF64748B),
+                        fontWeight: FontWeight.w600,
                       ),
-                    if (deal.stage == 'Propuesta' ||
-                        deal.stage == 'Negociación' ||
-                        deal.stage == 'Ganada') ...[
-                      PopupMenuItem(
-                        value: 'quote',
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.calculate_outlined,
-                              size: 16,
-                              color: Color(0xFF10B981),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              deal.stage == 'Ganada'
-                                  ? 'Ver Cotización de Cierre'
-                                  : 'Editar Cotización',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 'proposal',
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.description_outlined,
-                              size: 16,
-                              color: Color(0xFF3B82F6),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Ver Propuesta Formal',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                    if (deal.stage != 'Ganada') ...[
-                      const PopupMenuDivider(),
-                      ..._stages
-                          .where((s) => s != deal.stage)
-                          .map(
-                            (s) => PopupMenuItem(
-                              value: 'move:$s',
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 7,
-                                    height: 7,
-                                    decoration: BoxDecoration(
-                                      color: _getStageColor(s),
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Mover a: $s',
-                                    style: GoogleFonts.inter(fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                    ],
+                    ),
                   ],
                 ),
-              ],
-            ),
-
-            const SizedBox(height: 6),
-
-            // Título de la oportunidad
-            Text(
-              deal.title,
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: isDark ? Colors.white : const Color(0xFF0F172A),
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-
-            const SizedBox(height: 3),
-
-            // Cliente y Contacto
-            Row(
-              children: [
-                const Icon(Icons.business, size: 12, color: Color(0xFF64748B)),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    deal.clientName,
-                    style: GoogleFonts.inter(
-                      fontSize: 11.5,
-                      color: isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF64748B),
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+              PopupMenuButton<String>(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(
+                  Icons.more_horiz,
+                  size: 16,
+                  color: Color(0xFF94A3B8),
                 ),
-              ],
-            ),
-
-            const SizedBox(height: 8),
-
-            // Barra de probabilidad
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Probabilidad:',
-                  style: GoogleFonts.inter(
-                    fontSize: 10.5,
-                    color: const Color(0xFF64748B),
-                  ),
-                ),
-                Text(
-                  '${deal.probability}%',
-                  style: GoogleFonts.jetBrainsMono(
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w700,
-                    color: stageCol,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 3),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(2),
-              child: LinearProgressIndicator(
-                value: deal.probability / 100,
-                minHeight: 4,
-                backgroundColor: isDark
-                    ? const Color(0xFF1E293B)
-                    : const Color(0xFFE2E8F0),
-                valueColor: AlwaysStoppedAnimation<Color>(stageCol),
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            // Pie: Monto, Asesor y Botones Rápidos de Etapa
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              'Bs. ${deal.amount.toStringAsFixed(2)}',
-                              style: GoogleFonts.jetBrainsMono(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFF10B981),
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            deal.contractType == 'Recurrente Mensual'
-                                ? '/mes'
-                                : (deal.contractType == 'Híbrido'
-                                      ? '/mes+obra'
-                                      : '(Obra)'),
-                            style: GoogleFonts.inter(
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF64748B),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
+                tooltip: 'Opciones de oportunidad',
+                onSelected: (action) {
+                  if (action == 'quote') {
+                    _showQuotationBuilderDialog(deal);
+                  } else if (action == 'proposal') {
+                    _showProposalPreviewDialog(deal);
+                  } else if (action == 'customer360') {
+                    if (widget.onNavigateToTab != null) {
+                      widget.onNavigateToTab!(7);
+                    } else {
+                      _showPromoteToCustomerDialog(deal);
+                    }
+                  } else if (action.startsWith('move:')) {
+                    final targetStage = action.replaceFirst('move:', '');
+                    _requestMoveDeal(deal, targetStage);
+                  }
+                },
+                itemBuilder: (ctx) => [
+                  if (deal.stage == 'Ganada')
+                    PopupMenuItem(
+                      value: 'customer360',
+                      child: Row(
                         children: [
                           const Icon(
-                            Icons.person_pin,
-                            size: 11,
-                            color: Color(0xFF64748B),
+                            Icons.badge_outlined,
+                            size: 16,
+                            color: Color(0xFF10B981),
                           ),
-                          const SizedBox(width: 3),
-                          Expanded(
-                            child: Text(
-                              deal.owner,
-                              style: GoogleFonts.inter(
-                                fontSize: 10.5,
-                                color: const Color(0xFF64748B),
-                              ),
-                              overflow: TextOverflow.ellipsis,
+                          const SizedBox(width: 8),
+                          Text(
+                            'Ver en Clientes 360°',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF10B981),
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (deal.stage == 'Propuesta' ||
-                        deal.stage == 'Negociación' ||
-                        deal.stage == 'Ganada')
-                      IconButton(
-                        icon: const Icon(Icons.calculate_outlined, size: 16),
-                        tooltip: deal.stage == 'Ganada'
-                            ? 'Ver Cotización de Cierre'
-                            : 'Armar / Editar Cotización',
-                        visualDensity: VisualDensity.compact,
-                        constraints: const BoxConstraints(
-                          minWidth: 28,
-                          minHeight: 28,
-                        ),
-                        padding: const EdgeInsets.all(4),
-                        color: const Color(0xFF10B981),
-                        onPressed: () => _showQuotationBuilderDialog(deal),
+                    ),
+                  if (deal.stage == 'Propuesta' ||
+                      deal.stage == 'Negociación' ||
+                      deal.stage == 'Ganada') ...[
+                    PopupMenuItem(
+                      value: 'quote',
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.calculate_outlined,
+                            size: 16,
+                            color: Color(0xFF10B981),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            deal.stage == 'Ganada'
+                                ? 'Ver Cotización de Cierre'
+                                : 'Editar Cotización',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                    if (deal.stage == 'Ganada')
-                      IconButton(
-                        icon: const Icon(Icons.badge_outlined, size: 16),
-                        tooltip: 'Venta formalizada: Ver en Clientes 360°',
-                        visualDensity: VisualDensity.compact,
-                        constraints: const BoxConstraints(
-                          minWidth: 28,
-                          minHeight: 28,
-                        ),
-                        padding: const EdgeInsets.all(4),
-                        color: const Color(0xFF10B981),
-                        onPressed: () {
-                          if (widget.onNavigateToTab != null) {
-                            widget.onNavigateToTab!(7);
-                          } else {
-                            _showPromoteToCustomerDialog(deal);
-                          }
-                        },
-                      )
-                    else ...[
-                      if (curStageIdx > 0)
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back, size: 14),
-                          tooltip: 'Retroceder etapa',
-                          visualDensity: VisualDensity.compact,
-                          constraints: const BoxConstraints(
-                            minWidth: 26,
-                            minHeight: 28,
+                    ),
+                    PopupMenuItem(
+                      value: 'proposal',
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.description_outlined,
+                            size: 16,
+                            color: Color(0xFF3B82F6),
                           ),
-                          padding: const EdgeInsets.all(4),
-                          color: const Color(0xFF64748B),
-                          onPressed: () => _regressDeal(deal),
-                        ),
-                      if (curStageIdx < _stages.length - 1)
-                        IconButton(
-                          icon: const Icon(Icons.arrow_forward, size: 14),
-                          tooltip: 'Avanzar a ${_stages[curStageIdx + 1]}',
-                          visualDensity: VisualDensity.compact,
-                          constraints: const BoxConstraints(
-                            minWidth: 26,
-                            minHeight: 28,
+                          const SizedBox(width: 8),
+                          Text(
+                            'Ver Propuesta Formal',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                          padding: const EdgeInsets.all(4),
-                          color: const Color(0xFF3B82F6),
-                          onPressed: () => _advanceDeal(deal),
+                        ],
+                      ),
+                    ),
+                  ],
+                  if (deal.stage != 'Ganada') ...[
+                    const PopupMenuDivider(),
+                    ..._stages
+                        .where((s) => s != deal.stage)
+                        .map(
+                          (s) => PopupMenuItem(
+                            value: 'move:$s',
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 7,
+                                  height: 7,
+                                  decoration: BoxDecoration(
+                                    color: _getStageColor(s),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Mover a: $s',
+                                  style: GoogleFonts.inter(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                    ],
+                  ],
+                ],
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 6),
+
+          // Título de la oportunidad
+          Text(
+            deal.title,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: isDark ? Colors.white : const Color(0xFF0F172A),
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+
+          const SizedBox(height: 3),
+
+          // Cliente y Contacto
+          Row(
+            children: [
+              const Icon(Icons.business, size: 12, color: Color(0xFF64748B)),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  deal.clientName,
+                  style: GoogleFonts.inter(
+                    fontSize: 11.5,
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 8),
+
+          // Barra de probabilidad
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Probabilidad:',
+                style: GoogleFonts.inter(
+                  fontSize: 10.5,
+                  color: const Color(0xFF64748B),
+                ),
+              ),
+              Text(
+                '${deal.probability}%',
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  color: stageCol,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 3),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(2),
+            child: LinearProgressIndicator(
+              value: deal.probability / 100,
+              minHeight: 4,
+              backgroundColor: isDark
+                  ? const Color(0xFF1E293B)
+                  : const Color(0xFFE2E8F0),
+              valueColor: AlwaysStoppedAnimation<Color>(stageCol),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          // Pie: Monto, Asesor y Botones Rápidos de Etapa
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'Bs. ${deal.amount.toStringAsFixed(2)}',
+                            style: GoogleFonts.jetBrainsMono(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF10B981),
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          deal.contractType == 'Recurrente Mensual'
+                              ? '/mes'
+                              : (deal.contractType == 'Híbrido'
+                                    ? '/mes+obra'
+                                    : '(Obra)'),
+                          style: GoogleFonts.inter(
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.person_pin,
+                          size: 11,
+                          color: Color(0xFF64748B),
+                        ),
+                        const SizedBox(width: 3),
+                        Expanded(
+                          child: Text(
+                            deal.owner,
+                            style: GoogleFonts.inter(
+                              fontSize: 10.5,
+                              color: const Color(0xFF64748B),
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(width: 4),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (deal.stage == 'Propuesta' ||
+                      deal.stage == 'Negociación' ||
+                      deal.stage == 'Ganada')
+                    IconButton(
+                      icon: const Icon(Icons.calculate_outlined, size: 16),
+                      tooltip: deal.stage == 'Ganada'
+                          ? 'Ver Cotización de Cierre'
+                          : 'Armar / Editar Cotización',
+                      visualDensity: VisualDensity.compact,
+                      constraints: const BoxConstraints(
+                        minWidth: 28,
+                        minHeight: 28,
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      color: const Color(0xFF10B981),
+                      onPressed: () => _showQuotationBuilderDialog(deal),
+                    ),
+                  if (deal.stage == 'Ganada')
+                    IconButton(
+                      icon: const Icon(Icons.badge_outlined, size: 16),
+                      tooltip: 'Venta formalizada: Ver en Clientes 360°',
+                      visualDensity: VisualDensity.compact,
+                      constraints: const BoxConstraints(
+                        minWidth: 28,
+                        minHeight: 28,
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      color: const Color(0xFF10B981),
+                      onPressed: () {
+                        if (widget.onNavigateToTab != null) {
+                          widget.onNavigateToTab!(7);
+                        } else {
+                          _showPromoteToCustomerDialog(deal);
+                        }
+                      },
+                    )
+                  else ...[
+                    if (curStageIdx > 0)
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, size: 14),
+                        tooltip: 'Retroceder etapa',
+                        visualDensity: VisualDensity.compact,
+                        constraints: const BoxConstraints(
+                          minWidth: 26,
+                          minHeight: 28,
+                        ),
+                        padding: const EdgeInsets.all(4),
+                        color: const Color(0xFF64748B),
+                        onPressed: () => _regressDeal(deal),
+                      ),
+                    if (curStageIdx < _stages.length - 1)
+                      IconButton(
+                        icon: const Icon(Icons.arrow_forward, size: 14),
+                        tooltip: 'Avanzar a ${_stages[curStageIdx + 1]}',
+                        visualDensity: VisualDensity.compact,
+                        constraints: const BoxConstraints(
+                          minWidth: 26,
+                          minHeight: 28,
+                        ),
+                        padding: const EdgeInsets.all(4),
+                        color: const Color(0xFF3B82F6),
+                        onPressed: () => _advanceDeal(deal),
+                      ),
+                  ],
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+
+    return Draggable<OpportunityItem>(
+      data: deal,
+      feedback: Material(
+        color: Colors.transparent,
+        child: SizedBox(
+          width: 290,
+          child: Opacity(opacity: 0.9, child: cardContent),
         ),
+      ),
+      childWhenDragging: Opacity(opacity: 0.35, child: cardContent),
+      child: InkWell(
+        onTap: () => _showDealDetailsDialog(deal),
+        borderRadius: BorderRadius.circular(10),
+        child: cardContent,
       ),
     );
   }

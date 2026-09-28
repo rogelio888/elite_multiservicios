@@ -7,12 +7,7 @@ import '../../crm/presentation/views/crm_customers_view.dart';
 import '../../crm/presentation/views/crm_catalog_management_view.dart';
 import '../../crm/presentation/views/crm_leads_view.dart';
 import '../../crm/presentation/views/crm_pipeline_view.dart';
-import '../../rrhh/presentation/views/rrhh_dashboard_view.dart';
-import '../../rrhh/presentation/views/rrhh_personal_view.dart';
-import '../../rrhh/presentation/views/rrhh_organization_view.dart';
-import '../../rrhh/presentation/views/rrhh_assignments_view.dart';
-import '../../rrhh/presentation/views/rrhh_labor_view.dart';
-import '../../rrhh/presentation/views/rrhh_reports_view.dart';
+import '../../rrhh/rrhh_routes.dart';
 import '../services/auth_service.dart';
 import '../services/security_api_service.dart';
 import 'views/security_dashboard_view.dart';
@@ -50,13 +45,15 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'crm-pipeline',
     'crm-clientes',
     'crm-actividades',
+    // 6 Entradas Reorganizadas del Módulo RRHH
     'rrhh-dashboard',
     'rrhh-personal',
     'rrhh-organizacion',
-    'rrhh-asignaciones',
-    'rrhh-laboral',
+    'rrhh-novedades',
+    'rrhh-asistencia',
     'rrhh-reportes',
     'crm-catalogo',
+    'rrhh-catalogos',
   ];
 
   static int _indexFromRouteOrHash(String raw) {
@@ -74,7 +71,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         return 2;
       case 'audit':
       case 'auditoria':
-      case 'bitacora':
+      case 'bitacora-seguridad':
         return 3;
       case 'sessions':
       case 'sesiones':
@@ -90,49 +87,88 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         return 6;
       case 'crm-clientes':
       case 'clientes':
-      case 'directorio':
+      case 'directorio-clientes':
         return 7;
       case 'crm-actividades':
       case 'actividades':
       case 'agenda':
         return 8;
+
       case 'rrhh-dashboard':
       case 'dashboard-rrhh':
         return 9;
+
       case 'rrhh-personal':
+      case 'rrhhpersonal':
       case 'rrhh-colaboradores':
       case 'colaboradores':
       case 'empleados':
       case 'personal':
       case 'rrhh':
+      case 'rrhh-expediente':
+      case 'expediente':
+      case 'rrhh-postulantes':
+      case 'postulantes':
+      case 'reclutamiento':
+      case 'rrhh-contratacion':
+      case 'contratacion':
+      case 'rrhh-contrataciones':
+      case 'contrataciones':
+      case 'contrataciones-en-curso':
+      case 'alta':
+      case 'directorio':
         return 10;
+
       case 'rrhh-organizacion':
       case 'organizacion':
       case 'areas':
       case 'cargos':
       case 'especialidades':
-        return 11;
-      case 'rrhh-asignaciones':
-      case 'asignaciones':
-      case 'horarios':
+      case 'rrhh-turnos':
       case 'turnos':
-      case 'rrhh-contratos':
-      case 'contratos':
-        return 12;
-      case 'rrhh-laboral':
+      case 'horarios':
+        return 11;
+
+      case 'rrhh-novedades':
+      case 'novedades':
       case 'rrhh-permisos':
       case 'permisos':
+      case 'licencias':
+      case 'rrhh-vacaciones':
       case 'vacaciones':
+      case 'rrhh-disciplina':
+      case 'disciplina':
       case 'incidencias':
+      case 'memorandums':
       case 'rrhh-bajas':
       case 'bajas':
+      case 'desvinculaciones':
+      case 'finiquitos':
+        return 12;
+
+      case 'rrhh-asistencia':
+      case 'rrhh-asistencia-campo':
+      case 'asistencia-campo':
+      case 'asistencia':
         return 13;
+
       case 'rrhh-reportes':
       case 'reportes':
+      case 'rrhh-novedades-nomina':
+      case 'novedades-nomina':
+      case 'nomina':
       case 'rrhh-bitacora':
-      case 'rrhh-auditoria':
       case 'bitacora-rrhh':
+      case 'auditoria-rrhh':
+      case 'bitacora':
         return 14;
+
+      case 'rrhh-catalogos':
+      case 'catalogos-rrhh':
+      case 'catalogos':
+      case 'rrhh-catalogos-auxiliares':
+        return 16;
+
       case 'crm-catalogo':
       case 'catalogo':
       case 'tarifario':
@@ -183,7 +219,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       _isSecurityExpanded = true;
     } else if ((initialIndex >= 5 && initialIndex <= 8) || initialIndex == 15) {
       _isCrmExpanded = true;
-    } else if (initialIndex >= 9 && initialIndex <= 14) {
+    } else if ((initialIndex >= 9 && initialIndex <= 14) ||
+        initialIndex == 16) {
       _isRrhhExpanded = true;
     }
 
@@ -201,7 +238,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
             if ((newIndex >= 5 && newIndex <= 8) || newIndex == 15) {
               _isCrmExpanded = true;
             }
-            if (newIndex >= 9 && newIndex <= 14) _isRrhhExpanded = true;
+            if ((newIndex >= 9 && newIndex <= 14) || newIndex == 16) {
+              _isRrhhExpanded = true;
+            }
           });
           _loadSidebarMetrics();
         }
@@ -242,6 +281,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         setBrowserHash('/${_tabSlugs[index]}');
       }
     }
+
     if (isDrawer && Navigator.canPop(context)) {
       Navigator.pop(context);
     }
@@ -344,12 +384,13 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'CRM: Pipeline Comercial',
     'CRM: Directorio Clientes 360°',
     'CRM: Agenda & Actividades',
-    'RRHH: Dashboard Ejecutivo',
-    'RRHH: Personal & Expedientes',
-    'RRHH: Organización & Estructura',
-    'RRHH: Asignaciones & Horarios',
-    'RRHH: Gestión Laboral & Novedades',
-    'RRHH: Centro de Reportes & Métricas',
+    // 6 Entradas Reorganizadas de RRHH
+    'RRHH: Dashboard',
+    'RRHH: Personal',
+    'RRHH: Organización y Turnos',
+    'RRHH: Novedades Laborales',
+    'RRHH: Asistencia de Campo',
+    'RRHH: Reportes y Auditoría',
     'CRM: Catálogo & Tarifario',
   ];
 
@@ -368,6 +409,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
 
     final isCrmItem = (index >= 5 && index <= 8) || index == 15;
     final isRrhhItem = index >= 9 && index <= 14;
+
     final Color activeAccent = isCrmItem
         ? const Color(0xFF10B981)
         : (isRrhhItem ? const Color(0xFF8B5CF6) : const Color(0xFF2563EB));
@@ -592,50 +634,65 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     final isAnySecurityActive = _selectedIndex >= 1 && _selectedIndex <= 4;
     final isAnyCrmActive =
         (_selectedIndex >= 5 && _selectedIndex <= 8) || _selectedIndex == 15;
-    final isAnyRrhhActive = _selectedIndex >= 9 && _selectedIndex <= 14;
+    final isAnyRrhhActive =
+        (_selectedIndex >= 9 && _selectedIndex <= 14) || _selectedIndex == 16;
 
     final rrhhItems = [
       (
         icon: Icons.dashboard_outlined,
         selectedIcon: Icons.dashboard,
-        label: 'Dashboard RRHH',
+        label: 'Dashboard',
         badge: null,
         index: 9,
+        isSubItem: false,
       ),
       (
         icon: Icons.badge_outlined,
         selectedIcon: Icons.badge,
-        label: 'Personal & Expedientes',
+        label: 'Personal',
         badge: null,
         index: 10,
+        isSubItem: false,
       ),
       (
         icon: Icons.account_tree_outlined,
         selectedIcon: Icons.account_tree,
-        label: 'Organización',
+        label: 'Organización y Turnos',
         badge: null,
         index: 11,
+        isSubItem: false,
       ),
       (
-        icon: Icons.work_history_outlined,
-        selectedIcon: Icons.work_history,
-        label: 'Asignaciones & Turnos',
+        icon: Icons.assignment_outlined,
+        selectedIcon: Icons.assignment,
+        label: 'Novedades Laborales',
         badge: null,
         index: 12,
+        isSubItem: false,
       ),
       (
-        icon: Icons.fact_check_outlined,
-        selectedIcon: Icons.fact_check,
-        label: 'Gestión Laboral',
+        icon: Icons.location_on_outlined,
+        selectedIcon: Icons.location_on,
+        label: 'Asistencia de Campo',
         badge: null,
         index: 13,
+        isSubItem: false,
       ),
       (
-        icon: Icons.analytics_outlined,
-        selectedIcon: Icons.analytics,
-        label: 'Centro de Reportes',
+        icon: Icons.assessment_outlined,
+        selectedIcon: Icons.assessment,
+        label: 'Reportes y Auditoría',
         badge: null,
         index: 14,
+        isSubItem: false,
+      ),
+      (
+        icon: Icons.menu_book_outlined,
+        selectedIcon: Icons.menu_book,
+        label: 'Catálogos',
+        badge: null,
+        index: 16,
+        isSubItem: false,
       ),
     ];
 
@@ -673,27 +730,49 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         currentView = const CrmActivitiesView();
         break;
       case 9:
-        currentView = RrhhDashboardView(
+        currentView = RrhhRoutes.buildTopLevelView(
+          RrhhRoutes.dashboard,
           onNavigateToTab: _onTabSelected,
         );
         break;
       case 10:
-        currentView = const RrhhPersonalView();
+        currentView = RrhhRoutes.buildTopLevelView(
+          RrhhRoutes.personal,
+          onNavigateToTab: _onTabSelected,
+        );
         break;
       case 11:
-        currentView = const RrhhOrganizationView();
+        currentView = RrhhRoutes.buildTopLevelView(
+          RrhhRoutes.organizacion,
+          onNavigateToTab: _onTabSelected,
+        );
         break;
       case 12:
-        currentView = const RrhhAssignmentsView();
+        currentView = RrhhRoutes.buildTopLevelView(
+          RrhhRoutes.novedades,
+          onNavigateToTab: _onTabSelected,
+        );
         break;
       case 13:
-        currentView = const RrhhLaborView();
+        currentView = RrhhRoutes.buildTopLevelView(
+          RrhhRoutes.asistencia,
+          onNavigateToTab: _onTabSelected,
+        );
         break;
       case 14:
-        currentView = const RrhhReportsView();
+        currentView = RrhhRoutes.buildTopLevelView(
+          RrhhRoutes.reportes,
+          onNavigateToTab: _onTabSelected,
+        );
         break;
       case 15:
         currentView = const CrmCatalogManagementView();
+        break;
+      case 16:
+        currentView = RrhhRoutes.buildTopLevelView(
+          RrhhRoutes.catalogos,
+          onNavigateToTab: _onTabSelected,
+        );
         break;
       default:
         currentView = const Center(child: Text('Vista no encontrada'));
@@ -1291,9 +1370,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         String label,
         String? badge,
         int index,
+        bool isSubItem,
       })
     >
     rrhhItems,
+
     required bool isAnyRrhhActive,
   }) {
     final collapsed = !isDrawer && _isSidebarCollapsed;
