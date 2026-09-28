@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import '../../../../main.dart' as main_app;
 import '../domain/exceptions/auth_exception.dart';
@@ -50,6 +51,37 @@ class AuthService extends ChangeNotifier {
     _currentMfaChallenge = null;
     _isMfaPending = false;
     notifyListeners();
+  }
+
+  /// Maneja excepciones del cliente Serverpod (HTTP 401, 403, etc.):
+  /// - 401 con código MFA_REQUIRED: marca MFA como pendiente y redirige al flujo de 2FA.
+  /// - 401 (sin MFA o token inválido): cierra la sesión y redirige al login.
+  /// - 403 (FORBIDDEN): muestra mensaje de permisos insuficientes.
+  void handleServerError(Object error, {BuildContext? context}) {
+    if (error is ServerpodClientException) {
+      final msg = error.message.toLowerCase();
+      final isMfaRequired = msg.contains('mfa_required') || msg.contains('mfa');
+
+      if (error.statusCode == 401) {
+        if (isMfaRequired) {
+          _isSessionMfaVerified = false;
+          _isMfaPending = true;
+          notifyListeners();
+        } else {
+          logout();
+        }
+      } else if (error.statusCode == 403) {
+        if (context != null && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Acceso denegado: permisos insuficientes.'),
+              backgroundColor: Colors.redAccent,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      }
+    }
   }
 
   final Client _client;
