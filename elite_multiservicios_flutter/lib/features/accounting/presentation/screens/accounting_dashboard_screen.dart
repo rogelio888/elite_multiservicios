@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-// import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'; // Asegúrate de importar el cliente
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
+import '../../../../main.dart'; // Importa el client
+import '../widgets/accounting_excel_grid.dart';
 
 class AccountingDashboardScreen extends StatefulWidget {
   const AccountingDashboardScreen({super.key});
@@ -13,7 +15,12 @@ class _AccountingDashboardScreenState extends State<AccountingDashboardScreen> {
   bool _isLoading = true;
   double _totalIncome = 0;
   double _totalExpenses = 0;
+  double _projectedIncome = 0;
+  double _projectedExpenses = 0;
+  double _pettyCashBalance = 0;
   double _balance = 0;
+
+  List<AccountingBudget> _budgets = [];
 
   @override
   void initState() {
@@ -27,21 +34,35 @@ class _AccountingDashboardScreenState extends State<AccountingDashboardScreen> {
     });
 
     try {
-      // Aquí haríamos la llamada al servidor:
-      // final summary = await client.accounting.getFinancialSummary();
-      // setState(() {
-      //   _totalIncome = summary.totalIncome;
-      //   _totalExpenses = summary.totalExpenses;
-      //   _balance = summary.balance;
-      // });
+      final summary = await client.accounting.getFinancialSummary();
+      final budgets = await client.accounting.getBudgets();
 
-      // Mock data temporal para visualizar:
-      await Future.delayed(const Duration(seconds: 1));
       if (!mounted) return;
       setState(() {
-        _totalIncome = 15000.0;
-        _totalExpenses = 8500.0;
-        _balance = 6500.0;
+        _totalIncome = summary.totalIncome;
+        _totalExpenses = summary.totalExpenses;
+        _projectedIncome = summary.projectedIncome;
+        _projectedExpenses = summary.projectedExpenses;
+        _pettyCashBalance = summary.pettyCashBalance;
+        _balance = summary.balance;
+
+        // Si no hay presupuestos, generamos uno temporal basado en el summary actual para la vista (simulación)
+        if (budgets.isEmpty) {
+          _budgets = [
+            AccountingBudget(
+              month: DateTime.now().month,
+              year: DateTime.now().year,
+              projectedIncome: summary.projectedIncome,
+              executedIncome: summary.totalIncome,
+              projectedExpenses: summary.projectedExpenses,
+              executedExpenses: summary.totalExpenses,
+              estimatedBalance:
+                  summary.projectedIncome - summary.projectedExpenses,
+            ),
+          ];
+        } else {
+          _budgets = budgets;
+        }
       });
     } catch (e) {
       if (!mounted) return;
@@ -49,9 +70,11 @@ class _AccountingDashboardScreenState extends State<AccountingDashboardScreen> {
         SnackBar(content: Text('Error cargando el resumen financiero: $e')),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -69,13 +92,13 @@ class _AccountingDashboardScreenState extends State<AccountingDashboardScreen> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
+          : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Resumen del Mes',
+                    'Presupuesto Proyectado vs Ejecutado',
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
@@ -83,7 +106,15 @@ class _AccountingDashboardScreenState extends State<AccountingDashboardScreen> {
                     children: [
                       Expanded(
                         child: _buildSummaryCard(
-                          'Ingresos',
+                          'Ingresos Proyectados',
+                          _projectedIncome,
+                          Colors.green.shade200,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildSummaryCard(
+                          'Ingresos Reales',
                           _totalIncome,
                           Colors.green,
                         ),
@@ -91,43 +122,108 @@ class _AccountingDashboardScreenState extends State<AccountingDashboardScreen> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: _buildSummaryCard(
-                          'Egresos',
-                          _totalExpenses,
-                          Colors.red,
+                          'Gastos Proyectados',
+                          _projectedExpenses,
+                          Colors.red.shade200,
                         ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: _buildSummaryCard(
-                          'Balance',
-                          _balance,
-                          Colors.blue,
+                          'Gastos Reales',
+                          _totalExpenses,
+                          Colors.red,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 40),
-                  const Text(
-                    'Acciones Rápidas',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+
+                  // Nuevo: Tabla Excel de Presupuestos
+                  SizedBox(
+                    height: 300,
+                    child: AccountingExcelGrid(
+                      title: 'Hoja de Control Mensual',
+                      columns: [
+                        ExcelGridColumn(title: 'Mes/Año'),
+                        ExcelGridColumn(
+                          title: 'Proy. Ingresos',
+                          isNumeric: true,
+                        ),
+                        ExcelGridColumn(
+                          title: 'Ejec. Ingresos',
+                          isNumeric: true,
+                        ),
+                        ExcelGridColumn(title: 'Proy. Gastos', isNumeric: true),
+                        ExcelGridColumn(title: 'Ejec. Gastos', isNumeric: true),
+                        ExcelGridColumn(
+                          title: 'Estimación Saldo',
+                          isNumeric: true,
+                        ),
+                        ExcelGridColumn(title: 'Saldo Real', isNumeric: true),
+                      ],
+                      rows: _budgets.map((b) {
+                        return ExcelGridRow(
+                          cells: [
+                            Text('${b.month}/${b.year}'),
+                            Text(
+                              b.projectedIncome.toStringAsFixed(2),
+                              style: const TextStyle(color: Colors.green),
+                            ),
+                            Text(
+                              b.executedIncome.toStringAsFixed(2),
+                              style: const TextStyle(color: Colors.green),
+                            ),
+                            Text(
+                              b.projectedExpenses.toStringAsFixed(2),
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                            Text(
+                              b.executedExpenses.toStringAsFixed(2),
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                            Text(
+                              b.estimatedBalance.toStringAsFixed(2),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              (b.executedIncome - b.executedExpenses)
+                                  .toStringAsFixed(2),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
                   ),
-                  const SizedBox(height: 16),
+
+                  const SizedBox(height: 40),
+                  const Text(
+                    'Fondos Actuales',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
                   Row(
                     children: [
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          // Navegar a Facturas
-                        },
-                        icon: const Icon(Icons.receipt),
-                        label: const Text('Facturación a Clientes'),
+                      Expanded(
+                        child: _buildSummaryCard(
+                          'Caja Chica',
+                          _pettyCashBalance,
+                          Colors.orange,
+                        ),
                       ),
                       const SizedBox(width: 16),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          // Navegar a Gastos
-                        },
-                        icon: const Icon(Icons.money_off),
-                        label: const Text('Registrar Gasto Operativo'),
+                      Expanded(
+                        child: _buildSummaryCard(
+                          'Balance General',
+                          _balance,
+                          Colors.blue,
+                        ),
                       ),
                     ],
                   ),
@@ -152,9 +248,9 @@ class _AccountingDashboardScreenState extends State<AccountingDashboardScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              '\$${amount.toStringAsFixed(2)}',
+              'Bs ${amount.toStringAsFixed(2)}',
               style: TextStyle(
-                fontSize: 28,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: color,
               ),

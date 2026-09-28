@@ -20,6 +20,16 @@ accounting:
   - getExpenses:
   - createExpense:
   - getFinancialSummary:
+  - getPettyCash:
+  - createPettyCash:
+  - getPettyCashTransactions:
+  - addPettyCashTransaction:
+  - getPayrollEstimations:
+  - createPayrollEstimation:
+  - getBudgets:
+  - createBudget:
+  - updatePettyCashTransaction:
+  - deletePettyCashTransaction:
 crmAgenda:
   - listTasks:
   - getTask:

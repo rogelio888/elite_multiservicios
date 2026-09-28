@@ -26,64 +26,72 @@ import 'package:elite_multiservicios_server/src/generated/modules/accounting/mod
     as _i8;
 import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_financial_summary.dart'
     as _i9;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_task.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_petty_cash.dart'
     as _i10;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_agenda_metrics_response.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_petty_cash_txn.dart'
     as _i11;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_payroll_estimation.dart'
     as _i12;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_budget.dart'
     as _i13;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_task.dart'
     as _i14;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_agenda_metrics_response.dart'
     as _i15;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
     as _i16;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_detail_response.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
     as _i17;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_branch.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
     as _i18;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_contract.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
     as _i19;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
     as _i20;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_metrics_response.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_detail_response.dart'
     as _i21;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_branch.dart'
     as _i22;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead_metrics_response.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_contract.dart'
     as _i23;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
     as _i24;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_metrics_response.dart'
     as _i25;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_pipeline_metrics_response.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
     as _i26;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_dashboard_metrics_response.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead_metrics_response.dart'
     as _i27;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_recent_movement_dto.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
     as _i28;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
     as _i29;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log_page_response.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_pipeline_metrics_response.dart'
     as _i30;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/mfa_challenge_response.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_dashboard_metrics_response.dart'
     as _i31;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/mfa_verify_response.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_recent_movement_dto.dart'
     as _i32;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log.dart'
     as _i33;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/audit_log_page_response.dart'
     as _i34;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_role.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/mfa_challenge_response.dart'
     as _i35;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/role_permission.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/mfa_verify_response.dart'
     as _i36;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
     as _i37;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_permission.dart'
     as _i38;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_role.dart'
+    as _i39;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/role_permission.dart'
+    as _i40;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/user_session.dart'
+    as _i41;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_user.dart'
+    as _i42;
 import 'package:elite_multiservicios_server/src/generated/protocol.dart';
 import 'package:elite_multiservicios_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -952,6 +960,311 @@ class _AccountingEndpoint {
       }
     });
   }
+
+  _i3.Future<List<_i10.AccountingPettyCash>> getPettyCash(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'accounting',
+            method: 'getPettyCash',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'accounting',
+          methodName: 'getPettyCash',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i10.AccountingPettyCash>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i10.AccountingPettyCash> createPettyCash(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i10.AccountingPettyCash pettyCash,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'accounting',
+            method: 'createPettyCash',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'accounting',
+          methodName: 'createPettyCash',
+          parameters: _i1.testObjectToJson({'pettyCash': pettyCash}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i10.AccountingPettyCash>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i11.AccountingPettyCashTransaction>>
+  getPettyCashTransactions(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'accounting',
+            method: 'getPettyCashTransactions',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'accounting',
+          methodName: 'getPettyCashTransactions',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i11.AccountingPettyCashTransaction>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i11.AccountingPettyCashTransaction> addPettyCashTransaction(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i11.AccountingPettyCashTransaction transaction,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'accounting',
+            method: 'addPettyCashTransaction',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'accounting',
+          methodName: 'addPettyCashTransaction',
+          parameters: _i1.testObjectToJson({'transaction': transaction}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i11.AccountingPettyCashTransaction>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i12.AccountingPayrollEstimation>> getPayrollEstimations(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'accounting',
+            method: 'getPayrollEstimations',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'accounting',
+          methodName: 'getPayrollEstimations',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i12.AccountingPayrollEstimation>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i12.AccountingPayrollEstimation> createPayrollEstimation(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i12.AccountingPayrollEstimation estimation,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'accounting',
+            method: 'createPayrollEstimation',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'accounting',
+          methodName: 'createPayrollEstimation',
+          parameters: _i1.testObjectToJson({'estimation': estimation}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i12.AccountingPayrollEstimation>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i13.AccountingBudget>> getBudgets(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'accounting',
+            method: 'getBudgets',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'accounting',
+          methodName: 'getBudgets',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i13.AccountingBudget>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i13.AccountingBudget> createBudget(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i13.AccountingBudget budget,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'accounting',
+            method: 'createBudget',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'accounting',
+          methodName: 'createBudget',
+          parameters: _i1.testObjectToJson({'budget': budget}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i13.AccountingBudget>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i11.AccountingPettyCashTransaction> updatePettyCashTransaction(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i11.AccountingPettyCashTransaction transaction,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'accounting',
+            method: 'updatePettyCashTransaction',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'accounting',
+          methodName: 'updatePettyCashTransaction',
+          parameters: _i1.testObjectToJson({'transaction': transaction}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i11.AccountingPettyCashTransaction>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> deletePettyCashTransaction(
+    _i1.TestSessionBuilder sessionBuilder,
+    int transactionId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'accounting',
+            method: 'deletePettyCashTransaction',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'accounting',
+          methodName: 'deletePettyCashTransaction',
+          parameters: _i1.testObjectToJson({'transactionId': transactionId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _CrmAgendaEndpoint {
@@ -964,7 +1277,7 @@ class _CrmAgendaEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i10.CrmTask>> listTasks(
+  _i3.Future<List<_i14.CrmTask>> listTasks(
     _i1.TestSessionBuilder sessionBuilder, {
     required int limit,
     required int offset,
@@ -1005,7 +1318,7 @@ class _CrmAgendaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i10.CrmTask>>);
+                as _i3.Future<List<_i14.CrmTask>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1013,7 +1326,7 @@ class _CrmAgendaEndpoint {
     });
   }
 
-  _i3.Future<_i10.CrmTask?> getTask(
+  _i3.Future<_i14.CrmTask?> getTask(
     _i1.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
@@ -1036,7 +1349,7 @@ class _CrmAgendaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i10.CrmTask?>);
+                as _i3.Future<_i14.CrmTask?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1044,7 +1357,7 @@ class _CrmAgendaEndpoint {
     });
   }
 
-  _i3.Future<List<_i10.CrmTask>> getTasksForDate(
+  _i3.Future<List<_i14.CrmTask>> getTasksForDate(
     _i1.TestSessionBuilder sessionBuilder,
     DateTime date,
   ) async {
@@ -1067,7 +1380,7 @@ class _CrmAgendaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i10.CrmTask>>);
+                as _i3.Future<List<_i14.CrmTask>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1075,7 +1388,7 @@ class _CrmAgendaEndpoint {
     });
   }
 
-  _i3.Future<List<_i10.CrmTask>> getTodayTasks(
+  _i3.Future<List<_i14.CrmTask>> getTodayTasks(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1097,7 +1410,7 @@ class _CrmAgendaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i10.CrmTask>>);
+                as _i3.Future<List<_i14.CrmTask>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1105,7 +1418,7 @@ class _CrmAgendaEndpoint {
     });
   }
 
-  _i3.Future<List<_i10.CrmTask>> getOverdueTasks(
+  _i3.Future<List<_i14.CrmTask>> getOverdueTasks(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1127,7 +1440,7 @@ class _CrmAgendaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i10.CrmTask>>);
+                as _i3.Future<List<_i14.CrmTask>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1135,9 +1448,9 @@ class _CrmAgendaEndpoint {
     });
   }
 
-  _i3.Future<_i10.CrmTask> createTask(
+  _i3.Future<_i14.CrmTask> createTask(
     _i1.TestSessionBuilder sessionBuilder,
-    _i10.CrmTask task,
+    _i14.CrmTask task,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1158,7 +1471,7 @@ class _CrmAgendaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i10.CrmTask>);
+                as _i3.Future<_i14.CrmTask>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1166,9 +1479,9 @@ class _CrmAgendaEndpoint {
     });
   }
 
-  _i3.Future<_i10.CrmTask> updateTask(
+  _i3.Future<_i14.CrmTask> updateTask(
     _i1.TestSessionBuilder sessionBuilder,
-    _i10.CrmTask task,
+    _i14.CrmTask task,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1189,7 +1502,7 @@ class _CrmAgendaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i10.CrmTask>);
+                as _i3.Future<_i14.CrmTask>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1197,7 +1510,7 @@ class _CrmAgendaEndpoint {
     });
   }
 
-  _i3.Future<_i10.CrmTask?> completeTask(
+  _i3.Future<_i14.CrmTask?> completeTask(
     _i1.TestSessionBuilder sessionBuilder,
     int id, {
     String? notes,
@@ -1224,7 +1537,7 @@ class _CrmAgendaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i10.CrmTask?>);
+                as _i3.Future<_i14.CrmTask?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1232,7 +1545,7 @@ class _CrmAgendaEndpoint {
     });
   }
 
-  _i3.Future<_i10.CrmTask?> postponeTask(
+  _i3.Future<_i14.CrmTask?> postponeTask(
     _i1.TestSessionBuilder sessionBuilder,
     int id, {
     required DateTime newDate,
@@ -1263,7 +1576,7 @@ class _CrmAgendaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i10.CrmTask?>);
+                as _i3.Future<_i14.CrmTask?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1302,7 +1615,7 @@ class _CrmAgendaEndpoint {
     });
   }
 
-  _i3.Future<_i10.CrmTask> scheduleQualityCheck(
+  _i3.Future<_i14.CrmTask> scheduleQualityCheck(
     _i1.TestSessionBuilder sessionBuilder, {
     required String clientName,
     required String contactPerson,
@@ -1337,7 +1650,7 @@ class _CrmAgendaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i10.CrmTask>);
+                as _i3.Future<_i14.CrmTask>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1345,7 +1658,7 @@ class _CrmAgendaEndpoint {
     });
   }
 
-  _i3.Future<_i10.CrmTask> scheduleRenewal(
+  _i3.Future<_i14.CrmTask> scheduleRenewal(
     _i1.TestSessionBuilder sessionBuilder, {
     required String clientName,
     required String contactPerson,
@@ -1382,7 +1695,7 @@ class _CrmAgendaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i10.CrmTask>);
+                as _i3.Future<_i14.CrmTask>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1390,7 +1703,7 @@ class _CrmAgendaEndpoint {
     });
   }
 
-  _i3.Future<_i11.CrmAgendaMetricsResponse> getMetrics(
+  _i3.Future<_i15.CrmAgendaMetricsResponse> getMetrics(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1412,7 +1725,7 @@ class _CrmAgendaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i11.CrmAgendaMetricsResponse>);
+                as _i3.Future<_i15.CrmAgendaMetricsResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1431,7 +1744,7 @@ class _CrmCatalogEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i12.CrmSector>> listSectors(
+  _i3.Future<List<_i16.CrmSector>> listSectors(
     _i1.TestSessionBuilder sessionBuilder, {
     required bool includeInactive,
   }) async {
@@ -1456,7 +1769,7 @@ class _CrmCatalogEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i12.CrmSector>>);
+                as _i3.Future<List<_i16.CrmSector>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1464,9 +1777,9 @@ class _CrmCatalogEndpoint {
     });
   }
 
-  _i3.Future<_i12.CrmSector> createSector(
+  _i3.Future<_i16.CrmSector> createSector(
     _i1.TestSessionBuilder sessionBuilder,
-    _i12.CrmSector sector,
+    _i16.CrmSector sector,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1487,7 +1800,7 @@ class _CrmCatalogEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i12.CrmSector>);
+                as _i3.Future<_i16.CrmSector>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1495,9 +1808,9 @@ class _CrmCatalogEndpoint {
     });
   }
 
-  _i3.Future<_i12.CrmSector> updateSector(
+  _i3.Future<_i16.CrmSector> updateSector(
     _i1.TestSessionBuilder sessionBuilder,
-    _i12.CrmSector sector,
+    _i16.CrmSector sector,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1518,7 +1831,7 @@ class _CrmCatalogEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i12.CrmSector>);
+                as _i3.Future<_i16.CrmSector>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1557,7 +1870,7 @@ class _CrmCatalogEndpoint {
     });
   }
 
-  _i3.Future<List<_i13.CrmServiceLine>> listServiceLines(
+  _i3.Future<List<_i17.CrmServiceLine>> listServiceLines(
     _i1.TestSessionBuilder sessionBuilder, {
     String? category,
     required bool includeInactive,
@@ -1584,7 +1897,7 @@ class _CrmCatalogEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i13.CrmServiceLine>>);
+                as _i3.Future<List<_i17.CrmServiceLine>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1592,9 +1905,9 @@ class _CrmCatalogEndpoint {
     });
   }
 
-  _i3.Future<_i13.CrmServiceLine> createServiceLine(
+  _i3.Future<_i17.CrmServiceLine> createServiceLine(
     _i1.TestSessionBuilder sessionBuilder,
-    _i13.CrmServiceLine line,
+    _i17.CrmServiceLine line,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1615,7 +1928,7 @@ class _CrmCatalogEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i13.CrmServiceLine>);
+                as _i3.Future<_i17.CrmServiceLine>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1623,9 +1936,9 @@ class _CrmCatalogEndpoint {
     });
   }
 
-  _i3.Future<_i13.CrmServiceLine> updateServiceLine(
+  _i3.Future<_i17.CrmServiceLine> updateServiceLine(
     _i1.TestSessionBuilder sessionBuilder,
-    _i13.CrmServiceLine line,
+    _i17.CrmServiceLine line,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1646,7 +1959,7 @@ class _CrmCatalogEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i13.CrmServiceLine>);
+                as _i3.Future<_i17.CrmServiceLine>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1685,7 +1998,7 @@ class _CrmCatalogEndpoint {
     });
   }
 
-  _i3.Future<List<_i14.CrmCatalogItem>> listCatalogItems(
+  _i3.Future<List<_i18.CrmCatalogItem>> listCatalogItems(
     _i1.TestSessionBuilder sessionBuilder, {
     String? category,
     int? sectorId,
@@ -1716,7 +2029,7 @@ class _CrmCatalogEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i14.CrmCatalogItem>>);
+                as _i3.Future<List<_i18.CrmCatalogItem>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1724,7 +2037,7 @@ class _CrmCatalogEndpoint {
     });
   }
 
-  _i3.Future<_i14.CrmCatalogItem?> getCatalogItem(
+  _i3.Future<_i18.CrmCatalogItem?> getCatalogItem(
     _i1.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
@@ -1747,7 +2060,7 @@ class _CrmCatalogEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i14.CrmCatalogItem?>);
+                as _i3.Future<_i18.CrmCatalogItem?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1755,9 +2068,9 @@ class _CrmCatalogEndpoint {
     });
   }
 
-  _i3.Future<_i14.CrmCatalogItem> createCatalogItem(
+  _i3.Future<_i18.CrmCatalogItem> createCatalogItem(
     _i1.TestSessionBuilder sessionBuilder,
-    _i14.CrmCatalogItem item,
+    _i18.CrmCatalogItem item,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1778,7 +2091,7 @@ class _CrmCatalogEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i14.CrmCatalogItem>);
+                as _i3.Future<_i18.CrmCatalogItem>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1786,9 +2099,9 @@ class _CrmCatalogEndpoint {
     });
   }
 
-  _i3.Future<_i14.CrmCatalogItem> updateCatalogItem(
+  _i3.Future<_i18.CrmCatalogItem> updateCatalogItem(
     _i1.TestSessionBuilder sessionBuilder,
-    _i14.CrmCatalogItem item,
+    _i18.CrmCatalogItem item,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1809,7 +2122,7 @@ class _CrmCatalogEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i14.CrmCatalogItem>);
+                as _i3.Future<_i18.CrmCatalogItem>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1848,7 +2161,7 @@ class _CrmCatalogEndpoint {
     });
   }
 
-  _i3.Future<List<_i15.CrmCatalogItemScope>> listScopesForItem(
+  _i3.Future<List<_i19.CrmCatalogItemScope>> listScopesForItem(
     _i1.TestSessionBuilder sessionBuilder,
     int catalogItemId,
   ) async {
@@ -1871,7 +2184,7 @@ class _CrmCatalogEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i15.CrmCatalogItemScope>>);
+                as _i3.Future<List<_i19.CrmCatalogItemScope>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1879,9 +2192,9 @@ class _CrmCatalogEndpoint {
     });
   }
 
-  _i3.Future<_i15.CrmCatalogItemScope> setCatalogItemScope(
+  _i3.Future<_i19.CrmCatalogItemScope> setCatalogItemScope(
     _i1.TestSessionBuilder sessionBuilder,
-    _i15.CrmCatalogItemScope scope,
+    _i19.CrmCatalogItemScope scope,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -1902,7 +2215,7 @@ class _CrmCatalogEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i15.CrmCatalogItemScope>);
+                as _i3.Future<_i19.CrmCatalogItemScope>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1921,7 +2234,7 @@ class _CrmCustomersEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i16.CrmCustomer>> listCustomers(
+  _i3.Future<List<_i20.CrmCustomer>> listCustomers(
     _i1.TestSessionBuilder sessionBuilder, {
     required int limit,
     required int offset,
@@ -1954,7 +2267,7 @@ class _CrmCustomersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i16.CrmCustomer>>);
+                as _i3.Future<List<_i20.CrmCustomer>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1962,7 +2275,7 @@ class _CrmCustomersEndpoint {
     });
   }
 
-  _i3.Future<_i17.CrmCustomerDetailResponse?> getCustomerDetail(
+  _i3.Future<_i21.CrmCustomerDetailResponse?> getCustomerDetail(
     _i1.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
@@ -1985,7 +2298,7 @@ class _CrmCustomersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i17.CrmCustomerDetailResponse?>);
+                as _i3.Future<_i21.CrmCustomerDetailResponse?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1993,7 +2306,7 @@ class _CrmCustomersEndpoint {
     });
   }
 
-  _i3.Future<_i16.CrmCustomer?> getCustomer(
+  _i3.Future<_i20.CrmCustomer?> getCustomer(
     _i1.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
@@ -2016,7 +2329,7 @@ class _CrmCustomersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i16.CrmCustomer?>);
+                as _i3.Future<_i20.CrmCustomer?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2024,11 +2337,11 @@ class _CrmCustomersEndpoint {
     });
   }
 
-  _i3.Future<_i16.CrmCustomer> createCustomer(
+  _i3.Future<_i20.CrmCustomer> createCustomer(
     _i1.TestSessionBuilder sessionBuilder,
-    _i16.CrmCustomer customer, {
-    _i18.CrmCustomerBranch? initialBranch,
-    _i19.CrmCustomerContract? initialContract,
+    _i20.CrmCustomer customer, {
+    _i22.CrmCustomerBranch? initialBranch,
+    _i23.CrmCustomerContract? initialContract,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2053,7 +2366,7 @@ class _CrmCustomersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i16.CrmCustomer>);
+                as _i3.Future<_i20.CrmCustomer>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2061,9 +2374,9 @@ class _CrmCustomersEndpoint {
     });
   }
 
-  _i3.Future<_i16.CrmCustomer> updateCustomer(
+  _i3.Future<_i20.CrmCustomer> updateCustomer(
     _i1.TestSessionBuilder sessionBuilder,
-    _i16.CrmCustomer customer,
+    _i20.CrmCustomer customer,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2084,7 +2397,7 @@ class _CrmCustomersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i16.CrmCustomer>);
+                as _i3.Future<_i20.CrmCustomer>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2123,9 +2436,9 @@ class _CrmCustomersEndpoint {
     });
   }
 
-  _i3.Future<_i18.CrmCustomerBranch> addBranch(
+  _i3.Future<_i22.CrmCustomerBranch> addBranch(
     _i1.TestSessionBuilder sessionBuilder,
-    _i18.CrmCustomerBranch branch,
+    _i22.CrmCustomerBranch branch,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2146,7 +2459,7 @@ class _CrmCustomersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i18.CrmCustomerBranch>);
+                as _i3.Future<_i22.CrmCustomerBranch>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2154,9 +2467,9 @@ class _CrmCustomersEndpoint {
     });
   }
 
-  _i3.Future<_i18.CrmCustomerBranch> updateBranch(
+  _i3.Future<_i22.CrmCustomerBranch> updateBranch(
     _i1.TestSessionBuilder sessionBuilder,
-    _i18.CrmCustomerBranch branch,
+    _i22.CrmCustomerBranch branch,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2177,7 +2490,7 @@ class _CrmCustomersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i18.CrmCustomerBranch>);
+                as _i3.Future<_i22.CrmCustomerBranch>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2216,10 +2529,10 @@ class _CrmCustomersEndpoint {
     });
   }
 
-  _i3.Future<_i19.CrmCustomerContract> addContract(
+  _i3.Future<_i23.CrmCustomerContract> addContract(
     _i1.TestSessionBuilder sessionBuilder,
-    _i19.CrmCustomerContract contract, {
-    List<_i20.CrmContractBudgetItem>? budgetItems,
+    _i23.CrmCustomerContract contract, {
+    List<_i24.CrmContractBudgetItem>? budgetItems,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2243,7 +2556,7 @@ class _CrmCustomersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i19.CrmCustomerContract>);
+                as _i3.Future<_i23.CrmCustomerContract>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2251,9 +2564,9 @@ class _CrmCustomersEndpoint {
     });
   }
 
-  _i3.Future<_i19.CrmCustomerContract> updateContract(
+  _i3.Future<_i23.CrmCustomerContract> updateContract(
     _i1.TestSessionBuilder sessionBuilder,
-    _i19.CrmCustomerContract contract,
+    _i23.CrmCustomerContract contract,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2274,7 +2587,7 @@ class _CrmCustomersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i19.CrmCustomerContract>);
+                as _i3.Future<_i23.CrmCustomerContract>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2282,7 +2595,7 @@ class _CrmCustomersEndpoint {
     });
   }
 
-  _i3.Future<_i19.CrmCustomerContract?> completeContract(
+  _i3.Future<_i23.CrmCustomerContract?> completeContract(
     _i1.TestSessionBuilder sessionBuilder,
     int contractId, {
     required DateTime actualEndDate,
@@ -2315,7 +2628,7 @@ class _CrmCustomersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i19.CrmCustomerContract?>);
+                as _i3.Future<_i23.CrmCustomerContract?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2323,7 +2636,7 @@ class _CrmCustomersEndpoint {
     });
   }
 
-  _i3.Future<_i19.CrmCustomerContract?> renewContract(
+  _i3.Future<_i23.CrmCustomerContract?> renewContract(
     _i1.TestSessionBuilder sessionBuilder,
     int contractId, {
     required int additionalMonths,
@@ -2354,7 +2667,7 @@ class _CrmCustomersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i19.CrmCustomerContract?>);
+                as _i3.Future<_i23.CrmCustomerContract?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2362,7 +2675,7 @@ class _CrmCustomersEndpoint {
     });
   }
 
-  _i3.Future<_i19.CrmCustomerContract?> updateContractStatus(
+  _i3.Future<_i23.CrmCustomerContract?> updateContractStatus(
     _i1.TestSessionBuilder sessionBuilder,
     int contractId,
     String newStatus,
@@ -2389,7 +2702,7 @@ class _CrmCustomersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i19.CrmCustomerContract?>);
+                as _i3.Future<_i23.CrmCustomerContract?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2397,7 +2710,7 @@ class _CrmCustomersEndpoint {
     });
   }
 
-  _i3.Future<_i21.CrmCustomerMetricsResponse> getMetrics(
+  _i3.Future<_i25.CrmCustomerMetricsResponse> getMetrics(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2419,7 +2732,7 @@ class _CrmCustomersEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i21.CrmCustomerMetricsResponse>);
+                as _i3.Future<_i25.CrmCustomerMetricsResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2438,7 +2751,7 @@ class _CrmLeadsEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i22.CrmLead>> listLeads(
+  _i3.Future<List<_i26.CrmLead>> listLeads(
     _i1.TestSessionBuilder sessionBuilder, {
     required int limit,
     required int offset,
@@ -2479,7 +2792,7 @@ class _CrmLeadsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i22.CrmLead>>);
+                as _i3.Future<List<_i26.CrmLead>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2487,7 +2800,7 @@ class _CrmLeadsEndpoint {
     });
   }
 
-  _i3.Future<_i22.CrmLead?> getLead(
+  _i3.Future<_i26.CrmLead?> getLead(
     _i1.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
@@ -2510,7 +2823,7 @@ class _CrmLeadsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i22.CrmLead?>);
+                as _i3.Future<_i26.CrmLead?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2518,9 +2831,9 @@ class _CrmLeadsEndpoint {
     });
   }
 
-  _i3.Future<_i22.CrmLead> createLead(
+  _i3.Future<_i26.CrmLead> createLead(
     _i1.TestSessionBuilder sessionBuilder,
-    _i22.CrmLead lead,
+    _i26.CrmLead lead,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2541,7 +2854,7 @@ class _CrmLeadsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i22.CrmLead>);
+                as _i3.Future<_i26.CrmLead>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2549,9 +2862,9 @@ class _CrmLeadsEndpoint {
     });
   }
 
-  _i3.Future<_i22.CrmLead> updateLead(
+  _i3.Future<_i26.CrmLead> updateLead(
     _i1.TestSessionBuilder sessionBuilder,
-    _i22.CrmLead lead,
+    _i26.CrmLead lead,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2572,7 +2885,7 @@ class _CrmLeadsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i22.CrmLead>);
+                as _i3.Future<_i26.CrmLead>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2580,7 +2893,7 @@ class _CrmLeadsEndpoint {
     });
   }
 
-  _i3.Future<_i22.CrmLead?> updateStatus(
+  _i3.Future<_i26.CrmLead?> updateStatus(
     _i1.TestSessionBuilder sessionBuilder,
     int id,
     String status,
@@ -2607,7 +2920,7 @@ class _CrmLeadsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i22.CrmLead?>);
+                as _i3.Future<_i26.CrmLead?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2615,7 +2928,7 @@ class _CrmLeadsEndpoint {
     });
   }
 
-  _i3.Future<_i22.CrmLead?> updateTemperature(
+  _i3.Future<_i26.CrmLead?> updateTemperature(
     _i1.TestSessionBuilder sessionBuilder,
     int id,
     String temperature,
@@ -2642,7 +2955,7 @@ class _CrmLeadsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i22.CrmLead?>);
+                as _i3.Future<_i26.CrmLead?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2650,7 +2963,7 @@ class _CrmLeadsEndpoint {
     });
   }
 
-  _i3.Future<_i22.CrmLead?> markPromoted(
+  _i3.Future<_i26.CrmLead?> markPromoted(
     _i1.TestSessionBuilder sessionBuilder,
     int id,
     int? opportunityId,
@@ -2677,7 +2990,7 @@ class _CrmLeadsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i22.CrmLead?>);
+                as _i3.Future<_i26.CrmLead?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2716,7 +3029,7 @@ class _CrmLeadsEndpoint {
     });
   }
 
-  _i3.Future<_i23.CrmLeadMetricsResponse> getMetrics(
+  _i3.Future<_i27.CrmLeadMetricsResponse> getMetrics(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2738,7 +3051,7 @@ class _CrmLeadsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i23.CrmLeadMetricsResponse>);
+                as _i3.Future<_i27.CrmLeadMetricsResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2757,7 +3070,7 @@ class _CrmPipelineEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i24.CrmOpportunity>> listOpportunities(
+  _i3.Future<List<_i28.CrmOpportunity>> listOpportunities(
     _i1.TestSessionBuilder sessionBuilder, {
     required int limit,
     required int offset,
@@ -2792,7 +3105,7 @@ class _CrmPipelineEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i24.CrmOpportunity>>);
+                as _i3.Future<List<_i28.CrmOpportunity>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2800,7 +3113,7 @@ class _CrmPipelineEndpoint {
     });
   }
 
-  _i3.Future<_i24.CrmOpportunity?> getOpportunity(
+  _i3.Future<_i28.CrmOpportunity?> getOpportunity(
     _i1.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
@@ -2823,7 +3136,7 @@ class _CrmPipelineEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i24.CrmOpportunity?>);
+                as _i3.Future<_i28.CrmOpportunity?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2831,7 +3144,7 @@ class _CrmPipelineEndpoint {
     });
   }
 
-  _i3.Future<List<_i25.CrmQuoteItem>> getQuoteItems(
+  _i3.Future<List<_i29.CrmQuoteItem>> getQuoteItems(
     _i1.TestSessionBuilder sessionBuilder,
     int opportunityId,
   ) async {
@@ -2854,7 +3167,7 @@ class _CrmPipelineEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i25.CrmQuoteItem>>);
+                as _i3.Future<List<_i29.CrmQuoteItem>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2862,10 +3175,10 @@ class _CrmPipelineEndpoint {
     });
   }
 
-  _i3.Future<_i24.CrmOpportunity> createOpportunity(
+  _i3.Future<_i28.CrmOpportunity> createOpportunity(
     _i1.TestSessionBuilder sessionBuilder,
-    _i24.CrmOpportunity opp, {
-    List<_i25.CrmQuoteItem>? quoteItems,
+    _i28.CrmOpportunity opp, {
+    List<_i29.CrmQuoteItem>? quoteItems,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2889,7 +3202,7 @@ class _CrmPipelineEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i24.CrmOpportunity>);
+                as _i3.Future<_i28.CrmOpportunity>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2897,10 +3210,10 @@ class _CrmPipelineEndpoint {
     });
   }
 
-  _i3.Future<_i24.CrmOpportunity> updateOpportunity(
+  _i3.Future<_i28.CrmOpportunity> updateOpportunity(
     _i1.TestSessionBuilder sessionBuilder,
-    _i24.CrmOpportunity opp, {
-    List<_i25.CrmQuoteItem>? quoteItems,
+    _i28.CrmOpportunity opp, {
+    List<_i29.CrmQuoteItem>? quoteItems,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2924,7 +3237,7 @@ class _CrmPipelineEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i24.CrmOpportunity>);
+                as _i3.Future<_i28.CrmOpportunity>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2932,7 +3245,7 @@ class _CrmPipelineEndpoint {
     });
   }
 
-  _i3.Future<_i24.CrmOpportunity?> updateStage(
+  _i3.Future<_i28.CrmOpportunity?> updateStage(
     _i1.TestSessionBuilder sessionBuilder,
     int id,
     String newStage,
@@ -2959,7 +3272,7 @@ class _CrmPipelineEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i24.CrmOpportunity?>);
+                as _i3.Future<_i28.CrmOpportunity?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2967,7 +3280,7 @@ class _CrmPipelineEndpoint {
     });
   }
 
-  _i3.Future<_i17.CrmCustomerDetailResponse?> promoteToCustomer(
+  _i3.Future<_i21.CrmCustomerDetailResponse?> promoteToCustomer(
     _i1.TestSessionBuilder sessionBuilder,
     int opportunityId,
   ) async {
@@ -2990,7 +3303,7 @@ class _CrmPipelineEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i17.CrmCustomerDetailResponse?>);
+                as _i3.Future<_i21.CrmCustomerDetailResponse?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3029,7 +3342,7 @@ class _CrmPipelineEndpoint {
     });
   }
 
-  _i3.Future<_i26.CrmPipelineMetricsResponse> getMetrics(
+  _i3.Future<_i30.CrmPipelineMetricsResponse> getMetrics(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -3051,7 +3364,7 @@ class _CrmPipelineEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i26.CrmPipelineMetricsResponse>);
+                as _i3.Future<_i30.CrmPipelineMetricsResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3766,7 +4079,7 @@ class _RrhhDashboardEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i27.RrhhDashboardMetricsResponse> getMetrics(
+  _i3.Future<_i31.RrhhDashboardMetricsResponse> getMetrics(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -3788,7 +4101,7 @@ class _RrhhDashboardEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i27.RrhhDashboardMetricsResponse>);
+                as _i3.Future<_i31.RrhhDashboardMetricsResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3796,7 +4109,7 @@ class _RrhhDashboardEndpoint {
     });
   }
 
-  _i3.Future<List<_i28.RrhhRecentMovementDto>> getRecentMovements(
+  _i3.Future<List<_i32.RrhhRecentMovementDto>> getRecentMovements(
     _i1.TestSessionBuilder sessionBuilder, {
     required int limit,
   }) async {
@@ -3819,7 +4132,7 @@ class _RrhhDashboardEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i28.RrhhRecentMovementDto>>);
+                as _i3.Future<List<_i32.RrhhRecentMovementDto>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3838,7 +4151,7 @@ class _AuditEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i29.AuditLog>> listLogs(
+  _i3.Future<List<_i33.AuditLog>> listLogs(
     _i1.TestSessionBuilder sessionBuilder, {
     required int limit,
     required int offset,
@@ -3869,7 +4182,7 @@ class _AuditEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i29.AuditLog>>);
+                as _i3.Future<List<_i33.AuditLog>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3877,7 +4190,7 @@ class _AuditEndpoint {
     });
   }
 
-  _i3.Future<_i30.AuditLogPageResponse> listLogsPaged(
+  _i3.Future<_i34.AuditLogPageResponse> listLogsPaged(
     _i1.TestSessionBuilder sessionBuilder, {
     required int page,
     required int pageSize,
@@ -3916,7 +4229,7 @@ class _AuditEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i30.AuditLogPageResponse>);
+                as _i3.Future<_i34.AuditLogPageResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3935,7 +4248,7 @@ class _MfaEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i31.MfaChallengeResponse?> checkRequired(
+  _i3.Future<_i35.MfaChallengeResponse?> checkRequired(
     _i1.TestSessionBuilder sessionBuilder, {
     required bool rememberMe,
     String? trustedDeviceToken,
@@ -3962,7 +4275,7 @@ class _MfaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i31.MfaChallengeResponse?>);
+                as _i3.Future<_i35.MfaChallengeResponse?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -3970,7 +4283,7 @@ class _MfaEndpoint {
     });
   }
 
-  _i3.Future<_i32.MfaVerifyResponse> verifyMfa(
+  _i3.Future<_i36.MfaVerifyResponse> verifyMfa(
     _i1.TestSessionBuilder sessionBuilder, {
     required String challengeId,
     required String code,
@@ -3999,7 +4312,7 @@ class _MfaEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i32.MfaVerifyResponse>);
+                as _i3.Future<_i36.MfaVerifyResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4079,7 +4392,7 @@ class _RbacEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i33.AppRole>> listRoles(
+  _i3.Future<List<_i37.AppRole>> listRoles(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -4101,7 +4414,7 @@ class _RbacEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i33.AppRole>>);
+                as _i3.Future<List<_i37.AppRole>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4109,7 +4422,7 @@ class _RbacEndpoint {
     });
   }
 
-  _i3.Future<List<_i34.AppPermission>> listPermissions(
+  _i3.Future<List<_i38.AppPermission>> listPermissions(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -4131,7 +4444,7 @@ class _RbacEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i34.AppPermission>>);
+                as _i3.Future<List<_i38.AppPermission>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4139,7 +4452,7 @@ class _RbacEndpoint {
     });
   }
 
-  _i3.Future<_i35.UserRole> assignRoleToUser(
+  _i3.Future<_i39.UserRole> assignRoleToUser(
     _i1.TestSessionBuilder sessionBuilder, {
     required int userId,
     required int roleId,
@@ -4166,7 +4479,7 @@ class _RbacEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i35.UserRole>);
+                as _i3.Future<_i39.UserRole>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4209,7 +4522,7 @@ class _RbacEndpoint {
     });
   }
 
-  _i3.Future<_i36.RolePermission> assignPermissionToRole(
+  _i3.Future<_i40.RolePermission> assignPermissionToRole(
     _i1.TestSessionBuilder sessionBuilder, {
     required int roleId,
     required int permissionId,
@@ -4236,7 +4549,7 @@ class _RbacEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i36.RolePermission>);
+                as _i3.Future<_i40.RolePermission>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4275,9 +4588,9 @@ class _RbacEndpoint {
     });
   }
 
-  _i3.Future<_i33.AppRole> createRole(
+  _i3.Future<_i37.AppRole> createRole(
     _i1.TestSessionBuilder sessionBuilder,
-    _i33.AppRole role,
+    _i37.AppRole role,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -4298,7 +4611,7 @@ class _RbacEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i33.AppRole>);
+                as _i3.Future<_i37.AppRole>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4306,9 +4619,9 @@ class _RbacEndpoint {
     });
   }
 
-  _i3.Future<_i33.AppRole> updateRole(
+  _i3.Future<_i37.AppRole> updateRole(
     _i1.TestSessionBuilder sessionBuilder,
-    _i33.AppRole role,
+    _i37.AppRole role,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -4329,7 +4642,7 @@ class _RbacEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i33.AppRole>);
+                as _i3.Future<_i37.AppRole>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4476,7 +4789,7 @@ class _SessionManagementEndpoint {
     });
   }
 
-  _i3.Future<List<_i37.UserSession>> listUserSessions(
+  _i3.Future<List<_i41.UserSession>> listUserSessions(
     _i1.TestSessionBuilder sessionBuilder,
     int userId,
   ) async {
@@ -4499,7 +4812,7 @@ class _SessionManagementEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i37.UserSession>>);
+                as _i3.Future<List<_i41.UserSession>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4607,7 +4920,7 @@ class _UserEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i38.AppUser>> listUsers(
+  _i3.Future<List<_i42.AppUser>> listUsers(
     _i1.TestSessionBuilder sessionBuilder, {
     required int limit,
     required int offset,
@@ -4636,7 +4949,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i38.AppUser>>);
+                as _i3.Future<List<_i42.AppUser>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4644,7 +4957,7 @@ class _UserEndpoint {
     });
   }
 
-  _i3.Future<_i38.AppUser?> getUser(
+  _i3.Future<_i42.AppUser?> getUser(
     _i1.TestSessionBuilder sessionBuilder,
     int id,
   ) async {
@@ -4667,7 +4980,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i38.AppUser?>);
+                as _i3.Future<_i42.AppUser?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4675,7 +4988,7 @@ class _UserEndpoint {
     });
   }
 
-  _i3.Future<_i38.AppUser> createUser(
+  _i3.Future<_i42.AppUser> createUser(
     _i1.TestSessionBuilder sessionBuilder, {
     required String email,
     required String fullName,
@@ -4704,7 +5017,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i38.AppUser>);
+                as _i3.Future<_i42.AppUser>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4712,7 +5025,7 @@ class _UserEndpoint {
     });
   }
 
-  _i3.Future<_i38.AppUser?> updateUser(
+  _i3.Future<_i42.AppUser?> updateUser(
     _i1.TestSessionBuilder sessionBuilder, {
     required int id,
     required String fullName,
@@ -4739,7 +5052,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i38.AppUser?>);
+                as _i3.Future<_i42.AppUser?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -4813,7 +5126,7 @@ class _UserEndpoint {
     });
   }
 
-  _i3.Future<_i38.AppUser> getCurrentUser(
+  _i3.Future<_i42.AppUser> getCurrentUser(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -4835,7 +5148,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i38.AppUser>);
+                as _i3.Future<_i42.AppUser>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

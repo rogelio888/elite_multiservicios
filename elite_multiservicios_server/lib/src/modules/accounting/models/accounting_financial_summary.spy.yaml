@@ -2,4 +2,7 @@ class: AccountingFinancialSummary
 fields:
   totalIncome: double
   totalExpenses: double
+  projectedIncome: double
+  projectedExpenses: double
+  pettyCashBalance: double
   balance: double

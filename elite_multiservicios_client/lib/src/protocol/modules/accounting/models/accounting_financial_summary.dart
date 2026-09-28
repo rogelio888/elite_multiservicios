@@ -17,12 +17,18 @@ abstract class AccountingFinancialSummary implements _i1.SerializableModel {
   AccountingFinancialSummary._({
     required this.totalIncome,
     required this.totalExpenses,
+    required this.projectedIncome,
+    required this.projectedExpenses,
+    required this.pettyCashBalance,
     required this.balance,
   });
 
   factory AccountingFinancialSummary({
     required double totalIncome,
     required double totalExpenses,
+    required double projectedIncome,
+    required double projectedExpenses,
+    required double pettyCashBalance,
     required double balance,
   }) = _AccountingFinancialSummaryImpl;
 
@@ -32,6 +38,11 @@ abstract class AccountingFinancialSummary implements _i1.SerializableModel {
     return AccountingFinancialSummary(
       totalIncome: (jsonSerialization['totalIncome'] as num).toDouble(),
       totalExpenses: (jsonSerialization['totalExpenses'] as num).toDouble(),
+      projectedIncome: (jsonSerialization['projectedIncome'] as num).toDouble(),
+      projectedExpenses: (jsonSerialization['projectedExpenses'] as num)
+          .toDouble(),
+      pettyCashBalance: (jsonSerialization['pettyCashBalance'] as num)
+          .toDouble(),
       balance: (jsonSerialization['balance'] as num).toDouble(),
     );
   }
@@ -39,6 +50,12 @@ abstract class AccountingFinancialSummary implements _i1.SerializableModel {
   double totalIncome;
 
   double totalExpenses;
+
+  double projectedIncome;
+
+  double projectedExpenses;
+
+  double pettyCashBalance;
 
   double balance;
 
@@ -48,6 +65,9 @@ abstract class AccountingFinancialSummary implements _i1.SerializableModel {
   AccountingFinancialSummary copyWith({
     double? totalIncome,
     double? totalExpenses,
+    double? projectedIncome,
+    double? projectedExpenses,
+    double? pettyCashBalance,
     double? balance,
   });
   @override
@@ -56,6 +76,9 @@ abstract class AccountingFinancialSummary implements _i1.SerializableModel {
       '__className__': 'AccountingFinancialSummary',
       'totalIncome': totalIncome,
       'totalExpenses': totalExpenses,
+      'projectedIncome': projectedIncome,
+      'projectedExpenses': projectedExpenses,
+      'pettyCashBalance': pettyCashBalance,
       'balance': balance,
     };
   }
@@ -70,10 +93,16 @@ class _AccountingFinancialSummaryImpl extends AccountingFinancialSummary {
   _AccountingFinancialSummaryImpl({
     required double totalIncome,
     required double totalExpenses,
+    required double projectedIncome,
+    required double projectedExpenses,
+    required double pettyCashBalance,
     required double balance,
   }) : super._(
          totalIncome: totalIncome,
          totalExpenses: totalExpenses,
+         projectedIncome: projectedIncome,
+         projectedExpenses: projectedExpenses,
+         pettyCashBalance: pettyCashBalance,
          balance: balance,
        );
 
@@ -84,11 +113,17 @@ class _AccountingFinancialSummaryImpl extends AccountingFinancialSummary {
   AccountingFinancialSummary copyWith({
     double? totalIncome,
     double? totalExpenses,
+    double? projectedIncome,
+    double? projectedExpenses,
+    double? pettyCashBalance,
     double? balance,
   }) {
     return AccountingFinancialSummary(
       totalIncome: totalIncome ?? this.totalIncome,
       totalExpenses: totalExpenses ?? this.totalExpenses,
+      projectedIncome: projectedIncome ?? this.projectedIncome,
+      projectedExpenses: projectedExpenses ?? this.projectedExpenses,
+      pettyCashBalance: pettyCashBalance ?? this.pettyCashBalance,
       balance: balance ?? this.balance,
     );
   }

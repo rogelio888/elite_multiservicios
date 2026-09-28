@@ -1,0 +1,10 @@
+class: AccountingBudget
+table: accounting_budget
+fields:
+  month: int
+  year: int
+  projectedIncome: double
+  executedIncome: double
+  projectedExpenses: double
+  executedExpenses: double
+  estimatedBalance: double

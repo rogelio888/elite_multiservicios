@@ -93,10 +93,141 @@ class AccountingEndpoint extends Endpoint {
       }
     }
 
+    final opportunities = await CrmOpportunity.db.find(session);
+    double projectedInc = 0;
+    for (var opp in opportunities) {
+      if (opp.stage == 'Ganada' || opp.stage == 'Propuesta') {
+        projectedInc += opp.amount;
+      }
+    }
+
+    final pettyCash = await getPettyCash(session);
+    double pCashBalance = pettyCash.fold(0.0, (sum, p) => sum + p.balance);
+
     return AccountingFinancialSummary(
       totalIncome: totalIncome,
       totalExpenses: totalExpenses,
+      projectedIncome: projectedInc,
+      projectedExpenses: totalExpenses * 1.2, // Estimación básica
+      pettyCashBalance: pCashBalance,
       balance: totalIncome - totalExpenses,
     );
+  }
+
+  /// Obtener Caja Chica
+  Future<List<AccountingPettyCash>> getPettyCash(Session session) async {
+    return await AccountingPettyCash.db.find(session);
+  }
+
+  /// Crear Caja Chica
+  Future<AccountingPettyCash> createPettyCash(
+    Session session,
+    AccountingPettyCash pettyCash,
+  ) async {
+    return await AccountingPettyCash.db.insertRow(session, pettyCash);
+  }
+
+  /// Obtener transacciones de caja chica
+  Future<List<AccountingPettyCashTransaction>> getPettyCashTransactions(
+    Session session,
+  ) async {
+    return await AccountingPettyCashTransaction.db.find(
+      session,
+      orderBy: (t) => t.date,
+      orderDescending: true,
+    );
+  }
+
+  /// Agregar transacción de caja chica
+  Future<AccountingPettyCashTransaction> addPettyCashTransaction(
+    Session session,
+    AccountingPettyCashTransaction transaction,
+  ) async {
+    var pettyCash = await AccountingPettyCash.db.findById(
+      session,
+      transaction.pettyCashId,
+    );
+    if (pettyCash != null) {
+      if (transaction.type == 'EXPENSE') {
+        pettyCash.balance -= transaction.amount;
+      } else if (transaction.type == 'REPLENISHMENT') {
+        pettyCash.balance += transaction.amount;
+      }
+      await AccountingPettyCash.db.updateRow(session, pettyCash);
+    }
+    return await AccountingPettyCashTransaction.db.insertRow(
+      session,
+      transaction,
+    );
+  }
+
+  /// Obtener estimaciones de nómina
+  Future<List<AccountingPayrollEstimation>> getPayrollEstimations(
+    Session session,
+  ) async {
+    return await AccountingPayrollEstimation.db.find(session);
+  }
+
+  /// Crear estimación de nómina
+  Future<AccountingPayrollEstimation> createPayrollEstimation(
+    Session session,
+    AccountingPayrollEstimation estimation,
+  ) async {
+    return await AccountingPayrollEstimation.db.insertRow(session, estimation);
+  }
+
+  /// Obtener presupuestos mensuales
+  Future<List<AccountingBudget>> getBudgets(Session session) async {
+    return await AccountingBudget.db.find(
+      session,
+      orderBy: (t) => t.month,
+      orderDescending: true,
+    );
+  }
+
+  /// Crear o actualizar presupuesto
+  Future<AccountingBudget> createBudget(
+    Session session,
+    AccountingBudget budget,
+  ) async {
+    return await AccountingBudget.db.insertRow(session, budget);
+  }
+
+  /// Actualizar transacción de caja chica
+  Future<AccountingPettyCashTransaction> updatePettyCashTransaction(
+    Session session,
+    AccountingPettyCashTransaction transaction,
+  ) async {
+    return await AccountingPettyCashTransaction.db.updateRow(
+      session,
+      transaction,
+    );
+  }
+
+  /// Eliminar transacción de caja chica
+  Future<void> deletePettyCashTransaction(
+    Session session,
+    int transactionId,
+  ) async {
+    final txn = await AccountingPettyCashTransaction.db.findById(
+      session,
+      transactionId,
+    );
+    if (txn != null) {
+      // Revertir el efecto en el saldo de caja
+      final pettyCash = await AccountingPettyCash.db.findById(
+        session,
+        txn.pettyCashId,
+      );
+      if (pettyCash != null) {
+        if (txn.type == 'EXPENSE') {
+          pettyCash.balance += txn.amount; // revertir gasto
+        } else if (txn.type == 'REPLENISHMENT') {
+          pettyCash.balance -= txn.amount; // revertir reembolso
+        }
+        await AccountingPettyCash.db.updateRow(session, pettyCash);
+      }
+      await AccountingPettyCashTransaction.db.deleteRow(session, txn);
+    }
   }
 }

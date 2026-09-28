@@ -18,6 +18,8 @@ import 'views/active_sessions_view.dart';
 import '../../accounting/presentation/screens/accounting_dashboard_screen.dart';
 import '../../accounting/presentation/screens/accounting_invoices_screen.dart';
 import '../../accounting/presentation/screens/accounting_expenses_screen.dart';
+import '../../accounting/presentation/screens/accounting_petty_cash_screen.dart';
+import '../../accounting/presentation/screens/accounting_payroll_screen.dart';
 
 /// Shell principal de navegación para el módulo de seguridad de Elite Multiservicios.
 /// Diseñado con estética minimalista ejecutiva, contención visual y escala suiza.
@@ -720,7 +722,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       ),
     ];
 
-    final isAnyAccountingActive = _selectedIndex >= 16 && _selectedIndex <= 18;
+    final isAnyAccountingActive = _selectedIndex >= 16 && _selectedIndex <= 20;
     final accountingItems = [
       (
         icon: Icons.account_balance_wallet_outlined,
@@ -742,6 +744,20 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         label: 'Egresos',
         badge: null,
         index: 18,
+      ),
+      (
+        icon: Icons.point_of_sale_outlined,
+        selectedIcon: Icons.point_of_sale,
+        label: 'Caja Chica',
+        badge: null,
+        index: 19,
+      ),
+      (
+        icon: Icons.group_outlined,
+        selectedIcon: Icons.group,
+        label: 'Nómina',
+        badge: null,
+        index: 20,
       ),
     ];
 
@@ -825,11 +841,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 18:
         currentView = const AccountingExpensesScreen();
         break;
-      case 16:
-        currentView = RrhhRoutes.buildTopLevelView(
-          RrhhRoutes.catalogos,
-          onNavigateToTab: _onTabSelected,
-        );
+      case 19:
+        currentView = const AccountingPettyCashScreen();
+        break;
+      case 20:
+        currentView = const AccountingPayrollScreen();
         break;
       default:
         currentView = const Center(child: Text('Vista no encontrada'));
@@ -1370,28 +1386,73 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                     Expanded(child: currentView),
                   ],
                 )
-              : Row(
+              : Stack(
                   children: [
-                    _buildSidebarContent(
-                      isDark: isDark,
-                      isDrawer: false,
-                      securityItems: securityItems,
-                      isAnySecurityActive: isAnySecurityActive,
-                      crmItems: crmItems,
-                      isAnyCrmActive: isAnyCrmActive,
-                      rrhhItems: rrhhItems,
-                      isAnyRrhhActive: isAnyRrhhActive,
-                      accountingItems: accountingItems,
-                      isAnyAccountingActive: isAnyAccountingActive,
+                    Row(
+                      children: [
+                        _buildSidebarContent(
+                          isDark: isDark,
+                          isDrawer: false,
+                          securityItems: securityItems,
+                          isAnySecurityActive: isAnySecurityActive,
+                          crmItems: crmItems,
+                          isAnyCrmActive: isAnyCrmActive,
+                          rrhhItems: rrhhItems,
+                          isAnyRrhhActive: isAnyRrhhActive,
+                          accountingItems: accountingItems,
+                          isAnyAccountingActive: isAnyAccountingActive,
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              topBar,
+                              Expanded(child: currentView),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          topBar,
-                          Expanded(child: currentView),
-                        ],
+                    if (!isMobile)
+                      AnimatedPositioned(
+                        duration: const Duration(milliseconds: 180),
+                        curve: Curves.easeOutCubic,
+                        top:
+                            3, // alineado con el logo en la barra superior (54px de altura)
+                        left: _isSidebarCollapsed ? 0 : 248,
+                        child: Material(
+                          elevation: 3,
+                          borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(20),
+                            bottomRight: Radius.circular(20),
+                          ),
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : Colors.white,
+                          child: InkWell(
+                            onTap: () => setState(
+                              () => _isSidebarCollapsed = !_isSidebarCollapsed,
+                            ),
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(20),
+                              bottomRight: Radius.circular(20),
+                            ),
+                            child: Container(
+                              width: 32,
+                              height: 48,
+                              alignment: Alignment.center,
+                              child: Icon(
+                                _isSidebarCollapsed
+                                    ? Icons.chevron_right
+                                    : Icons.chevron_left,
+                                size: 20,
+                                color: isDark
+                                    ? const Color(0xFF94A3B8)
+                                    : const Color(0xFF64748B),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
                   ],
                 ),
         );
@@ -1454,10 +1515,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
       curve: Curves.easeOutCubic,
-      width: isDrawer ? 280 : (collapsed ? 68 : 248),
+      width: isDrawer ? 280 : (collapsed ? 0 : 248),
+      clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF0D111C) : Colors.white,
-        border: isDrawer
+        border: isDrawer || collapsed
             ? null
             : Border(
                 right: BorderSide(
