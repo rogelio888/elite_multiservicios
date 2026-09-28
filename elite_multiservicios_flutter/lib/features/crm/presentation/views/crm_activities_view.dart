@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/crm_agenda_service.dart';
+import '../widgets/crm_time_field.dart';
 
 String _formatDateShort(DateTime d) {
   const months = [
@@ -199,7 +200,7 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
     final notesCtrl = TextEditingController();
 
     DateTime selectedDay = initialDate ?? _selectedDate;
-    String selectedTime = '16:00';
+    TimeOfDay selectedTime = const TimeOfDay(hour: 16, minute: 0);
     String selectedType = CrmTaskType.call;
     String selectedPriority = 'Alta / Urgente';
 
@@ -539,73 +540,12 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                             const SizedBox(width: 10),
                             // Selector de Hora
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'HORA EXACTA',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF64748B),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  DropdownButtonFormField<String>(
-                                    initialValue:
-                                        [
-                                          '09:00',
-                                          '10:30',
-                                          '11:30',
-                                          '14:00',
-                                          '16:00',
-                                          '17:30',
-                                          '18:00',
-                                        ].contains(selectedTime)
-                                        ? selectedTime
-                                        : '16:00',
-                                    style: GoogleFonts.jetBrainsMono(
-                                      fontSize: 12,
-                                      color: isDark
-                                          ? Colors.white
-                                          : Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    decoration: InputDecoration(
-                                      isDense: true,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 9,
-                                          ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                    items:
-                                        [
-                                              '09:00',
-                                              '10:30',
-                                              '11:30',
-                                              '14:00',
-                                              '16:00',
-                                              '17:30',
-                                              '18:00',
-                                            ]
-                                            .map(
-                                              (h) => DropdownMenuItem(
-                                                value: h,
-                                                child: Text(h),
-                                              ),
-                                            )
-                                            .toList(),
-                                    onChanged: (v) {
-                                      if (v != null) {
-                                        setModalState(() => selectedTime = v);
-                                      }
-                                    },
-                                  ),
-                                ],
+                              child: CrmTimeField(
+                                label: 'HORA EXACTA',
+                                value: selectedTime,
+                                onChanged: (v) {
+                                  setModalState(() => selectedTime = v);
+                                },
                               ),
                             ),
                           ],
@@ -686,6 +626,16 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                           ? titleCtrl.text.trim()
                           : '$selectedType: ${clientCtrl.text.trim()}';
 
+                      final timeStr =
+                          '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}';
+                      final scheduledDateTime = DateTime(
+                        selectedDay.year,
+                        selectedDay.month,
+                        selectedDay.day,
+                        selectedTime.hour,
+                        selectedTime.minute,
+                      );
+
                       final newTask = CrmTaskItem(
                         id: 'TSK-${DateTime.now().millisecondsSinceEpoch % 100000}',
                         title: title,
@@ -695,14 +645,8 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                             ? contactCtrl.text.trim()
                             : 'Contacto Principal',
                         phone: phoneCtrl.text.trim(),
-                        scheduledAt: DateTime(
-                          selectedDay.year,
-                          selectedDay.month,
-                          selectedDay.day,
-                          int.tryParse(selectedTime.split(':')[0]) ?? 16,
-                          int.tryParse(selectedTime.split(':')[1]) ?? 0,
-                        ),
-                        scheduledTimeText: selectedTime,
+                        scheduledAt: scheduledDateTime,
+                        scheduledTimeText: timeStr,
                         priority: selectedPriority,
                         status: 'Pendiente',
                         callContext: contextCtrl.text.trim(),
@@ -730,7 +674,7 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  '¡Compromiso agendado para las $selectedTime con "${newTask.clientName}"!',
+                                  '¡Compromiso agendado para las $timeStr con "${newTask.clientName}"!',
                                   style: GoogleFonts.inter(fontSize: 12),
                                 ),
                               ),
@@ -1119,45 +1063,12 @@ class _CrmActivitiesViewState extends State<CrmActivitiesView> {
                           ),
                           const SizedBox(width: 10),
                           Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                final t = await showTimePicker(
-                                  context: context,
-                                  initialTime: selectedTime,
-                                );
-                                if (t != null) {
-                                  setModalState(() => selectedTime = t);
-                                }
+                            child: CrmTimeField(
+                              label: 'HORA',
+                              value: selectedTime,
+                              onChanged: (t) {
+                                setModalState(() => selectedTime = t);
                               },
-                              borderRadius: BorderRadius.circular(8),
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: isDark
-                                        ? const Color(0xFF334155)
-                                        : const Color(0xFFCBD5E1),
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.access_time,
-                                      size: 16,
-                                      color: Color(0xFF10B981),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}',
-                                      style: GoogleFonts.jetBrainsMono(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                             ),
                           ),
                         ],

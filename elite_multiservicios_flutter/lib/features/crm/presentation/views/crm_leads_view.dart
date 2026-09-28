@@ -6,6 +6,7 @@ import '../../data/crm_leads_service.dart';
 import '../../data/crm_agenda_service.dart';
 import '../../data/crm_catalog_service.dart';
 import '../../data/crm_pipeline_service.dart';
+import '../widgets/crm_time_field.dart';
 import '../views/crm_pipeline_view.dart' show OpportunityItem;
 import '../../../security/services/auth_service.dart';
 
@@ -2484,40 +2485,79 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
                           children: [
                             // Selector de Fecha
                             Expanded(
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(8),
-                                onTap: () async {
-                                  final picked = await showDatePicker(
-                                    context: context,
-                                    initialDate: selectedDate,
-                                    firstDate: DateTime.now().subtract(
-                                      const Duration(days: 1),
-                                    ),
-                                    lastDate: DateTime.now().add(
-                                      const Duration(days: 365),
-                                    ),
-                                  );
-                                  if (picked != null) {
-                                    setDialogState(() => selectedDate = picked);
-                                  }
-                                },
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Fecha Programada *',
-                                    prefixIcon: Icon(
-                                      Icons.calendar_today,
-                                      size: 18,
-                                    ),
-                                    isDense: true,
-                                  ),
-                                  child: Text(
-                                    dateText,
-                                    style: GoogleFonts.jetBrainsMono(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'FECHA PROGRAMADA *',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFF64748B),
+                                      letterSpacing: 0.3,
                                     ),
                                   ),
-                                ),
+                                  const SizedBox(height: 6),
+                                  InkWell(
+                                    borderRadius: BorderRadius.circular(8),
+                                    onTap: () async {
+                                      final picked = await showDatePicker(
+                                        context: context,
+                                        initialDate: selectedDate,
+                                        firstDate: DateTime.now().subtract(
+                                          const Duration(days: 1),
+                                        ),
+                                        lastDate: DateTime.now().add(
+                                          const Duration(days: 365),
+                                        ),
+                                      );
+                                      if (picked != null) {
+                                        setDialogState(
+                                          () => selectedDate = picked,
+                                        );
+                                      }
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 10,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: isDark
+                                            ? const Color(0xFF0F172A)
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: isDark
+                                              ? const Color(0xFF334155)
+                                              : const Color(0xFFCBD5E1),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            dateText,
+                                            style: GoogleFonts.jetBrainsMono(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : const Color(0xFF0F172A),
+                                            ),
+                                          ),
+                                          const Icon(
+                                            Icons.calendar_today,
+                                            size: 16,
+                                            color: Color(0xFF3B82F6),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
 
@@ -2525,34 +2565,12 @@ class _CrmLeadsViewState extends State<CrmLeadsView> {
 
                             // Selector de Hora
                             Expanded(
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(8),
-                                onTap: () async {
-                                  final picked = await showTimePicker(
-                                    context: context,
-                                    initialTime: selectedTime,
-                                  );
-                                  if (picked != null) {
-                                    setDialogState(() => selectedTime = picked);
-                                  }
+                              child: CrmTimeField(
+                                label: 'HORA PROGRAMADA *',
+                                value: selectedTime,
+                                onChanged: (picked) {
+                                  setDialogState(() => selectedTime = picked);
                                 },
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Hora Programada *',
-                                    prefixIcon: Icon(
-                                      Icons.access_time,
-                                      size: 18,
-                                    ),
-                                    isDense: true,
-                                  ),
-                                  child: Text(
-                                    timeText,
-                                    style: GoogleFonts.jetBrainsMono(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
                               ),
                             ),
                           ],
