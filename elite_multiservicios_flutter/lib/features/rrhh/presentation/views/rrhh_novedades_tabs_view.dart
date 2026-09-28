@@ -40,9 +40,13 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
       tabIndex = 1;
     } else if (tab == 'incidencias' || tab == 'disciplina') {
       tabIndex = 2;
-    } else if (tab == 'bajas' || tab == 'desvinculaciones' || tab == 'finiquitos') {
+    } else if (tab == 'bajas' ||
+        tab == 'desvinculaciones' ||
+        tab == 'finiquitos') {
       tabIndex = 3;
-    } else if (tab == 'nomina' || tab == 'novedades_nomina' || tab == 'novedades-nomina') {
+    } else if (tab == 'nomina' ||
+        tab == 'novedades_nomina' ||
+        tab == 'novedades-nomina') {
       tabIndex = 4;
     }
 
@@ -72,7 +76,9 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
             color: isDark ? const Color(0xFF090D16) : Colors.white,
             border: Border(
               bottom: BorderSide(
-                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                color: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFE2E8F0),
                 width: 1,
               ),
             ),
@@ -103,7 +109,9 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
                         style: GoogleFonts.inter(
                           fontSize: 19,
                           fontWeight: FontWeight.w700,
-                          color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                          color: isDark
+                              ? const Color(0xFFF8FAFC)
+                              : const Color(0xFF0F172A),
                           letterSpacing: -0.4,
                         ),
                       ),
@@ -112,7 +120,9 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
                         'Control de permisos, vacaciones, incidencias y desvinculaciones',
                         style: GoogleFonts.inter(
                           fontSize: 12.5,
-                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -220,4 +230,3 @@ class _RrhhNovedadesTabsViewState extends State<RrhhNovedadesTabsView>
     );
   }
 }
-

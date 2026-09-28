@@ -135,14 +135,21 @@ class RrhhVacationRecord {
       employeeId: json['employeeId'] as int? ?? 0,
       employeeCode: json['employeeCode'] as String? ?? '',
       employeeName: json['employeeName'] as String? ?? '',
-      startDate: DateTime.tryParse(json['startDate'] as String? ?? '') ?? DateTime.now(),
-      endDate: DateTime.tryParse(json['endDate'] as String? ?? '') ?? DateTime.now(),
+      startDate:
+          DateTime.tryParse(json['startDate'] as String? ?? '') ??
+          DateTime.now(),
+      endDate:
+          DateTime.tryParse(json['endDate'] as String? ?? '') ?? DateTime.now(),
       daysCounted: json['daysCounted'] as int? ?? 0,
       countingMode: json['countingMode'] as String? ?? 'habiles',
       status: json['status'] as String? ?? RrhhVacationRecordStatus.programado,
       notes: json['notes'] as String?,
-      createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ?? DateTime.now(),
-      updatedAt: DateTime.tryParse(json['updatedAt'] as String? ?? '') ?? DateTime.now(),
+      createdAt:
+          DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+          DateTime.now(),
+      updatedAt:
+          DateTime.tryParse(json['updatedAt'] as String? ?? '') ??
+          DateTime.now(),
       createdBy: json['createdBy'] as String? ?? 'Sistema RRHH',
     );
   }
@@ -179,7 +186,8 @@ class RrhhVacationBalance {
   final int assignedDays; // días asignados según antigüedad legal boliviana
   final int usedDays; // días gozados en el período actual
   final int pendingDays; // assignedDays - usedDays
-  final String balanceStatus; // 'disponible' | 'parcial' | 'agotado' | 'vencido' | 'sin_derecho'
+  final String
+  balanceStatus; // 'disponible' | 'parcial' | 'agotado' | 'vencido' | 'sin_derecho'
   final DateTime? nextAnniversary; // próximo aniversario laboral
   final int? daysUntilAnniversary;
 
@@ -200,7 +208,8 @@ class RrhhVacationBalance {
   });
 
   /// Antigüedad legible: "3 años, 4 meses" o "8 meses"
-  String get formattedAntiquity => RrhhVacationCalculator.formatAntiquity(hireDate, DateTime.now());
+  String get formattedAntiquity =>
+      RrhhVacationCalculator.formatAntiquity(hireDate, DateTime.now());
 
   /// Porcentaje de uso del saldo (para barras de progreso visual)
   double get usageRatio {

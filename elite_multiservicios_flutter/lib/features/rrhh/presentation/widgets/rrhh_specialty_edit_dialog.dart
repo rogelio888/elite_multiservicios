@@ -21,12 +21,16 @@ class RrhhSpecialtyEditDialog extends StatefulWidget {
     return showDialog<RrhhSpecialty>(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => RrhhSpecialtyEditDialog(specialty: specialty, existingSpecialties: existingSpecialties),
+      builder: (ctx) => RrhhSpecialtyEditDialog(
+        specialty: specialty,
+        existingSpecialties: existingSpecialties,
+      ),
     );
   }
 
   @override
-  State<RrhhSpecialtyEditDialog> createState() => _RrhhSpecialtyEditDialogState();
+  State<RrhhSpecialtyEditDialog> createState() =>
+      _RrhhSpecialtyEditDialogState();
 }
 
 class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
@@ -38,8 +42,14 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
   late bool _isActive;
 
   static const List<String> _palette = [
-    '#0284C7', '#16A34A', '#D97706', '#DC2626',
-    '#9333EA', '#0D9488', '#475569', '#E11D48',
+    '#0284C7',
+    '#16A34A',
+    '#D97706',
+    '#DC2626',
+    '#9333EA',
+    '#0D9488',
+    '#475569',
+    '#E11D48',
   ];
 
   @override
@@ -47,7 +57,9 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
     super.initState();
     final s = widget.specialty;
     final nextNum = widget.existingSpecialties.length + 1;
-    _codeCtrl = TextEditingController(text: s?.code ?? 'ESP-${nextNum.toString().padLeft(3, '0')}');
+    _codeCtrl = TextEditingController(
+      text: s?.code ?? 'ESP-${nextNum.toString().padLeft(3, '0')}',
+    );
     _nameCtrl = TextEditingController(text: s?.name ?? '');
     _descCtrl = TextEditingController(text: s?.description ?? '');
     _selectedColor = s?.colorTag ?? _palette.first;
@@ -65,19 +77,24 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
   void _handleSave() {
     if (!_formKey.currentState!.validate()) return;
     final now = DateTime.now();
-    Navigator.of(context).pop(RrhhSpecialty(
-      id: widget.specialty?.id,
-      code: _codeCtrl.text.trim().toUpperCase(),
-      name: _nameCtrl.text.trim(),
-      description: _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
-      colorTag: _selectedColor,
-      isActive: _isActive,
-      createdAt: widget.specialty?.createdAt ?? now,
-      updatedAt: now,
-    ));
+    Navigator.of(context).pop(
+      RrhhSpecialty(
+        id: widget.specialty?.id,
+        code: _codeCtrl.text.trim().toUpperCase(),
+        name: _nameCtrl.text.trim(),
+        description: _descCtrl.text.trim().isEmpty
+            ? null
+            : _descCtrl.text.trim(),
+        colorTag: _selectedColor,
+        isActive: _isActive,
+        createdAt: widget.specialty?.createdAt ?? now,
+        updatedAt: now,
+      ),
+    );
   }
 
-  Color _parseHex(String hex) => Color(int.parse('FF${hex.replaceAll('#', '')}', radix: 16));
+  Color _parseHex(String hex) =>
+      Color(int.parse('FF${hex.replaceAll('#', '')}', radix: 16));
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +102,10 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
 
     return Dialog(
       backgroundColor: const Color(0xFF0F172A),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Color(0xFF1E293B))),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Color(0xFF1E293B)),
+      ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
         child: Padding(
@@ -125,12 +145,25 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
           children: [
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: const Color(0xFF2563EB).withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
-              child: const Icon(Icons.build_outlined, color: Color(0xFF60A5FA), size: 18),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.build_outlined,
+                color: Color(0xFF60A5FA),
+                size: 18,
+              ),
             ),
             const SizedBox(width: 10),
-            Text(isEdit ? 'Editar Especialidad' : 'Nueva Especialidad',
-                style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+            Text(
+              isEdit ? 'Editar Especialidad' : 'Nueva Especialidad',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
           ],
         ),
         IconButton(
@@ -151,7 +184,9 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
       validator: (v) {
         if (v == null || v.trim().isEmpty) return 'El código es obligatorio';
         final val = v.trim().toUpperCase();
-        if (widget.existingSpecialties.any((s) => s.code.toUpperCase() == val && s.id != widget.specialty?.id)) {
+        if (widget.existingSpecialties.any(
+          (s) => s.code.toUpperCase() == val && s.id != widget.specialty?.id,
+        )) {
           return 'Ya existe una especialidad con este código';
         }
         return null;
@@ -163,11 +198,16 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
     return TextFormField(
       controller: _nameCtrl,
       style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
-      decoration: _inputDeco('Nombre de la Especialidad *', 'ej. Limpieza Hospitalaria'),
+      decoration: _inputDeco(
+        'Nombre de la Especialidad *',
+        'ej. Limpieza Hospitalaria',
+      ),
       validator: (v) {
         if (v == null || v.trim().isEmpty) return 'El nombre es obligatorio';
         final val = v.trim().toLowerCase();
-        if (widget.existingSpecialties.any((s) => s.name.toLowerCase() == val && s.id != widget.specialty?.id)) {
+        if (widget.existingSpecialties.any(
+          (s) => s.name.toLowerCase() == val && s.id != widget.specialty?.id,
+        )) {
           return 'Ya existe una especialidad con este nombre';
         }
         return null;
@@ -180,7 +220,10 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
       controller: _descCtrl,
       maxLines: 2,
       style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
-      decoration: _inputDeco('Descripción Técnica (Opcional)', 'Alcance o certificaciones requeridas'),
+      decoration: _inputDeco(
+        'Descripción Técnica (Opcional)',
+        'Alcance o certificaciones requeridas',
+      ),
     );
   }
 
@@ -188,7 +231,14 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Color Identificador', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF94A3B8))),
+        Text(
+          'Color Identificador',
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF94A3B8),
+          ),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -204,10 +254,22 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
                 decoration: BoxDecoration(
                   color: c,
                   shape: BoxShape.circle,
-                  border: Border.all(color: isSel ? Colors.white : Colors.transparent, width: 2.5),
-                  boxShadow: isSel ? [BoxShadow(color: c.withValues(alpha: 0.5), blurRadius: 6)] : null,
+                  border: Border.all(
+                    color: isSel ? Colors.white : Colors.transparent,
+                    width: 2.5,
+                  ),
+                  boxShadow: isSel
+                      ? [
+                          BoxShadow(
+                            color: c.withValues(alpha: 0.5),
+                            blurRadius: 6,
+                          ),
+                        ]
+                      : null,
                 ),
-                child: isSel ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
+                child: isSel
+                    ? const Icon(Icons.check, size: 14, color: Colors.white)
+                    : null,
               ),
             );
           }).toList(),
@@ -225,8 +287,23 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
       ),
       clipBehavior: Clip.antiAlias,
       child: SwitchListTile(
-        title: Text('Estado de la Especialidad', style: GoogleFonts.inter(fontSize: 13, color: Colors.white, fontWeight: FontWeight.w600)),
-        subtitle: Text(_isActive ? 'Especialidad activa y asignable' : 'Especialidad inactiva', style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF94A3B8))),
+        title: Text(
+          'Estado de la Especialidad',
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Text(
+          _isActive
+              ? 'Especialidad activa y asignable'
+              : 'Especialidad inactiva',
+          style: GoogleFonts.inter(
+            fontSize: 11.5,
+            color: const Color(0xFF94A3B8),
+          ),
+        ),
         value: _isActive,
         activeThumbColor: const Color(0xFF10B981),
         onChanged: (val) => setState(() => _isActive = val),
@@ -240,14 +317,22 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
       children: [
         OutlinedButton(
           onPressed: () => Navigator.of(context).pop(),
-          style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFF94A3B8), side: const BorderSide(color: Color(0xFF1E293B))),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: const Color(0xFF94A3B8),
+            side: const BorderSide(color: Color(0xFF1E293B)),
+          ),
           child: const Text('Cancelar'),
         ),
         const SizedBox(width: 12),
         ElevatedButton(
           onPressed: _handleSave,
-          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white),
-          child: Text(widget.specialty == null ? 'Crear Especialidad' : 'Guardar Cambios'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF2563EB),
+            foregroundColor: Colors.white,
+          ),
+          child: Text(
+            widget.specialty == null ? 'Crear Especialidad' : 'Guardar Cambios',
+          ),
         ),
       ],
     );
@@ -257,15 +342,30 @@ class _RrhhSpecialtyEditDialogState extends State<RrhhSpecialtyEditDialog> {
     return InputDecoration(
       labelText: label,
       hintText: hint,
-      labelStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 12.5),
-      hintStyle: GoogleFonts.inter(color: const Color(0xFF475569), fontSize: 12),
+      labelStyle: GoogleFonts.inter(
+        color: const Color(0xFF94A3B8),
+        fontSize: 12.5,
+      ),
+      hintStyle: GoogleFonts.inter(
+        color: const Color(0xFF475569),
+        fontSize: 12,
+      ),
       filled: true,
       fillColor: const Color(0xFF111827),
       isDense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E293B))),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E293B))),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF2563EB))),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFF1E293B)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFF1E293B)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFF2563EB)),
+      ),
     );
   }
 }

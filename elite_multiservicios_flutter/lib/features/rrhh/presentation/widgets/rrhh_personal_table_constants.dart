@@ -58,7 +58,8 @@ abstract class RrhhPersonalTableColumns {
   static const double expediente = 80.0;
   static const double acciones = 110.0;
 
-  static const double totalWidth = codigo +
+  static const double totalWidth =
+      codigo +
       foto +
       nombre +
       tipo +

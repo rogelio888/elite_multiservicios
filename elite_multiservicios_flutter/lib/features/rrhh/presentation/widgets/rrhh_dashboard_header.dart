@@ -35,7 +35,11 @@ class RrhhDashboardHeader extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.hub_outlined, size: 12, color: Color(0xFF93C5FD)),
+                  const Icon(
+                    Icons.hub_outlined,
+                    size: 12,
+                    color: Color(0xFF93C5FD),
+                  ),
                   const SizedBox(width: 5),
                   Text(
                     'RRHH • CONTROL OPERATIVO & TALENTO',
@@ -83,7 +87,9 @@ class RrhhDashboardHeader extends StatelessWidget {
                   height: 14,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF94A3B8)),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Color(0xFF94A3B8),
+                    ),
                   ),
                 )
               : const Icon(Icons.refresh, size: 16),
@@ -96,7 +102,9 @@ class RrhhDashboardHeader extends StatelessWidget {
             backgroundColor: const Color(0xFF1E293B),
             side: const BorderSide(color: Color(0xFF334155)),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
         ),
         const SizedBox(width: 8),
@@ -108,13 +116,18 @@ class RrhhDashboardHeader extends StatelessWidget {
             icon: const Icon(Icons.download_outlined, size: 16),
             label: Text(
               'Descargar',
-              style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             style: OutlinedButton.styleFrom(
               disabledForegroundColor: const Color(0xFF64748B),
               side: const BorderSide(color: Color(0xFF1E293B)),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           ),
         ),

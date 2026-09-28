@@ -113,7 +113,9 @@ class _RrhhTurnosViewState extends State<RrhhTurnosView>
                     style: GoogleFonts.inter(
                       fontSize: 19,
                       fontWeight: FontWeight.w700,
-                      color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                      color: isDark
+                          ? const Color(0xFFF8FAFC)
+                          : const Color(0xFF0F172A),
                       letterSpacing: -0.4,
                     ),
                   ),
@@ -122,7 +124,9 @@ class _RrhhTurnosViewState extends State<RrhhTurnosView>
                     'Catálogo de turnos de trabajo y horarios plantilla',
                     style: GoogleFonts.inter(
                       fontSize: 12.5,
-                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
                     ),
                   ),
                 ],
@@ -137,9 +141,17 @@ class _RrhhTurnosViewState extends State<RrhhTurnosView>
             indicatorColor: const Color(0xFF2563EB),
             indicatorWeight: 2.5,
             labelColor: const Color(0xFF2563EB),
-            unselectedLabelColor: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
-            labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700),
-            unselectedLabelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500),
+            unselectedLabelColor: isDark
+                ? const Color(0xFF94A3B8)
+                : const Color(0xFF64748B),
+            labelStyle: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+            unselectedLabelStyle: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
             tabs: const [
               Tab(
                 icon: Icon(Icons.timer_outlined, size: 17),

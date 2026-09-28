@@ -33,8 +33,10 @@ class RrhhDisciplinaryDetailDrawer extends StatefulWidget {
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 250),
       transitionBuilder: (ctx, a1, _, child) => SlideTransition(
-        position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
-            .animate(CurvedAnimation(parent: a1, curve: Curves.easeOutCubic)),
+        position: Tween<Offset>(
+          begin: const Offset(1, 0),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(parent: a1, curve: Curves.easeOutCubic)),
         child: child,
       ),
       pageBuilder: (ctx, _, _) => Align(
@@ -51,10 +53,12 @@ class RrhhDisciplinaryDetailDrawer extends StatefulWidget {
   }
 
   @override
-  State<RrhhDisciplinaryDetailDrawer> createState() => _RrhhDisciplinaryDetailDrawerState();
+  State<RrhhDisciplinaryDetailDrawer> createState() =>
+      _RrhhDisciplinaryDetailDrawerState();
 }
 
-class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDrawer> {
+class _RrhhDisciplinaryDetailDrawerState
+    extends State<RrhhDisciplinaryDetailDrawer> {
   bool _isLoading = true;
   bool _isActionRunning = false;
   String? _errorMessage;
@@ -113,9 +117,13 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
 
   String _getSupervisorForArea(String area) {
     final lower = area.toLowerCase();
-    if (lower.contains('operacion') || lower.contains('tecnic') || lower.contains('campo')) {
+    if (lower.contains('operacion') ||
+        lower.contains('tecnic') ||
+        lower.contains('campo')) {
       return 'Ing. Roberto Arteaga (Jefe de Operaciones)';
-    } else if (lower.contains('admin') || lower.contains('financ') || lower.contains('rrhh')) {
+    } else if (lower.contains('admin') ||
+        lower.contains('financ') ||
+        lower.contains('rrhh')) {
       return 'Lic. Laura Mendoza (Jefa de RRHH / Admin)';
     } else if (lower.contains('comercial') || lower.contains('ventas')) {
       return 'Lic. Carlos Salinas (Gerente Comercial)';
@@ -139,11 +147,19 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
         ),
         title: Row(
           children: [
-            const Icon(Icons.assignment_turned_in_outlined, color: Color(0xFF38BDF8), size: 20),
+            const Icon(
+              Icons.assignment_turned_in_outlined,
+              color: Color(0xFF38BDF8),
+              size: 20,
+            ),
             const SizedBox(width: 8),
             Text(
               'Registrar Descargo del Empleado',
-              style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white),
+              style: GoogleFonts.inter(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
             ),
           ],
         ),
@@ -157,7 +173,10 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
               children: [
                 Text(
                   'Ingrese la fundamentación y alegatos presentados por el colaborador dentro del plazo otorgado:',
-                  style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF94A3B8)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    color: const Color(0xFF94A3B8),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -165,8 +184,12 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
                   maxLines: 5,
                   style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Alegatos, circunstancias eximentes, justificaciones...',
-                    hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+                    hintText:
+                        'Alegatos, circunstancias eximentes, justificaciones...',
+                    hintStyle: GoogleFonts.inter(
+                      fontSize: 12.5,
+                      color: const Color(0xFF64748B),
+                    ),
                     filled: true,
                     fillColor: const Color(0xFF111827),
                     border: OutlineInputBorder(
@@ -174,7 +197,9 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
                       borderSide: const BorderSide(color: Color(0xFF1E293B)),
                     ),
                   ),
-                  validator: (v) => v == null || v.trim().length < 15 ? 'Ingrese al menos 15 caracteres' : null,
+                  validator: (v) => v == null || v.trim().length < 15
+                      ? 'Ingrese al menos 15 caracteres'
+                      : null,
                 ),
               ],
             ),
@@ -183,7 +208,10 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('Cancelar', style: GoogleFonts.inter(color: const Color(0xFF94A3B8))),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -191,8 +219,16 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
                 Navigator.of(ctx).pop(true);
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB)),
-            child: Text('Guardar Descargo', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2563EB),
+            ),
+            child: Text(
+              'Guardar Descargo',
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
           ),
         ],
       ),
@@ -212,7 +248,10 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
         widget.onModified?.call();
         await _loadData();
         if (mounted) {
-          RrhhSnackBar.showSuccess(context, 'Descargo registrado correctamente. Caso en evaluación.');
+          RrhhSnackBar.showSuccess(
+            context,
+            'Descargo registrado correctamente. Caso en evaluación.',
+          );
         }
       } catch (e) {
         if (mounted) {
@@ -225,9 +264,14 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
   }
 
   Future<void> _handleApplySanction() async {
-    String selectedSanction = _record!.sanctionType ?? RrhhSanctionTypes.escrita;
-    final reasonCtrl = TextEditingController(text: _record!.sanctionDescription ?? '');
-    final daysCtrl = TextEditingController(text: (_record!.suspensionDays ?? 1).toString());
+    String selectedSanction =
+        _record!.sanctionType ?? RrhhSanctionTypes.escrita;
+    final reasonCtrl = TextEditingController(
+      text: _record!.sanctionDescription ?? '',
+    );
+    final daysCtrl = TextEditingController(
+      text: (_record!.suspensionDays ?? 1).toString(),
+    );
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -240,11 +284,19 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
           ),
           title: Row(
             children: [
-              const Icon(Icons.gavel_outlined, color: Color(0xFFEF4444), size: 20),
+              const Icon(
+                Icons.gavel_outlined,
+                color: Color(0xFFEF4444),
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Aplicar Resolución y Sanción Final',
-                style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white),
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
@@ -256,10 +308,20 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
               children: [
                 Text(
                   'Habiéndose valorado la falta y los descargos correspondientes, defina la sanción definitiva:',
-                  style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF94A3B8)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    color: const Color(0xFF94A3B8),
+                  ),
                 ),
                 const SizedBox(height: 14),
-                Text('TIPO DE SANCIÓN', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: const Color(0xFF94A3B8))),
+                Text(
+                  'TIPO DE SANCIÓN',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ),
                 const SizedBox(height: 6),
                 DropdownButtonFormField<String>(
                   initialValue: selectedSanction,
@@ -268,15 +330,35 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: const Color(0xFF111827),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   items: const [
-                    DropdownMenuItem(value: RrhhSanctionTypes.verbal, child: Text('Amonestación verbal')),
-                    DropdownMenuItem(value: RrhhSanctionTypes.escrita, child: Text('Amonestación escrita (memorándum)')),
-                    DropdownMenuItem(value: RrhhSanctionTypes.pecuniaria, child: Text('Sanción pecuniaria')),
-                    DropdownMenuItem(value: RrhhSanctionTypes.suspension, child: Text('Suspensión sin goce')),
-                    DropdownMenuItem(value: RrhhSanctionTypes.retiro, child: Text('Retiro / Destitución')),
+                    DropdownMenuItem(
+                      value: RrhhSanctionTypes.verbal,
+                      child: Text('Amonestación verbal'),
+                    ),
+                    DropdownMenuItem(
+                      value: RrhhSanctionTypes.escrita,
+                      child: Text('Amonestación escrita (memorándum)'),
+                    ),
+                    DropdownMenuItem(
+                      value: RrhhSanctionTypes.pecuniaria,
+                      child: Text('Sanción pecuniaria'),
+                    ),
+                    DropdownMenuItem(
+                      value: RrhhSanctionTypes.suspension,
+                      child: Text('Suspensión sin goce'),
+                    ),
+                    DropdownMenuItem(
+                      value: RrhhSanctionTypes.retiro,
+                      child: Text('Retiro / Destitución'),
+                    ),
                   ],
                   onChanged: (val) {
                     if (val != null) {
@@ -286,7 +368,14 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
                 ),
                 if (selectedSanction == RrhhSanctionTypes.suspension) ...[
                   const SizedBox(height: 12),
-                  Text('DÍAS DE SUSPENSIÓN (1-5)', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: const Color(0xFF94A3B8))),
+                  Text(
+                    'DÍAS DE SUSPENSIÓN (1-5)',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF94A3B8),
+                    ),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: daysCtrl,
@@ -295,12 +384,21 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: const Color(0xFF111827),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                 ],
                 const SizedBox(height: 12),
-                Text('RESOLUCIÓN / MEMORÁNDUM', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: const Color(0xFF94A3B8))),
+                Text(
+                  'RESOLUCIÓN / MEMORÁNDUM',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ),
                 const SizedBox(height: 6),
                 TextFormField(
                   controller: reasonCtrl,
@@ -308,10 +406,15 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
                   style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
                   decoration: InputDecoration(
                     hintText: 'Fundamentación de la resolución emitida...',
-                    hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                    hintStyle: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: const Color(0xFF64748B),
+                    ),
                     filled: true,
                     fillColor: const Color(0xFF111827),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
               ],
@@ -320,12 +423,23 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text('Cancelar', style: GoogleFonts.inter(color: const Color(0xFF94A3B8))),
+              child: Text(
+                'Cancelar',
+                style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+              ),
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(ctx).pop(true),
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
-              child: Text('Confirmar Sanción', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEF4444),
+              ),
+              child: Text(
+                'Confirmar Sanción',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ],
         ),
@@ -359,7 +473,10 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
         widget.onModified?.call();
         await _loadData();
         if (mounted) {
-          RrhhSnackBar.showSuccess(context, 'Sanción aplicada exitosamente y registrada en legajo.');
+          RrhhSnackBar.showSuccess(
+            context,
+            'Sanción aplicada exitosamente y registrada en legajo.',
+          );
         }
       } catch (e) {
         if (mounted) {
@@ -411,8 +528,8 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
               ),
             )
           : _errorMessage != null
-              ? _buildErrorView()
-              : _buildContent(),
+          ? _buildErrorView()
+          : _buildContent(),
     );
   }
 
@@ -424,11 +541,17 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
         children: [
           const Icon(Icons.error_outline, size: 48, color: Color(0xFFEF4444)),
           const SizedBox(height: 16),
-          Text(_errorMessage!, style: GoogleFonts.inter(color: Colors.white, fontSize: 14), textAlign: TextAlign.center),
+          Text(
+            _errorMessage!,
+            style: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _loadData,
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2563EB),
+            ),
             child: const Text('Reintentar'),
           ),
         ],
@@ -487,7 +610,9 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
             decoration: BoxDecoration(
               color: const Color(0xFF38BDF8).withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: const Color(0xFF38BDF8).withValues(alpha: 0.3)),
+              border: Border.all(
+                color: const Color(0xFF38BDF8).withValues(alpha: 0.3),
+              ),
             ),
             child: Text(
               rec.code,
@@ -547,16 +672,25 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
                 const SizedBox(height: 2),
                 Text(
                   '${rec.employeeCode} • ${_employee?.position ?? "Operario de Servicios"}',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF94A3B8),
+                  ),
                 ),
                 Text(
                   'Área: ${_employee?.area ?? "Operaciones"} | Sede: ${_employee?.workplace ?? "Central"}',
-                  style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.inter(
+                    fontSize: 11.5,
+                    color: const Color(0xFF64748B),
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   'Supervisor: ${_getSupervisorForArea(_employee?.area ?? "Operaciones")}',
-                  style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFFCBD5E1)),
+                  style: GoogleFonts.inter(
+                    fontSize: 11.5,
+                    color: const Color(0xFFCBD5E1),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 InkWell(
@@ -566,7 +700,11 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.folder_shared_outlined, size: 14, color: Color(0xFF38BDF8)),
+                      const Icon(
+                        Icons.folder_shared_outlined,
+                        size: 14,
+                        color: Color(0xFF38BDF8),
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         'Ver Expediente Completo',
@@ -625,7 +763,11 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
             ),
             child: Text(
               rec.incidentDescription,
-              style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFFE2E8F0), height: 1.4),
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                color: const Color(0xFFE2E8F0),
+                height: 1.4,
+              ),
             ),
           ),
           if (rec.witnesses != null && rec.witnesses!.isNotEmpty) ...[
@@ -636,17 +778,25 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
             const SizedBox(height: 10),
             Row(
               children: [
-                Expanded(child: _dataField('EVIDENCIA ADJUNTA', rec.evidenceFile!)),
+                Expanded(
+                  child: _dataField('EVIDENCIA ADJUNTA', rec.evidenceFile!),
+                ),
                 OutlinedButton.icon(
                   onPressed: () {
-                    RrhhSnackBar.showInfo(context, 'Visualizando archivo: ${rec.evidenceFile}');
+                    RrhhSnackBar.showInfo(
+                      context,
+                      'Visualizando archivo: ${rec.evidenceFile}',
+                    );
                   },
                   icon: const Icon(Icons.open_in_new, size: 14),
                   label: const Text('Ver archivo'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF38BDF8),
                     side: const BorderSide(color: Color(0xFF38BDF8)),
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     textStyle: GoogleFonts.inter(fontSize: 11),
                   ),
                 ),
@@ -656,7 +806,10 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
           const SizedBox(height: 8),
           Text(
             'Registrado por: ${rec.createdBy} el ${_fmtTime(rec.createdAt)}',
-            style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B)),
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              color: const Color(0xFF64748B),
+            ),
           ),
         ],
       ),
@@ -664,8 +817,11 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
   }
 
   Widget _buildSection3Discharge(RrhhDisciplinaryRecord rec) {
-    final hasDischarge = rec.dischargeText != null && rec.dischargeText!.isNotEmpty;
-    final isWithinDeadline = rec.dischargeDeadline != null && rec.dischargeDeadline!.isAfter(DateTime.now());
+    final hasDischarge =
+        rec.dischargeText != null && rec.dischargeText!.isNotEmpty;
+    final isWithinDeadline =
+        rec.dischargeDeadline != null &&
+        rec.dischargeDeadline!.isAfter(DateTime.now());
 
     return _sectionBox(
       title: '3. DEBIDO PROCESO Y DESCARGO',
@@ -676,10 +832,20 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
           Row(
             children: [
               Expanded(
-                child: _dataField('FECHA LÍMITE DE DESCARGO', _fmt(rec.dischargeDeadline)),
+                child: _dataField(
+                  'FECHA LÍMITE DE DESCARGO',
+                  _fmt(rec.dischargeDeadline),
+                ),
               ),
               Expanded(
-                child: _dataField('ESTADO DEL DESCARGO', hasDischarge ? 'Presentado' : (isWithinDeadline ? 'En espera (vigente)' : 'Plazo vencido')),
+                child: _dataField(
+                  'ESTADO DEL DESCARGO',
+                  hasDischarge
+                      ? 'Presentado'
+                      : (isWithinDeadline
+                            ? 'En espera (vigente)'
+                            : 'Plazo vencido'),
+                ),
               ),
             ],
           ),
@@ -700,12 +866,19 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
                 children: [
                   Text(
                     rec.dischargeText!,
-                    style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFFE2E8F0), height: 1.4),
+                    style: GoogleFonts.inter(
+                      fontSize: 12.5,
+                      color: const Color(0xFFE2E8F0),
+                      height: 1.4,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Presentado el: ${_fmtTime(rec.dischargeDate)}',
-                    style: GoogleFonts.jetBrainsMono(fontSize: 11, color: const Color(0xFF10B981)),
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 11,
+                      color: const Color(0xFF10B981),
+                    ),
                   ),
                 ],
               ),
@@ -719,23 +892,40 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.pending_actions, size: 20, color: Color(0xFFF59E0B)),
+                  const Icon(
+                    Icons.pending_actions,
+                    size: 20,
+                    color: Color(0xFFF59E0B),
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'No se ha registrado aún el descargo formal del empleado para este expediente.',
-                      style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFCBD5E1)),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: const Color(0xFFCBD5E1),
+                      ),
                     ),
                   ),
-                  if (rec.status == RrhhDisciplinaryStatus.registrada || rec.status == RrhhDisciplinaryStatus.enDescargo) ...[
+                  if (rec.status == RrhhDisciplinaryStatus.registrada ||
+                      rec.status == RrhhDisciplinaryStatus.enDescargo) ...[
                     const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: _handleRegisterDischarge,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2563EB),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                       ),
-                      child: Text('Registrar descargo', style: GoogleFonts.inter(fontSize: 11.5, color: Colors.white)),
+                      child: Text(
+                        'Registrar descargo',
+                        style: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ],
                 ],
@@ -768,15 +958,22 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
               ),
               if (rec.suspensionDays != null && rec.suspensionDays! > 0)
                 Expanded(
-                  child: _dataField('DÍAS SUSPENSIÓN', '${rec.suspensionDays} días sin goce'),
+                  child: _dataField(
+                    'DÍAS SUSPENSIÓN',
+                    '${rec.suspensionDays} días sin goce',
+                  ),
                 ),
               if (rec.salaryDeduction != null && rec.salaryDeduction! > 0)
                 Expanded(
-                  child: _dataField('DESCUENTO SALARIAL', 'Bs. ${rec.salaryDeduction!.toStringAsFixed(2)}'),
+                  child: _dataField(
+                    'DESCUENTO SALARIAL',
+                    'Bs. ${rec.salaryDeduction!.toStringAsFixed(2)}',
+                  ),
                 ),
             ],
           ),
-          if (rec.sanctionDescription != null && rec.sanctionDescription!.isNotEmpty) ...[
+          if (rec.sanctionDescription != null &&
+              rec.sanctionDescription!.isNotEmpty) ...[
             const SizedBox(height: 10),
             Text('FUNDAMENTO DE LA RESOLUCIÓN', style: _labelStyle),
             const SizedBox(height: 4),
@@ -790,7 +987,10 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
               ),
               child: Text(
                 rec.sanctionDescription!,
-                style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFFE2E8F0)),
+                style: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  color: const Color(0xFFE2E8F0),
+                ),
               ),
             ),
           ],
@@ -800,12 +1000,17 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
               Expanded(
                 child: _dataField(
                   'NOTIFICACIÓN AL EMPLEADO',
-                  rec.notifiedEmployee ? 'Notificado (${rec.notificationMethod ?? "Físico"})' : 'No notificado',
+                  rec.notifiedEmployee
+                      ? 'Notificado (${rec.notificationMethod ?? "Físico"})'
+                      : 'No notificado',
                 ),
               ),
               if (rec.sanctionedAt != null)
                 Expanded(
-                  child: _dataField('FECHA RESOLUCIÓN', _fmtTime(rec.sanctionedAt)),
+                  child: _dataField(
+                    'FECHA RESOLUCIÓN',
+                    _fmtTime(rec.sanctionedAt),
+                  ),
                 ),
             ],
           ),
@@ -839,12 +1044,21 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
       title: '5. DOCUMENTOS Y EXPEDIENTES GENERADOS',
       icon: Icons.attach_file,
       child: docs.isEmpty
-          ? Text('No hay documentos adjuntos generados aún.', style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)))
+          ? Text(
+              'No hay documentos adjuntos generados aún.',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: const Color(0xFF64748B),
+              ),
+            )
           : Column(
               children: docs.map((d) {
                 return Container(
                   margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF111827),
                     borderRadius: BorderRadius.circular(8),
@@ -852,22 +1066,46 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.picture_as_pdf_outlined, size: 18, color: Color(0xFFEF4444)),
+                      const Icon(
+                        Icons.picture_as_pdf_outlined,
+                        size: 18,
+                        color: Color(0xFFEF4444),
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(d['title']!, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white)),
-                            Text(d['type']!, style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF94A3B8))),
+                            Text(
+                              d['title']!,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              d['type']!,
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: const Color(0xFF94A3B8),
+                              ),
+                            ),
                           ],
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.download_outlined, size: 16, color: Color(0xFF38BDF8)),
+                        icon: const Icon(
+                          Icons.download_outlined,
+                          size: 16,
+                          color: Color(0xFF38BDF8),
+                        ),
                         tooltip: 'Descargar archivo',
                         onPressed: () {
-                          RrhhSnackBar.showInfo(context, 'Descargando ${d['title']}...');
+                          RrhhSnackBar.showInfo(
+                            context,
+                            'Descargando ${d['title']}...',
+                          );
                         },
                       ),
                     ],
@@ -970,9 +1208,22 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(ev['title'] as String, style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600, color: Colors.white)),
+                      Text(
+                        ev['title'] as String,
+                        style: GoogleFonts.inter(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
                       const SizedBox(height: 1),
-                      Text('${ev['user']} • ${_fmtTime(ev['date'] as DateTime)}', style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF94A3B8))),
+                      Text(
+                        '${ev['user']} • ${_fmtTime(ev['date'] as DateTime)}',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: const Color(0xFF94A3B8),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -1006,47 +1257,72 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
         alignment: WrapAlignment.end,
         children: [
           // Si 'registrada' y requiere descargo
-          if (status == RrhhDisciplinaryStatus.registrada && rec.requiresDischarge) ...[
+          if (status == RrhhDisciplinaryStatus.registrada &&
+              rec.requiresDischarge) ...[
             OutlinedButton(
-              onPressed: () => _handleUpdateStatus(RrhhDisciplinaryStatus.archivada, reason: 'Proceso cancelado antes de descargo'),
-              style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFF94A3B8)),
+              onPressed: () => _handleUpdateStatus(
+                RrhhDisciplinaryStatus.archivada,
+                reason: 'Proceso cancelado antes de descargo',
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF94A3B8),
+              ),
               child: const Text('Archivar / Cancelar'),
             ),
             ElevatedButton.icon(
               onPressed: _handleRegisterDischarge,
               icon: const Icon(Icons.assignment_outlined, size: 15),
               label: const Text('Registrar descargo'),
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2563EB),
+              ),
             ),
           ],
 
           // Si 'en_descargo'
           if (status == RrhhDisciplinaryStatus.enDescargo) ...[
             OutlinedButton(
-              onPressed: () => _handleUpdateStatus(RrhhDisciplinaryStatus.archivada, reason: 'Archivado sin sanción tras descargo'),
-              style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFF10B981)),
+              onPressed: () => _handleUpdateStatus(
+                RrhhDisciplinaryStatus.archivada,
+                reason: 'Archivado sin sanción tras descargo',
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF10B981),
+              ),
               child: const Text('Archivar sin sanción'),
             ),
             ElevatedButton.icon(
               onPressed: _handleApplySanction,
               icon: const Icon(Icons.gavel_outlined, size: 15),
               label: const Text('Aplicar sanción'),
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEF4444),
+              ),
             ),
           ],
 
           // Si 'sancionada'
           if (status == RrhhDisciplinaryStatus.sancionada) ...[
             OutlinedButton(
-              onPressed: () => _handleUpdateStatus(RrhhDisciplinaryStatus.apelada, reason: 'Apelación interpuesta por el trabajador'),
-              style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFFF59E0B)),
+              onPressed: () => _handleUpdateStatus(
+                RrhhDisciplinaryStatus.apelada,
+                reason: 'Apelación interpuesta por el trabajador',
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFFF59E0B),
+              ),
               child: const Text('Marcar como apelada'),
             ),
             ElevatedButton.icon(
-              onPressed: () => _handleUpdateStatus(RrhhDisciplinaryStatus.cerrada, reason: 'Sanción cumplida y cerrada'),
+              onPressed: () => _handleUpdateStatus(
+                RrhhDisciplinaryStatus.cerrada,
+                reason: 'Sanción cumplida y cerrada',
+              ),
               icon: const Icon(Icons.check_circle_outline, size: 15),
               label: const Text('Cerrar caso'),
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF10B981),
+              ),
             ),
           ],
 
@@ -1054,22 +1330,34 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
           if (status == RrhhDisciplinaryStatus.apelada) ...[
             OutlinedButton(
               onPressed: _handleApplySanction,
-              style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFF38BDF8)),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF38BDF8),
+              ),
               child: const Text('Revisar sanción'),
             ),
             ElevatedButton.icon(
-              onPressed: () => _handleUpdateStatus(RrhhDisciplinaryStatus.cerrada, reason: 'Apelación resuelta y caso cerrado'),
+              onPressed: () => _handleUpdateStatus(
+                RrhhDisciplinaryStatus.cerrada,
+                reason: 'Apelación resuelta y caso cerrado',
+              ),
               icon: const Icon(Icons.check_circle_outline, size: 15),
               label: const Text('Cerrar caso'),
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF10B981),
+              ),
             ),
           ],
 
           // Si 'archivada' o 'cerrada'
-          if (status == RrhhDisciplinaryStatus.archivada || status == RrhhDisciplinaryStatus.cerrada) ...[
+          if (status == RrhhDisciplinaryStatus.archivada ||
+              status == RrhhDisciplinaryStatus.cerrada) ...[
             Text(
               'Caso ${status.toUpperCase()} (Solo lectura)',
-              style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B), fontStyle: FontStyle.italic),
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: const Color(0xFF64748B),
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ],
         ],
@@ -1121,22 +1409,30 @@ class _RrhhDisciplinaryDetailDrawerState extends State<RrhhDisciplinaryDetailDra
       children: [
         Text(label, style: _labelStyle),
         const SizedBox(height: 2),
-        Text(value, style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600, color: Colors.white)),
+        Text(
+          value,
+          style: GoogleFonts.inter(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
       ],
     );
   }
 
   TextStyle get _labelStyle => GoogleFonts.inter(
-        fontSize: 10.5,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 0.3,
-        color: const Color(0xFF64748B),
-      );
+    fontSize: 10.5,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 0.3,
+    color: const Color(0xFF64748B),
+  );
 
   String _getInitials(String name) {
     final parts = name.trim().split(RegExp(r'\s+'));
     if (parts.isEmpty) return 'EM';
-    if (parts.length == 1) return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
+    if (parts.length == 1)
+      return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
     return (parts[0][0] + parts[1][0]).toUpperCase();
   }
 }

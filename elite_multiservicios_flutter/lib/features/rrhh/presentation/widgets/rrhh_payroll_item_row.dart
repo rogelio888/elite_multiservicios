@@ -39,7 +39,9 @@ class _RrhhPayrollItemRowState extends State<RrhhPayrollItemRow> {
     final dateFormat = DateFormat('dd/MM/yyyy');
     final formattedDate = dateFormat.format(item.effectiveDate);
 
-    final baseBg = widget.isEven ? const Color(0xFF0F1523) : const Color(0xFF0B101B);
+    final baseBg = widget.isEven
+        ? const Color(0xFF0F1523)
+        : const Color(0xFF0B101B);
     final hoverBg = const Color(0xFF1E293B).withValues(alpha: 0.6);
 
     return MouseRegion(
@@ -65,7 +67,9 @@ class _RrhhPayrollItemRowState extends State<RrhhPayrollItemRow> {
                   children: [
                     CircleAvatar(
                       radius: 16,
-                      backgroundColor: const Color(0xFF2563EB).withValues(alpha: 0.2),
+                      backgroundColor: const Color(
+                        0xFF2563EB,
+                      ).withValues(alpha: 0.2),
                       child: Text(
                         _getInitials(item.employeeName),
                         style: GoogleFonts.inter(
@@ -123,7 +127,10 @@ class _RrhhPayrollItemRowState extends State<RrhhPayrollItemRow> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1E293B).withValues(alpha: 0.7),
                       borderRadius: BorderRadius.circular(4),

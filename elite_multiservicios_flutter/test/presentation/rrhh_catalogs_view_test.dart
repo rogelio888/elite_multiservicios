@@ -14,7 +14,9 @@ void main() {
   }
 
   group('RrhhCatalogsView (Catálogos Auxiliares) Tests', () {
-    testWidgets('renders view with header and Bancos catalog by default', (tester) async {
+    testWidgets('renders view with header and Bancos catalog by default', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1400, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());

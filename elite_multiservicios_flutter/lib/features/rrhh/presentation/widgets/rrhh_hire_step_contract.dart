@@ -53,7 +53,10 @@ class _RrhhHireStepContractState extends State<RrhhHireStepContract> {
       if (opt == 'Plazo Fijo') label = 'A Plazo Fijo (1 año o determinado)';
       if (opt == 'Indefinido') label = 'A Plazo Indefinido';
       if (opt == 'Servicios') label = 'Por Servicios / Consultoría';
-      return DropdownMenuItem(value: opt, child: Text(label, overflow: TextOverflow.ellipsis));
+      return DropdownMenuItem(
+        value: opt,
+        child: Text(label, overflow: TextOverflow.ellipsis),
+      );
     }).toList();
 
     final paymentItems = cfg.paymentModalityOptions.map((opt) {
@@ -61,11 +64,17 @@ class _RrhhHireStepContractState extends State<RrhhHireStepContract> {
       if (opt == 'JORNAL') label = 'Jornal Diario';
       if (opt == 'POR_HORAS') label = 'Por Horas Efectivas';
       if (opt == 'MENSUAL') label = 'Mensual (Planilla Oficial)';
-      return DropdownMenuItem(value: opt, child: Text(label, overflow: TextOverflow.ellipsis));
+      return DropdownMenuItem(
+        value: opt,
+        child: Text(label, overflow: TextOverflow.ellipsis),
+      );
     }).toList();
 
     final scheduleItems = cfg.scheduleOptions.map((opt) {
-      return DropdownMenuItem(value: opt['value']!, child: Text(opt['label']!, overflow: TextOverflow.ellipsis));
+      return DropdownMenuItem(
+        value: opt['value']!,
+        child: Text(opt['label']!, overflow: TextOverflow.ellipsis),
+      );
     }).toList();
 
     return SingleChildScrollView(
@@ -79,30 +88,44 @@ class _RrhhHireStepContractState extends State<RrhhHireStepContract> {
             decoration: BoxDecoration(
               color: const Color(0xFF2563EB).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.25)),
+              border: Border.all(
+                color: const Color(0xFF2563EB).withValues(alpha: 0.25),
+              ),
             ),
             child: Row(
               children: [
-                const Icon(Icons.info_outline, size: 16, color: Color(0xFF60A5FA)),
+                const Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: Color(0xFF60A5FA),
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     isCampo
                         ? 'Configuración para Personal de Campo: Contratación por defecto a Plazo Fijo con liquidación de jornal operativo.'
                         : 'Configuración para Personal de Oficina: Contratación por defecto a Plazo Indefinido con liquidación mensual estándar.',
-                    style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF93C5FD), height: 1.35),
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: const Color(0xFF93C5FD),
+                      height: 1.35,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 18),
-          buildHireSectionHeader('TÉRMINOS DEL CONTRATO (${cfg.roleBadgeText.toUpperCase()})'),
+          buildHireSectionHeader(
+            'TÉRMINOS DEL CONTRATO (${cfg.roleBadgeText.toUpperCase()})',
+          ),
           const SizedBox(height: 12),
           LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth > 580;
-              final colWidth = isWide ? (constraints.maxWidth - 14) / 2 : constraints.maxWidth;
+              final colWidth = isWide
+                  ? (constraints.maxWidth - 14) / 2
+                  : constraints.maxWidth;
 
               return Wrap(
                 spacing: 14,
@@ -119,8 +142,11 @@ class _RrhhHireStepContractState extends State<RrhhHireStepContract> {
                       onChanged: (val) {
                         if (val != null) {
                           form.contractType = val;
-                          if (val == 'Plazo Fijo' && form.contractEndDate == null) {
-                            form.contractEndDate = form.realStartDate.add(const Duration(days: 365));
+                          if (val == 'Plazo Fijo' &&
+                              form.contractEndDate == null) {
+                            form.contractEndDate = form.realStartDate.add(
+                              const Duration(days: 365),
+                            );
                           } else if (val != 'Plazo Fijo') {
                             form.contractEndDate = null;
                           }
@@ -138,7 +164,9 @@ class _RrhhHireStepContractState extends State<RrhhHireStepContract> {
                       child: buildHireDatePickerField(
                         context: context,
                         label: 'Fecha Vencimiento Contrato *',
-                        currentDate: form.contractEndDate ?? form.realStartDate.add(const Duration(days: 365)),
+                        currentDate:
+                            form.contractEndDate ??
+                            form.realStartDate.add(const Duration(days: 365)),
                         icon: Icons.event_busy_outlined,
                         onDateSelected: (date) {
                           form.contractEndDate = date;
@@ -153,16 +181,43 @@ class _RrhhHireStepContractState extends State<RrhhHireStepContract> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Vencimiento Contractual', style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w500, color: const Color(0xFF94A3B8))),
+                          Text(
+                            'Vencimiento Contractual',
+                            style: GoogleFonts.inter(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xFF94A3B8),
+                            ),
+                          ),
                           const SizedBox(height: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                            decoration: BoxDecoration(color: const Color(0xFF111827), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFF1E293B))),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF111827),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: const Color(0xFF1E293B),
+                              ),
+                            ),
                             child: Row(
                               children: [
-                                const Icon(Icons.all_inclusive, size: 16, color: Color(0xFF10B981)),
+                                const Icon(
+                                  Icons.all_inclusive,
+                                  size: 16,
+                                  color: Color(0xFF10B981),
+                                ),
                                 const SizedBox(width: 10),
-                                Text('Sin vencimiento (Contrato Indefinido)', style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF10B981), fontWeight: FontWeight.w500)),
+                                Text(
+                                  'Sin vencimiento (Contrato Indefinido)',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12.5,
+                                    color: const Color(0xFF10B981),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -212,38 +267,86 @@ class _RrhhHireStepContractState extends State<RrhhHireStepContract> {
           const SizedBox(height: 10),
           Row(
             children: [
-              Text('Sueldo Base Acordado (Bs.) *', style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w500, color: const Color(0xFF94A3B8))),
+              Text(
+                'Sueldo Base Acordado (Bs.) *',
+                style: GoogleFonts.inter(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF94A3B8),
+                ),
+              ),
               const SizedBox(width: 6),
-              const Icon(Icons.lock_outline, size: 12, color: Color(0xFFF59E0B)),
+              const Icon(
+                Icons.lock_outline,
+                size: 12,
+                color: Color(0xFFF59E0B),
+              ),
               const SizedBox(width: 4),
-              Text('Confidencial', style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFFF59E0B))),
+              Text(
+                'Confidencial',
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  color: const Color(0xFFF59E0B),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 6),
           TextField(
             controller: _salaryController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
-            style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF10B981)),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+            ],
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF10B981),
+            ),
             onChanged: (val) {
               final parsed = double.tryParse(val) ?? 0.0;
               form.agreedSalary = parsed;
               widget.onChanged();
             },
             decoration: InputDecoration(
-              prefixIcon: const Icon(Icons.monetization_on_outlined, size: 16, color: Color(0xFF10B981)),
+              prefixIcon: const Icon(
+                Icons.monetization_on_outlined,
+                size: 16,
+                color: Color(0xFF10B981),
+              ),
               prefixText: 'Bs. ',
-              prefixStyle: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF10B981)),
-              helperText: form.selectedPosition?.suggestedSalary != null && (form.selectedPosition!.suggestedSalary ?? 0) > 0
+              prefixStyle: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF10B981),
+              ),
+              helperText:
+                  form.selectedPosition?.suggestedSalary != null &&
+                      (form.selectedPosition!.suggestedSalary ?? 0) > 0
                   ? 'Sueldo referencial para ${form.selectedPosition!.name}: Bs. ${form.selectedPosition!.suggestedSalary!.toStringAsFixed(2)}'
                   : null,
-              helperStyle: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B)),
+              helperStyle: GoogleFonts.inter(
+                fontSize: 11,
+                color: const Color(0xFF64748B),
+              ),
               filled: true,
               fillColor: const Color(0xFF111827),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E293B))),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E293B))),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF10B981))),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 12,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0xFF1E293B)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0xFF1E293B)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0xFF10B981)),
+              ),
             ),
           ),
           const SizedBox(height: 18),
@@ -252,20 +355,36 @@ class _RrhhHireStepContractState extends State<RrhhHireStepContract> {
           TextField(
             controller: _obsController,
             maxLines: 2,
-            style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFFF8FAFC)),
+            style: GoogleFonts.inter(
+              fontSize: 12.5,
+              color: const Color(0xFFF8FAFC),
+            ),
             onChanged: (val) {
               form.observations = val;
               widget.onChanged();
             },
             decoration: InputDecoration(
-              hintText: 'Condiciones especiales, bonos de campo, acuerdos de traslado...',
-              hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+              hintText:
+                  'Condiciones especiales, bonos de campo, acuerdos de traslado...',
+              hintStyle: GoogleFonts.inter(
+                fontSize: 12,
+                color: const Color(0xFF64748B),
+              ),
               filled: true,
               fillColor: const Color(0xFF111827),
               contentPadding: const EdgeInsets.all(12),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E293B))),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E293B))),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF2563EB))),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0xFF1E293B)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0xFF1E293B)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0xFF2563EB)),
+              ),
             ),
           ),
         ],

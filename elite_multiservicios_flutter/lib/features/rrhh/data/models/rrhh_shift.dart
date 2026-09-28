@@ -133,10 +133,10 @@ class RrhhScheduleShiftDay {
   });
 
   Map<String, dynamic> toJson() => {
-        'shiftCode': shiftCode,
-        'shiftName': shiftName,
-        'dayOfWeek': dayOfWeek,
-      };
+    'shiftCode': shiftCode,
+    'shiftName': shiftName,
+    'dayOfWeek': dayOfWeek,
+  };
 
   factory RrhhScheduleShiftDay.fromJson(Map<String, dynamic> json) =>
       RrhhScheduleShiftDay(

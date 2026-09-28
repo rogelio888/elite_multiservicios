@@ -25,7 +25,11 @@ class RrhhPositionEditDialog extends StatefulWidget {
     return showDialog<RrhhPosition>(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => RrhhPositionEditDialog(position: position, availableAreas: availableAreas, existingPositions: existingPositions),
+      builder: (ctx) => RrhhPositionEditDialog(
+        position: position,
+        availableAreas: availableAreas,
+        existingPositions: existingPositions,
+      ),
     );
   }
 
@@ -49,13 +53,25 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
     super.initState();
     final p = widget.position;
     final nextNum = widget.existingPositions.length + 1;
-    _codeCtrl = TextEditingController(text: p?.code ?? 'CARGO-${nextNum.toString().padLeft(3, '0')}');
+    _codeCtrl = TextEditingController(
+      text: p?.code ?? 'CARGO-${nextNum.toString().padLeft(3, '0')}',
+    );
     _nameCtrl = TextEditingController(text: p?.name ?? '');
-    _salaryCtrl = TextEditingController(text: (p?.suggestedSalary != null && p!.suggestedSalary! > 0) ? p.suggestedSalary!.toStringAsFixed(0) : '');
+    _salaryCtrl = TextEditingController(
+      text: (p?.suggestedSalary != null && p!.suggestedSalary! > 0)
+          ? p.suggestedSalary!.toStringAsFixed(0)
+          : '',
+    );
     _descCtrl = TextEditingController(text: p?.description ?? '');
     _reqsCtrl = TextEditingController(text: p?.requirements ?? '');
-    _selectedAreaId = p?.areaId ?? (widget.availableAreas.isNotEmpty ? widget.availableAreas.first.id : null);
-    _workplaceType = p?.workplaceType.toUpperCase() == 'OFICINA' ? 'OFICINA' : 'CAMPO';
+    _selectedAreaId =
+        p?.areaId ??
+        (widget.availableAreas.isNotEmpty
+            ? widget.availableAreas.first.id
+            : null);
+    _workplaceType = p?.workplaceType.toUpperCase() == 'OFICINA'
+        ? 'OFICINA'
+        : 'CAMPO';
     _isActive = p?.isActive ?? true;
   }
 
@@ -75,21 +91,29 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
       RrhhSnackBar.showWarning(context, 'Seleccione un área departamental');
       return;
     }
-    final salary = _salaryCtrl.text.trim().isNotEmpty ? double.tryParse(_salaryCtrl.text.trim().replaceAll(',', '.')) : null;
+    final salary = _salaryCtrl.text.trim().isNotEmpty
+        ? double.tryParse(_salaryCtrl.text.trim().replaceAll(',', '.'))
+        : null;
     final now = DateTime.now();
-    Navigator.of(context).pop(RrhhPosition(
-      id: widget.position?.id,
-      code: _codeCtrl.text.trim().toUpperCase(),
-      areaId: _selectedAreaId!,
-      name: _nameCtrl.text.trim(),
-      workplaceType: _workplaceType,
-      suggestedSalary: salary,
-      description: _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
-      requirements: _reqsCtrl.text.trim().isEmpty ? null : _reqsCtrl.text.trim(),
-      isActive: _isActive,
-      createdAt: widget.position?.createdAt ?? now,
-      updatedAt: now,
-    ));
+    Navigator.of(context).pop(
+      RrhhPosition(
+        id: widget.position?.id,
+        code: _codeCtrl.text.trim().toUpperCase(),
+        areaId: _selectedAreaId!,
+        name: _nameCtrl.text.trim(),
+        workplaceType: _workplaceType,
+        suggestedSalary: salary,
+        description: _descCtrl.text.trim().isEmpty
+            ? null
+            : _descCtrl.text.trim(),
+        requirements: _reqsCtrl.text.trim().isEmpty
+            ? null
+            : _reqsCtrl.text.trim(),
+        isActive: _isActive,
+        createdAt: widget.position?.createdAt ?? now,
+        updatedAt: now,
+      ),
+    );
   }
 
   @override
@@ -97,7 +121,10 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
     final isEdit = widget.position != null;
     return Dialog(
       backgroundColor: const Color(0xFF0F172A),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Color(0xFF1E293B))),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Color(0xFF1E293B)),
+      ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 500, maxHeight: 680),
         child: Padding(
@@ -146,16 +173,36 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: const Color(0xFF2563EB).withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
-            child: const Icon(Icons.badge_outlined, color: Color(0xFF60A5FA), size: 18),
-          ),
-          const SizedBox(width: 10),
-          Text(isEdit ? 'Editar Cargo de Trabajo' : 'Nuevo Cargo de Trabajo', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
-        ]),
-        IconButton(onPressed: () => Navigator.of(context).pop(), icon: const Icon(Icons.close, color: Color(0xFF94A3B8), size: 20), tooltip: 'Cerrar'),
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.badge_outlined,
+                color: Color(0xFF60A5FA),
+                size: 18,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              isEdit ? 'Editar Cargo de Trabajo' : 'Nuevo Cargo de Trabajo',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.close, color: Color(0xFF94A3B8), size: 20),
+          tooltip: 'Cerrar',
+        ),
       ],
     );
   }
@@ -169,7 +216,10 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
       validator: (v) {
         if (v == null || v.trim().isEmpty) return 'Requerido';
         final val = v.trim().toUpperCase();
-        if (widget.existingPositions.any((p) => p.code.toUpperCase() == val && p.id != widget.position?.id)) return 'Duplicado';
+        if (widget.existingPositions.any(
+          (p) => p.code.toUpperCase() == val && p.id != widget.position?.id,
+        ))
+          return 'Duplicado';
         return null;
       },
     );
@@ -179,12 +229,21 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Entorno *', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF94A3B8))),
+        Text(
+          'Entorno *',
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF94A3B8),
+          ),
+        ),
         const SizedBox(height: 5),
         Row(
           children: ['CAMPO', 'OFICINA'].map((t) {
             final isSel = _workplaceType == t;
-            final col = t == 'CAMPO' ? const Color(0xFFF59E0B) : const Color(0xFF3B82F6);
+            final col = t == 'CAMPO'
+                ? const Color(0xFFF59E0B)
+                : const Color(0xFF3B82F6);
             return Expanded(
               child: Padding(
                 padding: EdgeInsets.only(right: t == 'CAMPO' ? 6 : 0),
@@ -193,9 +252,24 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 9),
-                    decoration: BoxDecoration(color: isSel ? col.withValues(alpha: 0.18) : const Color(0xFF111827), borderRadius: BorderRadius.circular(8), border: Border.all(color: isSel ? col : const Color(0xFF1E293B))),
+                    decoration: BoxDecoration(
+                      color: isSel
+                          ? col.withValues(alpha: 0.18)
+                          : const Color(0xFF111827),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: isSel ? col : const Color(0xFF1E293B),
+                      ),
+                    ),
                     alignment: Alignment.center,
-                    child: Text(t, style: GoogleFonts.inter(fontSize: 11, fontWeight: isSel ? FontWeight.w700 : FontWeight.w500, color: isSel ? Colors.white : const Color(0xFF94A3B8))),
+                    child: Text(
+                      t,
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
+                        color: isSel ? Colors.white : const Color(0xFF94A3B8),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -210,8 +284,12 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
     return TextFormField(
       controller: _nameCtrl,
       style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
-      decoration: _inputDeco('Título del Cargo *', 'ej. Guardia de Seguridad Operativo'),
-      validator: (v) => (v == null || v.trim().isEmpty) ? 'El título es obligatorio' : null,
+      decoration: _inputDeco(
+        'Título del Cargo *',
+        'ej. Guardia de Seguridad Operativo',
+      ),
+      validator: (v) =>
+          (v == null || v.trim().isEmpty) ? 'El título es obligatorio' : null,
     );
   }
 
@@ -221,7 +299,17 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
       dropdownColor: const Color(0xFF0F172A),
       style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
       decoration: _inputDeco('Área Departamental Padre *', ''),
-      items: widget.availableAreas.map((a) => DropdownMenuItem<int>(value: a.id, child: Text('${a.name} (${a.code})', overflow: TextOverflow.ellipsis))).toList(),
+      items: widget.availableAreas
+          .map(
+            (a) => DropdownMenuItem<int>(
+              value: a.id,
+              child: Text(
+                '${a.name} (${a.code})',
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          )
+          .toList(),
       onChanged: (val) => setState(() => _selectedAreaId = val),
       validator: (val) => val == null ? 'Área requerida' : null,
     );
@@ -232,9 +320,14 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
       controller: _salaryCtrl,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       style: GoogleFonts.jetBrainsMono(color: Colors.white, fontSize: 13),
-      decoration: _inputDeco('Sueldo Sugerido (Bs.) 🔒', 'ej. 3200 (Opcional)').copyWith(
-        prefixIcon: const Icon(Icons.lock_outline, size: 16, color: Color(0xFFF59E0B)),
-      ),
+      decoration: _inputDeco('Sueldo Sugerido (Bs.) 🔒', 'ej. 3200 (Opcional)')
+          .copyWith(
+            prefixIcon: const Icon(
+              Icons.lock_outline,
+              size: 16,
+              color: Color(0xFFF59E0B),
+            ),
+          ),
       validator: (v) {
         if (v == null || v.trim().isEmpty) return null;
         final numVal = double.tryParse(v.trim().replaceAll(',', '.'));
@@ -244,9 +337,25 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
     );
   }
 
-  Widget _buildDescField() => TextFormField(controller: _descCtrl, maxLines: 2, style: GoogleFonts.inter(color: Colors.white, fontSize: 13), decoration: _inputDeco('Descripción del Cargo (Opcional)', 'Responsabilidades'));
+  Widget _buildDescField() => TextFormField(
+    controller: _descCtrl,
+    maxLines: 2,
+    style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+    decoration: _inputDeco(
+      'Descripción del Cargo (Opcional)',
+      'Responsabilidades',
+    ),
+  );
 
-  Widget _buildReqsField() => TextFormField(controller: _reqsCtrl, maxLines: 2, style: GoogleFonts.inter(color: Colors.white, fontSize: 13), decoration: _inputDeco('Requisitos / Perfil (Opcional)', 'Experiencia, licencias'));
+  Widget _buildReqsField() => TextFormField(
+    controller: _reqsCtrl,
+    maxLines: 2,
+    style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+    decoration: _inputDeco(
+      'Requisitos / Perfil (Opcional)',
+      'Experiencia, licencias',
+    ),
+  );
 
   Widget _buildActiveSwitch() {
     return Material(
@@ -257,8 +366,23 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
       ),
       clipBehavior: Clip.antiAlias,
       child: SwitchListTile(
-        title: Text('Estado del Puesto', style: GoogleFonts.inter(fontSize: 13, color: Colors.white, fontWeight: FontWeight.w600)),
-        subtitle: Text(_isActive ? 'Puesto activo para contrataciones' : 'Puesto inactivo / congelado', style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF94A3B8))),
+        title: Text(
+          'Estado del Puesto',
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Text(
+          _isActive
+              ? 'Puesto activo para contrataciones'
+              : 'Puesto inactivo / congelado',
+          style: GoogleFonts.inter(
+            fontSize: 11,
+            color: const Color(0xFF94A3B8),
+          ),
+        ),
         value: _isActive,
         activeThumbColor: const Color(0xFF10B981),
         onChanged: (val) => setState(() => _isActive = val),
@@ -272,14 +396,22 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
       children: [
         OutlinedButton(
           onPressed: () => Navigator.of(context).pop(),
-          style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFF94A3B8), side: const BorderSide(color: Color(0xFF1E293B))),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: const Color(0xFF94A3B8),
+            side: const BorderSide(color: Color(0xFF1E293B)),
+          ),
           child: const Text('Cancelar'),
         ),
         const SizedBox(width: 12),
         ElevatedButton(
           onPressed: _handleSave,
-          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white),
-          child: Text(widget.position == null ? 'Crear Cargo' : 'Guardar Cambios'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF2563EB),
+            foregroundColor: Colors.white,
+          ),
+          child: Text(
+            widget.position == null ? 'Crear Cargo' : 'Guardar Cambios',
+          ),
         ),
       ],
     );
@@ -289,16 +421,30 @@ class _RrhhPositionEditDialogState extends State<RrhhPositionEditDialog> {
     return InputDecoration(
       labelText: label,
       hintText: hint,
-      labelStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 12.5),
-      hintStyle: GoogleFonts.inter(color: const Color(0xFF475569), fontSize: 12),
+      labelStyle: GoogleFonts.inter(
+        color: const Color(0xFF94A3B8),
+        fontSize: 12.5,
+      ),
+      hintStyle: GoogleFonts.inter(
+        color: const Color(0xFF475569),
+        fontSize: 12,
+      ),
       filled: true,
       fillColor: const Color(0xFF111827),
       isDense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E293B))),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E293B))),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF2563EB))),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFF1E293B)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFF1E293B)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFF2563EB)),
+      ),
     );
   }
 }
-

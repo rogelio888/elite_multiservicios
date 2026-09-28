@@ -84,7 +84,8 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
       if (!mounted) return;
 
       RrhhVacationBalance? selected;
-      final targetEmpId = widget.initialRecord?.employeeId ?? widget.preselectedEmployeeId;
+      final targetEmpId =
+          widget.initialRecord?.employeeId ?? widget.preselectedEmployeeId;
 
       if (targetEmpId != null) {
         final matches = balances.where((b) => b.employeeId == targetEmpId);
@@ -107,7 +108,10 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      RrhhSnackBar.showError(context, 'Error al cargar saldos de empleados: $e');
+      RrhhSnackBar.showError(
+        context,
+        'Error al cargar saldos de empleados: $e',
+      );
     }
   }
 
@@ -122,7 +126,8 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
   int get _effectiveAvailableDays {
     if (_selectedBalance == null) return 0;
     // Si estamos editando el mismo registro, sumamos de vuelta los días que ya tenía este registro
-    if (_isEditing && widget.initialRecord!.employeeId == _selectedBalance!.employeeId) {
+    if (_isEditing &&
+        widget.initialRecord!.employeeId == _selectedBalance!.employeeId) {
       return _selectedBalance!.pendingDays + widget.initialRecord!.daysCounted;
     }
     return _selectedBalance!.pendingDays;
@@ -152,12 +157,16 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
 
     final days = _calculatedDays;
     if (days <= 0) {
-      RrhhSnackBar.showError(context, 'El período seleccionado debe contener al menos 1 día válido.');
+      RrhhSnackBar.showError(
+        context,
+        'El período seleccionado debe contener al menos 1 día válido.',
+      );
       return;
     }
 
     // Regla: No tener menos de 1 año de antigüedad
-    if (_selectedBalance!.balanceStatus == RrhhVacationBalanceStatus.sinDerecho) {
+    if (_selectedBalance!.balanceStatus ==
+        RrhhVacationBalanceStatus.sinDerecho) {
       RrhhSnackBar.showError(
         context,
         'El colaborador aún no cumple 1 año ininterrumpido de servicio (sin derecho legal de vacaciones).',
@@ -187,7 +196,8 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
       final hasOverlap = existingRecords.any((r) {
         if (_isEditing && r.id == widget.initialRecord!.id) return false;
         if (r.status == RrhhVacationRecordStatus.cancelado) return false;
-        final overlaps = !(_endDate.isBefore(r.startDate) || _startDate.isAfter(r.endDate));
+        final overlaps =
+            !(_endDate.isBefore(r.startDate) || _startDate.isAfter(r.endDate));
         return overlaps;
       });
 
@@ -203,7 +213,9 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
 
       final status = markInCourse
           ? RrhhVacationRecordStatus.enCurso
-          : (_isEditing ? widget.initialRecord!.status : RrhhVacationRecordStatus.programado);
+          : (_isEditing
+                ? widget.initialRecord!.status
+                : RrhhVacationRecordStatus.programado);
 
       final record = RrhhVacationRecord(
         id: _isEditing ? widget.initialRecord!.id : 0,
@@ -221,7 +233,9 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
             : null,
         createdAt: _isEditing ? widget.initialRecord!.createdAt : now,
         updatedAt: now,
-        createdBy: _isEditing ? widget.initialRecord!.createdBy : 'Lic. Laura Mendoza',
+        createdBy: _isEditing
+            ? widget.initialRecord!.createdBy
+            : 'Lic. Laura Mendoza',
       );
 
       if (_isEditing) {
@@ -235,7 +249,9 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
         context,
         markInCourse
             ? 'Vacaciones programadas y marcadas en curso exitosamente.'
-            : (_isEditing ? 'Período de vacaciones actualizado correctamente.' : 'Vacaciones programadas exitosamente.'),
+            : (_isEditing
+                  ? 'Período de vacaciones actualizado correctamente.'
+                  : 'Vacaciones programadas exitosamente.'),
       );
       Navigator.of(context).pop(true);
     } catch (e) {
@@ -392,7 +408,9 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _isEditing ? 'Editar Vacaciones' : 'Programar Vacaciones',
+                        _isEditing
+                            ? 'Editar Vacaciones'
+                            : 'Programar Vacaciones',
                         style: GoogleFonts.inter(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -452,13 +470,20 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
               isExpanded: true,
               dropdownColor: const Color(0xFF0F172A),
               value: _selectedBalance?.employeeId,
-              icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFF94A3B8)),
+              icon: const Icon(
+                Icons.keyboard_arrow_down,
+                color: Color(0xFF94A3B8),
+              ),
               hint: Text(
                 'Seleccione un colaborador...',
-                style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF64748B)),
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: const Color(0xFF64748B),
+                ),
               ),
               items: _balances.map((b) {
-                final hasBalance = b.pendingDays > 0 &&
+                final hasBalance =
+                    b.pendingDays > 0 &&
                     b.balanceStatus != RrhhVacationBalanceStatus.sinDerecho;
                 return DropdownMenuItem<int>(
                   value: b.employeeId,
@@ -470,7 +495,9 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
                           style: GoogleFonts.inter(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
-                            color: hasBalance ? Colors.white : const Color(0xFF94A3B8),
+                            color: hasBalance
+                                ? Colors.white
+                                : const Color(0xFF94A3B8),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -496,7 +523,9 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
                   : (val) {
                       if (val != null) {
                         setState(() {
-                          _selectedBalance = _balances.firstWhere((b) => b.employeeId == val);
+                          _selectedBalance = _balances.firstWhere(
+                            (b) => b.employeeId == val,
+                          );
                         });
                       }
                     },
@@ -510,7 +539,8 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
   Widget _buildBalanceInfoCard() {
     final b = _selectedBalance!;
     final available = _effectiveAvailableDays;
-    final isSinDerecho = b.balanceStatus == RrhhVacationBalanceStatus.sinDerecho;
+    final isSinDerecho =
+        b.balanceStatus == RrhhVacationBalanceStatus.sinDerecho;
     final isAgotado = available <= 0 && !isSinDerecho;
 
     return Container(
@@ -553,7 +583,9 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: available > 0 ? const Color(0xFF10B981) : const Color(0xFFEF4444),
+                  color: available > 0
+                      ? const Color(0xFF10B981)
+                      : const Color(0xFFEF4444),
                 ),
               ),
               Text(
@@ -612,7 +644,10 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
                 onTap: () => _pickDate(isStart: true),
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 11,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF111827),
                     borderRadius: BorderRadius.circular(8),
@@ -620,7 +655,11 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.calendar_today, size: 16, color: Color(0xFF60A5FA)),
+                      const Icon(
+                        Icons.calendar_today,
+                        size: 16,
+                        color: Color(0xFF60A5FA),
+                      ),
                       const SizedBox(width: 10),
                       Text(
                         _formatDate(_startDate),
@@ -657,7 +696,10 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
                 onTap: () => _pickDate(isStart: false),
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 11,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF111827),
                     borderRadius: BorderRadius.circular(8),
@@ -665,7 +707,11 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.event, size: 16, color: Color(0xFF60A5FA)),
+                      const Icon(
+                        Icons.event,
+                        size: 16,
+                        color: Color(0xFF60A5FA),
+                      ),
                       const SizedBox(width: 10),
                       Text(
                         _formatDate(_endDate),
@@ -793,7 +839,9 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
               children: [
                 Icon(
                   isExceeded ? Icons.error_outline : Icons.check_circle_outline,
-                  color: isExceeded ? const Color(0xFFEF4444) : const Color(0xFF38BDF8),
+                  color: isExceeded
+                      ? const Color(0xFFEF4444)
+                      : const Color(0xFF38BDF8),
                   size: 20,
                 ),
                 const SizedBox(width: 10),
@@ -813,7 +861,9 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
                         style: GoogleFonts.inter(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
-                          color: isExceeded ? const Color(0xFFEF4444) : Colors.white,
+                          color: isExceeded
+                              ? const Color(0xFFEF4444)
+                              : Colors.white,
                         ),
                       ),
                     ],
@@ -864,8 +914,12 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
           maxLines: 3,
           style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
           decoration: InputDecoration(
-            hintText: 'Ej. Acordado con jefatura operativa, reemplazo asignado...',
-            hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+            hintText:
+                'Ej. Acordado con jefatura operativa, reemplazo asignado...',
+            hintStyle: GoogleFonts.inter(
+              fontSize: 12.5,
+              color: const Color(0xFF64748B),
+            ),
             filled: true,
             fillColor: const Color(0xFF111827),
             border: OutlineInputBorder(
@@ -889,9 +943,11 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
   Widget _buildActionsFooter() {
     final days = _calculatedDays;
     final available = _effectiveAvailableDays;
-    final canSubmit = !_isSaving &&
+    final canSubmit =
+        !_isSaving &&
         _selectedBalance != null &&
-        _selectedBalance!.balanceStatus != RrhhVacationBalanceStatus.sinDerecho &&
+        _selectedBalance!.balanceStatus !=
+            RrhhVacationBalanceStatus.sinDerecho &&
         days > 0 &&
         days <= available;
 
@@ -918,27 +974,41 @@ class _RrhhVacationEditDialogState extends State<RrhhVacationEditDialog> {
           const SizedBox(width: 10),
           if (!_isEditing && _isStartDateToday) ...[
             ElevatedButton(
-              onPressed: canSubmit ? () => _handleSave(markInCourse: true) : null,
+              onPressed: canSubmit
+                  ? () => _handleSave(markInCourse: true)
+                  : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF10B981),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 11,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: Text(
                 'Programar y marcar en curso',
-                style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
+                style: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             const SizedBox(width: 8),
           ],
           ElevatedButton(
-            onPressed: canSubmit ? () => _handleSave(markInCourse: false) : null,
+            onPressed: canSubmit
+                ? () => _handleSave(markInCourse: false)
+                : null,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2563EB),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             child: _isSaving
                 ? const SizedBox(

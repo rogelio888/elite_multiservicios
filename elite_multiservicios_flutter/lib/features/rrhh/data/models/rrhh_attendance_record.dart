@@ -13,14 +13,14 @@ class RrhhAttendanceStatus {
 /// Entidad de solo lectura para RRHH consumida desde el módulo de Operaciones/APK.
 class RrhhAttendanceRecord {
   final int id;
-  final String code;              // 'ASI-001', 'ASI-002', ...
+  final String code; // 'ASI-001', 'ASI-002', ...
   final int employeeId;
-  final String employeeCode;      // Snapshot EMP-XXX
-  final String employeeName;      // Snapshot
-  final DateTime date;            // Fecha de la jornada
-  final String clientName;        // Cliente (ej: Kolping Bolivia)
-  final String serviceName;       // Servicio (ej: Seguridad Física)
-  final String location;          // Sede/ubicación (ej: Central)
+  final String employeeCode; // Snapshot EMP-XXX
+  final String employeeName; // Snapshot
+  final DateTime date; // Fecha de la jornada
+  final String clientName; // Cliente (ej: Kolping Bolivia)
+  final String serviceName; // Servicio (ej: Seguridad Física)
+  final String location; // Sede/ubicación (ej: Central)
 
   // Horas programadas
   final TimeOfDay scheduledEntry;
@@ -31,8 +31,8 @@ class RrhhAttendanceRecord {
   final TimeOfDay? actualExit;
 
   // Cálculos
-  final double? workedHours;      // Calculado
-  final int? lateMinutes;         // Minutos de tardanza
+  final double? workedHours; // Calculado
+  final int? lateMinutes; // Minutos de tardanza
 
   // Estado ('presente' | 'tarde' | 'ausente' | 'justificado')
   final String status;
@@ -49,7 +49,7 @@ class RrhhAttendanceRecord {
 
   // Auditoría (proviene de Operaciones)
   final DateTime createdAt;
-  final String createdBy;         // "Operaciones/APK"
+  final String createdBy; // "Operaciones/APK"
 
   const RrhhAttendanceRecord({
     required this.id,
@@ -77,7 +77,9 @@ class RrhhAttendanceRecord {
   });
 
   bool get isPresent => status == RrhhAttendanceStatus.presente;
-  bool get isLate => status == RrhhAttendanceStatus.tarde || (lateMinutes != null && lateMinutes! > 0);
+  bool get isLate =>
+      status == RrhhAttendanceStatus.tarde ||
+      (lateMinutes != null && lateMinutes! > 0);
   bool get isAbsent => status == RrhhAttendanceStatus.ausente;
   bool get isJustified => status == RrhhAttendanceStatus.justificado;
 

@@ -34,7 +34,9 @@ class RrhhPayrollKpis extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isNarrow = constraints.maxWidth < 900;
-        final cardWidth = isNarrow ? (constraints.maxWidth - 12) / 2 : (constraints.maxWidth - 36) / 4;
+        final cardWidth = isNarrow
+            ? (constraints.maxWidth - 12) / 2
+            : (constraints.maxWidth - 36) / 4;
 
         final cards = [
           _buildKpiCard(
@@ -211,11 +213,16 @@ class RrhhPayrollKpis extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: statusColor.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,

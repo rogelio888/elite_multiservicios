@@ -59,20 +59,44 @@ class RrhhPersonalStatusChip extends StatelessWidget {
     final clean = rawStatus.toUpperCase().trim();
     switch (clean) {
       case 'DISPONIBLE':
-        return ('Disponible', const Color(0xFF10B981), Icons.check_circle_outline);
+        return (
+          'Disponible',
+          const Color(0xFF10B981),
+          Icons.check_circle_outline,
+        );
       case 'ASIGNADO':
-        return ('Asignado', const Color(0xFF2563EB), Icons.business_center_outlined);
+        return (
+          'Asignado',
+          const Color(0xFF2563EB),
+          Icons.business_center_outlined,
+        );
       case 'CON_PERMISO':
-        return ('Con Permiso', const Color(0xFFF59E0B), Icons.access_time_outlined);
+        return (
+          'Con Permiso',
+          const Color(0xFFF59E0B),
+          Icons.access_time_outlined,
+        );
       case 'DE_VACACIONES':
-        return ('Vacaciones', const Color(0xFF8B5CF6), Icons.beach_access_outlined);
+        return (
+          'Vacaciones',
+          const Color(0xFF8B5CF6),
+          Icons.beach_access_outlined,
+        );
       case 'SUSPENDIDO':
-        return ('Suspendido', const Color(0xFFEF4444), Icons.remove_circle_outline);
+        return (
+          'Suspendido',
+          const Color(0xFFEF4444),
+          Icons.remove_circle_outline,
+        );
       case 'INACTIVO':
       case 'BAJA':
         return ('Inactivo', const Color(0xFF64748B), Icons.cancel_outlined);
       default:
-        return (clean.replaceAll('_', ' '), const Color(0xFF94A3B8), Icons.info_outline);
+        return (
+          clean.replaceAll('_', ' '),
+          const Color(0xFF94A3B8),
+          Icons.info_outline,
+        );
     }
   }
 }

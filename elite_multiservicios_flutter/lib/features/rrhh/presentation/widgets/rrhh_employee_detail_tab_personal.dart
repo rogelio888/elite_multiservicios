@@ -31,7 +31,9 @@ class RrhhEmployeeDetailTabPersonal extends StatelessWidget {
           LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth > 580;
-              final colWidth = isWide ? (constraints.maxWidth - 12) / 2 : constraints.maxWidth;
+              final colWidth = isWide
+                  ? (constraints.maxWidth - 12) / 2
+                  : constraints.maxWidth;
 
               return Wrap(
                 spacing: 12,
@@ -109,7 +111,9 @@ class RrhhEmployeeDetailTabPersonal extends StatelessWidget {
           LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth > 580;
-              final colWidth = isWide ? (constraints.maxWidth - 12) / 2 : constraints.maxWidth;
+              final colWidth = isWide
+                  ? (constraints.maxWidth - 12) / 2
+                  : constraints.maxWidth;
 
               return Wrap(
                 spacing: 12,
@@ -225,7 +229,8 @@ class RrhhEmployeeDetailTabPersonal extends StatelessWidget {
     if (birth == null) return 0;
     final now = DateTime.now();
     int age = now.year - birth.year;
-    if (now.month < birth.month || (now.month == birth.month && now.day < birth.day)) {
+    if (now.month < birth.month ||
+        (now.month == birth.month && now.day < birth.day)) {
       age--;
     }
     return age;

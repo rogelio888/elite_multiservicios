@@ -26,7 +26,8 @@ class _RrhhAreaTableWidths {
     required this.cargos,
     required this.estado,
     required this.acciones,
-  }) : total = codigo + nombre + descripcion + color + cargos + estado + acciones;
+  }) : total =
+           codigo + nombre + descripcion + color + cargos + estado + acciones;
 
   factory _RrhhAreaTableWidths.calculate(double availableWidth) {
     const fixedWidth = 110.0 + 100.0 + 130.0 + 95.0 + 125.0; // 560.0
@@ -34,7 +35,9 @@ class _RrhhAreaTableWidths {
     const minDesc = 220.0;
     const minTotal = fixedWidth + minNombre + minDesc; // 960.0
 
-    final effectiveWidth = availableWidth > minTotal ? availableWidth : minTotal;
+    final effectiveWidth = availableWidth > minTotal
+        ? availableWidth
+        : minTotal;
     final extra = effectiveWidth - minTotal;
     final nombre = minNombre + (extra * 0.40);
     final descripcion = minDesc + (extra * 0.60);
@@ -56,7 +59,8 @@ class RrhhOrganizationTabAreas extends StatefulWidget {
   const RrhhOrganizationTabAreas({super.key});
 
   @override
-  State<RrhhOrganizationTabAreas> createState() => _RrhhOrganizationTabAreasState();
+  State<RrhhOrganizationTabAreas> createState() =>
+      _RrhhOrganizationTabAreasState();
 }
 
 class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
@@ -135,7 +139,9 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
   }
 
   Future<void> _openEditArea(RrhhArea area) async {
-    final activePositionsCount = _positions.where((p) => p.areaId == area.id && p.isActive).length;
+    final activePositionsCount = _positions
+        .where((p) => p.areaId == area.id && p.isActive)
+        .length;
     final updated = await RrhhAreaEditDialog.show(
       context: context,
       area: area,
@@ -163,7 +169,9 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
   }
 
   Future<void> _toggleAreaStatus(RrhhArea area) async {
-    final activePositionsCount = _positions.where((p) => p.areaId == area.id && p.isActive).length;
+    final activePositionsCount = _positions
+        .where((p) => p.areaId == area.id && p.isActive)
+        .length;
 
     if (area.isActive) {
       final confirm = await showDialog<bool>(
@@ -177,14 +185,22 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
           title: Row(
             children: [
               Icon(
-                activePositionsCount > 0 ? Icons.warning_amber_rounded : Icons.info_outline,
-                color: activePositionsCount > 0 ? const Color(0xFFF59E0B) : const Color(0xFF60A5FA),
+                activePositionsCount > 0
+                    ? Icons.warning_amber_rounded
+                    : Icons.info_outline,
+                color: activePositionsCount > 0
+                    ? const Color(0xFFF59E0B)
+                    : const Color(0xFF60A5FA),
                 size: 22,
               ),
               const SizedBox(width: 10),
               Text(
                 'Desactivar Área',
-                style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
@@ -192,7 +208,11 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
             activePositionsCount > 0
                 ? 'El área "${area.name}" tiene $activePositionsCount cargo(s) activo(s) asociado(s).\n\n¿Desea desactivarla de todos modos? Los colaboradores y cargos mantendrán su relación pero el área no se ofrecerá para nuevas contrataciones.'
                 : '¿Confirma que desea desactivar el área "${area.name}"?',
-            style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8), height: 1.45),
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: const Color(0xFF94A3B8),
+              height: 1.45,
+            ),
           ),
           actions: [
             OutlinedButton(
@@ -205,7 +225,9 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              style: FilledButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFFEF4444),
+              ),
               child: const Text('Desactivar'),
             ),
           ],
@@ -266,7 +288,8 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
       if (_statusFilter == 'INACTIVE' && a.isActive) return false;
       if (_searchQuery.isEmpty) return true;
       final q = _searchQuery.toLowerCase();
-      return a.name.toLowerCase().contains(q) || a.code.toLowerCase().contains(q);
+      return a.name.toLowerCase().contains(q) ||
+          a.code.toLowerCase().contains(q);
     }).toList();
 
     final totalCount = _areas.length;
@@ -310,19 +333,26 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
                             padding: EdgeInsets.symmetric(vertical: 40),
                             child: RrhhEmptyState(
                               title: 'No se encontraron áreas departamentales',
-                              description: 'Intente ajustando el término de búsqueda o el filtro de estado.',
+                              description:
+                                  'Intente ajustando el término de búsqueda o el filtro de estado.',
                               icon: Icons.corporate_fare_outlined,
                             ),
                           )
                         else
-                          ...filtered.map((area) => _RrhhAreaTableRow(
-                                area: area,
-                                widths: widths,
-                                positionsCount: _positions.where((p) => p.areaId == area.id && p.isActive).length,
-                                parseHex: _parseHex,
-                                onEdit: () => _openEditArea(area),
-                                onToggleStatus: () => _toggleAreaStatus(area),
-                              )),
+                          ...filtered.map(
+                            (area) => _RrhhAreaTableRow(
+                              area: area,
+                              widths: widths,
+                              positionsCount: _positions
+                                  .where(
+                                    (p) => p.areaId == area.id && p.isActive,
+                                  )
+                                  .length,
+                              parseHex: _parseHex,
+                              onEdit: () => _openEditArea(area),
+                              onToggleStatus: () => _toggleAreaStatus(area),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -332,7 +362,10 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
               if (!_isLoading && _areas.isNotEmpty)
                 Text(
                   'Mostrando ${filtered.length} de $totalCount áreas departamentales',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF64748B),
+                  ),
                 ),
             ],
           ),
@@ -355,7 +388,9 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
               style: GoogleFonts.inter(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                color: isDark
+                    ? const Color(0xFFF8FAFC)
+                    : const Color(0xFF0F172A),
                 letterSpacing: -0.3,
               ),
             ),
@@ -364,7 +399,9 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
               'Departamentos, divisiones corporativas y centros organizacionales',
               style: GoogleFonts.inter(
                 fontSize: 12,
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -374,12 +411,17 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
           icon: const Icon(Icons.add_rounded, size: 16),
           label: Text(
             'Nueva Área',
-            style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
+            style: GoogleFonts.inter(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           style: FilledButton.styleFrom(
             backgroundColor: const Color(0xFF2563EB),
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
           ),
         ),
@@ -411,11 +453,22 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
               style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
               decoration: InputDecoration(
                 hintText: 'Buscar por código o nombre...',
-                hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12.5),
-                prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF64748B)),
+                hintStyle: GoogleFonts.inter(
+                  color: const Color(0xFF64748B),
+                  fontSize: 12.5,
+                ),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  size: 18,
+                  color: Color(0xFF64748B),
+                ),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.close, size: 16, color: Color(0xFF64748B)),
+                        icon: const Icon(
+                          Icons.close,
+                          size: 16,
+                          color: Color(0xFF64748B),
+                        ),
                         onPressed: () {
                           _searchCtrl.clear();
                           setState(() => _searchQuery = '');
@@ -424,7 +477,10 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
                     : null,
                 filled: true,
                 fillColor: const Color(0xFF111827),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 0,
+                ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(color: Color(0xFF1E293B)),
@@ -461,10 +517,14 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2563EB).withValues(alpha: 0.15) : const Color(0xFF111827),
+          color: isSelected
+              ? const Color(0xFF2563EB).withValues(alpha: 0.15)
+              : const Color(0xFF111827),
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF1E293B),
+            color: isSelected
+                ? const Color(0xFF2563EB)
+                : const Color(0xFF1E293B),
           ),
         ),
         child: Text(
@@ -472,7 +532,9 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? const Color(0xFF60A5FA) : const Color(0xFF94A3B8),
+            color: isSelected
+                ? const Color(0xFF60A5FA)
+                : const Color(0xFF94A3B8),
           ),
         ),
       ),
@@ -503,7 +565,11 @@ class _RrhhOrganizationTabAreasState extends State<RrhhOrganizationTabAreas> {
     );
   }
 
-  Widget _buildTh(String title, double width, {TextAlign align = TextAlign.left}) {
+  Widget _buildTh(
+    String title,
+    double width, {
+    TextAlign align = TextAlign.left,
+  }) {
     return SizedBox(
       width: width,
       child: Text(
@@ -581,7 +647,9 @@ class _RrhhAreaTableRowState extends State<_RrhhAreaTableRow> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: _isHovered ? const Color(0xFF141D30) : Colors.transparent,
-          border: const Border(bottom: BorderSide(color: Color(0xFF1E293B), width: 0.8)),
+          border: const Border(
+            bottom: BorderSide(color: Color(0xFF1E293B), width: 0.8),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -639,7 +707,10 @@ class _RrhhAreaTableRowState extends State<_RrhhAreaTableRow> {
                     decoration: BoxDecoration(
                       color: color,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 7),
@@ -660,7 +731,10 @@ class _RrhhAreaTableRowState extends State<_RrhhAreaTableRow> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E293B),
                     borderRadius: BorderRadius.circular(6),
@@ -668,7 +742,11 @@ class _RrhhAreaTableRowState extends State<_RrhhAreaTableRow> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.badge_outlined, size: 13, color: Color(0xFF94A3B8)),
+                      const Icon(
+                        Icons.badge_outlined,
+                        size: 13,
+                        color: Color(0xFF94A3B8),
+                      ),
                       const SizedBox(width: 5),
                       Text(
                         '${widget.positionsCount} cargos',
@@ -690,7 +768,11 @@ class _RrhhAreaTableRowState extends State<_RrhhAreaTableRow> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: BoxDecoration(
-                  color: (a.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B)).withValues(alpha: 0.15),
+                  color:
+                      (a.isActive
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFF64748B))
+                          .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: Row(
@@ -700,7 +782,9 @@ class _RrhhAreaTableRowState extends State<_RrhhAreaTableRow> {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: a.isActive ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
+                        color: a.isActive
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFF94A3B8),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -710,7 +794,9 @@ class _RrhhAreaTableRowState extends State<_RrhhAreaTableRow> {
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: a.isActive ? const Color(0xFF34D399) : const Color(0xFF94A3B8),
+                        color: a.isActive
+                            ? const Color(0xFF34D399)
+                            : const Color(0xFF94A3B8),
                       ),
                     ),
                   ],
@@ -728,7 +814,10 @@ class _RrhhAreaTableRowState extends State<_RrhhAreaTableRow> {
                     onPressed: widget.onEdit,
                     style: TextButton.styleFrom(
                       foregroundColor: const Color(0xFF94A3B8),
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 3,
+                      ),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
@@ -746,7 +835,11 @@ class _RrhhAreaTableRowState extends State<_RrhhAreaTableRow> {
                     width: 24,
                     height: 24,
                     child: PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 15, color: Color(0xFF64748B)),
+                      icon: const Icon(
+                        Icons.more_vert,
+                        size: 15,
+                        color: Color(0xFF64748B),
+                      ),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       color: const Color(0xFF0F172A),
@@ -759,9 +852,13 @@ class _RrhhAreaTableRowState extends State<_RrhhAreaTableRow> {
                           child: Row(
                             children: [
                               Icon(
-                                a.isActive ? Icons.block_flipped : Icons.check_circle_outline,
+                                a.isActive
+                                    ? Icons.block_flipped
+                                    : Icons.check_circle_outline,
                                 size: 15,
-                                color: a.isActive ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                                color: a.isActive
+                                    ? const Color(0xFFEF4444)
+                                    : const Color(0xFF10B981),
                               ),
                               const SizedBox(width: 8),
                               Text(

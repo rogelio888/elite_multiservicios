@@ -98,15 +98,21 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
     // Inicializar Bloque A
     _phoneController = TextEditingController(text: emp.phone);
     _emailController = TextEditingController(text: emp.corporateEmail ?? '');
-    _addressController = TextEditingController(text: emp.fullAddress ?? emp.address);
+    _addressController = TextEditingController(
+      text: emp.fullAddress ?? emp.address,
+    );
     _maritalStatus = emp.maritalStatus;
     _childrenCountController = TextEditingController(
       text: emp.childrenCount != null ? emp.childrenCount.toString() : '',
     );
 
     // Inicializar Bloque B
-    _emergencyNameController = TextEditingController(text: emp.emergencyContactName ?? '');
-    _emergencyPhoneController = TextEditingController(text: emp.emergencyContactPhone ?? '');
+    _emergencyNameController = TextEditingController(
+      text: emp.emergencyContactName ?? '',
+    );
+    _emergencyPhoneController = TextEditingController(
+      text: emp.emergencyContactPhone ?? '',
+    );
     _emergencyRelation = emp.emergencyContactRelation;
 
     // Inicializar Bloque C
@@ -116,10 +122,14 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
 
     // Inicializar Bloque D
     _selectedBankName = emp.bankName;
-    _accountType = (emp.accountType != null && emp.accountType!.toLowerCase().contains('corriente'))
+    _accountType =
+        (emp.accountType != null &&
+            emp.accountType!.toLowerCase().contains('corriente'))
         ? 'Corriente'
         : 'Ahorro';
-    _accountNumberController = TextEditingController(text: emp.accountNumber ?? '');
+    _accountNumberController = TextEditingController(
+      text: emp.accountNumber ?? '',
+    );
 
     // Inicializar Bloque E
     _notesController = TextEditingController(text: emp.observations ?? '');
@@ -190,7 +200,8 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
     if (newEmail.isNotEmpty && newEmail != (emp.corporateEmail ?? '')) {
       changeDetails.add('Email actualizado');
     }
-    if (newAddress.isNotEmpty && newAddress != (emp.fullAddress ?? emp.address)) {
+    if (newAddress.isNotEmpty &&
+        newAddress != (emp.fullAddress ?? emp.address)) {
       changeDetails.add('Dirección actualizada');
     }
     if (_maritalStatus != emp.maritalStatus && _maritalStatus != null) {
@@ -199,19 +210,22 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
     if (newChildrenCount != emp.childrenCount && newChildrenCount != null) {
       changeDetails.add('Hijos: $newChildrenCount');
     }
-    if (newEmergencyPhone.isNotEmpty && newEmergencyPhone != (emp.emergencyContactPhone ?? '')) {
+    if (newEmergencyPhone.isNotEmpty &&
+        newEmergencyPhone != (emp.emergencyContactPhone ?? '')) {
       changeDetails.add('Contacto de emergencia actualizado');
     }
     if (_selectedAfpName != null && _selectedAfpName != emp.afpName) {
       changeDetails.add('AFP cambiada a $_selectedAfpName');
     }
-    if (_selectedHealthInsurance != null && _selectedHealthInsurance != emp.healthInsurance) {
+    if (_selectedHealthInsurance != null &&
+        _selectedHealthInsurance != emp.healthInsurance) {
       changeDetails.add('Seguro médico actualizado');
     }
     if (_selectedBankName != null && _selectedBankName != emp.bankName) {
       changeDetails.add('Banco actualizado a $_selectedBankName');
     }
-    if (newAccountNumber.isNotEmpty && newAccountNumber != (emp.accountNumber ?? '')) {
+    if (newAccountNumber.isNotEmpty &&
+        newAccountNumber != (emp.accountNumber ?? '')) {
       changeDetails.add('Nº de cuenta bancaria actualizado');
     }
 
@@ -223,8 +237,12 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
         fullAddress: newAddress.isNotEmpty ? newAddress : emp.fullAddress,
         maritalStatus: _maritalStatus,
         childrenCount: newChildrenCount,
-        emergencyContactName: newEmergencyName.isNotEmpty ? newEmergencyName : null,
-        emergencyContactPhone: newEmergencyPhone.isNotEmpty ? newEmergencyPhone : null,
+        emergencyContactName: newEmergencyName.isNotEmpty
+            ? newEmergencyName
+            : null,
+        emergencyContactPhone: newEmergencyPhone.isNotEmpty
+            ? newEmergencyPhone
+            : null,
         emergencyContactRelation: _emergencyRelation,
         afpName: _selectedAfpName,
         afpNumber: newAfpNumber.isNotEmpty ? newAfpNumber : null,
@@ -290,7 +308,9 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
               child: _isLoadingCatalogs
                   ? const Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2563EB)),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFF2563EB),
+                        ),
                       ),
                     )
                   : SingleChildScrollView(
@@ -337,9 +357,15 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
             decoration: BoxDecoration(
               color: const Color(0xFF2563EB).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.3)),
+              border: Border.all(
+                color: const Color(0xFF2563EB).withValues(alpha: 0.3),
+              ),
             ),
-            child: const Icon(Icons.edit_note_outlined, color: Color(0xFF38BDF8), size: 20),
+            child: const Icon(
+              Icons.edit_note_outlined,
+              color: Color(0xFF38BDF8),
+              size: 20,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -458,10 +484,12 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
                 value: _maritalStatus,
                 hint: 'Seleccionar estado civil',
                 items: _maritalStatusOptions
-                    .map((e) => DropdownMenuItem(
-                          value: e,
-                          child: Text(e, overflow: TextOverflow.ellipsis),
-                        ))
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e, overflow: TextOverflow.ellipsis),
+                      ),
+                    )
                     .toList(),
                 onChanged: (val) => setState(() => _maritalStatus = val),
               ),
@@ -486,7 +514,10 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
   Widget _buildBlockB() {
     return _buildCardContainer(
       children: [
-        _buildSectionTitle('BLOQUE B — CONTACTO DE EMERGENCIA', Icons.emergency_outlined),
+        _buildSectionTitle(
+          'BLOQUE B — CONTACTO DE EMERGENCIA',
+          Icons.emergency_outlined,
+        ),
         const SizedBox(height: 14),
         Row(
           children: [
@@ -516,10 +547,12 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
                 value: _emergencyRelation,
                 hint: 'Seleccionar parentesco',
                 items: _relationOptions
-                    .map((e) => DropdownMenuItem(
-                          value: e,
-                          child: Text(e, overflow: TextOverflow.ellipsis),
-                        ))
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e, overflow: TextOverflow.ellipsis),
+                      ),
+                    )
                     .toList(),
                 onChanged: (val) => setState(() => _emergencyRelation = val),
               ),
@@ -534,7 +567,10 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
   Widget _buildBlockC() {
     return _buildCardContainer(
       children: [
-        _buildSectionTitle('BLOQUE C — SEGURIDAD SOCIAL', Icons.health_and_safety_outlined),
+        _buildSectionTitle(
+          'BLOQUE C — SEGURIDAD SOCIAL',
+          Icons.health_and_safety_outlined,
+        ),
         const SizedBox(height: 14),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -548,12 +584,17 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
                 items: [
                   const DropdownMenuItem(
                     value: null,
-                    child: Text('(Ninguna seleccionada)', overflow: TextOverflow.ellipsis),
+                    child: Text(
+                      '(Ninguna seleccionada)',
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  ..._afps.map((e) => DropdownMenuItem(
-                        value: e.name,
-                        child: Text(e.name, overflow: TextOverflow.ellipsis),
-                      )),
+                  ..._afps.map(
+                    (e) => DropdownMenuItem(
+                      value: e.name,
+                      child: Text(e.name, overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                 ],
                 onChanged: (val) => setState(() => _selectedAfpName = val),
               ),
@@ -577,14 +618,20 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
                 items: [
                   const DropdownMenuItem(
                     value: null,
-                    child: Text('(Ninguno seleccionado)', overflow: TextOverflow.ellipsis),
+                    child: Text(
+                      '(Ninguno seleccionado)',
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  ..._healthInsurances.map((e) => DropdownMenuItem(
-                        value: e.name,
-                        child: Text(e.name, overflow: TextOverflow.ellipsis),
-                      )),
+                  ..._healthInsurances.map(
+                    (e) => DropdownMenuItem(
+                      value: e.name,
+                      child: Text(e.name, overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                 ],
-                onChanged: (val) => setState(() => _selectedHealthInsurance = val),
+                onChanged: (val) =>
+                    setState(() => _selectedHealthInsurance = val),
               ),
             ),
           ],
@@ -597,7 +644,10 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
   Widget _buildBlockD() {
     return _buildCardContainer(
       children: [
-        _buildSectionTitle('BLOQUE D — DATOS BANCARIOS', Icons.account_balance_outlined),
+        _buildSectionTitle(
+          'BLOQUE D — DATOS BANCARIOS',
+          Icons.account_balance_outlined,
+        ),
         const SizedBox(height: 14),
         Row(
           children: [
@@ -610,12 +660,17 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
                 items: [
                   const DropdownMenuItem(
                     value: null,
-                    child: Text('(Sin banco asignado)', overflow: TextOverflow.ellipsis),
+                    child: Text(
+                      '(Sin banco asignado)',
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  ..._banks.map((e) => DropdownMenuItem(
-                        value: e.name,
-                        child: Text(e.name, overflow: TextOverflow.ellipsis),
-                      )),
+                  ..._banks.map(
+                    (e) => DropdownMenuItem(
+                      value: e.name,
+                      child: Text(e.name, overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                 ],
                 onChanged: (val) => setState(() => _selectedBankName = val),
               ),
@@ -627,10 +682,12 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
                 label: 'Tipo de cuenta',
                 value: _accountType,
                 items: _accountTypeOptions
-                    .map((e) => DropdownMenuItem(
-                          value: e,
-                          child: Text(e, overflow: TextOverflow.ellipsis),
-                        ))
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e, overflow: TextOverflow.ellipsis),
+                      ),
+                    )
                     .toList(),
                 onChanged: (val) {
                   if (val != null) setState(() => _accountType = val);
@@ -661,7 +718,8 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
         _buildTextField(
           controller: _notesController,
           label: 'Notas internas / Observaciones de seguimiento (opcional)',
-          hint: 'Agrega anotaciones administrativas, seguimiento disciplinario o consideraciones especiales...',
+          hint:
+              'Agrega anotaciones administrativas, seguimiento disciplinario o consideraciones especiales...',
           maxLines: 3,
         ),
       ],
@@ -698,11 +756,17 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
           style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+            hintStyle: GoogleFonts.inter(
+              fontSize: 12.5,
+              color: const Color(0xFF64748B),
+            ),
             filled: true,
             fillColor: const Color(0xFF0F172A),
             isDense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 12,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0xFF334155)),
@@ -713,7 +777,10 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFF2563EB),
+                width: 1.5,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
@@ -754,7 +821,10 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
                   hint,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
-                  style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    color: const Color(0xFF64748B),
+                  ),
                 )
               : null,
           dropdownColor: const Color(0xFF1E293B),
@@ -764,7 +834,10 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
             filled: true,
             fillColor: const Color(0xFF0F172A),
             isDense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 10,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0xFF334155)),
@@ -775,7 +848,10 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFF2563EB),
+                width: 1.5,
+              ),
             ),
           ),
         ),
@@ -794,16 +870,23 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           OutlinedButton(
-            onPressed: _isSaving ? null : () => Navigator.of(context).pop(false),
+            onPressed: _isSaving
+                ? null
+                : () => Navigator.of(context).pop(false),
             style: OutlinedButton.styleFrom(
               foregroundColor: const Color(0xFF94A3B8),
               side: const BorderSide(color: Color(0xFF334155)),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             child: Text(
               'Cancelar',
-              style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -813,18 +896,26 @@ class _RrhhEditEmployeeDialogState extends State<RrhhEditEmployeeDialog> {
                 ? const SizedBox(
                     width: 14,
                     height: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
                 : const Icon(Icons.save_outlined, size: 16),
             label: Text(
               _isSaving ? 'Guardando...' : 'Guardar cambios',
-              style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2563EB),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           ),
         ],

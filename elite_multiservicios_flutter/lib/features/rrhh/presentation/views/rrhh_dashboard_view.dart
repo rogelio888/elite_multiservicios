@@ -68,7 +68,9 @@ class _RrhhDashboardViewState extends State<RrhhDashboardView> {
   @override
   Widget build(BuildContext context) {
     if (!widget.hasPermission) {
-      return const RrhhForbiddenState(requiredPermission: 'rrhh.dashboard.view');
+      return const RrhhForbiddenState(
+        requiredPermission: 'rrhh.dashboard.view',
+      );
     }
 
     if (_errorMessage != null) {
@@ -81,7 +83,8 @@ class _RrhhDashboardViewState extends State<RrhhDashboardView> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isMobile = constraints.maxWidth < 768;
-        final isTablet = constraints.maxWidth >= 768 && constraints.maxWidth < 1120;
+        final isTablet =
+            constraints.maxWidth >= 768 && constraints.maxWidth < 1120;
 
         return SingleChildScrollView(
           padding: EdgeInsets.symmetric(
@@ -97,10 +100,12 @@ class _RrhhDashboardViewState extends State<RrhhDashboardView> {
                 onRefresh: _loadDashboardData,
               ),
               const SizedBox(height: 20),
-              if (!_isLoading && (_metrics == null || _metrics!.totalEmployeesCount == 0))
+              if (!_isLoading &&
+                  (_metrics == null || _metrics!.totalEmployeesCount == 0))
                 const RrhhEmptyState(
                   title: 'No existen métricas registradas',
-                  description: 'El sistema no cuenta con registros de telemetría activa en este período.',
+                  description:
+                      'El sistema no cuenta con registros de telemetría activa en este período.',
                 )
               else ...[
                 _buildKpiGrid(isMobile, isTablet),
@@ -122,7 +127,9 @@ class _RrhhDashboardViewState extends State<RrhhDashboardView> {
       RrhhDashboardKpiCard(
         label: 'Personal Activo',
         value: m != null ? '${m.activeEmployeesCount} Colaboradores' : '0',
-        subtext: m != null ? '(${m.fieldEmployeesCount} Campo / ${m.officeEmployeesCount} Ofic)' : '',
+        subtext: m != null
+            ? '(${m.fieldEmployeesCount} Campo / ${m.officeEmployeesCount} Ofic)'
+            : '',
         icon: Icons.people_alt_outlined,
         accentColor: const Color(0xFF2563EB),
         badgeText: 'Nómina',
@@ -141,7 +148,9 @@ class _RrhhDashboardViewState extends State<RrhhDashboardView> {
       RrhhDashboardKpiCard(
         label: 'Expedientes Compl.',
         value: m != null ? '${m.expedientesPercentage}%' : '0%',
-        subtext: m != null ? '${m.completeFilesCount} de ${m.totalEmployeesCount} Físicos' : '',
+        subtext: m != null
+            ? '${m.completeFilesCount} de ${m.totalEmployeesCount} Físicos'
+            : '',
         icon: Icons.folder_shared_outlined,
         accentColor: const Color(0xFF7C3AED),
         badgeText: 'Al Día',

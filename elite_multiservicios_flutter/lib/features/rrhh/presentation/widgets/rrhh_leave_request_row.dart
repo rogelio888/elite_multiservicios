@@ -48,7 +48,9 @@ class _RrhhLeaveRequestRowState extends State<RrhhLeaveRequestRow> {
           duration: const Duration(milliseconds: 140),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: _isHovered ? const Color(0xFF162032) : const Color(0xFF0F172A),
+            color: _isHovered
+                ? const Color(0xFF162032)
+                : const Color(0xFF0F172A),
             border: const Border(
               bottom: BorderSide(color: Color(0xFF1E293B), width: 1),
             ),
@@ -76,7 +78,9 @@ class _RrhhLeaveRequestRowState extends State<RrhhLeaveRequestRow> {
                   children: [
                     CircleAvatar(
                       radius: 15,
-                      backgroundColor: const Color(0xFF2563EB).withValues(alpha: 0.2),
+                      backgroundColor: const Color(
+                        0xFF2563EB,
+                      ).withValues(alpha: 0.2),
                       child: Text(
                         _getInitials(req.employeeName),
                         style: GoogleFonts.inter(
@@ -159,7 +163,10 @@ class _RrhhLeaveRequestRowState extends State<RrhhLeaveRequestRow> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 2.5,
+                    ),
                     decoration: BoxDecoration(
                       color: req.isPaid
                           ? const Color(0xFF10B981).withValues(alpha: 0.12)
@@ -208,14 +215,24 @@ class _RrhhLeaveRequestRowState extends State<RrhhLeaveRequestRow> {
                       label: const Text('Ver'),
                       style: TextButton.styleFrom(
                         foregroundColor: const Color(0xFF38BDF8),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        textStyle: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w600),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        textStyle: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                        ),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),
                     PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 16, color: Color(0xFF94A3B8)),
+                      icon: const Icon(
+                        Icons.more_vert,
+                        size: 16,
+                        color: Color(0xFF94A3B8),
+                      ),
                       tooltip: 'Más opciones',
                       color: const Color(0xFF1E293B),
                       elevation: 4,

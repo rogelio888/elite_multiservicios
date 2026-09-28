@@ -14,7 +14,7 @@ class RrhhRecruitmentKanbanColumn extends StatefulWidget {
   final List<RrhhApplicantSummaryDto> applicants;
   final void Function(RrhhApplicantSummaryDto applicant) onCardTap;
   final void Function(RrhhApplicantSummaryDto applicant, String targetStage)
-      onApplicantDropped;
+  onApplicantDropped;
   final double width;
   final EdgeInsetsGeometry margin;
 

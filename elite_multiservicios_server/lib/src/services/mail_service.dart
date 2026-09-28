@@ -156,8 +156,9 @@ class MailService {
         runMode == 'production' ||
         Platform.environment['SERVERPOD_ENV'] == 'production';
 
-    final mailDriver =
-        Platform.environment['MAIL_DRIVER']?.toLowerCase().trim();
+    final mailDriver = Platform.environment['MAIL_DRIVER']
+        ?.toLowerCase()
+        .trim();
 
     // Regla estricta:
     // - En localhost / desarrollo (o si MAIL_DRIVER=mailtrap): Usar MAILTRAP.

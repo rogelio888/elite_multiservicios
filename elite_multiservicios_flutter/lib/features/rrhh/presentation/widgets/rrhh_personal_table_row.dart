@@ -59,16 +59,38 @@ class _RrhhPersonalTableRowState extends State<RrhhPersonalTableRow> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(width: widget.widths.codigo, child: Text(e.code, style: GoogleFonts.jetBrainsMono(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF64748B)))),
+              SizedBox(
+                width: widget.widths.codigo,
+                child: Text(
+                  e.code,
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF64748B),
+                  ),
+                ),
+              ),
               SizedBox(
                 width: widget.widths.foto,
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    width: 30, height: 30,
-                    decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0xFF334155))),
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E293B),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: const Color(0xFF334155)),
+                    ),
                     alignment: Alignment.center,
-                    child: Text(_getInitials(e.fullName), style: GoogleFonts.inter(fontSize: 10.5, fontWeight: FontWeight.w600, color: const Color(0xFFE2E8F0))),
+                    child: Text(
+                      _getInitials(e.fullName),
+                      style: GoogleFonts.inter(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFFE2E8F0),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -80,8 +102,23 @@ class _RrhhPersonalTableRowState extends State<RrhhPersonalTableRow> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(e.fullName, style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w500, color: const Color(0xFFF8FAFC)), maxLines: 1, overflow: TextOverflow.ellipsis),
-                      Text('Ingreso: ${_formatDate(e.realStartDate)}', style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFF64748B))),
+                      Text(
+                        e.fullName,
+                        style: GoogleFonts.inter(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFFF8FAFC),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        'Ingreso: ${_formatDate(e.realStartDate)}',
+                        style: GoogleFonts.inter(
+                          fontSize: 10.5,
+                          color: const Color(0xFF64748B),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -91,13 +128,31 @@ class _RrhhPersonalTableRowState extends State<RrhhPersonalTableRow> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: e.isField ? const Color(0xFF059669).withValues(alpha: 0.12) : const Color(0xFF2563EB).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: e.isField ? const Color(0xFF059669).withValues(alpha: 0.25) : const Color(0xFF2563EB).withValues(alpha: 0.25)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 2,
                     ),
-                    child: Text(e.employeeType, style: GoogleFonts.jetBrainsMono(fontSize: 9.5, fontWeight: FontWeight.w600, color: e.isField ? const Color(0xFF10B981) : const Color(0xFF60A5FA))),
+                    decoration: BoxDecoration(
+                      color: e.isField
+                          ? const Color(0xFF059669).withValues(alpha: 0.12)
+                          : const Color(0xFF2563EB).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                        color: e.isField
+                            ? const Color(0xFF059669).withValues(alpha: 0.25)
+                            : const Color(0xFF2563EB).withValues(alpha: 0.25),
+                      ),
+                    ),
+                    child: Text(
+                      e.employeeType,
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w600,
+                        color: e.isField
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFF60A5FA),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -109,8 +164,25 @@ class _RrhhPersonalTableRowState extends State<RrhhPersonalTableRow> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(e.position ?? '---', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: const Color(0xFFCBD5E1)), maxLines: 1, overflow: TextOverflow.ellipsis),
-                      Text(e.area ?? '---', style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFF64748B)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(
+                        e.position ?? '---',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFFCBD5E1),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        e.area ?? '---',
+                        style: GoogleFonts.inter(
+                          fontSize: 10.5,
+                          color: const Color(0xFF64748B),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),
@@ -119,21 +191,49 @@ class _RrhhPersonalTableRowState extends State<RrhhPersonalTableRow> {
                 width: widget.widths.especialidad,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 12),
-                  child: Text(e.specialty, style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF94A3B8)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  child: Text(
+                    e.specialty,
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      color: const Color(0xFF94A3B8),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
               SizedBox(
                 width: widget.widths.disponibilidad,
-                child: Align(alignment: Alignment.centerLeft, child: RrhhPersonalStatusChip(status: e.availabilityStatus)),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: RrhhPersonalStatusChip(status: e.availabilityStatus),
+                ),
               ),
               SizedBox(
                 width: widget.widths.expediente,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(e.hasCompleteDocs ? Icons.check_circle_outline : Icons.pending_actions_outlined, size: 13, color: e.hasCompleteDocs ? const Color(0xFF10B981) : const Color(0xFFF59E0B)),
+                    Icon(
+                      e.hasCompleteDocs
+                          ? Icons.check_circle_outline
+                          : Icons.pending_actions_outlined,
+                      size: 13,
+                      color: e.hasCompleteDocs
+                          ? const Color(0xFF10B981)
+                          : const Color(0xFFF59E0B),
+                    ),
                     const SizedBox(width: 4),
-                    Text('${e.attachedDocsCount}/6', style: GoogleFonts.jetBrainsMono(fontSize: 10.5, fontWeight: FontWeight.w600, color: e.hasCompleteDocs ? const Color(0xFF10B981) : const Color(0xFFF59E0B))),
+                    Text(
+                      '${e.attachedDocsCount}/6',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w600,
+                        color: e.hasCompleteDocs
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFFF59E0B),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -146,7 +246,10 @@ class _RrhhPersonalTableRowState extends State<RrhhPersonalTableRow> {
                       onPressed: widget.onViewDetails,
                       style: TextButton.styleFrom(
                         foregroundColor: const Color(0xFF94A3B8),
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 3,
+                        ),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
@@ -160,22 +263,38 @@ class _RrhhPersonalTableRowState extends State<RrhhPersonalTableRow> {
                       ),
                     ),
                     PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 15, color: Color(0xFF64748B)),
+                      icon: const Icon(
+                        Icons.more_vert,
+                        size: 15,
+                        color: Color(0xFF64748B),
+                      ),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       color: const Color(0xFF0F172A),
                       itemBuilder: (context) => [
                         const PopupMenuItem(
                           value: 'view',
-                          child: Text('Ver Expediente 360°', style: TextStyle(color: Colors.white, fontSize: 12)),
+                          child: Text(
+                            'Ver Expediente 360°',
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
                         ),
                         const PopupMenuItem(
                           value: 'edit',
-                          child: Text('Editar Ficha', style: TextStyle(color: Colors.white, fontSize: 12)),
+                          child: Text(
+                            'Editar Ficha',
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
                         ),
                         const PopupMenuItem(
                           value: 'terminate',
-                          child: Text('Registrar Desvinculación', style: TextStyle(color: Color(0xFFEF4444), fontSize: 12)),
+                          child: Text(
+                            'Registrar Desvinculación',
+                            style: TextStyle(
+                              color: Color(0xFFEF4444),
+                              fontSize: 12,
+                            ),
+                          ),
                         ),
                       ],
                       onSelected: (val) {
@@ -199,7 +318,9 @@ class _RrhhPersonalTableRowState extends State<RrhhPersonalTableRow> {
     if (parts.length >= 2) {
       return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
     }
-    return parts.isNotEmpty && parts[0].isNotEmpty ? parts[0][0].toUpperCase() : 'EP';
+    return parts.isNotEmpty && parts[0].isNotEmpty
+        ? parts[0][0].toUpperCase()
+        : 'EP';
   }
 
   String _formatDate(DateTime dt) {

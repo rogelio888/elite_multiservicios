@@ -108,9 +108,14 @@ class _RrhhEmployeeDetailTabHistoryState
     );
   }
 
-  Widget _buildTimelineItem(RrhhTimelineEvent ev, int index, {required bool isLast}) {
+  Widget _buildTimelineItem(
+    RrhhTimelineEvent ev,
+    int index, {
+    required bool isLast,
+  }) {
     final (catColor, catLabel) = _getCategoryStyle(ev.category);
-    final isContractual = ev.category.toUpperCase() == 'CONTRATUAL' ||
+    final isContractual =
+        ev.category.toUpperCase() == 'CONTRATUAL' ||
         ev.category.toUpperCase() == 'CONTRATO';
     final hasDetailedLines = ev.description.contains('\n');
     final isExpanded = _expandedIndices.contains(index);
@@ -176,11 +181,16 @@ class _RrhhEmployeeDetailTabHistoryState
                     children: [
                       // Categoría
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: catColor.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: catColor.withValues(alpha: 0.3)),
+                          border: Border.all(
+                            color: catColor.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Text(
                           catLabel,
@@ -234,12 +244,17 @@ class _RrhhEmployeeDetailTabHistoryState
                       },
                       borderRadius: BorderRadius.circular(6),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 4,
+                          horizontal: 2,
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              isExpanded ? Icons.expand_less : Icons.expand_more,
+                              isExpanded
+                                  ? Icons.expand_less
+                                  : Icons.expand_more,
                               size: 16,
                               color: const Color(0xFF38BDF8),
                             ),

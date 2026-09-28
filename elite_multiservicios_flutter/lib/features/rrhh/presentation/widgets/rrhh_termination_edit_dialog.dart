@@ -24,7 +24,8 @@ class RrhhTerminationEditDialog extends StatefulWidget {
   }
 
   @override
-  State<RrhhTerminationEditDialog> createState() => _RrhhTerminationEditDialogState();
+  State<RrhhTerminationEditDialog> createState() =>
+      _RrhhTerminationEditDialogState();
 }
 
 class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
@@ -46,11 +47,13 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
   late DateTime _paymentDeadline;
 
   // Bloque D: Documentos y obligaciones
-  final TextEditingController _resignationFileController = TextEditingController();
+  final TextEditingController _resignationFileController =
+      TextEditingController();
   final TextEditingController _memoFileController = TextEditingController();
   bool _deliveryWorkCertificate = true;
   bool _hasPendingObligations = false;
-  final TextEditingController _obligationsDetailController = TextEditingController();
+  final TextEditingController _obligationsDetailController =
+      TextEditingController();
   bool _notifiedEmployee = true;
 
   bool _isSaving = false;
@@ -65,11 +68,14 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
 
     if (item != null) {
       _terminationType = item.terminationType;
-      _justifiedCause = item.justifiedCause ?? RrhhJustifiedCauses.perjuicioMaterial;
+      _justifiedCause =
+          item.justifiedCause ?? RrhhJustifiedCauses.perjuicioMaterial;
       _reasonController.text = item.reason;
       _lastWorkDay = item.lastWorkDay;
       _terminationDate = item.terminationDate;
-      _paymentDeadline = item.paymentDeadline ?? item.lastWorkDay.add(const Duration(days: 15));
+      _paymentDeadline =
+          item.paymentDeadline ??
+          item.lastWorkDay.add(const Duration(days: 15));
       _resignationFileController.text = item.resignationLetterFile ?? '';
       _memoFileController.text = item.terminationMemoFile ?? '';
       _deliveryWorkCertificate = item.workCertificateFile != null;
@@ -115,9 +121,9 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
           _isLoadingEmployees = false;
           if (widget.initialRecord != null) {
             _selectedEmployee = list.cast<RrhhEmployeeSummaryDto?>().firstWhere(
-                  (e) => e?.id == widget.initialRecord!.employeeId,
-                  orElse: () => null,
-                );
+              (e) => e?.id == widget.initialRecord!.employeeId,
+              orElse: () => null,
+            );
             if (_selectedEmployee != null) {
               _loadEmployeeDetail(_selectedEmployee!.id);
             }
@@ -145,14 +151,20 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedEmployee == null && widget.initialRecord == null) {
-      RrhhSnackBar.showWarning(context, 'Debe seleccionar al empleado a desvincular.');
+      RrhhSnackBar.showWarning(
+        context,
+        'Debe seleccionar al empleado a desvincular.',
+      );
       return;
     }
 
     // Validación carta de renuncia si es renuncia voluntaria
     if (_terminationType == RrhhTerminationTypes.renunciaVoluntaria &&
         _resignationFileController.text.trim().isEmpty) {
-      RrhhSnackBar.showWarning(context, 'Debe adjuntar la carta de renuncia para este tipo de baja.');
+      RrhhSnackBar.showWarning(
+        context,
+        'Debe adjuntar la carta de renuncia para este tipo de baja.',
+      );
       return;
     }
 
@@ -160,7 +172,10 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
     if ((_terminationType == RrhhTerminationTypes.despidoJustificado ||
             _terminationType == RrhhTerminationTypes.despidoInjustificado) &&
         _memoFileController.text.trim().isEmpty) {
-      RrhhSnackBar.showWarning(context, 'Debe adjuntar el memorándum de despido notificado.');
+      RrhhSnackBar.showWarning(
+        context,
+        'Debe adjuntar el memorándum de despido notificado.',
+      );
       return;
     }
 
@@ -169,8 +184,10 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
     try {
       final repo = RrhhRepository.current;
       final empId = _selectedEmployee?.id ?? widget.initialRecord!.employeeId;
-      final empCode = _selectedEmployee?.code ?? widget.initialRecord!.employeeCode;
-      final empName = _selectedEmployee?.fullName ?? widget.initialRecord!.employeeName;
+      final empCode =
+          _selectedEmployee?.code ?? widget.initialRecord!.employeeCode;
+      final empName =
+          _selectedEmployee?.fullName ?? widget.initialRecord!.employeeName;
 
       final recordToSave = RrhhTerminationRecord(
         id: widget.initialRecord?.id ?? 0,
@@ -179,26 +196,36 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
         employeeCode: empCode,
         employeeName: empName,
         terminationType: _terminationType,
-        justifiedCause: _terminationType == RrhhTerminationTypes.despidoJustificado ? _justifiedCause : null,
+        justifiedCause:
+            _terminationType == RrhhTerminationTypes.despidoJustificado
+            ? _justifiedCause
+            : null,
         terminationDate: _terminationDate,
         lastWorkDay: _lastWorkDay,
         reason: _reasonController.text.trim(),
-        resignationLetterFile: _terminationType == RrhhTerminationTypes.renunciaVoluntaria
+        resignationLetterFile:
+            _terminationType == RrhhTerminationTypes.renunciaVoluntaria
             ? _resignationFileController.text.trim()
             : null,
-        terminationMemoFile: (_terminationType == RrhhTerminationTypes.despidoJustificado ||
+        terminationMemoFile:
+            (_terminationType == RrhhTerminationTypes.despidoJustificado ||
                 _terminationType == RrhhTerminationTypes.despidoInjustificado)
             ? _memoFileController.text.trim()
             : null,
-        workCertificateFile: _deliveryWorkCertificate ? 'certificado_trabajo_${empCode.toLowerCase()}.pdf' : null,
+        workCertificateFile: _deliveryWorkCertificate
+            ? 'certificado_trabajo_${empCode.toLowerCase()}.pdf'
+            : null,
         hasPendingObligations: _hasPendingObligations,
-        pendingObligationsDetail: _hasPendingObligations ? _obligationsDetailController.text.trim() : null,
+        pendingObligationsDetail: _hasPendingObligations
+            ? _obligationsDetailController.text.trim()
+            : null,
         paymentDeadline: _paymentDeadline,
         paymentCompleted: widget.initialRecord?.paymentCompleted ?? false,
         paymentCompletedAt: widget.initialRecord?.paymentCompletedAt,
         notifiedEmployee: _notifiedEmployee,
         notifiedAt: _notifiedEmployee ? DateTime.now() : null,
-        status: widget.initialRecord?.status ?? RrhhTerminationStatus.registrada,
+        status:
+            widget.initialRecord?.status ?? RrhhTerminationStatus.registrada,
         createdAt: widget.initialRecord?.createdAt ?? DateTime.now(),
         updatedAt: DateTime.now(),
         createdBy: widget.initialRecord?.createdBy ?? 'RRHH',
@@ -207,13 +234,19 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
       if (isEditing) {
         await repo.updateTerminationRecord(recordToSave);
         if (mounted) {
-          RrhhSnackBar.showSuccess(context, 'Expediente ${recordToSave.code} actualizado correctamente.');
+          RrhhSnackBar.showSuccess(
+            context,
+            'Expediente ${recordToSave.code} actualizado correctamente.',
+          );
           Navigator.of(context).pop(true);
         }
       } else {
         final created = await repo.createTerminationRecord(recordToSave);
         if (mounted) {
-          RrhhSnackBar.showSuccess(context, 'Desvinculación registrada con código ${created.code}.');
+          RrhhSnackBar.showSuccess(
+            context,
+            'Desvinculación registrada con código ${created.code}.',
+          );
           Navigator.of(context).pop(true);
         }
       }
@@ -299,7 +332,11 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
               color: const Color(0xFFEF4444).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.person_remove_outlined, color: Color(0xFFEF4444), size: 20),
+            child: const Icon(
+              Icons.person_remove_outlined,
+              color: Color(0xFFEF4444),
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -307,7 +344,9 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditing ? 'Editar Desvinculación' : 'Registrar Desvinculación',
+                  isEditing
+                      ? 'Editar Desvinculación'
+                      : 'Registrar Desvinculación',
                   style: GoogleFonts.inter(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -316,7 +355,10 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
                 ),
                 Text(
                   'Gestión de bajas, causales Art. 16 LGT y plazo perentorio de liquidación',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF94A3B8),
+                  ),
                 ),
               ],
             ),
@@ -336,12 +378,18 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
       decoration: BoxDecoration(
         color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+        border: Border.all(
+          color: const Color(0xFFF59E0B).withValues(alpha: 0.3),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.warning_amber_rounded, color: Color(0xFFF59E0B), size: 22),
+          const Icon(
+            Icons.warning_amber_rounded,
+            color: Color(0xFFF59E0B),
+            size: 22,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -389,11 +437,19 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.badge_outlined, color: Color(0xFF38BDF8), size: 20),
+                  const Icon(
+                    Icons.badge_outlined,
+                    color: Color(0xFF38BDF8),
+                    size: 20,
+                  ),
                   const SizedBox(width: 10),
                   Text(
                     '${widget.initialRecord!.employeeName} (${widget.initialRecord!.employeeCode})',
-                    style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.w600, color: Colors.white),
+                    style: GoogleFonts.inter(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                 ],
               ),
@@ -427,7 +483,8 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
                     _loadEmployeeDetail(val.id);
                   }
                 },
-                validator: (val) => val == null ? 'Seleccione un empleado' : null,
+                validator: (val) =>
+                    val == null ? 'Seleccione un empleado' : null,
               ),
           ],
 
@@ -454,13 +511,17 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
                       'Fecha Ingreso',
                       _employeeDetail != null
                           ? _fmtDate(_employeeDetail!.realStartDate)
-                          : (_selectedEmployee != null ? _fmtDate(_selectedEmployee!.realStartDate) : '—'),
+                          : (_selectedEmployee != null
+                                ? _fmtDate(_selectedEmployee!.realStartDate)
+                                : '—'),
                     ),
                   ),
                   Expanded(
                     child: _buildInfoItem(
                       'Salario Base',
-                      _employeeDetail != null ? 'Bs. ${(_employeeDetail!.agreedSalary ?? 0.0).toStringAsFixed(2)}' : '—',
+                      _employeeDetail != null
+                          ? 'Bs. ${(_employeeDetail!.agreedSalary ?? 0.0).toStringAsFixed(2)}'
+                          : '—',
                     ),
                   ),
                 ],
@@ -473,7 +534,8 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
   }
 
   Widget _buildBlockB() {
-    final isDismissalJustified = _terminationType == RrhhTerminationTypes.despidoJustificado;
+    final isDismissalJustified =
+        _terminationType == RrhhTerminationTypes.despidoJustificado;
 
     return _buildCardWrapper(
       title: 'BLOQUE B — TIPO Y CAUSAL DE DESVINCULACIÓN',
@@ -494,7 +556,10 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
                       initialValue: _terminationType,
                       isExpanded: true,
                       dropdownColor: const Color(0xFF0F172A),
-                      style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 13,
+                      ),
                       decoration: _inputDecoration(),
                       items: RrhhTerminationTypes.all.map((t) {
                         return DropdownMenuItem(
@@ -519,13 +584,19 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Causal Art. 16 LGT (Bolivia) *', style: _labelStyle),
+                      Text(
+                        'Causal Art. 16 LGT (Bolivia) *',
+                        style: _labelStyle,
+                      ),
                       const SizedBox(height: 6),
                       DropdownButtonFormField<String>(
                         initialValue: _justifiedCause,
                         dropdownColor: const Color(0xFF0F172A),
                         isExpanded: true,
-                        style: GoogleFonts.inter(color: Colors.white, fontSize: 12.5),
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 12.5,
+                        ),
                         decoration: _inputDecoration(),
                         items: RrhhJustifiedCauses.all.map((c) {
                           return DropdownMenuItem(
@@ -534,7 +605,8 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
                           );
                         }).toList(),
                         onChanged: (val) {
-                          if (val != null) setState(() => _justifiedCause = val);
+                          if (val != null)
+                            setState(() => _justifiedCause = val);
                         },
                       ),
                     ],
@@ -546,17 +618,22 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
           const SizedBox(height: 14),
 
           // Motivo / Descripción (mínimo 30 caracteres)
-          Text('Motivo / Justificación detallada * (mínimo 30 caracteres)', style: _labelStyle),
+          Text(
+            'Motivo / Justificación detallada * (mínimo 30 caracteres)',
+            style: _labelStyle,
+          ),
           const SizedBox(height: 6),
           TextFormField(
             controller: _reasonController,
             maxLines: 3,
             style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
             decoration: _inputDecoration(
-              hint: 'Detalle claramente las causas, antecedentes o documentación que sustentan la desvinculación...',
+              hint:
+                  'Detalle claramente las causas, antecedentes o documentación que sustentan la desvinculación...',
             ),
             validator: (val) {
-              if (val == null || val.trim().isEmpty) return 'El motivo es obligatorio';
+              if (val == null || val.trim().isEmpty)
+                return 'El motivo es obligatorio';
               if (val.trim().length < 30) {
                 return 'El motivo debe tener al menos 30 caracteres (${val.trim().length}/30)';
               }
@@ -632,7 +709,10 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Fecha límite de pago (Finiquito)', style: _labelStyle),
+                    Text(
+                      'Fecha límite de pago (Finiquito)',
+                      style: _labelStyle,
+                    ),
                     const SizedBox(height: 6),
                     Container(
                       height: 40,
@@ -644,7 +724,11 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.lock_clock_outlined, size: 16, color: Color(0xFFF59E0B)),
+                          const Icon(
+                            Icons.lock_clock_outlined,
+                            size: 16,
+                            color: Color(0xFFF59E0B),
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             _fmtDate(_paymentDeadline),
@@ -672,12 +756,19 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.info_outline, size: 14, color: Color(0xFF60A5FA)),
+                const Icon(
+                  Icons.info_outline,
+                  size: 14,
+                  color: Color(0xFF60A5FA),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Plazo legal de 15 días calendario computables desde el último día trabajado para el pago total del finiquito sin multas (D.S. 28699 Art. 9).',
-                    style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF94A3B8)),
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      color: const Color(0xFF94A3B8),
+                    ),
                   ),
                 ),
               ],
@@ -689,8 +780,10 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
   }
 
   Widget _buildBlockD() {
-    final isResignation = _terminationType == RrhhTerminationTypes.renunciaVoluntaria;
-    final isDismissal = _terminationType == RrhhTerminationTypes.despidoJustificado ||
+    final isResignation =
+        _terminationType == RrhhTerminationTypes.renunciaVoluntaria;
+    final isDismissal =
+        _terminationType == RrhhTerminationTypes.despidoJustificado ||
         _terminationType == RrhhTerminationTypes.despidoInjustificado;
 
     return _buildCardWrapper(
@@ -707,7 +800,11 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
               style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
               decoration: _inputDecoration(
                 hint: 'ej. carta_renuncia_firmada.pdf',
-                prefixIcon: const Icon(Icons.attach_file, size: 18, color: Color(0xFF64748B)),
+                prefixIcon: const Icon(
+                  Icons.attach_file,
+                  size: 18,
+                  color: Color(0xFF64748B),
+                ),
               ),
               validator: (val) {
                 if (isResignation && (val == null || val.trim().isEmpty)) {
@@ -720,14 +817,21 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
           ],
 
           if (isDismissal) ...[
-            Text('Memorándum de Despido / Comunicación Oficial *', style: _labelStyle),
+            Text(
+              'Memorándum de Despido / Comunicación Oficial *',
+              style: _labelStyle,
+            ),
             const SizedBox(height: 6),
             TextFormField(
               controller: _memoFileController,
               style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
               decoration: _inputDecoration(
                 hint: 'ej. memo_despido_notificado.pdf',
-                prefixIcon: const Icon(Icons.attach_file, size: 18, color: Color(0xFF64748B)),
+                prefixIcon: const Icon(
+                  Icons.attach_file,
+                  size: 18,
+                  color: Color(0xFF64748B),
+                ),
               ),
               validator: (val) {
                 if (isDismissal && (val == null || val.trim().isEmpty)) {
@@ -744,9 +848,19 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
             type: MaterialType.transparency,
             child: CheckboxListTile(
               value: _deliveryWorkCertificate,
-              onChanged: (val) => setState(() => _deliveryWorkCertificate = val ?? true),
-              title: Text('Emitir y entregar Certificado de Trabajo', style: GoogleFonts.inter(color: Colors.white, fontSize: 13)),
-              subtitle: Text('Obligatorio según LGT Art. 15 a la cesación del vínculo laboral', style: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 11.5)),
+              onChanged: (val) =>
+                  setState(() => _deliveryWorkCertificate = val ?? true),
+              title: Text(
+                'Emitir y entregar Certificado de Trabajo',
+                style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+              ),
+              subtitle: Text(
+                'Obligatorio según LGT Art. 15 a la cesación del vínculo laboral',
+                style: GoogleFonts.inter(
+                  color: const Color(0xFF94A3B8),
+                  fontSize: 11.5,
+                ),
+              ),
               contentPadding: EdgeInsets.zero,
               controlAffinity: ListTileControlAffinity.leading,
               activeColor: const Color(0xFF2563EB),
@@ -757,9 +871,19 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
             type: MaterialType.transparency,
             child: CheckboxListTile(
               value: _hasPendingObligations,
-              onChanged: (val) => setState(() => _hasPendingObligations = val ?? false),
-              title: Text('¿Tiene obligaciones o activos corporativos pendientes?', style: GoogleFonts.inter(color: Colors.white, fontSize: 13)),
-              subtitle: Text('Herramientas, llaves, uniformes, credenciales magnéticas o deudas pendientes', style: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 11.5)),
+              onChanged: (val) =>
+                  setState(() => _hasPendingObligations = val ?? false),
+              title: Text(
+                '¿Tiene obligaciones o activos corporativos pendientes?',
+                style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+              ),
+              subtitle: Text(
+                'Herramientas, llaves, uniformes, credenciales magnéticas o deudas pendientes',
+                style: GoogleFonts.inter(
+                  color: const Color(0xFF94A3B8),
+                  fontSize: 11.5,
+                ),
+              ),
               contentPadding: EdgeInsets.zero,
               controlAffinity: ListTileControlAffinity.leading,
               activeColor: const Color(0xFFF59E0B),
@@ -773,10 +897,12 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
               maxLines: 2,
               style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
               decoration: _inputDecoration(
-                hint: 'Detalle de los bienes, activos o rendiciones que debe entregar antes del visado...',
+                hint:
+                    'Detalle de los bienes, activos o rendiciones que debe entregar antes del visado...',
               ),
               validator: (val) {
-                if (_hasPendingObligations && (val == null || val.trim().isEmpty)) {
+                if (_hasPendingObligations &&
+                    (val == null || val.trim().isEmpty)) {
                   return 'Indique el detalle de las obligaciones pendientes';
                 }
                 return null;
@@ -789,8 +915,12 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
             type: MaterialType.transparency,
             child: CheckboxListTile(
               value: _notifiedEmployee,
-              onChanged: (val) => setState(() => _notifiedEmployee = val ?? true),
-              title: Text('Notificar formalmente al empleado sobre el registro de baja', style: GoogleFonts.inter(color: Colors.white, fontSize: 13)),
+              onChanged: (val) =>
+                  setState(() => _notifiedEmployee = val ?? true),
+              title: Text(
+                'Notificar formalmente al empleado sobre el registro de baja',
+                style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+              ),
               contentPadding: EdgeInsets.zero,
               controlAffinity: ListTileControlAffinity.leading,
               activeColor: const Color(0xFF2563EB),
@@ -801,7 +931,11 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
     );
   }
 
-  Widget _buildCardWrapper({required String title, required IconData icon, required Widget child}) {
+  Widget _buildCardWrapper({
+    required String title,
+    required IconData icon,
+    required Widget child,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -834,7 +968,10 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
     );
   }
 
-  Widget _buildDatePickerButton({required DateTime date, required VoidCallback onTap}) {
+  Widget _buildDatePickerButton({
+    required DateTime date,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
@@ -848,11 +985,18 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.calendar_today_outlined, size: 16, color: Color(0xFF94A3B8)),
+            const Icon(
+              Icons.calendar_today_outlined,
+              size: 16,
+              color: Color(0xFF94A3B8),
+            ),
             const SizedBox(width: 8),
             Text(
               _fmtDate(date),
-              style: GoogleFonts.jetBrainsMono(color: Colors.white, fontSize: 12.5),
+              style: GoogleFonts.jetBrainsMono(
+                color: Colors.white,
+                fontSize: 12.5,
+              ),
             ),
           ],
         ),
@@ -864,11 +1008,21 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B))),
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 11,
+            color: const Color(0xFF64748B),
+          ),
+        ),
         const SizedBox(height: 2),
         Text(
           value,
-          style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600, color: Colors.white),
+          style: GoogleFonts.inter(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
           overflow: TextOverflow.ellipsis,
         ),
       ],
@@ -899,9 +1053,18 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
           FilledButton.icon(
             onPressed: _isSaving ? null : _handleSave,
             icon: _isSaving
-                ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                ? const SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
                 : const Icon(Icons.check, size: 16),
-            label: Text(isEditing ? 'Guardar Cambios' : 'Registrar Desvinculación'),
+            label: Text(
+              isEditing ? 'Guardar Cambios' : 'Registrar Desvinculación',
+            ),
             style: FilledButton.styleFrom(
               backgroundColor: const Color(0xFF2563EB),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -915,7 +1078,10 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
   InputDecoration _inputDecoration({String? hint, Widget? prefixIcon}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12.5),
+      hintStyle: GoogleFonts.inter(
+        color: const Color(0xFF64748B),
+        fontSize: 12.5,
+      ),
       prefixIcon: prefixIcon,
       filled: true,
       fillColor: const Color(0xFF111827),
@@ -940,10 +1106,10 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
   }
 
   TextStyle get _labelStyle => GoogleFonts.inter(
-        fontSize: 12.5,
-        fontWeight: FontWeight.w500,
-        color: const Color(0xFF94A3B8),
-      );
+    fontSize: 12.5,
+    fontWeight: FontWeight.w500,
+    color: const Color(0xFF94A3B8),
+  );
 
   String _fmtDate(DateTime dt) {
     return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';

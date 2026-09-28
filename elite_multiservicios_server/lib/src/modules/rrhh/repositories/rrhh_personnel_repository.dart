@@ -13,8 +13,13 @@ class RrhhPersonnelRepository {
   const RrhhPersonnelRepository(this.session);
 
   /// Helper que identifica si un cargo, área o especialidad corresponde a Seguridad Física.
-  bool _isSecurityPosition({String? position, String? area, String? specialty}) {
-    final combined = '${position ?? ''} ${area ?? ''} ${specialty ?? ''}'.toLowerCase();
+  bool _isSecurityPosition({
+    String? position,
+    String? area,
+    String? specialty,
+  }) {
+    final combined = '${position ?? ''} ${area ?? ''} ${specialty ?? ''}'
+        .toLowerCase();
     return combined.contains('seguridad') ||
         combined.contains('guardia') ||
         combined.contains('vigilante') ||
@@ -56,11 +61,13 @@ class RrhhPersonnelRepository {
       return employees;
     }
     return employees
-        .map((e) => e.copyWith(
-              agreedSalary: null,
-              bonuses: null,
-              deductions: null,
-            ))
+        .map(
+          (e) => e.copyWith(
+            agreedSalary: null,
+            bonuses: null,
+            deductions: null,
+          ),
+        )
         .toList();
   }
 
@@ -226,7 +233,8 @@ class RrhhPersonnelRepository {
       specialty: employee.specialty,
     );
     if (isSecurity) {
-      final felccDocValid = employee.documentChecklist?.any(
+      final felccDocValid =
+          employee.documentChecklist?.any(
             (d) =>
                 d.code.toUpperCase() == 'FELCC' &&
                 d.status.toLowerCase() == 'validado',

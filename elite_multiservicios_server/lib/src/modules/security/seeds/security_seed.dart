@@ -124,13 +124,16 @@ class SecuritySeed {
       session,
       AppRole(
         name: 'RRHH',
-        description: 'Rol para la gestión integral de Recursos Humanos, Personal y Reclutamiento',
+        description:
+            'Rol para la gestión integral de Recursos Humanos, Personal y Reclutamiento',
         isSystemRole: true,
         createdAt: DateTime.now().toUtc(),
       ),
     );
 
-    final rrhhPermissions = allPermissions.where((p) => p.code.startsWith('rrhh.')).toList();
+    final rrhhPermissions = allPermissions
+        .where((p) => p.code.startsWith('rrhh.'))
+        .toList();
     for (final perm in rrhhPermissions) {
       if (perm.id == null) continue;
 

@@ -33,8 +33,10 @@ class RrhhLeaveRequestDetailDrawer extends StatefulWidget {
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 250),
       transitionBuilder: (ctx, a1, _, child) => SlideTransition(
-        position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
-            .animate(CurvedAnimation(parent: a1, curve: Curves.easeOutCubic)),
+        position: Tween<Offset>(
+          begin: const Offset(1, 0),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(parent: a1, curve: Curves.easeOutCubic)),
         child: child,
       ),
       pageBuilder: (ctx, _, _) => Align(
@@ -941,7 +943,10 @@ class _RrhhLeaveRequestDetailDrawerState
             ],
           ),
           const SizedBox(height: 12),
-          _buildInfoRow('Tipo de Permiso', RrhhLeaveTypeChip(leaveType: leave.leaveType)),
+          _buildInfoRow(
+            'Tipo de Permiso',
+            RrhhLeaveTypeChip(leaveType: leave.leaveType),
+          ),
           const SizedBox(height: 8),
           _buildInfoRow(
             'Período',
@@ -1230,7 +1235,9 @@ class _RrhhLeaveRequestDetailDrawerState
             hasNotes ? leave.notes! : 'Sin observaciones internas registradas.',
             style: GoogleFonts.inter(
               fontSize: 12,
-              color: hasNotes ? const Color(0xFFCBD5E1) : const Color(0xFF64748B),
+              color: hasNotes
+                  ? const Color(0xFFCBD5E1)
+                  : const Color(0xFF64748B),
               fontStyle: hasNotes ? FontStyle.normal : FontStyle.italic,
               height: 1.4,
             ),
@@ -1354,8 +1361,13 @@ class _RrhhLeaveRequestDetailDrawerState
                           height: 22,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: (ev['color'] as Color).withValues(alpha: 0.15),
-                            border: Border.all(color: ev['color'] as Color, width: 1.5),
+                            color: (ev['color'] as Color).withValues(
+                              alpha: 0.15,
+                            ),
+                            border: Border.all(
+                              color: ev['color'] as Color,
+                              width: 1.5,
+                            ),
                           ),
                           child: Icon(
                             ev['icon'] as IconData,

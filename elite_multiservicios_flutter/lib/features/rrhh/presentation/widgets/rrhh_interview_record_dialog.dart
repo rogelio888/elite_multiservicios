@@ -35,7 +35,8 @@ class RrhhInterviewRecordDialog extends StatefulWidget {
   }
 
   @override
-  State<RrhhInterviewRecordDialog> createState() => _RrhhInterviewRecordDialogState();
+  State<RrhhInterviewRecordDialog> createState() =>
+      _RrhhInterviewRecordDialogState();
 }
 
 class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
@@ -66,7 +67,9 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
       _selectedTime = TimeOfDay.fromDateTime(rec.dateTime);
       _interviewerDueno = rec.interviewers.contains('Dueño');
       _interviewerRrhh = rec.interviewers.contains('Encargada de RRHH');
-      final others = rec.interviewers.where((i) => i != 'Dueño' && i != 'Encargada de RRHH').toList();
+      final others = rec.interviewers
+          .where((i) => i != 'Dueño' && i != 'Encargada de RRHH')
+          .toList();
       if (others.isNotEmpty) {
         _interviewerOther = true;
         _otherInterviewerCtrl.text = others.join(', ');
@@ -123,8 +126,12 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
       modality: _modality,
       notes: _notesCtrl.text.trim(),
       result: _result,
-      rejectionReason: _result == 'No Apto' ? _rejectionReasonCtrl.text.trim() : null,
-      attachedUrl: _attachedUrlCtrl.text.trim().isEmpty ? null : _attachedUrlCtrl.text.trim(),
+      rejectionReason: _result == 'No Apto'
+          ? _rejectionReasonCtrl.text.trim()
+          : null,
+      attachedUrl: _attachedUrlCtrl.text.trim().isEmpty
+          ? null
+          : _attachedUrlCtrl.text.trim(),
     );
 
     Navigator.of(context).pop(record);
@@ -158,9 +165,15 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
                       decoration: BoxDecoration(
                         color: const Color(0xFFF59E0B).withValues(alpha: 0.15),
                         shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: const Color(0xFFF59E0B).withValues(alpha: 0.3),
+                        ),
                       ),
-                      child: const Icon(Icons.record_voice_over_outlined, color: Color(0xFFF59E0B), size: 22),
+                      child: const Icon(
+                        Icons.record_voice_over_outlined,
+                        color: Color(0xFFF59E0B),
+                        size: 22,
+                      ),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -169,18 +182,29 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
                         children: [
                           Text(
                             'Registro de Entrevista',
-                            style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white),
+                            style: GoogleFonts.inter(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             '${widget.applicantCode} • ${widget.applicantName}',
-                            style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8)),
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              color: const Color(0xFF94A3B8),
+                            ),
                           ),
                         ],
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Color(0xFF64748B), size: 20),
+                      icon: const Icon(
+                        Icons.close,
+                        color: Color(0xFF64748B),
+                        size: 20,
+                      ),
                       onPressed: () => Navigator.of(context).pop(null),
                     ),
                   ],
@@ -209,7 +233,8 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
                                         firstDate: DateTime(2025),
                                         lastDate: DateTime(2030),
                                       );
-                                      if (d != null) setState(() => _selectedDate = d);
+                                      if (d != null)
+                                        setState(() => _selectedDate = d);
                                     },
                                     child: _boxPicker(
                                       Icons.calendar_today_outlined,
@@ -231,7 +256,8 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
                                         context: context,
                                         initialTime: _selectedTime,
                                       );
-                                      if (t != null) setState(() => _selectedTime = t);
+                                      if (t != null)
+                                        setState(() => _selectedTime = t);
                                     },
                                     child: _boxPicker(
                                       Icons.access_time_outlined,
@@ -255,15 +281,23 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
                               child: ChoiceChip(
                                 label: Text(m),
                                 selected: isSel,
-                                selectedColor: const Color(0xFF0284C7).withValues(alpha: 0.3),
+                                selectedColor: const Color(
+                                  0xFF0284C7,
+                                ).withValues(alpha: 0.3),
                                 backgroundColor: const Color(0xFF1E293B),
                                 labelStyle: GoogleFonts.inter(
                                   fontSize: 12,
-                                  fontWeight: isSel ? FontWeight.w600 : FontWeight.w400,
-                                  color: isSel ? const Color(0xFF38BDF8) : const Color(0xFF94A3B8),
+                                  fontWeight: isSel
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                  color: isSel
+                                      ? const Color(0xFF38BDF8)
+                                      : const Color(0xFF94A3B8),
                                 ),
                                 side: BorderSide(
-                                  color: isSel ? const Color(0xFF0284C7) : const Color(0xFF334155),
+                                  color: isSel
+                                      ? const Color(0xFF0284C7)
+                                      : const Color(0xFF334155),
                                 ),
                                 onSelected: (sel) {
                                   if (sel) setState(() => _modality = m);
@@ -286,61 +320,98 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
                           child: Padding(
                             padding: const EdgeInsets.all(10),
                             child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: CheckboxListTile(
-                                      value: _interviewerDueno,
-                                      dense: true,
-                                      contentPadding: EdgeInsets.zero,
-                                      activeColor: const Color(0xFF0284C7),
-                                      title: Text('Dueño', style: GoogleFonts.inter(fontSize: 12, color: Colors.white)),
-                                      onChanged: (v) => setState(() => _interviewerDueno = v ?? false),
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: CheckboxListTile(
+                                        value: _interviewerDueno,
+                                        dense: true,
+                                        contentPadding: EdgeInsets.zero,
+                                        activeColor: const Color(0xFF0284C7),
+                                        title: Text(
+                                          'Dueño',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        onChanged: (v) => setState(
+                                          () => _interviewerDueno = v ?? false,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: CheckboxListTile(
+                                        value: _interviewerRrhh,
+                                        dense: true,
+                                        contentPadding: EdgeInsets.zero,
+                                        activeColor: const Color(0xFF0284C7),
+                                        title: Text(
+                                          'Encargada de RRHH',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        onChanged: (v) => setState(
+                                          () => _interviewerRrhh = v ?? false,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                CheckboxListTile(
+                                  value: _interviewerOther,
+                                  dense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                  activeColor: const Color(0xFF0284C7),
+                                  title: Text(
+                                    'Otro evaluador',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: Colors.white,
                                     ),
                                   ),
-                                  Expanded(
-                                    child: CheckboxListTile(
-                                      value: _interviewerRrhh,
-                                      dense: true,
-                                      contentPadding: EdgeInsets.zero,
-                                      activeColor: const Color(0xFF0284C7),
-                                      title: Text('Encargada de RRHH', style: GoogleFonts.inter(fontSize: 12, color: Colors.white)),
-                                      onChanged: (v) => setState(() => _interviewerRrhh = v ?? false),
+                                  onChanged: (v) => setState(
+                                    () => _interviewerOther = v ?? false,
+                                  ),
+                                ),
+                                if (_interviewerOther) ...[
+                                  const SizedBox(height: 4),
+                                  TextFormField(
+                                    controller: _otherInterviewerCtrl,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: Colors.white,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText:
+                                          'Nombre y cargo del otro entrevistador...',
+                                      hintStyle: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: const Color(0xFF64748B),
+                                      ),
+                                      filled: true,
+                                      fillColor: const Color(0xFF0F172A),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 8,
+                                          ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(6),
+                                        borderSide: const BorderSide(
+                                          color: Color(0xFF334155),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ],
-                              ),
-                              CheckboxListTile(
-                                value: _interviewerOther,
-                                dense: true,
-                                contentPadding: EdgeInsets.zero,
-                                activeColor: const Color(0xFF0284C7),
-                                title: Text('Otro evaluador', style: GoogleFonts.inter(fontSize: 12, color: Colors.white)),
-                                onChanged: (v) => setState(() => _interviewerOther = v ?? false),
-                              ),
-                              if (_interviewerOther) ...[
-                                const SizedBox(height: 4),
-                                TextFormField(
-                                  controller: _otherInterviewerCtrl,
-                                  style: GoogleFonts.inter(fontSize: 12, color: Colors.white),
-                                  decoration: InputDecoration(
-                                    hintText: 'Nombre y cargo del otro entrevistador...',
-                                    hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
-                                    filled: true,
-                                    fillColor: const Color(0xFF0F172A),
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(6),
-                                      borderSide: const BorderSide(color: Color(0xFF334155)),
-                                    ),
-                                  ),
-                                ),
                               ],
-                            ],
+                            ),
                           ),
                         ),
-                      ),
                         const SizedBox(height: 14),
 
                         // Notas de la entrevista
@@ -348,7 +419,10 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
                         TextFormField(
                           controller: _notesCtrl,
                           maxLines: 4,
-                          style: GoogleFonts.inter(fontSize: 12, color: Colors.white),
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: Colors.white,
+                          ),
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
                               return 'Por favor registra las observaciones principales de la entrevista.';
@@ -356,18 +430,26 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
                             return null;
                           },
                           decoration: InputDecoration(
-                            hintText: 'Habilidades observadas, puntualidad, actitud, expectativas...',
-                            hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                            hintText:
+                                'Habilidades observadas, puntualidad, actitud, expectativas...',
+                            hintStyle: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: const Color(0xFF64748B),
+                            ),
                             filled: true,
                             fillColor: const Color(0xFF1E293B),
                             contentPadding: const EdgeInsets.all(12),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(color: Color(0xFF334155)),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF334155),
+                              ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(color: Color(0xFF334155)),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF334155),
+                              ),
                             ),
                           ),
                         ),
@@ -377,11 +459,23 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
                         _label('RESULTADO FINAL DE LA ENTREVISTA *'),
                         Row(
                           children: [
-                            _buildResultOption('Apto', const Color(0xFF10B981), Icons.check_circle_outline),
+                            _buildResultOption(
+                              'Apto',
+                              const Color(0xFF10B981),
+                              Icons.check_circle_outline,
+                            ),
                             const SizedBox(width: 8),
-                            _buildResultOption('Dudoso', const Color(0xFFF59E0B), Icons.help_outline),
+                            _buildResultOption(
+                              'Dudoso',
+                              const Color(0xFFF59E0B),
+                              Icons.help_outline,
+                            ),
                             const SizedBox(width: 8),
-                            _buildResultOption('No Apto', const Color(0xFFEF4444), Icons.cancel_outlined),
+                            _buildResultOption(
+                              'No Apto',
+                              const Color(0xFFEF4444),
+                              Icons.cancel_outlined,
+                            ),
                           ],
                         ),
 
@@ -392,26 +486,38 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
                           TextFormField(
                             controller: _rejectionReasonCtrl,
                             maxLines: 2,
-                            style: GoogleFonts.inter(fontSize: 12, color: Colors.white),
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: Colors.white,
+                            ),
                             validator: (val) {
-                              if (_result == 'No Apto' && (val == null || val.trim().isEmpty)) {
+                              if (_result == 'No Apto' &&
+                                  (val == null || val.trim().isEmpty)) {
                                 return 'Especifica obligatoriamente por qué se evaluó como No Apto.';
                               }
                               return null;
                             },
                             decoration: InputDecoration(
-                              hintText: 'Detalla las deficiencias críticas o motivos de descarte...',
-                              hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                              hintText:
+                                  'Detalla las deficiencias críticas o motivos de descarte...',
+                              hintStyle: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: const Color(0xFF64748B),
+                              ),
                               filled: true,
                               fillColor: const Color(0xFF1E293B),
                               contentPadding: const EdgeInsets.all(12),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(color: Color(0xFFEF4444)),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFEF4444),
+                                ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(color: Color(0xFFEF4444)),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFEF4444),
+                                ),
                               ),
                             ),
                           ),
@@ -422,21 +528,38 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
                         _label('DOCUMENTO / ENLACE ADJUNTO (OPCIONAL)'),
                         TextFormField(
                           controller: _attachedUrlCtrl,
-                          style: GoogleFonts.inter(fontSize: 12, color: Colors.white),
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: Colors.white,
+                          ),
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.link, color: Color(0xFF64748B), size: 16),
+                            prefixIcon: const Icon(
+                              Icons.link,
+                              color: Color(0xFF64748B),
+                              size: 16,
+                            ),
                             hintText: 'https://storage/informe_entrevista.pdf',
-                            hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                            hintStyle: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: const Color(0xFF64748B),
+                            ),
                             filled: true,
                             fillColor: const Color(0xFF1E293B),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(color: Color(0xFF334155)),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF334155),
+                              ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(color: Color(0xFF334155)),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF334155),
+                              ),
                             ),
                           ),
                         ),
@@ -454,23 +577,45 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF94A3B8),
                         side: const BorderSide(color: Color(0xFF334155)),
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       onPressed: () => Navigator.of(context).pop(null),
-                      child: Text('Cancelar', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
+                      child: Text(
+                        'Cancelar',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0284C7),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       onPressed: _save,
                       icon: const Icon(Icons.check, size: 16),
-                      label: Text('Guardar Entrevista', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
+                      label: Text(
+                        'Guardar Entrevista',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -509,7 +654,10 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
         children: [
           Icon(icon, color: const Color(0xFF38BDF8), size: 16),
           const SizedBox(width: 8),
-          Text(value, style: GoogleFonts.inter(fontSize: 12, color: Colors.white)),
+          Text(
+            value,
+            style: GoogleFonts.inter(fontSize: 12, color: Colors.white),
+          ),
         ],
       ),
     );
@@ -524,14 +672,23 @@ class _RrhhInterviewRecordDialogState extends State<RrhhInterviewRecordDialog> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? color.withValues(alpha: 0.2) : const Color(0xFF1E293B),
+            color: isSelected
+                ? color.withValues(alpha: 0.2)
+                : const Color(0xFF1E293B),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: isSelected ? color : const Color(0xFF334155), width: isSelected ? 1.5 : 1.0),
+            border: Border.all(
+              color: isSelected ? color : const Color(0xFF334155),
+              width: isSelected ? 1.5 : 1.0,
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: isSelected ? color : const Color(0xFF64748B), size: 16),
+              Icon(
+                icon,
+                color: isSelected ? color : const Color(0xFF64748B),
+                size: 16,
+              ),
               const SizedBox(width: 6),
               Text(
                 label,

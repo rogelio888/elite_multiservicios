@@ -24,9 +24,12 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
 
   // Filtros
   final TextEditingController _searchController = TextEditingController();
-  String _selectedFaultType = 'TODOS'; // 'TODOS' | 'leve' | 'grave' | 'gravisima'
-  String _selectedSanction = 'TODAS'; // 'TODAS' | 'verbal' | 'escrita' | 'pecuniaria' | 'suspension' | 'retiro'
-  String _selectedStatus = 'TODOS'; // 'TODOS' | 'registrada' | 'en_descargo' | 'sancionada' | 'apelada' | 'archivada' | 'cerrada'
+  String _selectedFaultType =
+      'TODOS'; // 'TODOS' | 'leve' | 'grave' | 'gravisima'
+  String _selectedSanction =
+      'TODAS'; // 'TODAS' | 'verbal' | 'escrita' | 'pecuniaria' | 'suspension' | 'retiro'
+  String _selectedStatus =
+      'TODOS'; // 'TODOS' | 'registrada' | 'en_descargo' | 'sancionada' | 'apelada' | 'archivada' | 'cerrada'
   DateTimeRange? _selectedDateRange;
 
   @override
@@ -89,7 +92,9 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
 
       // 3. Filtro por sanción
       if (_selectedSanction != 'TODAS') {
-        if (item.sanctionType == null || item.sanctionType!.toLowerCase() != _selectedSanction.toLowerCase()) {
+        if (item.sanctionType == null ||
+            item.sanctionType!.toLowerCase() !=
+                _selectedSanction.toLowerCase()) {
           return false;
         }
       }
@@ -105,7 +110,8 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
       if (_selectedDateRange != null) {
         final start = _selectedDateRange!.start;
         final end = _selectedDateRange!.end;
-        if (item.incidentDate.isBefore(start) || item.incidentDate.isAfter(end.add(const Duration(days: 1)))) {
+        if (item.incidentDate.isBefore(start) ||
+            item.incidentDate.isAfter(end.add(const Duration(days: 1)))) {
           return false;
         }
       }
@@ -135,14 +141,20 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
   // --- KPIs CALCULADOS ---
 
   int get _activeSanctionsCount {
-    return _records.where((r) => r.status == RrhhDisciplinaryStatus.sancionada).length;
+    return _records
+        .where((r) => r.status == RrhhDisciplinaryStatus.sancionada)
+        .length;
   }
 
   int get _inProgressProcessesCount {
-    return _records.where((r) =>
-        r.status == RrhhDisciplinaryStatus.registrada ||
-        r.status == RrhhDisciplinaryStatus.enDescargo ||
-        r.status == RrhhDisciplinaryStatus.apelada).length;
+    return _records
+        .where(
+          (r) =>
+              r.status == RrhhDisciplinaryStatus.registrada ||
+              r.status == RrhhDisciplinaryStatus.enDescargo ||
+              r.status == RrhhDisciplinaryStatus.apelada,
+        )
+        .length;
   }
 
   // --- ACCIONES CRUD / DIALOGS ---
@@ -173,24 +185,49 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
         ),
         title: Row(
           children: [
-            const Icon(Icons.archive_outlined, color: Color(0xFF10B981), size: 20),
+            const Icon(
+              Icons.archive_outlined,
+              color: Color(0xFF10B981),
+              size: 20,
+            ),
             const SizedBox(width: 8),
-            Text('Archivar Expediente', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+            Text(
+              'Archivar Expediente',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
           ],
         ),
         content: Text(
           '¿Desea archivar el expediente ${item.code} sin sanción aplicada para ${item.employeeName}?',
-          style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8)),
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            color: const Color(0xFF94A3B8),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('Cancelar', style: GoogleFonts.inter(color: const Color(0xFF94A3B8))),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
-            child: Text('Archivar', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF10B981),
+            ),
+            child: Text(
+              'Archivar',
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
           ),
         ],
       ),
@@ -204,7 +241,10 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
           reason: 'Archivado sin sanción',
         );
         if (mounted) {
-          RrhhSnackBar.showSuccess(context, 'Incidencia ${item.code} archivada sin sanción.');
+          RrhhSnackBar.showSuccess(
+            context,
+            'Incidencia ${item.code} archivada sin sanción.',
+          );
         }
         await _loadData();
       } catch (e) {
@@ -224,24 +264,49 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
         ),
         title: Row(
           children: [
-            const Icon(Icons.delete_outline, color: Color(0xFFEF4444), size: 20),
+            const Icon(
+              Icons.delete_outline,
+              color: Color(0xFFEF4444),
+              size: 20,
+            ),
             const SizedBox(width: 8),
-            Text('Eliminar Registro', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+            Text(
+              'Eliminar Registro',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
           ],
         ),
         content: Text(
           '¿Eliminar permanentemente el registro ${item.code}? Esta acción solo está disponible en estado "Registrada".',
-          style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8)),
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            color: const Color(0xFF94A3B8),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('Cancelar', style: GoogleFonts.inter(color: const Color(0xFF94A3B8))),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
-            child: Text('Eliminar', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+            ),
+            child: Text(
+              'Eliminar',
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
           ),
         ],
       ),
@@ -251,7 +316,10 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
       try {
         await RrhhRepository.current.deleteDisciplinaryRecord(item.id);
         if (mounted) {
-          RrhhSnackBar.showSuccess(context, 'Registro ${item.code} eliminado correctamente.');
+          RrhhSnackBar.showSuccess(
+            context,
+            'Registro ${item.code} eliminado correctamente.',
+          );
         }
         await _loadData();
       } catch (e) {
@@ -273,9 +341,11 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
     final activeCount = _activeSanctionsCount;
     final inProgressCount = _inProgressProcessesCount;
     final archivedCount = _records
-        .where((r) =>
-            r.status == RrhhDisciplinaryStatus.archivada ||
-            r.status == RrhhDisciplinaryStatus.cerrada)
+        .where(
+          (r) =>
+              r.status == RrhhDisciplinaryStatus.archivada ||
+              r.status == RrhhDisciplinaryStatus.cerrada,
+        )
         .length;
 
     const minTableWidth = 980.0;
@@ -283,7 +353,9 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final contentWidth = constraints.maxWidth - 48.0;
-        final tableWidth = contentWidth > minTableWidth ? contentWidth : minTableWidth;
+        final tableWidth = contentWidth > minTableWidth
+            ? contentWidth
+            : minTableWidth;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -295,7 +367,12 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
               const SizedBox(height: 14),
 
               // 2. Barra de Filtros en Card redondeada
-              _buildFiltersBar(totalCount, activeCount, inProgressCount, archivedCount),
+              _buildFiltersBar(
+                totalCount,
+                activeCount,
+                inProgressCount,
+                archivedCount,
+              ),
               const SizedBox(height: 14),
 
               // 3. Tabla dentro de Card redondeada
@@ -318,7 +395,9 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
                           const Padding(
                             padding: EdgeInsets.symmetric(vertical: 40),
                             child: Center(
-                              child: CircularProgressIndicator(color: Color(0xFF2563EB)),
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF2563EB),
+                              ),
                             ),
                           )
                         else if (filtered.isEmpty)
@@ -328,19 +407,30 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.inbox_outlined, size: 48, color: Color(0xFF64748B)),
+                                  const Icon(
+                                    Icons.inbox_outlined,
+                                    size: 48,
+                                    color: Color(0xFF64748B),
+                                  ),
                                   const SizedBox(height: 12),
                                   Text(
                                     _hasActiveFilters
                                         ? 'No se encontraron incidencias que coincidan con los filtros aplicados.'
                                         : 'No hay incidencias disciplinarias registradas.',
-                                    style: GoogleFonts.inter(fontSize: 13.5, color: const Color(0xFF94A3B8)),
+                                    style: GoogleFonts.inter(
+                                      fontSize: 13.5,
+                                      color: const Color(0xFF94A3B8),
+                                    ),
                                   ),
                                   if (_hasActiveFilters) ...[
                                     const SizedBox(height: 12),
                                     ElevatedButton(
                                       onPressed: _clearFilters,
-                                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB)),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(
+                                          0xFF2563EB,
+                                        ),
+                                      ),
                                       child: const Text('Limpiar filtros'),
                                     ),
                                   ],
@@ -349,14 +439,17 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
                             ),
                           )
                         else
-                          ...filtered.map((item) => RrhhDisciplinaryRecordRow(
-                                record: item,
-                                onTap: () => _openDetailDrawer(item),
-                                onRegisterDischarge: () => _openDetailDrawer(item),
-                                onApplySanction: () => _openDetailDrawer(item),
-                                onArchive: () => _handleArchive(item),
-                                onDelete: () => _handleDelete(item),
-                              )),
+                          ...filtered.map(
+                            (item) => RrhhDisciplinaryRecordRow(
+                              record: item,
+                              onTap: () => _openDetailDrawer(item),
+                              onRegisterDischarge: () =>
+                                  _openDetailDrawer(item),
+                              onApplySanction: () => _openDetailDrawer(item),
+                              onArchive: () => _handleArchive(item),
+                              onDelete: () => _handleDelete(item),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -368,7 +461,10 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
               if (!_isLoading && _records.isNotEmpty)
                 Text(
                   'Mostrando ${filtered.length} de $totalCount incidencias disciplinarias',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF64748B),
+                  ),
                 ),
             ],
           ),
@@ -391,7 +487,9 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
               style: GoogleFonts.inter(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                color: isDark
+                    ? const Color(0xFFF8FAFC)
+                    : const Color(0xFF0F172A),
                 letterSpacing: -0.3,
               ),
             ),
@@ -400,7 +498,9 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
               'Registro de faltas laborales, debidos procesos, descargos y sanciones aplicadas',
               style: GoogleFonts.inter(
                 fontSize: 12,
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -463,11 +563,22 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
                   style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Buscar empleado o código INC...',
-                    hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12.5),
-                    prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF64748B)),
+                    hintStyle: GoogleFonts.inter(
+                      color: const Color(0xFF64748B),
+                      fontSize: 12.5,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      size: 18,
+                      color: Color(0xFF64748B),
+                    ),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.close, size: 16, color: Color(0xFF64748B)),
+                            icon: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Color(0xFF64748B),
+                            ),
                             onPressed: () {
                               _searchController.clear();
                               setState(() {});
@@ -476,7 +587,10 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
                         : null,
                     filled: true,
                     fillColor: const Color(0xFF111827),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 0,
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(color: Color(0xFF1E293B)),
@@ -502,16 +616,47 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
                   child: DropdownButton<String>(
                     value: _selectedSanction,
                     dropdownColor: const Color(0xFF0F172A),
-                    icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF94A3B8)),
-                    style: GoogleFonts.inter(color: Colors.white, fontSize: 12.5),
-                    hint: Text('Todas las sanciones', style: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 12.5)),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 18,
+                      color: Color(0xFF94A3B8),
+                    ),
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 12.5,
+                    ),
+                    hint: Text(
+                      'Todas las sanciones',
+                      style: GoogleFonts.inter(
+                        color: const Color(0xFF94A3B8),
+                        fontSize: 12.5,
+                      ),
+                    ),
                     items: const [
-                      DropdownMenuItem(value: 'TODAS', child: Text('Todas las sanciones')),
-                      DropdownMenuItem(value: RrhhSanctionTypes.verbal, child: Text('Amonestación verbal')),
-                      DropdownMenuItem(value: RrhhSanctionTypes.escrita, child: Text('Amonestación escrita')),
-                      DropdownMenuItem(value: RrhhSanctionTypes.pecuniaria, child: Text('Sanción pecuniaria')),
-                      DropdownMenuItem(value: RrhhSanctionTypes.suspension, child: Text('Suspensión sin goce')),
-                      DropdownMenuItem(value: RrhhSanctionTypes.retiro, child: Text('Retiro / Destitución')),
+                      DropdownMenuItem(
+                        value: 'TODAS',
+                        child: Text('Todas las sanciones'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhSanctionTypes.verbal,
+                        child: Text('Amonestación verbal'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhSanctionTypes.escrita,
+                        child: Text('Amonestación escrita'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhSanctionTypes.pecuniaria,
+                        child: Text('Sanción pecuniaria'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhSanctionTypes.suspension,
+                        child: Text('Suspensión sin goce'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhSanctionTypes.retiro,
+                        child: Text('Retiro / Destitución'),
+                      ),
                     ],
                     onChanged: (val) {
                       if (val != null) setState(() => _selectedSanction = val);
@@ -533,14 +678,39 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
                   child: DropdownButton<String>(
                     value: _selectedFaultType,
                     dropdownColor: const Color(0xFF0F172A),
-                    icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF94A3B8)),
-                    style: GoogleFonts.inter(color: Colors.white, fontSize: 12.5),
-                    hint: Text('Todas las faltas', style: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 12.5)),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 18,
+                      color: Color(0xFF94A3B8),
+                    ),
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 12.5,
+                    ),
+                    hint: Text(
+                      'Todas las faltas',
+                      style: GoogleFonts.inter(
+                        color: const Color(0xFF94A3B8),
+                        fontSize: 12.5,
+                      ),
+                    ),
                     items: const [
-                      DropdownMenuItem(value: 'TODOS', child: Text('Todas las faltas')),
-                      DropdownMenuItem(value: RrhhFaultTypes.leve, child: Text('Falta Leve')),
-                      DropdownMenuItem(value: RrhhFaultTypes.grave, child: Text('Falta Grave')),
-                      DropdownMenuItem(value: RrhhFaultTypes.gravisima, child: Text('Falta Gravísima')),
+                      DropdownMenuItem(
+                        value: 'TODOS',
+                        child: Text('Todas las faltas'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhFaultTypes.leve,
+                        child: Text('Falta Leve'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhFaultTypes.grave,
+                        child: Text('Falta Grave'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhFaultTypes.gravisima,
+                        child: Text('Falta Gravísima'),
+                      ),
                     ],
                     onChanged: (val) {
                       if (val != null) setState(() => _selectedFaultType = val);
@@ -557,14 +727,26 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
                   height: 38,
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    color: _selectedDateRange != null ? const Color(0xFF2563EB).withValues(alpha: 0.15) : const Color(0xFF111827),
+                    color: _selectedDateRange != null
+                        ? const Color(0xFF2563EB).withValues(alpha: 0.15)
+                        : const Color(0xFF111827),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: _selectedDateRange != null ? const Color(0xFF2563EB) : const Color(0xFF1E293B)),
+                    border: Border.all(
+                      color: _selectedDateRange != null
+                          ? const Color(0xFF2563EB)
+                          : const Color(0xFF1E293B),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.date_range, size: 16, color: _selectedDateRange != null ? const Color(0xFF38BDF8) : const Color(0xFF94A3B8)),
+                      Icon(
+                        Icons.date_range,
+                        size: 16,
+                        color: _selectedDateRange != null
+                            ? const Color(0xFF38BDF8)
+                            : const Color(0xFF94A3B8),
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         _selectedDateRange != null
@@ -572,14 +754,21 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
                             : 'Rango de fechas',
                         style: GoogleFonts.inter(
                           fontSize: 12.5,
-                          color: _selectedDateRange != null ? Colors.white : const Color(0xFF94A3B8),
+                          color: _selectedDateRange != null
+                              ? Colors.white
+                              : const Color(0xFF94A3B8),
                         ),
                       ),
                       if (_selectedDateRange != null) ...[
                         const SizedBox(width: 6),
                         GestureDetector(
-                          onTap: () => setState(() => _selectedDateRange = null),
-                          child: const Icon(Icons.close, size: 14, color: Color(0xFF94A3B8)),
+                          onTap: () =>
+                              setState(() => _selectedDateRange = null),
+                          child: const Icon(
+                            Icons.close,
+                            size: 14,
+                            color: Color(0xFF94A3B8),
+                          ),
                         ),
                       ],
                     ],
@@ -594,7 +783,10 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
                   label: const Text('Limpiar'),
                   style: TextButton.styleFrom(
                     foregroundColor: const Color(0xFFEF4444),
-                    textStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+                    textStyle: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
             ],
@@ -606,11 +798,20 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
             children: [
               _buildFilterChip('Todos ($total)', 'TODOS'),
               const SizedBox(width: 6),
-              _buildFilterChip('Sancionadas ($active)', RrhhDisciplinaryStatus.sancionada),
+              _buildFilterChip(
+                'Sancionadas ($active)',
+                RrhhDisciplinaryStatus.sancionada,
+              ),
               const SizedBox(width: 6),
-              _buildFilterChip('En descargo ($inProgress)', RrhhDisciplinaryStatus.enDescargo),
+              _buildFilterChip(
+                'En descargo ($inProgress)',
+                RrhhDisciplinaryStatus.enDescargo,
+              ),
               const SizedBox(width: 6),
-              _buildFilterChip('Cerradas ($archived)', RrhhDisciplinaryStatus.cerrada),
+              _buildFilterChip(
+                'Cerradas ($archived)',
+                RrhhDisciplinaryStatus.cerrada,
+              ),
             ],
           ),
         ],
@@ -626,10 +827,14 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2563EB).withValues(alpha: 0.15) : const Color(0xFF111827),
+          color: isSelected
+              ? const Color(0xFF2563EB).withValues(alpha: 0.15)
+              : const Color(0xFF111827),
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF1E293B),
+            color: isSelected
+                ? const Color(0xFF2563EB)
+                : const Color(0xFF1E293B),
           ),
         ),
         child: Text(
@@ -637,7 +842,9 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-            color: isSelected ? const Color(0xFF60A5FA) : const Color(0xFF94A3B8),
+            color: isSelected
+                ? const Color(0xFF60A5FA)
+                : const Color(0xFF94A3B8),
           ),
         ),
       ),
@@ -701,11 +908,11 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
   }
 
   TextStyle get _headerStyle => GoogleFonts.inter(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        color: const Color(0xFF64748B),
-        letterSpacing: 0.5,
-      );
+    fontSize: 11,
+    fontWeight: FontWeight.w700,
+    color: const Color(0xFF64748B),
+    letterSpacing: 0.5,
+  );
 
   Widget _buildErrorWidget() {
     return Center(
@@ -724,7 +931,9 @@ class _RrhhDisciplinaryViewState extends State<RrhhDisciplinaryView> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadData,
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2563EB),
+              ),
               child: const Text('Reintentar'),
             ),
           ],

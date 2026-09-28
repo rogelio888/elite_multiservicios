@@ -266,7 +266,10 @@ void main() {
             emergencyContactRelation: 'Cónyuge',
             registeredBy: 'Admin Test',
           );
-          expect(piUpdated.fullAddress, equals('Calle Las Palmas #123, Barrio Sirari'));
+          expect(
+            piUpdated.fullAddress,
+            equals('Calle Las Palmas #123, Barrio Sirari'),
+          );
           expect(piUpdated.maritalStatus, equals('CASADO'));
           expect(piUpdated.childrenCount, equals(2));
           expect(piUpdated.emergencyContactName, equals('Laura Mendoza'));
@@ -281,7 +284,8 @@ void main() {
             baseSalary: 4200.0,
             contractStartDate: contractStart,
             contractEndDate: null,
-            contractSignedPdfUrl: 'https://storage.example.com/contracts/EMP-999.pdf',
+            contractSignedPdfUrl:
+                'https://storage.example.com/contracts/EMP-999.pdf',
             bonuses: [
               RrhhEmployeeBonus(
                 code: 'BON-001',
@@ -298,7 +302,8 @@ void main() {
                 amount: 50.0,
               ),
             ],
-            justification: 'Modificación contractual debidamente aprobada por Gerencia General',
+            justification:
+                'Modificación contractual debidamente aprobada por Gerencia General',
             registeredBy: 'Admin Test',
           );
           expect(cUpdated.contractType, equals('PLAZO_FIJO'));
@@ -367,10 +372,15 @@ void main() {
             ],
             registeredBy: 'Admin Test',
           );
-          expect(docUpdated.documentChecklist?.any((d) => d.code == 'CI'), isTrue);
+          expect(
+            docUpdated.documentChecklist?.any((d) => d.code == 'CI'),
+            isTrue,
+          );
 
           // 9. getEmployeeContractData
-          final contractData = await personnelRepo.getEmployeeContractData(empId);
+          final contractData = await personnelRepo.getEmployeeContractData(
+            empId,
+          );
           expect(contractData.employeeId, equals(empId));
           expect(contractData.code, equals(employee.code));
           expect(contractData.baseSalary, isNull); // Enmascarado sin permiso
@@ -379,14 +389,32 @@ void main() {
 
           // 10. Verificar que cada operación registró un evento en la línea de tiempo
           final events = await personnelRepo.listTimelineEvents(empId);
-          expect(events.any((e) => e.title.contains('datos bancarios')), isTrue);
-          expect(events.any((e) => e.title.contains('seguridad social')), isTrue);
-          expect(events.any((e) => e.title.contains('datos personales')), isTrue);
-          expect(events.any((e) => e.title.contains('datos contractuales')), isTrue);
+          expect(
+            events.any((e) => e.title.contains('datos bancarios')),
+            isTrue,
+          );
+          expect(
+            events.any((e) => e.title.contains('seguridad social')),
+            isTrue,
+          );
+          expect(
+            events.any((e) => e.title.contains('datos personales')),
+            isTrue,
+          );
+          expect(
+            events.any((e) => e.title.contains('datos contractuales')),
+            isTrue,
+          );
           expect(events.any((e) => e.title.contains('bonificaciones')), isTrue);
           expect(events.any((e) => e.title.contains('deducciones')), isTrue);
-          expect(events.any((e) => e.title.contains('asignación organizacional')), isTrue);
-          expect(events.any((e) => e.title.contains('checklist documental')), isTrue);
+          expect(
+            events.any((e) => e.title.contains('asignación organizacional')),
+            isTrue,
+          );
+          expect(
+            events.any((e) => e.title.contains('checklist documental')),
+            isTrue,
+          );
         },
       );
     },

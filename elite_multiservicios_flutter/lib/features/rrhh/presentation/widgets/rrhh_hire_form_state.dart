@@ -89,9 +89,12 @@ class RrhhHireFormState {
     phone = applicant.phone;
     address = applicant.address ?? '';
     birthDate = applicant.birthDate;
-    personalReference = applicant.referencePerson ?? applicant.emergencyContact ?? '';
+    personalReference =
+        applicant.referencePerson ?? applicant.emergencyContact ?? '';
     referencePhone = applicant.referencePhone ?? applicant.emergencyPhone ?? '';
-    employeeType = applicant.targetType.isNotEmpty ? applicant.targetType : 'CAMPO';
+    employeeType = applicant.targetType.isNotEmpty
+        ? applicant.targetType
+        : 'CAMPO';
     applyTypeDefaults();
 
     if (applicant.expectedSalary != null && applicant.expectedSalary! > 0) {
@@ -106,21 +109,28 @@ class RrhhHireFormState {
       hasPhoto3x4 = companion.documents.hasPhoto3x4;
       hasSusInsurance = companion.documents.hasSus;
 
-      if (companion.evaluation.salaryExpectation != null && companion.evaluation.salaryExpectation! > 0) {
+      if (companion.evaluation.salaryExpectation != null &&
+          companion.evaluation.salaryExpectation! > 0) {
         agreedSalary = companion.evaluation.salaryExpectation!;
       }
-      if (companion.evaluation.experienceSummary != null && companion.evaluation.experienceSummary!.isNotEmpty) {
+      if (companion.evaluation.experienceSummary != null &&
+          companion.evaluation.experienceSummary!.isNotEmpty) {
         occupation = companion.evaluation.experienceSummary!;
       }
     }
 
     if (availableAreas != null && applicant.targetArea != null) {
-      final match = availableAreas.where((a) => a.name == applicant.targetArea || a.id == applicant.areaId);
+      final match = availableAreas.where(
+        (a) => a.name == applicant.targetArea || a.id == applicant.areaId,
+      );
       if (match.isNotEmpty) selectedArea = match.first;
     }
 
     if (availablePositions != null && applicant.targetPosition != null) {
-      final match = availablePositions.where((p) => p.name == applicant.targetPosition || p.id == applicant.positionId);
+      final match = availablePositions.where(
+        (p) =>
+            p.name == applicant.targetPosition || p.id == applicant.positionId,
+      );
       if (match.isNotEmpty) {
         selectedPosition = match.first;
         if (selectedPosition?.suggestedSalary != null && agreedSalary <= 0) {
@@ -130,7 +140,9 @@ class RrhhHireFormState {
     }
 
     if (availableSpecialties != null && applicant.specialty != null) {
-      final match = availableSpecialties.where((s) => s.name == applicant.specialty || s.id == applicant.specialtyId);
+      final match = availableSpecialties.where(
+        (s) => s.name == applicant.specialty || s.id == applicant.specialtyId,
+      );
       if (match.isNotEmpty) selectedSpecialty = match.first;
     }
   }
@@ -143,7 +155,9 @@ class RrhhHireFormState {
 
   /// Validación Paso 1 según tipo de trabajador
   bool isStep1Valid() {
-    if (selectedArea == null || selectedPosition == null || selectedSchedule == null) {
+    if (selectedArea == null ||
+        selectedPosition == null ||
+        selectedSchedule == null) {
       return false;
     }
     if (supervisor.trim().isEmpty) return false;
@@ -195,7 +209,11 @@ class RrhhHireFormState {
     if (referencePhone.trim().isEmpty) return false;
 
     // Los 5 documentos base son obligatorios siempre
-    if (!hasCiCopy || !hasUtilityBill || !hasHomeSketch || !hasPhoto3x4 || !hasSusInsurance) {
+    if (!hasCiCopy ||
+        !hasUtilityBill ||
+        !hasHomeSketch ||
+        !hasPhoto3x4 ||
+        !hasSusInsurance) {
       return false;
     }
 
@@ -210,10 +228,14 @@ class RrhhHireFormState {
   /// Construye el objeto [RrhhEmployee] según el contrato de datos.
   RrhhEmployee buildEmployee({int? applicantId}) {
     final now = DateTime.now();
-    final workplaceDefault = employeeType == 'OFICINA' ? 'Oficina Central (Equipetrol)' : 'Sede Cliente Asignada';
+    final workplaceDefault = employeeType == 'OFICINA'
+        ? 'Oficina Central (Equipetrol)'
+        : 'Sede Cliente Asignada';
     final supervisorValue = supervisor.trim().isNotEmpty
         ? supervisor.trim()
-        : (employeeType == 'OFICINA' ? 'Lic. Laura Mendoza' : 'Ricardo Montaño');
+        : (employeeType == 'OFICINA'
+              ? 'Lic. Laura Mendoza'
+              : 'Ricardo Montaño');
 
     return RrhhEmployee(
       code: '',
@@ -223,7 +245,9 @@ class RrhhHireFormState {
       identityCard: identityCard.trim(),
       phone: phone.trim(),
       address: address.trim(),
-      occupation: occupation.isNotEmpty ? occupation : (selectedPosition?.name ?? 'Operario'),
+      occupation: occupation.isNotEmpty
+          ? occupation
+          : (selectedPosition?.name ?? 'Operario'),
       personalReference: personalReference.trim(),
       referencePhone: referencePhone.trim(),
       employeeType: employeeType,
@@ -231,7 +255,9 @@ class RrhhHireFormState {
       areaId: selectedArea?.id,
       position: selectedPosition?.name ?? 'Operario',
       positionId: selectedPosition?.id,
-      specialty: selectedSpecialty?.name ?? (employeeType == 'OFICINA' ? 'Administración' : 'General'),
+      specialty:
+          selectedSpecialty?.name ??
+          (employeeType == 'OFICINA' ? 'Administración' : 'General'),
       specialtyId: selectedSpecialty?.id,
       workplace: workplaceDefault,
       supervisor: supervisorValue,

@@ -33,8 +33,10 @@ class RrhhVacationDetailDrawer extends StatefulWidget {
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 250),
       transitionBuilder: (ctx, a1, _, child) => SlideTransition(
-        position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
-            .animate(CurvedAnimation(parent: a1, curve: Curves.easeOutCubic)),
+        position: Tween<Offset>(
+          begin: const Offset(1, 0),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(parent: a1, curve: Curves.easeOutCubic)),
         child: child,
       ),
       pageBuilder: (ctx, _, _) => Align(
@@ -51,7 +53,8 @@ class RrhhVacationDetailDrawer extends StatefulWidget {
   }
 
   @override
-  State<RrhhVacationDetailDrawer> createState() => _RrhhVacationDetailDrawerState();
+  State<RrhhVacationDetailDrawer> createState() =>
+      _RrhhVacationDetailDrawerState();
 }
 
 class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
@@ -127,7 +130,10 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
         RrhhVacationRecordStatus.enCurso,
       );
       if (!mounted) return;
-      RrhhSnackBar.showSuccess(context, 'Período ${_record!.code} iniciado y marcado en curso.');
+      RrhhSnackBar.showSuccess(
+        context,
+        'Período ${_record!.code} iniciado y marcado en curso.',
+      );
       widget.onModified?.call();
       await _loadData();
     } catch (e) {
@@ -148,7 +154,10 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
         RrhhVacationRecordStatus.gozado,
       );
       if (!mounted) return;
-      RrhhSnackBar.showSuccess(context, 'Período ${_record!.code} finalizado y computado como gozado.');
+      RrhhSnackBar.showSuccess(
+        context,
+        'Período ${_record!.code} finalizado y computado como gozado.',
+      );
       widget.onModified?.call();
       await _loadData();
     } catch (e) {
@@ -218,7 +227,10 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
                 style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
                 decoration: InputDecoration(
                   hintText: 'Motivo de la cancelación...',
-                  hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+                  hintStyle: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    color: const Color(0xFF64748B),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFF111827),
                   border: OutlineInputBorder(
@@ -239,7 +251,10 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('Cerrar', style: GoogleFonts.inter(color: const Color(0xFF94A3B8))),
+            child: Text(
+              'Cerrar',
+              style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -251,7 +266,10 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
                 Navigator.of(ctx).pop(true);
               }
             },
-            child: Text('Confirmar Cancelación', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+            child: Text(
+              'Confirmar Cancelación',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),
@@ -310,10 +328,12 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
         ],
       ),
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFF2563EB)),
+            )
           : _errorMessage != null
-              ? _buildErrorWidget()
-              : _buildContent(),
+          ? _buildErrorWidget()
+          : _buildContent(),
     );
   }
 
@@ -333,7 +353,9 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _loadData,
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2563EB),
+            ),
             child: const Text('Reintentar'),
           ),
         ],
@@ -384,7 +406,8 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
         ),
 
         // 3. Footer de Acciones
-        if (isProgramado || isEnCurso) _buildFooterActions(isProgramado, isEnCurso),
+        if (isProgramado || isEnCurso)
+          _buildFooterActions(isProgramado, isEnCurso),
       ],
     );
   }
@@ -487,7 +510,11 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
           ),
           if (emp != null)
             IconButton(
-              icon: const Icon(Icons.open_in_new, size: 16, color: Color(0xFF60A5FA)),
+              icon: const Icon(
+                Icons.open_in_new,
+                size: 16,
+                color: Color(0xFF60A5FA),
+              ),
               tooltip: 'Ver expediente completo',
               onPressed: () {
                 RrhhEmployeeDetailDialog.show(context, emp.id ?? 0);
@@ -551,7 +578,9 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
               Expanded(
                 child: _buildDetailTile(
                   'Modo de Cómputo',
-                  rec.countingMode == 'habiles' ? 'Hábiles (L-V)' : 'Calendario',
+                  rec.countingMode == 'habiles'
+                      ? 'Hábiles (L-V)'
+                      : 'Calendario',
                   Icons.view_week_outlined,
                 ),
               ),
@@ -597,7 +626,10 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
     );
   }
 
-  Widget _buildBalanceImpactCard(RrhhVacationRecord rec, RrhhVacationBalance bal) {
+  Widget _buildBalanceImpactCard(
+    RrhhVacationRecord rec,
+    RrhhVacationBalance bal,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -627,9 +659,21 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildMiniMetric('Asignados', '${bal.assignedDays} d', const Color(0xFF38BDF8)),
-              _buildMiniMetric('Gozados acumulados', '${bal.usedDays} d', const Color(0xFF94A3B8)),
-              _buildMiniMetric('Saldo pendiente', '${bal.pendingDays} d', const Color(0xFF10B981)),
+              _buildMiniMetric(
+                'Asignados',
+                '${bal.assignedDays} d',
+                const Color(0xFF38BDF8),
+              ),
+              _buildMiniMetric(
+                'Gozados acumulados',
+                '${bal.usedDays} d',
+                const Color(0xFF94A3B8),
+              ),
+              _buildMiniMetric(
+                'Saldo pendiente',
+                '${bal.pendingDays} d',
+                const Color(0xFF10B981),
+              ),
             ],
           ),
         ],
@@ -643,12 +687,19 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
       children: [
         Text(
           label,
-          style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF94A3B8)),
+          style: GoogleFonts.inter(
+            fontSize: 11,
+            color: const Color(0xFF94A3B8),
+          ),
         ),
         const SizedBox(height: 2),
         Text(
           value,
-          style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color),
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
         ),
       ],
     );
@@ -679,10 +730,14 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
           ),
           const SizedBox(height: 8),
           Text(
-            hasNotes ? rec.notes! : 'Sin observaciones registradas para este período.',
+            hasNotes
+                ? rec.notes!
+                : 'Sin observaciones registradas para este período.',
             style: GoogleFonts.inter(
               fontSize: 12.5,
-              color: hasNotes ? const Color(0xFFE2E8F0) : const Color(0xFF64748B),
+              color: hasNotes
+                  ? const Color(0xFFE2E8F0)
+                  : const Color(0xFF64748B),
               height: 1.4,
             ),
           ),
@@ -730,9 +785,17 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
               foregroundColor: const Color(0xFFEF4444),
               side: const BorderSide(color: Color(0xFF7F1D1D)),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-            child: Text('Cancelar Goce', style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600)),
+            child: Text(
+              'Cancelar Goce',
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
           const SizedBox(width: 8),
           if (isProgramado) ...[
@@ -741,10 +804,21 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF60A5FA),
                 side: const BorderSide(color: Color(0xFF2563EB)),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
-              child: Text('Editar', style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600)),
+              child: Text(
+                'Editar',
+                style: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
             const SizedBox(width: 8),
             ElevatedButton(
@@ -752,12 +826,30 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF10B981),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: _isActionRunning
-                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : Text('Iniciar Goce', style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(
+                      'Iniciar Goce',
+                      style: GoogleFonts.inter(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
             ),
           ],
           if (isEnCurso) ...[
@@ -766,12 +858,30 @@ class _RrhhVacationDetailDrawerState extends State<RrhhVacationDetailDrawer> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: _isActionRunning
-                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : Text('Finalizar Goce (Gozado)', style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(
+                      'Finalizar Goce (Gozado)',
+                      style: GoogleFonts.inter(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
             ),
           ],
         ],

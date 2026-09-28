@@ -43,12 +43,23 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
   }
 
   Future<void> loadApplicants() async {
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
       final list = await RrhhRepository.current.listApplicants();
-      if (mounted) setState(() { _allApplicants = list; _isLoading = false; });
+      if (mounted)
+        setState(() {
+          _allApplicants = list;
+          _isLoading = false;
+        });
     } catch (e) {
-      if (mounted) setState(() { _errorMessage = 'Error al cargar postulantes: $e'; _isLoading = false; });
+      if (mounted)
+        setState(() {
+          _errorMessage = 'Error al cargar postulantes: $e';
+          _isLoading = false;
+        });
     }
   }
 
@@ -73,7 +84,10 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
     await loadApplicants();
   }
 
-  Future<void> _onApplicantDropped(RrhhApplicantSummaryDto applicant, String targetStage) async {
+  Future<void> _onApplicantDropped(
+    RrhhApplicantSummaryDto applicant,
+    String targetStage,
+  ) async {
     if (applicant.status.toUpperCase() == targetStage) return;
 
     if (targetStage == 'RECHAZADO') {
@@ -118,7 +132,10 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
 
     // 2. Persistencia en segundo plano
     try {
-      await RrhhRepository.current.updateApplicantStatus(applicant.id, targetStage);
+      await RrhhRepository.current.updateApplicantStatus(
+        applicant.id,
+        targetStage,
+      );
       final freshList = await RrhhRepository.current.listApplicants();
       if (mounted) {
         setState(() => _allApplicants = freshList);
@@ -142,7 +159,10 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
   @override
   Widget build(BuildContext context) {
     if (_errorMessage != null) {
-      return RrhhErrorState(errorMessage: _errorMessage, onRetry: loadApplicants);
+      return RrhhErrorState(
+        errorMessage: _errorMessage,
+        onRetry: loadApplicants,
+      );
     }
 
     final filtered = _allApplicants.where((a) {
@@ -191,7 +211,9 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
               style: GoogleFonts.inter(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                color: isDark
+                    ? const Color(0xFFF8FAFC)
+                    : const Color(0xFF0F172A),
                 letterSpacing: -0.3,
               ),
             ),
@@ -200,7 +222,9 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
               'Tablero Kanban de candidatos, evaluación de aptitudes y preselección de colaboradores',
               style: GoogleFonts.inter(
                 fontSize: 12,
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -226,7 +250,11 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
           decoration: InputDecoration(
             hintText: 'Buscar por nombre, código o cargo aspirado...',
             hintStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 12),
-            prefixIcon: const Icon(Icons.search, size: 16, color: Color(0xFF64748B)),
+            prefixIcon: const Icon(
+              Icons.search,
+              size: 16,
+              color: Color(0xFF64748B),
+            ),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 8),
             filled: true,

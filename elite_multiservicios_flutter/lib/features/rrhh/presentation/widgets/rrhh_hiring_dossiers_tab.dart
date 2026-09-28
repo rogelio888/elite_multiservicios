@@ -185,8 +185,9 @@ class _RrhhHiringDossiersTabState extends State<RrhhHiringDossiersTab> {
             foregroundColor: const Color(0xFF94A3B8),
             side: const BorderSide(color: Color(0xFF1E293B)),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
         ),
       ],
@@ -255,9 +256,9 @@ class _RrhhHiringDossiersTabState extends State<RrhhHiringDossiersTab> {
           ...filters.map((filter) {
             final isSelected = filter == 'TODOS'
                 ? (_selectedStatusFilter == null ||
-                    _selectedStatusFilter!.isEmpty)
+                      _selectedStatusFilter!.isEmpty)
                 : (_selectedStatusFilter?.toLowerCase() ==
-                    filter.toLowerCase());
+                      filter.toLowerCase());
 
             return FilterChip(
               selected: isSelected,
@@ -291,7 +292,10 @@ class _RrhhHiringDossiersTabState extends State<RrhhHiringDossiersTab> {
     );
   }
 
-  Widget _buildTableContainer(List<RrhhHiringDossier> items, double tableWidth) {
+  Widget _buildTableContainer(
+    List<RrhhHiringDossier> items,
+    double tableWidth,
+  ) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -500,8 +504,9 @@ class _DossierTableRowState extends State<_DossierTableRow> {
                   children: [
                     CircleAvatar(
                       radius: 13,
-                      backgroundColor:
-                          const Color(0xFF2563EB).withValues(alpha: 0.15),
+                      backgroundColor: const Color(
+                        0xFF2563EB,
+                      ).withValues(alpha: 0.15),
                       child: Text(
                         d.applicantName.isNotEmpty
                             ? d.applicantName[0].toUpperCase()
@@ -643,7 +648,9 @@ class _DossierTableRowState extends State<_DossierTableRow> {
                         backgroundColor: const Color(0xFF2563EB),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 7),
+                          horizontal: 10,
+                          vertical: 7,
+                        ),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         shape: RoundedRectangleBorder(
@@ -661,7 +668,10 @@ class _DossierTableRowState extends State<_DossierTableRow> {
                     const SizedBox(width: 4),
                     PopupMenuButton<String>(
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
                       icon: const Icon(
                         Icons.more_vert,
                         size: 16,

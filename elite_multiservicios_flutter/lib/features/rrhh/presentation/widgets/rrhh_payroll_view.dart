@@ -25,7 +25,8 @@ class RrhhPayrollView extends StatefulWidget {
   State<RrhhPayrollView> createState() => _RrhhPayrollViewState();
 }
 
-class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProviderStateMixin {
+class _RrhhPayrollViewState extends State<RrhhPayrollView>
+    with SingleTickerProviderStateMixin {
   late final RrhhRepository _repo;
 
   bool _isLoading = true;
@@ -40,7 +41,8 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
 
   // Búsqueda y filtro de impacto
   final _searchController = TextEditingController();
-  String _selectedImpactFilter = 'todos'; // 'todos' | 'descuento' | 'pago_extra' | 'sin_impacto'
+  String _selectedImpactFilter =
+      'todos'; // 'todos' | 'descuento' | 'pago_extra' | 'sin_impacto'
 
   @override
   void initState() {
@@ -151,14 +153,29 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
         ),
         title: Row(
           children: [
-            const Icon(Icons.lock_outline_rounded, color: Color(0xFFA855F7), size: 22),
+            const Icon(
+              Icons.lock_outline_rounded,
+              color: Color(0xFFA855F7),
+              size: 22,
+            ),
             const SizedBox(width: 10),
-            Text('Cerrar Período de Nómina', style: GoogleFonts.inter(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+            Text(
+              'Cerrar Período de Nómina',
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ],
         ),
         content: Text(
           '¿Está seguro de cerrar el período ${_selectedPeriod!.displayName}? Una vez cerrado no se podrán agregar más novedades hasta su reapertura y quedará listo para su remisión a Contabilidad.',
-          style: GoogleFonts.inter(color: const Color(0xFFCBD5E1), fontSize: 13, height: 1.4),
+          style: GoogleFonts.inter(
+            color: const Color(0xFFCBD5E1),
+            fontSize: 13,
+            height: 1.4,
+          ),
         ),
         actions: [
           OutlinedButton(
@@ -175,7 +192,13 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
               backgroundColor: const Color(0xFFA855F7),
               foregroundColor: Colors.white,
             ),
-            child: Text('Confirmar Cierre', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
+            child: Text(
+              'Confirmar Cierre',
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -187,7 +210,10 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
         _selectedPeriod = updated;
         await _loadData();
         if (mounted) {
-          RrhhSnackBar.showSuccess(context, 'Período ${updated.code} cerrado exitosamente.');
+          RrhhSnackBar.showSuccess(
+            context,
+            'Período ${updated.code} cerrado exitosamente.',
+          );
         }
       } catch (e) {
         if (mounted) {
@@ -201,7 +227,10 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
     if (_selectedPeriod == null) return;
 
     if (_selectedPeriod!.isOpen) {
-      RrhhSnackBar.showWarning(context, 'Debe cerrar el período antes de poder remitirlo a Contabilidad.');
+      RrhhSnackBar.showWarning(
+        context,
+        'Debe cerrar el período antes de poder remitirlo a Contabilidad.',
+      );
       return;
     }
 
@@ -217,12 +246,23 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
           children: [
             const Icon(Icons.send_rounded, color: Color(0xFF10B981), size: 22),
             const SizedBox(width: 10),
-            Text('Enviar Novedades a Contabilidad', style: GoogleFonts.inter(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+            Text(
+              'Enviar Novedades a Contabilidad',
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ],
         ),
         content: Text(
           '¿Desea remitir formalmente el consolidado de ${_selectedPeriod!.displayName} al departamento contable? Las novedades pasarán al estado "Enviado" para su liquidación.',
-          style: GoogleFonts.inter(color: const Color(0xFFCBD5E1), fontSize: 13, height: 1.4),
+          style: GoogleFonts.inter(
+            color: const Color(0xFFCBD5E1),
+            fontSize: 13,
+            height: 1.4,
+          ),
         ),
         actions: [
           OutlinedButton(
@@ -239,7 +279,13 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
               backgroundColor: const Color(0xFF10B981),
               foregroundColor: Colors.white,
             ),
-            child: Text('Remitir a Contabilidad', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
+            child: Text(
+              'Remitir a Contabilidad',
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -247,7 +293,9 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
 
     if (confirmed == true) {
       try {
-        final updated = await _repo.sendPayrollPeriodToAccounting(_selectedPeriod!.id);
+        final updated = await _repo.sendPayrollPeriodToAccounting(
+          _selectedPeriod!.id,
+        );
         _selectedPeriod = updated;
         await _loadData();
         if (mounted) {
@@ -258,7 +306,10 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
         }
       } catch (e) {
         if (mounted) {
-          RrhhSnackBar.showError(context, 'Error al remitir a contabilidad: $e');
+          RrhhSnackBar.showError(
+            context,
+            'Error al remitir a contabilidad: $e',
+          );
         }
       }
     }
@@ -268,7 +319,10 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
     if (_selectedPeriod == null) return;
 
     try {
-      final content = await _repo.exportPayrollPeriod(_selectedPeriod!.id, format);
+      final content = await _repo.exportPayrollPeriod(
+        _selectedPeriod!.id,
+        format,
+      );
       if (mounted) {
         final formatUpper = format.toUpperCase();
         RrhhSnackBar.showSuccess(
@@ -294,9 +348,20 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
         ),
         title: Row(
           children: [
-            const Icon(Icons.history_rounded, color: Color(0xFF60A5FA), size: 22),
+            const Icon(
+              Icons.history_rounded,
+              color: Color(0xFF60A5FA),
+              size: 22,
+            ),
             const SizedBox(width: 10),
-            Text('Historial de Períodos de Nómina', style: GoogleFonts.inter(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+            Text(
+              'Historial de Períodos de Nómina',
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ],
         ),
         content: SizedBox(
@@ -318,19 +383,39 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(p.displayName, style: GoogleFonts.inter(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
-                        Text(p.code, style: GoogleFonts.jetBrainsMono(color: const Color(0xFF94A3B8), fontSize: 11)),
+                        Text(
+                          p.displayName,
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          p.code,
+                          style: GoogleFonts.jetBrainsMono(
+                            color: const Color(0xFF94A3B8),
+                            fontSize: 11,
+                          ),
+                        ),
                       ],
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF2563EB).withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         RrhhPayrollPeriodStatus.label(p.status),
-                        style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: const Color(0xFF60A5FA)),
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF60A5FA),
+                        ),
                       ),
                     ),
                   ],
@@ -377,12 +462,14 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
     }
 
     return _allItems.where((item) {
-      if (requiredSource != null && item.sourceType.toLowerCase() != requiredSource.toLowerCase()) {
+      if (requiredSource != null &&
+          item.sourceType.toLowerCase() != requiredSource.toLowerCase()) {
         return false;
       }
 
       if (_selectedImpactFilter != 'todos') {
-        if (item.impactType.toLowerCase() != _selectedImpactFilter.toLowerCase()) {
+        if (item.impactType.toLowerCase() !=
+            _selectedImpactFilter.toLowerCase()) {
           return false;
         }
       }
@@ -392,7 +479,8 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
         final matchCode = item.employeeCode.toLowerCase().contains(search);
         final matchSource = item.sourceCode.toLowerCase().contains(search);
         final matchDesc = item.description.toLowerCase().contains(search);
-        if (!matchName && !matchCode && !matchSource && !matchDesc) return false;
+        if (!matchName && !matchCode && !matchSource && !matchDesc)
+          return false;
       }
 
       return true;
@@ -412,9 +500,15 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
           children: [
             const Icon(Icons.error_outline, size: 40, color: Color(0xFFEF4444)),
             const SizedBox(height: 12),
-            Text(_errorMessage!, style: GoogleFonts.inter(color: Colors.white, fontSize: 14)),
+            Text(
+              _errorMessage!,
+              style: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+            ),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _loadData, child: const Text('Reintentar')),
+            ElevatedButton(
+              onPressed: _loadData,
+              child: const Text('Reintentar'),
+            ),
           ],
         ),
       );
@@ -426,7 +520,9 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
       builder: (context, constraints) {
         const minTableWidth = 980.0;
         final contentWidth = constraints.maxWidth - 48.0;
-        final tableWidth = contentWidth > minTableWidth ? contentWidth : minTableWidth;
+        final tableWidth = contentWidth > minTableWidth
+            ? contentWidth
+            : minTableWidth;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -469,8 +565,7 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
               const SizedBox(height: 16),
 
               // Acciones del período (Footer)
-              if (_selectedPeriod != null)
-                _buildPeriodActionsFooter(),
+              if (_selectedPeriod != null) _buildPeriodActionsFooter(),
             ],
           ),
         );
@@ -513,16 +608,27 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
       child: Center(
         child: Column(
           children: [
-            const Icon(Icons.receipt_long_outlined, size: 36, color: Color(0xFF64748B)),
+            const Icon(
+              Icons.receipt_long_outlined,
+              size: 36,
+              color: Color(0xFF64748B),
+            ),
             const SizedBox(height: 10),
             Text(
               'No existen períodos de nómina registrados todavía.',
-              style: GoogleFonts.inter(color: Colors.white, fontSize: 13.5, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: 13.5,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
               'Haga clic en "+ Nuevo Período" para iniciar la consolidación mensual de novedades.',
-              style: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 12),
+              style: GoogleFonts.inter(
+                color: const Color(0xFF94A3B8),
+                fontSize: 12,
+              ),
             ),
             const SizedBox(height: 12),
             ElevatedButton(
@@ -542,10 +648,18 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
   Widget _buildFilterTabsAndSearch() {
     // Contadores por fuente
     final countTodos = _allItems.length;
-    final countPermisos = _allItems.where((i) => i.sourceType == RrhhPayrollSourceType.permiso).length;
-    final countVacaciones = _allItems.where((i) => i.sourceType == RrhhPayrollSourceType.vacacion).length;
-    final countIncidencias = _allItems.where((i) => i.sourceType == RrhhPayrollSourceType.incidencia).length;
-    final countBajas = _allItems.where((i) => i.sourceType == RrhhPayrollSourceType.desvinculacion).length;
+    final countPermisos = _allItems
+        .where((i) => i.sourceType == RrhhPayrollSourceType.permiso)
+        .length;
+    final countVacaciones = _allItems
+        .where((i) => i.sourceType == RrhhPayrollSourceType.vacacion)
+        .length;
+    final countIncidencias = _allItems
+        .where((i) => i.sourceType == RrhhPayrollSourceType.incidencia)
+        .length;
+    final countBajas = _allItems
+        .where((i) => i.sourceType == RrhhPayrollSourceType.desvinculacion)
+        .length;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -569,14 +683,23 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
             ),
             labelColor: Colors.white,
             unselectedLabelColor: const Color(0xFF94A3B8),
-            labelStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
-            unselectedLabelStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500),
+            labelStyle: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+            unselectedLabelStyle: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
             padding: EdgeInsets.zero,
             tabs: [
               Tab(height: 32, child: Text('1. Todos ($countTodos)')),
               Tab(height: 32, child: Text('2. Permisos ($countPermisos)')),
               Tab(height: 32, child: Text('3. Vacaciones ($countVacaciones)')),
-              Tab(height: 32, child: Text('4. Incidencias ($countIncidencias)')),
+              Tab(
+                height: 32,
+                child: Text('4. Incidencias ($countIncidencias)'),
+              ),
               Tab(height: 32, child: Text('5. Desvinculaciones ($countBajas)')),
             ],
           ),
@@ -596,11 +719,22 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
                     style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
                     decoration: InputDecoration(
                       hintText: 'Buscar por colaborador, código o detalle...',
-                      hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12),
-                      prefixIcon: const Icon(Icons.search, size: 16, color: Color(0xFF64748B)),
+                      hintStyle: GoogleFonts.inter(
+                        color: const Color(0xFF64748B),
+                        fontSize: 12,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        size: 16,
+                        color: Color(0xFF64748B),
+                      ),
                       suffixIcon: _searchController.text.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear, size: 16, color: Color(0xFF94A3B8)),
+                              icon: const Icon(
+                                Icons.clear,
+                                size: 16,
+                                color: Color(0xFF94A3B8),
+                              ),
                               onPressed: () {
                                 _searchController.clear();
                                 setState(() {});
@@ -642,16 +776,37 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
                   child: DropdownButton<String>(
                     value: _selectedImpactFilter,
                     dropdownColor: const Color(0xFF0F172A),
-                    icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF94A3B8), size: 18),
-                    style: GoogleFonts.inter(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500),
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Color(0xFF94A3B8),
+                      size: 18,
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
                     items: const [
-                      DropdownMenuItem(value: 'todos', child: Text('Impacto: Todos')),
-                      DropdownMenuItem(value: RrhhPayrollImpactType.descuento, child: Text('Solo Descuentos')),
-                      DropdownMenuItem(value: RrhhPayrollImpactType.pagoExtra, child: Text('Solo Pagos Extra / Bajas')),
-                      DropdownMenuItem(value: RrhhPayrollImpactType.sinImpacto, child: Text('Sin Impacto')),
+                      DropdownMenuItem(
+                        value: 'todos',
+                        child: Text('Impacto: Todos'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhPayrollImpactType.descuento,
+                        child: Text('Solo Descuentos'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhPayrollImpactType.pagoExtra,
+                        child: Text('Solo Pagos Extra / Bajas'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhPayrollImpactType.sinImpacto,
+                        child: Text('Sin Impacto'),
+                      ),
                     ],
                     onChanged: (val) {
-                      if (val != null) setState(() => _selectedImpactFilter = val);
+                      if (val != null)
+                        setState(() => _selectedImpactFilter = val);
                     },
                   ),
                 ),
@@ -663,7 +818,10 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
     );
   }
 
-  Widget _buildConsolidatedTableCard(List<RrhhPayrollItem> items, double tableWidth) {
+  Widget _buildConsolidatedTableCard(
+    List<RrhhPayrollItem> items,
+    double tableWidth,
+  ) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -688,16 +846,27 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.inbox_rounded, size: 36, color: Color(0xFF64748B)),
+                      const Icon(
+                        Icons.inbox_rounded,
+                        size: 36,
+                        color: Color(0xFF64748B),
+                      ),
                       const SizedBox(height: 10),
                       Text(
                         'No se encontraron novedades para este período o filtro.',
-                        style: GoogleFonts.inter(color: Colors.white, fontSize: 13.5, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Intente cambiando el término de búsqueda o seleccione otra categoría.',
-                        style: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 12),
+                        style: GoogleFonts.inter(
+                          color: const Color(0xFF94A3B8),
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -712,10 +881,15 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
 
               // Contador al pie de la tabla
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 decoration: const BoxDecoration(
                   color: Color(0xFF111827),
-                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(10),
+                  ),
                   border: Border(top: BorderSide(color: Color(0xFF1E293B))),
                 ),
                 child: Row(
@@ -723,12 +897,19 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
                   children: [
                     Text(
                       'Mostrando ${items.length} de ${_allItems.length} novedades consolidadas',
-                      style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: const Color(0xFF64748B),
+                      ),
                     ),
                     if (_selectedPeriod != null)
                       Text(
                         'Período: ${_selectedPeriod!.displayName} (${_selectedPeriod!.code})',
-                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: const Color(0xFF94A3B8)),
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF94A3B8),
+                        ),
                       ),
                   ],
                 ),
@@ -806,14 +987,17 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
   }
 
   TextStyle get _headerStyle => GoogleFonts.inter(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        color: const Color(0xFF64748B),
-        letterSpacing: 0.5,
-      );
+    fontSize: 11,
+    fontWeight: FontWeight.w700,
+    color: const Color(0xFF64748B),
+    letterSpacing: 0.5,
+  );
 
   Widget _buildPeriodActionsFooter() {
-    final isClosed = _selectedPeriod!.isClosed || _selectedPeriod!.isSent || _selectedPeriod!.isProcessed;
+    final isClosed =
+        _selectedPeriod!.isClosed ||
+        _selectedPeriod!.isSent ||
+        _selectedPeriod!.isProcessed;
     final isSent = _selectedPeriod!.isSent || _selectedPeriod!.isProcessed;
 
     return Container(
@@ -835,35 +1019,80 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
             children: [
               OutlinedButton.icon(
                 onPressed: () => _handleExport('excel'),
-                icon: const Icon(Icons.table_chart_outlined, size: 16, color: Color(0xFF10B981)),
-                label: Text('Exportar a Excel (.xlsx)', style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600)),
+                icon: const Icon(
+                  Icons.table_chart_outlined,
+                  size: 16,
+                  color: Color(0xFF10B981),
+                ),
+                label: Text(
+                  'Exportar a Excel (.xlsx)',
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFFCBD5E1),
                   side: const BorderSide(color: Color(0xFF334155)),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
               OutlinedButton.icon(
                 onPressed: () => _handleExport('csv'),
-                icon: const Icon(Icons.file_present_outlined, size: 16, color: Color(0xFF3B82F6)),
-                label: Text('Exportar a CSV', style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600)),
+                icon: const Icon(
+                  Icons.file_present_outlined,
+                  size: 16,
+                  color: Color(0xFF3B82F6),
+                ),
+                label: Text(
+                  'Exportar a CSV',
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFFCBD5E1),
                   side: const BorderSide(color: Color(0xFF334155)),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
               OutlinedButton.icon(
                 onPressed: _showHistoryDialog,
-                icon: const Icon(Icons.history_rounded, size: 16, color: Color(0xFF94A3B8)),
-                label: Text('Ver Histórico', style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600)),
+                icon: const Icon(
+                  Icons.history_rounded,
+                  size: 16,
+                  color: Color(0xFF94A3B8),
+                ),
+                label: Text(
+                  'Ver Histórico',
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFFCBD5E1),
                   side: const BorderSide(color: Color(0xFF334155)),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
             ],
@@ -877,12 +1106,28 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
               if (!isClosed)
                 OutlinedButton.icon(
                   onPressed: _handleClosePeriod,
-                  icon: const Icon(Icons.lock_outline_rounded, size: 16, color: Color(0xFFA855F7)),
-                  label: Text('Cerrar Período', style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600, color: const Color(0xFFA855F7))),
+                  icon: const Icon(
+                    Icons.lock_outline_rounded,
+                    size: 16,
+                    color: Color(0xFFA855F7),
+                  ),
+                  label: Text(
+                    'Cerrar Período',
+                    style: GoogleFonts.inter(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFA855F7),
+                    ),
+                  ),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFFA855F7)),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
 
@@ -892,15 +1137,23 @@ class _RrhhPayrollViewState extends State<RrhhPayrollView> with SingleTickerProv
                 icon: const Icon(Icons.send_rounded, size: 16),
                 label: Text(
                   isSent ? 'Remitido a Contabilidad' : 'Enviar a Contabilidad',
-                  style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF10B981),
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: const Color(0xFF1E293B),
                   disabledForegroundColor: const Color(0xFF64748B),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   elevation: 0,
                 ),
               ),

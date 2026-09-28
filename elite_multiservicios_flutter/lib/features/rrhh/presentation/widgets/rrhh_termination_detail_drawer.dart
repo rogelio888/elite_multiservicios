@@ -33,8 +33,10 @@ class RrhhTerminationDetailDrawer extends StatefulWidget {
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 250),
       transitionBuilder: (ctx, a1, _, child) => SlideTransition(
-        position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
-            .animate(CurvedAnimation(parent: a1, curve: Curves.easeOutCubic)),
+        position: Tween<Offset>(
+          begin: const Offset(1, 0),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(parent: a1, curve: Curves.easeOutCubic)),
         child: child,
       ),
       pageBuilder: (ctx, _, _) => Align(
@@ -51,10 +53,12 @@ class RrhhTerminationDetailDrawer extends StatefulWidget {
   }
 
   @override
-  State<RrhhTerminationDetailDrawer> createState() => _RrhhTerminationDetailDrawerState();
+  State<RrhhTerminationDetailDrawer> createState() =>
+      _RrhhTerminationDetailDrawerState();
 }
 
-class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawer> {
+class _RrhhTerminationDetailDrawerState
+    extends State<RrhhTerminationDetailDrawer> {
   bool _isLoading = true;
   bool _isActionRunning = false;
   String? _errorMessage;
@@ -104,7 +108,8 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
   Future<void> _handleStartProcess() async {
     final confirmed = await _confirmDialog(
       title: 'Iniciar Proceso de Baja',
-      message: '¿Desea cambiar el estado del expediente ${_record!.code} a "En Proceso"?',
+      message:
+          '¿Desea cambiar el estado del expediente ${_record!.code} a "En Proceso"?',
       actionLabel: 'Iniciar Proceso',
       actionColor: const Color(0xFFF59E0B),
     );
@@ -118,12 +123,16 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
           reason: 'Proceso formal de baja iniciado por RRHH.',
         );
         if (mounted) {
-          RrhhSnackBar.showSuccess(context, 'Expediente ${_record!.code} ahora está En Proceso.');
+          RrhhSnackBar.showSuccess(
+            context,
+            'Expediente ${_record!.code} ahora está En Proceso.',
+          );
         }
         widget.onModified?.call();
         await _loadData();
       } catch (e) {
-        if (mounted) RrhhSnackBar.showError(context, 'Error al iniciar proceso: $e');
+        if (mounted)
+          RrhhSnackBar.showError(context, 'Error al iniciar proceso: $e');
       } finally {
         if (mounted) setState(() => _isActionRunning = false);
       }
@@ -133,7 +142,8 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
   Future<void> _handleMarkPaymentCompleted() async {
     final confirmed = await _confirmDialog(
       title: 'Registrar Pago de Finiquito',
-      message: '¿Confirma que se completó el pago de liquidación/finiquito para ${_record!.employeeName} dentro del plazo legal?',
+      message:
+          '¿Confirma que se completó el pago de liquidación/finiquito para ${_record!.employeeName} dentro del plazo legal?',
       actionLabel: 'Marcar Pagado',
       actionColor: const Color(0xFF10B981),
     );
@@ -148,12 +158,16 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
           paymentCompletedAt: DateTime.now(),
         );
         if (mounted) {
-          RrhhSnackBar.showSuccess(context, 'Pago de finiquito registrado exitosamente.');
+          RrhhSnackBar.showSuccess(
+            context,
+            'Pago de finiquito registrado exitosamente.',
+          );
         }
         widget.onModified?.call();
         await _loadData();
       } catch (e) {
-        if (mounted) RrhhSnackBar.showError(context, 'Error al registrar pago: $e');
+        if (mounted)
+          RrhhSnackBar.showError(context, 'Error al registrar pago: $e');
       } finally {
         if (mounted) setState(() => _isActionRunning = false);
       }
@@ -163,7 +177,8 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
   Future<void> _handleFinalizeTermination() async {
     final confirmed = await _confirmDialog(
       title: 'Finalizar Baja Laboral',
-      message: 'ATENCIÓN: Al finalizar la baja, el colaborador ${_record!.employeeName} pasará formalmente a estado "BAJA", desaparecerá de las asignaciones operativas activas y el expediente quedará cerrado.',
+      message:
+          'ATENCIÓN: Al finalizar la baja, el colaborador ${_record!.employeeName} pasará formalmente a estado "BAJA", desaparecerá de las asignaciones operativas activas y el expediente quedará cerrado.',
       actionLabel: 'Finalizar Baja',
       actionColor: const Color(0xFF10B981),
     );
@@ -177,12 +192,16 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
           reason: 'Desvinculación y baja laboral completada definitivamente.',
         );
         if (mounted) {
-          RrhhSnackBar.showSuccess(context, 'Baja laboral completada. El colaborador pasó a estado BAJA.');
+          RrhhSnackBar.showSuccess(
+            context,
+            'Baja laboral completada. El colaborador pasó a estado BAJA.',
+          );
         }
         widget.onModified?.call();
         await _loadData();
       } catch (e) {
-        if (mounted) RrhhSnackBar.showError(context, 'Error al finalizar baja: $e');
+        if (mounted)
+          RrhhSnackBar.showError(context, 'Error al finalizar baja: $e');
       } finally {
         if (mounted) setState(() => _isActionRunning = false);
       }
@@ -203,14 +222,27 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
           children: [
             const Icon(Icons.block, color: Color(0xFFEF4444), size: 20),
             const SizedBox(width: 8),
-            Text('Cancelar Proceso de Baja', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+            Text(
+              'Cancelar Proceso de Baja',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Indique el motivo por el cual se anula la baja:', style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF94A3B8))),
+            Text(
+              'Indique el motivo por el cual se anula la baja:',
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                color: const Color(0xFF94A3B8),
+              ),
+            ),
             const SizedBox(height: 10),
             TextField(
               controller: reasonCtrl,
@@ -218,19 +250,29 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
               style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
               decoration: InputDecoration(
                 hintText: 'ej. Reincorporación por acuerdo mutuo...',
-                hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12),
+                hintStyle: GoogleFonts.inter(
+                  color: const Color(0xFF64748B),
+                  fontSize: 12,
+                ),
                 filled: true,
                 fillColor: const Color(0xFF111827),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Volver')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Volver'),
+          ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+            ),
             child: const Text('Confirmar Anulación'),
           ),
         ],
@@ -245,11 +287,13 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
           RrhhTerminationStatus.cancelada,
           reason: reasonCtrl.text.trim(),
         );
-        if (mounted) RrhhSnackBar.showInfo(context, 'Proceso de baja cancelado.');
+        if (mounted)
+          RrhhSnackBar.showInfo(context, 'Proceso de baja cancelado.');
         widget.onModified?.call();
         await _loadData();
       } catch (e) {
-        if (mounted) RrhhSnackBar.showError(context, 'Error al cancelar proceso: $e');
+        if (mounted)
+          RrhhSnackBar.showError(context, 'Error al cancelar proceso: $e');
       } finally {
         if (mounted) setState(() => _isActionRunning = false);
       }
@@ -259,7 +303,8 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
   Future<void> _handleDelete() async {
     final confirmed = await _confirmDialog(
       title: 'Eliminar Registro',
-      message: '¿Desea eliminar permanentemente el expediente ${_record!.code}? Esta acción solo está disponible en estado Registrada.',
+      message:
+          '¿Desea eliminar permanentemente el expediente ${_record!.code}? Esta acción solo está disponible en estado Registrada.',
       actionLabel: 'Eliminar',
       actionColor: const Color(0xFFEF4444),
     );
@@ -269,7 +314,10 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
       try {
         await RrhhRepository.current.deleteTerminationRecord(_record!.id);
         if (mounted) {
-          RrhhSnackBar.showSuccess(context, 'Registro ${_record!.code} eliminado.');
+          RrhhSnackBar.showSuccess(
+            context,
+            'Registro ${_record!.code} eliminado.',
+          );
           Navigator.of(context).pop(true);
         }
         widget.onModified?.call();
@@ -282,7 +330,10 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
   }
 
   Future<void> _handleEdit() async {
-    final updated = await RrhhTerminationEditDialog.show(context, record: _record);
+    final updated = await RrhhTerminationEditDialog.show(
+      context,
+      record: _record,
+    );
     if (updated == true) {
       widget.onModified?.call();
       await _loadData();
@@ -303,14 +354,37 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
           borderRadius: BorderRadius.circular(12),
           side: const BorderSide(color: Color(0xFF1E293B)),
         ),
-        title: Text(title, style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
-        content: Text(message, style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8), height: 1.4)),
+        title: Text(
+          title,
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+        content: Text(
+          message,
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            color: const Color(0xFF94A3B8),
+            height: 1.4,
+          ),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: ElevatedButton.styleFrom(backgroundColor: actionColor),
-            child: Text(actionLabel, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white)),
+            child: Text(
+              actionLabel,
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
           ),
         ],
       ),
@@ -341,8 +415,8 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _errorMessage != null
-                      ? _buildErrorWidget()
-                      : _buildDrawerBody(),
+                  ? _buildErrorWidget()
+                  : _buildDrawerBody(),
             ),
 
             // Bottom Actions Bar
@@ -372,7 +446,11 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
                     color: const Color(0xFFEF4444).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Icon(Icons.person_remove_outlined, color: Color(0xFFEF4444), size: 18),
+                  child: const Icon(
+                    Icons.person_remove_outlined,
+                    color: Color(0xFFEF4444),
+                    size: 18,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -380,13 +458,22 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _record != null ? 'Expediente ${_record!.code}' : 'Expediente de Desvinculación',
-                        style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white),
+                        _record != null
+                            ? 'Expediente ${_record!.code}'
+                            : 'Expediente de Desvinculación',
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         'Detalle integral de baja laboral y liquidación',
-                        style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF94A3B8)),
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: const Color(0xFF94A3B8),
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
@@ -476,11 +563,17 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
       decoration: BoxDecoration(
         color: const Color(0xFFEF4444).withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.4)),
+        border: Border.all(
+          color: const Color(0xFFEF4444).withValues(alpha: 0.4),
+        ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.warning_amber_rounded, color: Color(0xFFEF4444), size: 22),
+          const Icon(
+            Icons.warning_amber_rounded,
+            color: Color(0xFFEF4444),
+            size: 22,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -488,11 +581,18 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
               children: [
                 Text(
                   'ALERTA LEGAL: PLAZO DE 15 DÍAS VENCIDO',
-                  style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFFFCA5A5)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFFFCA5A5),
+                  ),
                 ),
                 Text(
                   'El plazo legal improrrogable establecido por el D.S. 28699 para el pago total del finiquito ha vencido. Aplica multa del 30% más mantenimiento de valor.',
-                  style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFFE2E8F0)),
+                  style: GoogleFonts.inter(
+                    fontSize: 11.5,
+                    color: const Color(0xFFE2E8F0),
+                  ),
                 ),
               ],
             ),
@@ -516,7 +616,11 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
               backgroundColor: const Color(0xFF2563EB).withValues(alpha: 0.2),
               child: Text(
                 _getInitials(item.employeeName),
-                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: const Color(0xFF60A5FA)),
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF60A5FA),
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -526,24 +630,35 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
                 children: [
                   Text(
                     item.employeeName,
-                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
                   ),
                   Text(
                     '${item.employeeCode} · ${emp?.position ?? "Operario"}',
-                    style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: const Color(0xFF94A3B8),
+                    ),
                   ),
                 ],
               ),
             ),
             if (emp != null)
               OutlinedButton.icon(
-                onPressed: () => RrhhEmployeeDetailDialog.show(context, item.employeeId),
+                onPressed: () =>
+                    RrhhEmployeeDetailDialog.show(context, item.employeeId),
                 icon: const Icon(Icons.open_in_new, size: 13),
                 label: const Text('Expediente'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFF38BDF8),
                   side: const BorderSide(color: Color(0xFF38BDF8)),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   textStyle: GoogleFonts.inter(fontSize: 11),
                 ),
               ),
@@ -557,8 +672,14 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
           runSpacing: 10,
           children: [
             _buildDetailField('Área', emp?.area ?? 'Operaciones & Servicios'),
-            _buildDetailField('Supervisor', emp?.supervisor ?? 'Jefatura Operativa'),
-            _buildDetailField('Fecha de Ingreso', emp != null ? _fmtDate(emp.realStartDate) : '—'),
+            _buildDetailField(
+              'Supervisor',
+              emp?.supervisor ?? 'Jefatura Operativa',
+            ),
+            _buildDetailField(
+              'Fecha de Ingreso',
+              emp != null ? _fmtDate(emp.realStartDate) : '—',
+            ),
             _buildDetailField('Estado Actual', emp?.status ?? 'ACTIVO'),
           ],
         ),
@@ -578,7 +699,13 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Tipo de Baja', style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B))),
+                Text(
+                  'Tipo de Baja',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: const Color(0xFF64748B),
+                  ),
+                ),
                 const SizedBox(height: 4),
                 RrhhTerminationTypeChip(type: item.terminationType),
               ],
@@ -586,7 +713,13 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text('Estado del Proceso', style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B))),
+                Text(
+                  'Estado del Proceso',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: const Color(0xFF64748B),
+                  ),
+                ),
                 const SizedBox(height: 4),
                 RrhhTerminationStatusChip(status: item.status),
               ],
@@ -602,8 +735,18 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(child: _buildDetailField('Último día trabajado', _fmtDate(item.lastWorkDay))),
-            Expanded(child: _buildDetailField('Fecha efectiva de baja', _fmtDate(item.terminationDate))),
+            Expanded(
+              child: _buildDetailField(
+                'Último día trabajado',
+                _fmtDate(item.lastWorkDay),
+              ),
+            ),
+            Expanded(
+              child: _buildDetailField(
+                'Fecha efectiva de baja',
+                _fmtDate(item.terminationDate),
+              ),
+            ),
           ],
         ),
       ],
@@ -617,18 +760,40 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (item.resignationLetterFile != null)
-          _buildDocRow('Carta de Renuncia', item.resignationLetterFile!, Icons.description_outlined),
+          _buildDocRow(
+            'Carta de Renuncia',
+            item.resignationLetterFile!,
+            Icons.description_outlined,
+          ),
         if (item.terminationMemoFile != null)
-          _buildDocRow('Memorándum de Despido', item.terminationMemoFile!, Icons.mail_outline),
+          _buildDocRow(
+            'Memorándum de Despido',
+            item.terminationMemoFile!,
+            Icons.mail_outline,
+          ),
         if (item.workCertificateFile != null)
-          _buildDocRow('Certificado de Trabajo', item.workCertificateFile!, Icons.verified_outlined),
+          _buildDocRow(
+            'Certificado de Trabajo',
+            item.workCertificateFile!,
+            Icons.verified_outlined,
+          ),
         if (item.settlementFile != null)
-          _buildDocRow('Finiquito Visado', item.settlementFile!, Icons.receipt_long_outlined),
+          _buildDocRow(
+            'Finiquito Visado',
+            item.settlementFile!,
+            Icons.receipt_long_outlined,
+          ),
         if (item.resignationLetterFile == null &&
             item.terminationMemoFile == null &&
             item.workCertificateFile == null &&
             item.settlementFile == null)
-          Text('No hay documentos adjuntos registrados.', style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8))),
+          Text(
+            'No hay documentos adjuntos registrados.',
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: const Color(0xFF94A3B8),
+            ),
+          ),
       ],
     );
   }
@@ -650,8 +815,17 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B))),
-                Text(fileName, style: GoogleFonts.inter(fontSize: 12, color: Colors.white)),
+                Text(
+                  label,
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: const Color(0xFF64748B),
+                  ),
+                ),
+                Text(
+                  fileName,
+                  style: GoogleFonts.inter(fontSize: 12, color: Colors.white),
+                ),
               ],
             ),
           ),
@@ -667,12 +841,19 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
     if (!item.hasPendingObligations) {
       return Row(
         children: [
-          const Icon(Icons.check_circle_outline, color: Color(0xFF10B981), size: 18),
+          const Icon(
+            Icons.check_circle_outline,
+            color: Color(0xFF10B981),
+            size: 18,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               'Sin obligaciones ni activos corporativos pendientes de entrega.',
-              style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF10B981)),
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: const Color(0xFF10B981),
+              ),
             ),
           ),
         ],
@@ -689,21 +870,32 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
             Expanded(
               child: Text(
                 'Activos / Bienes pendientes de devolución:',
-                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFFFDE68A)),
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFFFDE68A),
+                ),
               ),
             ),
           ],
         ),
         const SizedBox(height: 6),
-        Text(item.pendingObligationsDetail ?? 'Sin detalle especificado.',
-            style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFFCBD5E1), height: 1.35)),
+        Text(
+          item.pendingObligationsDetail ?? 'Sin detalle especificado.',
+          style: GoogleFonts.inter(
+            fontSize: 12.5,
+            color: const Color(0xFFCBD5E1),
+            height: 1.35,
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildPaymentInfo() {
     final item = _record!;
-    final deadline = item.paymentDeadline ?? item.lastWorkDay.add(const Duration(days: 15));
+    final deadline =
+        item.paymentDeadline ?? item.lastWorkDay.add(const Duration(days: 15));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -711,23 +903,50 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
         Row(
           children: [
             Expanded(
-              child: _buildDetailField('Fecha límite de pago (15 días)', _fmtDate(deadline)),
+              child: _buildDetailField(
+                'Fecha límite de pago (15 días)',
+                _fmtDate(deadline),
+              ),
             ),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Estado del Pago', style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B))),
+                  Text(
+                    'Estado del Pago',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: const Color(0xFF64748B),
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   if (item.paymentCompleted)
-                    Text('COMPLETADO (${_fmtDate(item.paymentCompletedAt ?? DateTime.now())})',
-                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF10B981)))
+                    Text(
+                      'COMPLETADO (${_fmtDate(item.paymentCompletedAt ?? DateTime.now())})',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF10B981),
+                      ),
+                    )
                   else if (item.isPaymentExpired)
-                    Text('VENCIDO (${item.daysUntilPaymentDeadline.abs()} días de mora)',
-                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFFEF4444)))
+                    Text(
+                      'VENCIDO (${item.daysUntilPaymentDeadline.abs()} días de mora)',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFEF4444),
+                      ),
+                    )
                   else
-                    Text('PENDIENTE (${item.daysUntilPaymentDeadline} días restantes)',
-                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFFF59E0B))),
+                    Text(
+                      'PENDIENTE (${item.daysUntilPaymentDeadline} días restantes)',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFF59E0B),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -736,7 +955,11 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
         const SizedBox(height: 10),
         Text(
           'Base Legal: Art. 9 D.S. 28699 dispone que en caso de no cancelarse el finiquito en el plazo de 15 días calendario, el empleador deberá cancelar el monto con una multa del 30% y mantenimiento de valor.',
-          style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B), height: 1.3),
+          style: GoogleFonts.inter(
+            fontSize: 11,
+            color: const Color(0xFF64748B),
+            height: 1.3,
+          ),
         ),
       ],
     );
@@ -758,21 +981,27 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
           _buildTimelineItem(
             title: 'Notificación al Colaborador',
             subtitle: 'Notificación oficial enviada al empleado',
-            date: item.notifiedAt != null ? _fmtDateTime(item.notifiedAt!) : '—',
+            date: item.notifiedAt != null
+                ? _fmtDateTime(item.notifiedAt!)
+                : '—',
             isDone: true,
           ),
         if (item.paymentCompleted)
           _buildTimelineItem(
             title: 'Liquidación / Finiquito Pagado',
             subtitle: 'Monto liquidado conforme a cálculo contable',
-            date: item.paymentCompletedAt != null ? _fmtDateTime(item.paymentCompletedAt!) : '—',
+            date: item.paymentCompletedAt != null
+                ? _fmtDateTime(item.paymentCompletedAt!)
+                : '—',
             isDone: true,
           ),
         if (item.status == RrhhTerminationStatus.finalizada)
           _buildTimelineItem(
             title: 'Baja Laboral Completada',
             subtitle: 'Procesado por ${item.processedBy ?? "RRHH"}',
-            date: item.processedAt != null ? _fmtDateTime(item.processedAt!) : '—',
+            date: item.processedAt != null
+                ? _fmtDateTime(item.processedAt!)
+                : '—',
             isDone: true,
           ),
         if (item.status == RrhhTerminationStatus.cancelada)
@@ -794,7 +1023,9 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
     required bool isDone,
     bool isError = false,
   }) {
-    final color = isError ? const Color(0xFFEF4444) : (isDone ? const Color(0xFF10B981) : const Color(0xFF64748B));
+    final color = isError
+        ? const Color(0xFFEF4444)
+        : (isDone ? const Color(0xFF10B981) : const Color(0xFF64748B));
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -812,12 +1043,31 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white)),
-                Text(subtitle, style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF94A3B8))),
+                Text(
+                  title,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ),
               ],
             ),
           ),
-          Text(date, style: GoogleFonts.jetBrainsMono(fontSize: 10.5, color: const Color(0xFF64748B))),
+          Text(
+            date,
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 10.5,
+              color: const Color(0xFF64748B),
+            ),
+          ),
         ],
       ),
     );
@@ -840,22 +1090,33 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
           if (isRegistrada) ...[
             TextButton.icon(
               onPressed: _isActionRunning ? null : _handleDelete,
-              icon: const Icon(Icons.delete_outline, size: 14, color: Color(0xFFEF4444)),
-              label: const Text('Eliminar', style: TextStyle(color: Color(0xFFEF4444))),
+              icon: const Icon(
+                Icons.delete_outline,
+                size: 14,
+                color: Color(0xFFEF4444),
+              ),
+              label: const Text(
+                'Eliminar',
+                style: TextStyle(color: Color(0xFFEF4444)),
+              ),
             ),
             const SizedBox(width: 8),
             OutlinedButton.icon(
               onPressed: _isActionRunning ? null : _handleEdit,
               icon: const Icon(Icons.edit_outlined, size: 14),
               label: const Text('Editar'),
-              style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFF38BDF8)),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF38BDF8),
+              ),
             ),
             const SizedBox(width: 8),
             FilledButton.icon(
               onPressed: _isActionRunning ? null : _handleStartProcess,
               icon: const Icon(Icons.play_arrow_rounded, size: 16),
               label: const Text('Iniciar Proceso'),
-              style: FilledButton.styleFrom(backgroundColor: const Color(0xFFF59E0B)),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFFF59E0B),
+              ),
             ),
           ],
           if (isEnProceso) ...[
@@ -863,22 +1124,30 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
               onPressed: _isActionRunning ? null : _handleCancelProcess,
               icon: const Icon(Icons.close, size: 14),
               label: const Text('Cancelar'),
-              style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFFEF4444)),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFFEF4444),
+              ),
             ),
             const SizedBox(width: 8),
             if (!item.paymentCompleted)
               FilledButton.icon(
-                onPressed: _isActionRunning ? null : _handleMarkPaymentCompleted,
+                onPressed: _isActionRunning
+                    ? null
+                    : _handleMarkPaymentCompleted,
                 icon: const Icon(Icons.check_circle_outline, size: 15),
                 label: const Text('Marcar Pagado'),
-                style: FilledButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFF10B981),
+                ),
               ),
             const SizedBox(width: 8),
             FilledButton.icon(
               onPressed: _isActionRunning ? null : _handleFinalizeTermination,
               icon: const Icon(Icons.task_alt, size: 15),
               label: const Text('Finalizar Baja'),
-              style: FilledButton.styleFrom(backgroundColor: const Color(0xFF2563EB)),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFF2563EB),
+              ),
             ),
           ],
         ],
@@ -886,7 +1155,11 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
     );
   }
 
-  Widget _buildSectionCard({required String title, required IconData icon, required Widget child}) {
+  Widget _buildSectionCard({
+    required String title,
+    required IconData icon,
+    required Widget child,
+  }) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -923,9 +1196,22 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B))),
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 11,
+            color: const Color(0xFF64748B),
+          ),
+        ),
         const SizedBox(height: 2),
-        Text(value, style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w500, color: Colors.white)),
+        Text(
+          value,
+          style: GoogleFonts.inter(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
+        ),
       ],
     );
   }
@@ -939,9 +1225,16 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
           children: [
             const Icon(Icons.error_outline, color: Color(0xFFEF4444), size: 36),
             const SizedBox(height: 12),
-            Text(_errorMessage!, textAlign: TextAlign.center, style: GoogleFonts.inter(color: Colors.white, fontSize: 13)),
+            Text(
+              _errorMessage!,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+            ),
             const SizedBox(height: 12),
-            ElevatedButton(onPressed: _loadData, child: const Text('Reintentar')),
+            ElevatedButton(
+              onPressed: _loadData,
+              child: const Text('Reintentar'),
+            ),
           ],
         ),
       ),
@@ -951,7 +1244,8 @@ class _RrhhTerminationDetailDrawerState extends State<RrhhTerminationDetailDrawe
   String _getInitials(String name) {
     final parts = name.trim().split(' ').where((p) => p.isNotEmpty).toList();
     if (parts.isEmpty) return 'EM';
-    if (parts.length == 1) return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
+    if (parts.length == 1)
+      return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
     return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
   }
 

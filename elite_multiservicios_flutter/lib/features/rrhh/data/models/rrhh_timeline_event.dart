@@ -83,7 +83,9 @@ final _employeeNameExpando = Expando<String>('employeeName');
 final _employeeCodeExpando = Expando<String>('employeeCode');
 final _userRoleExpando = Expando<String>('userRole');
 final _ipAddressExpando = Expando<String>('ipAddress');
-final _fieldChangesExpando = Expando<List<RrhhAuditFieldChange>>('fieldChanges');
+final _fieldChangesExpando = Expando<List<RrhhAuditFieldChange>>(
+  'fieldChanges',
+);
 final _documentsExpando = Expando<List<String>>('documents');
 
 /// Extensiones para formateo y compatibilidad visual de RrhhTimelineEvent

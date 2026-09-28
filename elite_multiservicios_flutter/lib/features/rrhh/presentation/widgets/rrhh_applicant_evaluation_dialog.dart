@@ -39,10 +39,12 @@ class RrhhApplicantEvaluationDialog extends StatefulWidget {
   }
 
   @override
-  State<RrhhApplicantEvaluationDialog> createState() => _RrhhApplicantEvaluationDialogState();
+  State<RrhhApplicantEvaluationDialog> createState() =>
+      _RrhhApplicantEvaluationDialogState();
 }
 
-class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationDialog> {
+class _RrhhApplicantEvaluationDialogState
+    extends State<RrhhApplicantEvaluationDialog> {
   final _formKey = GlobalKey<FormState>();
 
   // Campos Comunes
@@ -62,7 +64,12 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
 
   // Específicos OFICINA
   String _educationLevel = 'Licenciatura';
-  final List<String> _educationLevels = ['Bachiller', 'Técnico', 'Licenciatura', 'Postgrado'];
+  final List<String> _educationLevels = [
+    'Bachiller',
+    'Técnico',
+    'Licenciatura',
+    'Postgrado',
+  ];
   late final TextEditingController _professionalTitleCtrl;
   late final TextEditingController _certificationsCtrl;
   late final TextEditingController _salaryExpectationCtrl;
@@ -74,21 +81,32 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
     _educationCtrl = TextEditingController(text: ev.education ?? '');
     _expSummaryCtrl = TextEditingController(text: ev.experienceSummary ?? '');
     _skillsCtrl = TextEditingController(text: ev.technicalSkills.join(', '));
-    _personalRefNameCtrl = TextEditingController(text: ev.personalReferenceName ?? '');
-    _personalRefPhoneCtrl = TextEditingController(text: ev.personalReferencePhone ?? '');
+    _personalRefNameCtrl = TextEditingController(
+      text: ev.personalReferenceName ?? '',
+    );
+    _personalRefPhoneCtrl = TextEditingController(
+      text: ev.personalReferencePhone ?? '',
+    );
     _workRefNameCtrl = TextEditingController(text: ev.workReferenceName ?? '');
-    _workRefPhoneCtrl = TextEditingController(text: ev.workReferencePhone ?? '');
+    _workRefPhoneCtrl = TextEditingController(
+      text: ev.workReferencePhone ?? '',
+    );
 
     _rotatingShifts = ev.rotatingShiftsAvailable;
     _clientBranches = ev.clientBranchesAvailable;
     _drivingLicenseCtrl = TextEditingController(text: ev.drivingLicense ?? '');
     _physicalFitness = ev.physicalFitnessDeclared;
 
-    if (ev.educationLevel != null && _educationLevels.contains(ev.educationLevel)) {
+    if (ev.educationLevel != null &&
+        _educationLevels.contains(ev.educationLevel)) {
       _educationLevel = ev.educationLevel!;
     }
-    _professionalTitleCtrl = TextEditingController(text: ev.professionalTitle ?? '');
-    _certificationsCtrl = TextEditingController(text: ev.professionalCertifications ?? '');
+    _professionalTitleCtrl = TextEditingController(
+      text: ev.professionalTitle ?? '',
+    );
+    _certificationsCtrl = TextEditingController(
+      text: ev.professionalCertifications ?? '',
+    );
     _salaryExpectationCtrl = TextEditingController(
       text: (ev.salaryExpectation != null && ev.salaryExpectation! > 0)
           ? ev.salaryExpectation!.toStringAsFixed(0)
@@ -127,19 +145,33 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
       education: isCampo ? _educationCtrl.text.trim() : _educationLevel,
       experienceSummary: _expSummaryCtrl.text.trim(),
       technicalSkills: skillsList,
-      personalReferenceName: _personalRefNameCtrl.text.trim().isEmpty ? null : _personalRefNameCtrl.text.trim(),
-      personalReferencePhone: _personalRefPhoneCtrl.text.trim().isEmpty ? null : _personalRefPhoneCtrl.text.trim(),
-      workReferenceName: _workRefNameCtrl.text.trim().isEmpty ? null : _workRefNameCtrl.text.trim(),
-      workReferencePhone: _workRefPhoneCtrl.text.trim().isEmpty ? null : _workRefPhoneCtrl.text.trim(),
+      personalReferenceName: _personalRefNameCtrl.text.trim().isEmpty
+          ? null
+          : _personalRefNameCtrl.text.trim(),
+      personalReferencePhone: _personalRefPhoneCtrl.text.trim().isEmpty
+          ? null
+          : _personalRefPhoneCtrl.text.trim(),
+      workReferenceName: _workRefNameCtrl.text.trim().isEmpty
+          ? null
+          : _workRefNameCtrl.text.trim(),
+      workReferencePhone: _workRefPhoneCtrl.text.trim().isEmpty
+          ? null
+          : _workRefPhoneCtrl.text.trim(),
       // CAMPO
       rotatingShiftsAvailable: _rotatingShifts,
       clientBranchesAvailable: _clientBranches,
-      drivingLicense: _drivingLicenseCtrl.text.trim().isEmpty ? null : _drivingLicenseCtrl.text.trim(),
+      drivingLicense: _drivingLicenseCtrl.text.trim().isEmpty
+          ? null
+          : _drivingLicenseCtrl.text.trim(),
       physicalFitnessDeclared: _physicalFitness,
       // OFICINA
       educationLevel: isCampo ? null : _educationLevel,
-      professionalTitle: _professionalTitleCtrl.text.trim().isEmpty ? null : _professionalTitleCtrl.text.trim(),
-      professionalCertifications: _certificationsCtrl.text.trim().isEmpty ? null : _certificationsCtrl.text.trim(),
+      professionalTitle: _professionalTitleCtrl.text.trim().isEmpty
+          ? null
+          : _professionalTitleCtrl.text.trim(),
+      professionalCertifications: _certificationsCtrl.text.trim().isEmpty
+          ? null
+          : _certificationsCtrl.text.trim(),
       salaryExpectation: double.tryParse(_salaryExpectationCtrl.text.trim()),
     );
 
@@ -174,15 +206,27 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
                       width: 42,
                       height: 42,
                       decoration: BoxDecoration(
-                        color: (isCampo ? const Color(0xFF38BDF8) : const Color(0xFFA855F7)).withValues(alpha: 0.15),
+                        color:
+                            (isCampo
+                                    ? const Color(0xFF38BDF8)
+                                    : const Color(0xFFA855F7))
+                                .withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: (isCampo ? const Color(0xFF38BDF8) : const Color(0xFFA855F7)).withValues(alpha: 0.3),
+                          color:
+                              (isCampo
+                                      ? const Color(0xFF38BDF8)
+                                      : const Color(0xFFA855F7))
+                                  .withValues(alpha: 0.3),
                         ),
                       ),
                       child: Icon(
-                        isCampo ? Icons.fact_check_outlined : Icons.assignment_outlined,
-                        color: isCampo ? const Color(0xFF38BDF8) : const Color(0xFFA855F7),
+                        isCampo
+                            ? Icons.fact_check_outlined
+                            : Icons.assignment_outlined,
+                        color: isCampo
+                            ? const Color(0xFF38BDF8)
+                            : const Color(0xFFA855F7),
                         size: 22,
                       ),
                     ),
@@ -193,18 +237,29 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
                         children: [
                           Text(
                             'Evaluación Completa (Fase 2)',
-                            style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white),
+                            style: GoogleFonts.inter(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             '${widget.applicantCode} • ${widget.applicantName} (${widget.targetType})',
-                            style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: const Color(0xFF94A3B8),
+                            ),
                           ),
                         ],
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Color(0xFF64748B), size: 20),
+                      icon: const Icon(
+                        Icons.close,
+                        color: Color(0xFF64748B),
+                        size: 20,
+                      ),
                       onPressed: () => Navigator.of(context).pop(null),
                     ),
                   ],
@@ -222,24 +277,32 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
                           _buildField(
                             controller: _educationCtrl,
                             label: 'EDUCACIÓN / FORMACIÓN *',
-                            hint: 'Ej: Bachiller en Humanidades, Libreta de Servicio Militar',
+                            hint:
+                                'Ej: Bachiller en Humanidades, Libreta de Servicio Militar',
                             icon: Icons.school_outlined,
-                            validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido.' : null,
+                            validator: (v) => (v == null || v.trim().isEmpty)
+                                ? 'Requerido.'
+                                : null,
                           ),
                           const SizedBox(height: 12),
                           _buildField(
                             controller: _expSummaryCtrl,
                             label: 'EXPERIENCIA OPERATIVA PREVIA (RESUMEN) *',
-                            hint: 'Empresas anteriores, funciones realizadas, tiempo...',
+                            hint:
+                                'Empresas anteriores, funciones realizadas, tiempo...',
                             icon: Icons.work_history_outlined,
                             maxLines: 2,
-                            validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido.' : null,
+                            validator: (v) => (v == null || v.trim().isEmpty)
+                                ? 'Requerido.'
+                                : null,
                           ),
                           const SizedBox(height: 12),
                           _buildField(
                             controller: _skillsCtrl,
-                            label: 'HABILIDADES TÉCNICAS ESPECÍFICAS (SEPARADAS POR COMA)',
-                            hint: 'Ej: Manejo de hidrolavadoras, CCTV, Trabajo en altura',
+                            label:
+                                'HABILIDADES TÉCNICAS ESPECÍFICAS (SEPARADAS POR COMA)',
+                            hint:
+                                'Ej: Manejo de hidrolavadoras, CCTV, Trabajo en altura',
                             icon: Icons.build_circle_outlined,
                           ),
                           const SizedBox(height: 12),
@@ -266,29 +329,62 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
                                   value: _rotatingShifts,
                                   dense: true,
                                   activeColor: const Color(0xFF0284C7),
-                                  title: Text('Disponibilidad para turnos rotativos (Mañana / Tarde / Noche)',
-                                      style: GoogleFonts.inter(fontSize: 12, color: Colors.white)),
-                                  onChanged: (v) => setState(() => _rotatingShifts = v ?? true),
+                                  title: Text(
+                                    'Disponibilidad para turnos rotativos (Mañana / Tarde / Noche)',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  onChanged: (v) => setState(
+                                    () => _rotatingShifts = v ?? true,
+                                  ),
                                 ),
-                                const Divider(height: 1, color: Color(0xFF334155)),
+                                const Divider(
+                                  height: 1,
+                                  color: Color(0xFF334155),
+                                ),
                                 CheckboxListTile(
                                   value: _clientBranches,
                                   dense: true,
                                   activeColor: const Color(0xFF0284C7),
-                                  title: Text('Disponibilidad para trabajar en sedes externas de clientes',
-                                      style: GoogleFonts.inter(fontSize: 12, color: Colors.white)),
-                                  onChanged: (v) => setState(() => _clientBranches = v ?? true),
+                                  title: Text(
+                                    'Disponibilidad para trabajar en sedes externas de clientes',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  onChanged: (v) => setState(
+                                    () => _clientBranches = v ?? true,
+                                  ),
                                 ),
-                                const Divider(height: 1, color: Color(0xFF334155)),
+                                const Divider(
+                                  height: 1,
+                                  color: Color(0xFF334155),
+                                ),
                                 CheckboxListTile(
                                   value: _physicalFitness,
                                   dense: true,
                                   activeColor: const Color(0xFF10B981),
-                                  title: Text('Aptitud física y de salud declarada para labores de campo *',
-                                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white)),
-                                  subtitle: Text('Obligatorio certificar condición física antes de contratar',
-                                      style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B))),
-                                  onChanged: (v) => setState(() => _physicalFitness = v ?? true),
+                                  title: Text(
+                                    'Aptitud física y de salud declarada para labores de campo *',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    'Obligatorio certificar condición física antes de contratar',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      color: const Color(0xFF64748B),
+                                    ),
+                                  ),
+                                  onChanged: (v) => setState(
+                                    () => _physicalFitness = v ?? true,
+                                  ),
                                 ),
                               ],
                             ),
@@ -306,11 +402,25 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
                                       initialValue: _educationLevel,
                                       isExpanded: true,
                                       dropdownColor: const Color(0xFF1E293B),
-                                      style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+                                      style: GoogleFonts.inter(
+                                        fontSize: 13,
+                                        color: Colors.white,
+                                      ),
                                       decoration: _inputDecoration(),
-                                      items: _educationLevels.map((lvl) => DropdownMenuItem(value: lvl, child: Text(lvl, overflow: TextOverflow.ellipsis))).toList(),
+                                      items: _educationLevels
+                                          .map(
+                                            (lvl) => DropdownMenuItem(
+                                              value: lvl,
+                                              child: Text(
+                                                lvl,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          )
+                                          .toList(),
                                       onChanged: (v) {
-                                        if (v != null) setState(() => _educationLevel = v);
+                                        if (v != null)
+                                          setState(() => _educationLevel = v);
                                       },
                                     ),
                                   ],
@@ -321,7 +431,8 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
                                 child: _buildField(
                                   controller: _professionalTitleCtrl,
                                   label: 'TÍTULO PROFESIONAL (OPCIONAL)',
-                                  hint: 'Ej: Lic. en Contabilidad, Ing. Comercial',
+                                  hint:
+                                      'Ej: Lic. en Contabilidad, Ing. Comercial',
                                   icon: Icons.school_outlined,
                                 ),
                               ),
@@ -331,16 +442,21 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
                           _buildField(
                             controller: _expSummaryCtrl,
                             label: 'EXPERIENCIA ADMINISTRATIVA PREVIA *',
-                            hint: 'Gestión documental, compras, atención cliente, RRHH...',
+                            hint:
+                                'Gestión documental, compras, atención cliente, RRHH...',
                             icon: Icons.work_history_outlined,
                             maxLines: 2,
-                            validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido.' : null,
+                            validator: (v) => (v == null || v.trim().isEmpty)
+                                ? 'Requerido.'
+                                : null,
                           ),
                           const SizedBox(height: 12),
                           _buildField(
                             controller: _skillsCtrl,
-                            label: 'COMPETENCIAS TÉCNICAS (EXCEL, ERP, IDIOMAS, ETC.)',
-                            hint: 'Ej: Excel avanzado, SIAT, ERP SAP, Redacción comercial',
+                            label:
+                                'COMPETENCIAS TÉCNICAS (EXCEL, ERP, IDIOMAS, ETC.)',
+                            hint:
+                                'Ej: Excel avanzado, SIAT, ERP SAP, Redacción comercial',
                             icon: Icons.stars_outlined,
                           ),
                           const SizedBox(height: 12),
@@ -350,7 +466,8 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
                                 flex: 3,
                                 child: _buildField(
                                   controller: _certificationsCtrl,
-                                  label: 'CERTIFICACIONES PROFESIONALES (OPCIONAL)',
+                                  label:
+                                      'CERTIFICACIONES PROFESIONALES (OPCIONAL)',
                                   hint: 'Ej: Diplomado en Tributación, Scrum',
                                   icon: Icons.card_membership_outlined,
                                 ),
@@ -434,23 +551,45 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF94A3B8),
                         side: const BorderSide(color: Color(0xFF334155)),
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       onPressed: () => Navigator.of(context).pop(null),
-                      child: Text('Cancelar', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
+                      child: Text(
+                        'Cancelar',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0284C7),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       onPressed: _save,
                       icon: const Icon(Icons.check, size: 16),
-                      label: Text('Guardar Evaluación', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
+                      label: Text(
+                        'Guardar Evaluación',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -513,7 +652,9 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
           style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
           decoration: _inputDecoration(
             hint: hint,
-            prefixIcon: maxLines == 1 ? Icon(icon, color: const Color(0xFF38BDF8), size: 16) : null,
+            prefixIcon: maxLines == 1
+                ? Icon(icon, color: const Color(0xFF38BDF8), size: 16)
+                : null,
           ),
         ),
       ],
@@ -524,7 +665,10 @@ class _RrhhApplicantEvaluationDialogState extends State<RrhhApplicantEvaluationD
     return InputDecoration(
       hintText: hint,
       prefixIcon: prefixIcon,
-      hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+      hintStyle: GoogleFonts.inter(
+        fontSize: 12,
+        color: const Color(0xFF64748B),
+      ),
       filled: true,
       fillColor: const Color(0xFF1E293B),
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),

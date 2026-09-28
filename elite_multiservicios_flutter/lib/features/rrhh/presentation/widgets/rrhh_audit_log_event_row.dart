@@ -39,8 +39,14 @@ class _RrhhAuditLogEventRowState extends State<RrhhAuditLogEventRow> {
     final dateStr = DateFormat('dd/MM/yyyy').format(e.date);
     final timeStr = DateFormat('HH:mm').format(e.date);
 
-    final empName = e.employeeName ?? (e.employeeId > 0 ? 'Colaborador #${e.employeeId}' : 'General');
-    final empCode = e.employeeCode ?? (e.employeeId > 0 ? 'EMP-${e.employeeId.toString().padLeft(3, '0')}' : null);
+    final empName =
+        e.employeeName ??
+        (e.employeeId > 0 ? 'Colaborador #${e.employeeId}' : 'General');
+    final empCode =
+        e.employeeCode ??
+        (e.employeeId > 0
+            ? 'EMP-${e.employeeId.toString().padLeft(3, '0')}'
+            : null);
 
     final changesCount = e.fieldChanges?.length ?? 0;
 
@@ -56,7 +62,9 @@ class _RrhhAuditLogEventRowState extends State<RrhhAuditLogEventRow> {
           decoration: BoxDecoration(
             color: _isHovered
                 ? const Color(0xFF1E293B).withValues(alpha: 0.65)
-                : (widget.isEven ? const Color(0xFF0F1523) : const Color(0xFF0D111C)),
+                : (widget.isEven
+                      ? const Color(0xFF0F1523)
+                      : const Color(0xFF0D111C)),
             border: const Border(
               bottom: BorderSide(color: Color(0xFF1E293B), width: 1),
             ),
@@ -74,7 +82,11 @@ class _RrhhAuditLogEventRowState extends State<RrhhAuditLogEventRow> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.event_outlined, size: 12, color: Color(0xFF64748B)),
+                        const Icon(
+                          Icons.event_outlined,
+                          size: 12,
+                          color: Color(0xFF64748B),
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           dateStr,
@@ -108,7 +120,9 @@ class _RrhhAuditLogEventRowState extends State<RrhhAuditLogEventRow> {
                   children: [
                     CircleAvatar(
                       radius: 13,
-                      backgroundColor: const Color(0xFF2563EB).withValues(alpha: 0.2),
+                      backgroundColor: const Color(
+                        0xFF2563EB,
+                      ).withValues(alpha: 0.2),
                       child: Text(
                         _getInitials(e.registeredBy),
                         style: GoogleFonts.inter(
@@ -170,11 +184,17 @@ class _RrhhAuditLogEventRowState extends State<RrhhAuditLogEventRow> {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 1.5,
+                            ),
                             decoration: BoxDecoration(
                               color: const Color(0xFF1E293B),
                               borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: const Color(0xFF334155), width: 0.8),
+                              border: Border.all(
+                                color: const Color(0xFF334155),
+                                width: 0.8,
+                              ),
                             ),
                             child: Text(
                               empCode,
@@ -255,19 +275,30 @@ class _RrhhAuditLogEventRowState extends State<RrhhAuditLogEventRow> {
                 flex: 11,
                 child: changesCount > 0
                     ? Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                          color: const Color(
+                            0xFF2563EB,
+                          ).withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: const Color(0xFF3B82F6).withValues(alpha: 0.3),
+                            color: const Color(
+                              0xFF3B82F6,
+                            ).withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.tune_rounded, size: 12, color: Color(0xFF60A5FA)),
+                            const Icon(
+                              Icons.tune_rounded,
+                              size: 12,
+                              color: Color(0xFF60A5FA),
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               '$changesCount ${changesCount == 1 ? 'cambio' : 'cambios'}',
@@ -281,27 +312,30 @@ class _RrhhAuditLogEventRowState extends State<RrhhAuditLogEventRow> {
                         ),
                       )
                     : (e.sourceCode != null
-                        ? Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1E293B),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              e.sourceCode!,
-                              style: GoogleFonts.jetBrainsMono(
-                                fontSize: 10,
-                                color: const Color(0xFF94A3B8),
+                          ? Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2.5,
                               ),
-                            ),
-                          )
-                        : Text(
-                            '—',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: const Color(0xFF64748B),
-                            ),
-                          )),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1E293B),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                e.sourceCode!,
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 10,
+                                  color: const Color(0xFF94A3B8),
+                                ),
+                              ),
+                            )
+                          : Text(
+                              '—',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: const Color(0xFF64748B),
+                              ),
+                            )),
               ),
 
               // 7. ACCIONES (flex: 9)
@@ -311,7 +345,11 @@ class _RrhhAuditLogEventRowState extends State<RrhhAuditLogEventRow> {
                   alignment: Alignment.centerRight,
                   child: OutlinedButton.icon(
                     onPressed: widget.onTap,
-                    icon: const Icon(Icons.visibility_outlined, size: 13, color: Color(0xFF60A5FA)),
+                    icon: const Icon(
+                      Icons.visibility_outlined,
+                      size: 13,
+                      color: Color(0xFF60A5FA),
+                    ),
                     label: Text(
                       'Detalle',
                       style: GoogleFonts.inter(
@@ -321,10 +359,20 @@ class _RrhhAuditLogEventRowState extends State<RrhhAuditLogEventRow> {
                       ),
                     ),
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF2563EB), width: 0.8),
-                      backgroundColor: const Color(0xFF1E293B).withValues(alpha: 0.5),
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                      side: const BorderSide(
+                        color: Color(0xFF2563EB),
+                        width: 0.8,
+                      ),
+                      backgroundColor: const Color(
+                        0xFF1E293B,
+                      ).withValues(alpha: 0.5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                     ),
                   ),
                 ),

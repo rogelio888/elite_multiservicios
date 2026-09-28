@@ -153,7 +153,9 @@ class _RrhhOrganizationViewState extends State<RrhhOrganizationView>
                     style: GoogleFonts.inter(
                       fontSize: 19,
                       fontWeight: FontWeight.w700,
-                      color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                      color: isDark
+                          ? const Color(0xFFF8FAFC)
+                          : const Color(0xFF0F172A),
                       letterSpacing: -0.4,
                     ),
                   ),
@@ -162,7 +164,9 @@ class _RrhhOrganizationViewState extends State<RrhhOrganizationView>
                     subtitle,
                     style: GoogleFonts.inter(
                       fontSize: 12.5,
-                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

@@ -77,7 +77,10 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: const Color(0xFF1E293B),
                               borderRadius: BorderRadius.circular(4),
@@ -106,7 +109,11 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: onClose,
-                  icon: const Icon(Icons.close_rounded, size: 20, color: Color(0xFF94A3B8)),
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    size: 20,
+                    color: Color(0xFF94A3B8),
+                  ),
                   tooltip: 'Cerrar detalle',
                   splashRadius: 18,
                 ),
@@ -126,31 +133,46 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
                   const SizedBox(height: 18),
 
                   // Sección 1: Datos del Empleado
-                  _buildSectionTitle('1. DATOS DEL EMPLEADO', Icons.person_outline_rounded),
+                  _buildSectionTitle(
+                    '1. DATOS DEL EMPLEADO',
+                    Icons.person_outline_rounded,
+                  ),
                   const SizedBox(height: 10),
                   _buildEmployeeCard(context),
                   const SizedBox(height: 18),
 
                   // Sección 2: Datos del Servicio
-                  _buildSectionTitle('2. SERVICIO ASIGNADO', Icons.business_outlined),
+                  _buildSectionTitle(
+                    '2. SERVICIO ASIGNADO',
+                    Icons.business_outlined,
+                  ),
                   const SizedBox(height: 10),
                   _buildServiceCard(),
                   const SizedBox(height: 18),
 
                   // Sección 3: Jornada y Horarios
-                  _buildSectionTitle('3. JORNADA Y REGISTRO DE HORAS', Icons.access_time_rounded),
+                  _buildSectionTitle(
+                    '3. JORNADA Y REGISTRO DE HORAS',
+                    Icons.access_time_rounded,
+                  ),
                   const SizedBox(height: 10),
                   _buildShiftCard(formattedDate),
                   const SizedBox(height: 18),
 
                   // Sección 4: Ubicación y Evidencias
-                  _buildSectionTitle('4. GEOLOCALIZACIÓN Y EVIDENCIAS', Icons.pin_drop_outlined),
+                  _buildSectionTitle(
+                    '4. GEOLOCALIZACIÓN Y EVIDENCIAS',
+                    Icons.pin_drop_outlined,
+                  ),
                   const SizedBox(height: 10),
                   _buildLocationCard(),
                   const SizedBox(height: 18),
 
                   // Sección 5: Incidencias y Acciones
-                  _buildSectionTitle('5. INCIDENCIAS Y ACCIONES RRHH', Icons.report_problem_outlined),
+                  _buildSectionTitle(
+                    '5. INCIDENCIAS Y ACCIONES RRHH',
+                    Icons.report_problem_outlined,
+                  ),
                   const SizedBox(height: 10),
                   _buildIncidentsCard(context),
                 ],
@@ -173,7 +195,11 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.info_outline_rounded, color: Color(0xFF60A5FA), size: 18),
+          const Icon(
+            Icons.info_outline_rounded,
+            color: Color(0xFF60A5FA),
+            size: 18,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -222,7 +248,9 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: const Color(0xFF2563EB).withValues(alpha: 0.25),
+                backgroundColor: const Color(
+                  0xFF2563EB,
+                ).withValues(alpha: 0.25),
                 child: Text(
                   _getInitials(record.employeeName),
                   style: GoogleFonts.inter(
@@ -272,7 +300,11 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
                   ),
                 );
               },
-              icon: const Icon(Icons.badge_outlined, size: 14, color: Color(0xFF38BDF8)),
+              icon: const Icon(
+                Icons.badge_outlined,
+                size: 14,
+                color: Color(0xFF38BDF8),
+              ),
               label: Text(
                 'Ver Expediente del Empleado',
                 style: GoogleFonts.inter(
@@ -308,7 +340,10 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
           const SizedBox(height: 8),
           _buildInfoRow('Sede / Puesto', record.location),
           const SizedBox(height: 8),
-          _buildInfoRow('Supervisor de Cuadrilla', 'Operaciones / Cuadrilla Turno Central'),
+          _buildInfoRow(
+            'Supervisor de Cuadrilla',
+            'Operaciones / Cuadrilla Turno Central',
+          ),
         ],
       ),
     );
@@ -357,7 +392,9 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
                   'Entrada Real (APK)',
                   _formatTime(record.actualEntry),
                   Icons.how_to_reg_rounded,
-                  record.isLate ? const Color(0xFFF59E0B) : const Color(0xFF10B981),
+                  record.isLate
+                      ? const Color(0xFFF59E0B)
+                      : const Color(0xFF10B981),
                 ),
               ),
             ],
@@ -394,11 +431,16 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
                 children: [
                   Text(
                     'Horas Efectivas:',
-                    style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B)),
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: const Color(0xFF64748B),
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    record.workedHours != null ? '${record.workedHours!.toStringAsFixed(1)} horas' : '0.0 horas',
+                    record.workedHours != null
+                        ? '${record.workedHours!.toStringAsFixed(1)} horas'
+                        : '0.0 horas',
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -412,7 +454,10 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
                 children: [
                   Text(
                     'Retraso / Tardanza:',
-                    style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B)),
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: const Color(0xFF64748B),
+                    ),
                   ),
                   const SizedBox(height: 2),
                   RrhhAttendanceLatenessChip(
@@ -446,7 +491,9 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
               Icon(
                 hasCoords ? Icons.gps_fixed_rounded : Icons.gps_off_rounded,
                 size: 16,
-                color: hasCoords ? const Color(0xFF10B981) : const Color(0xFF64748B),
+                color: hasCoords
+                    ? const Color(0xFF10B981)
+                    : const Color(0xFF64748B),
               ),
               const SizedBox(width: 8),
               Text(
@@ -455,7 +502,9 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
                     : 'Sin geolocalización GPS registrada',
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 11.5,
-                  color: hasCoords ? const Color(0xFFCBD5E1) : const Color(0xFF64748B),
+                  color: hasCoords
+                      ? const Color(0xFFCBD5E1)
+                      : const Color(0xFF64748B),
                 ),
               ),
             ],
@@ -497,7 +546,10 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
                   top: 8,
                   right: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF0F172A).withValues(alpha: 0.8),
                       borderRadius: BorderRadius.circular(4),
@@ -567,17 +619,25 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () async {
-                    final created = await RrhhDisciplinaryEditDialog.show(context);
+                    final created = await RrhhDisciplinaryEditDialog.show(
+                      context,
+                    );
                     if (created == true && context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Incidencia disciplinaria registrada con éxito.'),
+                          content: Text(
+                            'Incidencia disciplinaria registrada con éxito.',
+                          ),
                           backgroundColor: Color(0xFF10B981),
                         ),
                       );
                     }
                   },
-                  icon: const Icon(Icons.gavel_rounded, size: 14, color: Color(0xFFF59E0B)),
+                  icon: const Icon(
+                    Icons.gavel_rounded,
+                    size: 14,
+                    color: Color(0xFFF59E0B),
+                  ),
                   label: Text(
                     'Registrar Incidencia',
                     style: GoogleFonts.inter(
@@ -600,7 +660,11 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
                       onClose();
                       onNavigateToIncidents!();
                     },
-                    icon: const Icon(Icons.arrow_forward_rounded, size: 14, color: Color(0xFF38BDF8)),
+                    icon: const Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 14,
+                      color: Color(0xFF38BDF8),
+                    ),
                     label: Text(
                       'Ver Régimen Disciplinario',
                       style: GoogleFonts.inter(
@@ -650,7 +714,12 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeMetric(String label, String time, IconData icon, Color color) {
+  Widget _buildTimeMetric(
+    String label,
+    String time,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -667,7 +736,10 @@ class RrhhAttendanceDetailDrawer extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 label,
-                style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B)),
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  color: const Color(0xFF64748B),
+                ),
               ),
             ],
           ),

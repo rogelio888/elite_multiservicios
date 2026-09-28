@@ -47,12 +47,15 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
         .where((p) => p.workplaceType == form.employeeType)
         .map((p) => p.areaId)
         .toSet();
-    final filteredAreas = widget.areas.where((a) => validAreaIds.contains(a.id)).toList();
+    final filteredAreas = widget.areas
+        .where((a) => validAreaIds.contains(a.id))
+        .toList();
 
     // 2. Cargos filtrados por tipo + área seleccionada
     final filteredPositions = widget.positions.where((p) {
       if (p.workplaceType != form.employeeType) return false;
-      if (form.selectedArea != null && p.areaId != form.selectedArea!.id) return false;
+      if (form.selectedArea != null && p.areaId != form.selectedArea!.id)
+        return false;
       return true;
     }).toList();
 
@@ -64,7 +67,9 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
     // 4. Supervisores filtrados o sugeridos
     final supervisorOptions = widget.availableSupervisors.isNotEmpty
         ? widget.availableSupervisors
-        : (isCampo ? ['Ricardo Montaño', 'Juan Carlos Pérez'] : ['Lic. Laura Mendoza', 'Ing. Roberto Paz']);
+        : (isCampo
+              ? ['Ricardo Montaño', 'Juan Carlos Pérez']
+              : ['Lic. Laura Mendoza', 'Ing. Roberto Paz']);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -78,11 +83,17 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
               decoration: BoxDecoration(
                 color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.4)),
+                border: Border.all(
+                  color: const Color(0xFFF59E0B).withValues(alpha: 0.4),
+                ),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.warning_amber_rounded, color: Color(0xFFF59E0B), size: 22),
+                  const Icon(
+                    Icons.warning_amber_rounded,
+                    color: Color(0xFFF59E0B),
+                    size: 22,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -124,12 +135,18 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
             ],
           ),
           const SizedBox(height: 20),
-          buildHireSectionHeader(isCampo ? 'ESTRUCTURA OPERATIVA (CAMPO)' : 'ESTRUCTURA CORPORATIVA (OFICINA)'),
+          buildHireSectionHeader(
+            isCampo
+                ? 'ESTRUCTURA OPERATIVA (CAMPO)'
+                : 'ESTRUCTURA CORPORATIVA (OFICINA)',
+          ),
           const SizedBox(height: 12),
           LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth > 580;
-              final colWidth = isWide ? (constraints.maxWidth - 14) / 2 : constraints.maxWidth;
+              final colWidth = isWide
+                  ? (constraints.maxWidth - 14) / 2
+                  : constraints.maxWidth;
 
               return Wrap(
                 spacing: 14,
@@ -141,12 +158,23 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
                     child: buildHireDropdownField<RrhhArea>(
                       label: 'Departamento / Área *',
                       value: form.selectedArea,
-                      items: filteredAreas.map((a) => DropdownMenuItem(value: a, child: Text(a.name, overflow: TextOverflow.ellipsis))).toList(),
+                      items: filteredAreas
+                          .map(
+                            (a) => DropdownMenuItem(
+                              value: a,
+                              child: Text(
+                                a.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          )
+                          .toList(),
                       hint: 'Seleccionar departamento...',
                       icon: Icons.domain_outlined,
                       onChanged: (area) {
                         form.selectedArea = area;
-                        if (form.selectedPosition != null && form.selectedPosition!.areaId != area?.id) {
+                        if (form.selectedPosition != null &&
+                            form.selectedPosition!.areaId != area?.id) {
                           form.selectedPosition = null;
                         }
                         widget.onChanged();
@@ -160,12 +188,26 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
                     child: buildHireDropdownField<RrhhPosition>(
                       label: 'Cargo Contractual *',
                       value: form.selectedPosition,
-                      items: filteredPositions.map((p) => DropdownMenuItem(value: p, child: Text(p.name, overflow: TextOverflow.ellipsis))).toList(),
-                      hint: form.selectedArea == null ? 'Primero elija un área...' : 'Seleccionar cargo...',
+                      items: filteredPositions
+                          .map(
+                            (p) => DropdownMenuItem(
+                              value: p,
+                              child: Text(
+                                p.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      hint: form.selectedArea == null
+                          ? 'Primero elija un área...'
+                          : 'Seleccionar cargo...',
                       icon: Icons.badge_outlined,
                       onChanged: (pos) {
                         form.selectedPosition = pos;
-                        if (pos?.suggestedSalary != null && (pos!.suggestedSalary ?? 0) > 0 && form.agreedSalary == 0) {
+                        if (pos?.suggestedSalary != null &&
+                            (pos!.suggestedSalary ?? 0) > 0 &&
+                            form.agreedSalary == 0) {
                           form.agreedSalary = pos.suggestedSalary!;
                         }
                         widget.onChanged();
@@ -180,7 +222,17 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
                       child: buildHireDropdownField<RrhhSpecialty>(
                         label: 'Especialidad Operativa *',
                         value: form.selectedSpecialty,
-                        items: widget.specialties.map((s) => DropdownMenuItem(value: s, child: Text(s.name, overflow: TextOverflow.ellipsis))).toList(),
+                        items: widget.specialties
+                            .map(
+                              (s) => DropdownMenuItem(
+                                value: s,
+                                child: Text(
+                                  s.name,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            )
+                            .toList(),
                         hint: 'Seleccionar especialidad...',
                         icon: Icons.psychology_outlined,
                         onChanged: (s) {
@@ -194,9 +246,21 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
                   SizedBox(
                     width: colWidth,
                     child: buildHireDropdownField<RrhhSchedule>(
-                      label: isCampo ? 'Turno Base Operativo *' : 'Horario Administrativo *',
+                      label: isCampo
+                          ? 'Turno Base Operativo *'
+                          : 'Horario Administrativo *',
                       value: form.selectedSchedule,
-                      items: filteredSchedules.map((s) => DropdownMenuItem(value: s, child: Text('${s.name} (${s.startTime} - ${s.endTime})', overflow: TextOverflow.ellipsis))).toList(),
+                      items: filteredSchedules
+                          .map(
+                            (s) => DropdownMenuItem(
+                              value: s,
+                              child: Text(
+                                '${s.name} (${s.startTime} - ${s.endTime})',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          )
+                          .toList(),
                       hint: 'Seleccionar turno...',
                       icon: Icons.schedule_outlined,
                       onChanged: (s) {
@@ -210,9 +274,22 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
                   SizedBox(
                     width: colWidth,
                     child: buildHireDropdownField<String>(
-                      label: isCampo ? 'Supervisor de Campo *' : 'Supervisor Directo *',
-                      value: supervisorOptions.contains(form.supervisor) ? form.supervisor : (supervisorOptions.isNotEmpty ? supervisorOptions.first : null),
-                      items: supervisorOptions.map((s) => DropdownMenuItem(value: s, child: Text(s, overflow: TextOverflow.ellipsis))).toList(),
+                      label: isCampo
+                          ? 'Supervisor de Campo *'
+                          : 'Supervisor Directo *',
+                      value: supervisorOptions.contains(form.supervisor)
+                          ? form.supervisor
+                          : (supervisorOptions.isNotEmpty
+                                ? supervisorOptions.first
+                                : null),
+                      items: supervisorOptions
+                          .map(
+                            (s) => DropdownMenuItem(
+                              value: s,
+                              child: Text(s, overflow: TextOverflow.ellipsis),
+                            ),
+                          )
+                          .toList(),
                       hint: 'Seleccionar supervisor...',
                       icon: Icons.supervisor_account_outlined,
                       onChanged: (val) {
@@ -247,17 +324,29 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
           if (!isCampo) ...[
             const SizedBox(height: 16),
             InkWell(
-              onTap: () => setState(() => _showAdvancedSpecialty = !_showAdvancedSpecialty),
+              onTap: () => setState(
+                () => _showAdvancedSpecialty = !_showAdvancedSpecialty,
+              ),
               borderRadius: BorderRadius.circular(6),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
                   children: [
-                    Icon(_showAdvancedSpecialty ? Icons.expand_less : Icons.expand_more, size: 18, color: const Color(0xFF60A5FA)),
+                    Icon(
+                      _showAdvancedSpecialty
+                          ? Icons.expand_less
+                          : Icons.expand_more,
+                      size: 18,
+                      color: const Color(0xFF60A5FA),
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       'Especialidad o Sub-área — Avanzado (opcional)',
-                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF60A5FA)),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF60A5FA),
+                      ),
                     ),
                   ],
                 ),
@@ -270,7 +359,14 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
                 child: buildHireDropdownField<RrhhSpecialty>(
                   label: 'Especialidad / Perfil Funcional (Opcional)',
                   value: form.selectedSpecialty,
-                  items: widget.specialties.map((s) => DropdownMenuItem(value: s, child: Text(s.name, overflow: TextOverflow.ellipsis))).toList(),
+                  items: widget.specialties
+                      .map(
+                        (s) => DropdownMenuItem(
+                          value: s,
+                          child: Text(s.name, overflow: TextOverflow.ellipsis),
+                        ),
+                      )
+                      .toList(),
                   hint: 'Ninguna / Especialidad general...',
                   icon: Icons.psychology_outlined,
                   onChanged: (s) {
@@ -286,27 +382,63 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
     );
   }
 
-  Widget _buildTypeCard({required String label, required String description, required IconData icon, required bool isSelected, required VoidCallback onTap}) {
+  Widget _buildTypeCard({
+    required String label,
+    required String description,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2563EB).withValues(alpha: 0.12) : const Color(0xFF111827),
+          color: isSelected
+              ? const Color(0xFF2563EB).withValues(alpha: 0.12)
+              : const Color(0xFF111827),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF1E293B), width: isSelected ? 1.5 : 1.0),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF2563EB)
+                : const Color(0xFF1E293B),
+            width: isSelected ? 1.5 : 1.0,
+          ),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 22, color: isSelected ? const Color(0xFF60A5FA) : const Color(0xFF64748B)),
+            Icon(
+              icon,
+              size: 22,
+              color: isSelected
+                  ? const Color(0xFF60A5FA)
+                  : const Color(0xFF64748B),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: isSelected ? const Color(0xFFF8FAFC) : const Color(0xFF94A3B8))),
-                  Text(description, style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(
+                    label,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected
+                          ? const Color(0xFFF8FAFC)
+                          : const Color(0xFF94A3B8),
+                    ),
+                  ),
+                  Text(
+                    description,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: const Color(0xFF64748B),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
@@ -315,8 +447,15 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
               height: 16,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF64748B), width: isSelected ? 4.5 : 1.5),
-                color: isSelected ? const Color(0xFF0F172A) : Colors.transparent,
+                border: Border.all(
+                  color: isSelected
+                      ? const Color(0xFF2563EB)
+                      : const Color(0xFF64748B),
+                  width: isSelected ? 4.5 : 1.5,
+                ),
+                color: isSelected
+                    ? const Color(0xFF0F172A)
+                    : Colors.transparent,
               ),
             ),
           ],

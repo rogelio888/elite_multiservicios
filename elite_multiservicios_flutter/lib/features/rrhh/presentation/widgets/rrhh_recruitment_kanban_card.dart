@@ -32,6 +32,7 @@ class _RrhhRecruitmentKanbanCardState extends State<RrhhRecruitmentKanbanCard> {
     if (parts.length == 1) return parts[0][0].toUpperCase();
     return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
   }
+
   @override
   Widget build(BuildContext context) {
     final a = widget.applicant;
@@ -114,12 +115,18 @@ class _RrhhRecruitmentKanbanCardState extends State<RrhhRecruitmentKanbanCard> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: (isCampo ? const Color(0xFF38BDF8) : const Color(0xFFA78BFA))
-                      .withValues(alpha: 0.12),
+                  color:
+                      (isCampo
+                              ? const Color(0xFF38BDF8)
+                              : const Color(0xFFA78BFA))
+                          .withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(4),
                   border: Border.all(
-                    color: (isCampo ? const Color(0xFF38BDF8) : const Color(0xFFA78BFA))
-                        .withValues(alpha: 0.3),
+                    color:
+                        (isCampo
+                                ? const Color(0xFF38BDF8)
+                                : const Color(0xFFA78BFA))
+                            .withValues(alpha: 0.3),
                     width: 0.8,
                   ),
                 ),
@@ -128,7 +135,9 @@ class _RrhhRecruitmentKanbanCardState extends State<RrhhRecruitmentKanbanCard> {
                   style: GoogleFonts.inter(
                     fontSize: 9.5,
                     fontWeight: FontWeight.w700,
-                    color: isCampo ? const Color(0xFF38BDF8) : const Color(0xFFA78BFA),
+                    color: isCampo
+                        ? const Color(0xFF38BDF8)
+                        : const Color(0xFFA78BFA),
                   ),
                 ),
               ),
@@ -188,7 +197,8 @@ class _RrhhRecruitmentKanbanCardState extends State<RrhhRecruitmentKanbanCard> {
           ),
 
           // Especialidad (si existe)
-          if (a.specialty.isNotEmpty && a.specialty.toLowerCase() != 'general') ...[
+          if (a.specialty.isNotEmpty &&
+              a.specialty.toLowerCase() != 'general') ...[
             const SizedBox(height: 2),
             Text(
               a.specialty,
@@ -203,7 +213,10 @@ class _RrhhRecruitmentKanbanCardState extends State<RrhhRecruitmentKanbanCard> {
           const SizedBox(height: 10),
 
           // Separador sutil
-          Container(height: 1, color: const Color(0xFF1E293B).withValues(alpha: 0.6)),
+          Container(
+            height: 1,
+            color: const Color(0xFF1E293B).withValues(alpha: 0.6),
+          ),
           const SizedBox(height: 8),
 
           // Fila Inferior: Fecha de postulación e Indicador CV
@@ -213,7 +226,11 @@ class _RrhhRecruitmentKanbanCardState extends State<RrhhRecruitmentKanbanCard> {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.calendar_today_outlined, size: 12, color: Color(0xFF64748B)),
+                  const Icon(
+                    Icons.calendar_today_outlined,
+                    size: 12,
+                    color: Color(0xFF64748B),
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     _formatDate(a.applicationDate),
@@ -228,7 +245,11 @@ class _RrhhRecruitmentKanbanCardState extends State<RrhhRecruitmentKanbanCard> {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.check_circle_rounded, size: 13, color: Color(0xFF10B981)),
+                    const Icon(
+                      Icons.check_circle_rounded,
+                      size: 13,
+                      color: Color(0xFF10B981),
+                    ),
                     const SizedBox(width: 3),
                     Text(
                       'CV ✓',

@@ -38,7 +38,9 @@ class RrhhVacationRecordRow extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isEven ? const Color(0xFF0F172A) : const Color(0xFF0B132B).withValues(alpha: 0.5),
+        color: isEven
+            ? const Color(0xFF0F172A)
+            : const Color(0xFF0B132B).withValues(alpha: 0.5),
         border: const Border(
           bottom: BorderSide(color: Color(0xFF1E293B), width: 1),
         ),
@@ -52,7 +54,10 @@ class RrhhVacationRecordRow extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF2563EB).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(4),
@@ -80,7 +85,9 @@ class RrhhVacationRecordRow extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 16,
-                  backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.15),
+                  backgroundColor: const Color(
+                    0xFF10B981,
+                  ).withValues(alpha: 0.15),
                   child: Text(
                     record.employeeName.isNotEmpty
                         ? record.employeeName[0].toUpperCase()
@@ -169,7 +176,10 @@ class RrhhVacationRecordRow extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 2.5,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E293B),
                     borderRadius: BorderRadius.circular(4),
@@ -209,7 +219,10 @@ class RrhhVacationRecordRow extends StatelessWidget {
                     side: BorderSide(
                       color: const Color(0xFF2563EB).withValues(alpha: 0.5),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     minimumSize: const Size(0, 30),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6),
@@ -249,11 +262,18 @@ class RrhhVacationRecordRow extends StatelessWidget {
                         value: 'start',
                         child: Row(
                           children: [
-                            const Icon(Icons.play_arrow, size: 16, color: Color(0xFF10B981)),
+                            const Icon(
+                              Icons.play_arrow,
+                              size: 16,
+                              color: Color(0xFF10B981),
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Iniciar goce',
-                              style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
+                              style: GoogleFonts.inter(
+                                fontSize: 12.5,
+                                color: Colors.white,
+                              ),
                             ),
                           ],
                         ),
@@ -262,11 +282,18 @@ class RrhhVacationRecordRow extends StatelessWidget {
                         value: 'edit',
                         child: Row(
                           children: [
-                            const Icon(Icons.edit_outlined, size: 16, color: Color(0xFF38BDF8)),
+                            const Icon(
+                              Icons.edit_outlined,
+                              size: 16,
+                              color: Color(0xFF38BDF8),
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Editar período',
-                              style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
+                              style: GoogleFonts.inter(
+                                fontSize: 12.5,
+                                color: Colors.white,
+                              ),
                             ),
                           ],
                         ),
@@ -275,11 +302,18 @@ class RrhhVacationRecordRow extends StatelessWidget {
                         value: 'cancel',
                         child: Row(
                           children: [
-                            const Icon(Icons.block_outlined, size: 16, color: Color(0xFFF59E0B)),
+                            const Icon(
+                              Icons.block_outlined,
+                              size: 16,
+                              color: Color(0xFFF59E0B),
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Cancelar',
-                              style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
+                              style: GoogleFonts.inter(
+                                fontSize: 12.5,
+                                color: Colors.white,
+                              ),
                             ),
                           ],
                         ),
@@ -288,11 +322,18 @@ class RrhhVacationRecordRow extends StatelessWidget {
                         value: 'delete',
                         child: Row(
                           children: [
-                            const Icon(Icons.delete_outline, size: 16, color: Color(0xFFEF4444)),
+                            const Icon(
+                              Icons.delete_outline,
+                              size: 16,
+                              color: Color(0xFFEF4444),
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Eliminar',
-                              style: GoogleFonts.inter(fontSize: 12.5, color: Color(0xFFEF4444)),
+                              style: GoogleFonts.inter(
+                                fontSize: 12.5,
+                                color: Color(0xFFEF4444),
+                              ),
                             ),
                           ],
                         ),
@@ -303,11 +344,18 @@ class RrhhVacationRecordRow extends StatelessWidget {
                         value: 'finish',
                         child: Row(
                           children: [
-                            const Icon(Icons.check_circle_outline, size: 16, color: Color(0xFF10B981)),
+                            const Icon(
+                              Icons.check_circle_outline,
+                              size: 16,
+                              color: Color(0xFF10B981),
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Finalizar goce',
-                              style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
+                              style: GoogleFonts.inter(
+                                fontSize: 12.5,
+                                color: Colors.white,
+                              ),
                             ),
                           ],
                         ),
@@ -316,11 +364,18 @@ class RrhhVacationRecordRow extends StatelessWidget {
                         value: 'cancel',
                         child: Row(
                           children: [
-                            const Icon(Icons.block_outlined, size: 16, color: Color(0xFFF59E0B)),
+                            const Icon(
+                              Icons.block_outlined,
+                              size: 16,
+                              color: Color(0xFFF59E0B),
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Cancelar goce',
-                              style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
+                              style: GoogleFonts.inter(
+                                fontSize: 12.5,
+                                color: Colors.white,
+                              ),
                             ),
                           ],
                         ),
@@ -331,11 +386,18 @@ class RrhhVacationRecordRow extends StatelessWidget {
                         value: 'delete',
                         child: Row(
                           children: [
-                            const Icon(Icons.delete_outline, size: 16, color: Color(0xFFEF4444)),
+                            const Icon(
+                              Icons.delete_outline,
+                              size: 16,
+                              color: Color(0xFFEF4444),
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Eliminar registro',
-                              style: GoogleFonts.inter(fontSize: 12.5, color: Color(0xFFEF4444)),
+                              style: GoogleFonts.inter(
+                                fontSize: 12.5,
+                                color: Color(0xFFEF4444),
+                              ),
                             ),
                           ],
                         ),

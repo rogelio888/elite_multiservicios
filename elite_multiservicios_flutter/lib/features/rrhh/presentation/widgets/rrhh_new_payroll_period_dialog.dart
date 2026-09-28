@@ -13,10 +13,12 @@ class RrhhNewPayrollPeriodDialog extends StatefulWidget {
   });
 
   @override
-  State<RrhhNewPayrollPeriodDialog> createState() => _RrhhNewPayrollPeriodDialogState();
+  State<RrhhNewPayrollPeriodDialog> createState() =>
+      _RrhhNewPayrollPeriodDialogState();
 }
 
-class _RrhhNewPayrollPeriodDialogState extends State<RrhhNewPayrollPeriodDialog> {
+class _RrhhNewPayrollPeriodDialogState
+    extends State<RrhhNewPayrollPeriodDialog> {
   final _formKey = GlobalKey<FormState>();
   final _notesController = TextEditingController();
 
@@ -56,7 +58,9 @@ class _RrhhNewPayrollPeriodDialogState extends State<RrhhNewPayrollPeriodDialog>
       final newPeriod = await widget.repository.createPayrollPeriod(
         _selectedYear,
         _selectedMonth,
-        notes: _notesController.text.trim().isNotEmpty ? _notesController.text.trim() : null,
+        notes: _notesController.text.trim().isNotEmpty
+            ? _notesController.text.trim()
+            : null,
       );
 
       if (mounted) {
@@ -135,7 +139,10 @@ class _RrhhNewPayrollPeriodDialogState extends State<RrhhNewPayrollPeriodDialog>
                                 initialValue: _selectedMonth,
                                 isExpanded: true,
                                 dropdownColor: const Color(0xFF1E293B),
-                                style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+                                style: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  color: Colors.white,
+                                ),
                                 decoration: _inputDecoration(),
                                 items: _months.map((m) {
                                   return DropdownMenuItem<int>(
@@ -144,7 +151,8 @@ class _RrhhNewPayrollPeriodDialogState extends State<RrhhNewPayrollPeriodDialog>
                                   );
                                 }).toList(),
                                 onChanged: (val) {
-                                  if (val != null) setState(() => _selectedMonth = val);
+                                  if (val != null)
+                                    setState(() => _selectedMonth = val);
                                 },
                               ),
                             ],
@@ -171,7 +179,10 @@ class _RrhhNewPayrollPeriodDialogState extends State<RrhhNewPayrollPeriodDialog>
                                 initialValue: _selectedYear,
                                 isExpanded: true,
                                 dropdownColor: const Color(0xFF1E293B),
-                                style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+                                style: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  color: Colors.white,
+                                ),
                                 decoration: _inputDecoration(),
                                 items: _years.map((y) {
                                   return DropdownMenuItem<int>(
@@ -180,7 +191,8 @@ class _RrhhNewPayrollPeriodDialogState extends State<RrhhNewPayrollPeriodDialog>
                                   );
                                 }).toList(),
                                 onChanged: (val) {
-                                  if (val != null) setState(() => _selectedYear = val);
+                                  if (val != null)
+                                    setState(() => _selectedYear = val);
                                 },
                               ),
                             ],
@@ -203,9 +215,13 @@ class _RrhhNewPayrollPeriodDialogState extends State<RrhhNewPayrollPeriodDialog>
                     TextFormField(
                       controller: _notesController,
                       maxLines: 3,
-                      style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: Colors.white,
+                      ),
                       decoration: _inputDecoration(
-                        hint: 'ej. Cierre mensual regular previo a la remisión de la planilla contable...',
+                        hint:
+                            'ej. Cierre mensual regular previo a la remisión de la planilla contable...',
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -216,12 +232,20 @@ class _RrhhNewPayrollPeriodDialogState extends State<RrhhNewPayrollPeriodDialog>
                       decoration: BoxDecoration(
                         color: const Color(0xFF3B82F6).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFF3B82F6).withValues(alpha: 0.25)),
+                        border: Border.all(
+                          color: const Color(
+                            0xFF3B82F6,
+                          ).withValues(alpha: 0.25),
+                        ),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.info_outline, size: 18, color: Color(0xFF60A5FA)),
+                          const Icon(
+                            Icons.info_outline,
+                            size: 18,
+                            color: Color(0xFF60A5FA),
+                          ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
@@ -330,9 +354,17 @@ class _RrhhNewPayrollPeriodDialogState extends State<RrhhNewPayrollPeriodDialog>
               foregroundColor: const Color(0xFF94A3B8),
               side: const BorderSide(color: Color(0xFF334155)),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-            child: Text('Cancelar', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
           const SizedBox(width: 12),
           ElevatedButton(
@@ -341,16 +373,27 @@ class _RrhhNewPayrollPeriodDialogState extends State<RrhhNewPayrollPeriodDialog>
               backgroundColor: const Color(0xFF2563EB),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               elevation: 0,
             ),
             child: _isSubmitting
                 ? const SizedBox(
                     width: 16,
                     height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
-                : Text('Crear Período', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
+                : Text(
+                    'Crear Período',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
           ),
         ],
       ),
@@ -360,7 +403,10 @@ class _RrhhNewPayrollPeriodDialogState extends State<RrhhNewPayrollPeriodDialog>
   InputDecoration _inputDecoration({String? hint}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF64748B)),
+      hintStyle: GoogleFonts.inter(
+        fontSize: 13,
+        color: const Color(0xFF64748B),
+      ),
       filled: true,
       fillColor: const Color(0xFF0F172A),
       isDense: true,

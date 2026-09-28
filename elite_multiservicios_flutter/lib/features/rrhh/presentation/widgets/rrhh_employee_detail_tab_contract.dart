@@ -43,7 +43,11 @@ class RrhhEmployeeDetailTabContract extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.info_outline, size: 16, color: Color(0xFF60A5FA)),
+                const Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: Color(0xFF60A5FA),
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -65,7 +69,9 @@ class RrhhEmployeeDetailTabContract extends StatelessWidget {
           LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth > 580;
-              final colWidth = isWide ? (constraints.maxWidth - 12) / 2 : constraints.maxWidth;
+              final colWidth = isWide
+                  ? (constraints.maxWidth - 12) / 2
+                  : constraints.maxWidth;
 
               return Wrap(
                 spacing: 12,
@@ -120,7 +126,8 @@ class RrhhEmployeeDetailTabContract extends StatelessWidget {
             isMasked: !hasCompensationPermission,
             valueColor: const Color(0xFF10B981),
           ),
-          if (employee.observations != null && employee.observations!.isNotEmpty) ...[
+          if (employee.observations != null &&
+              employee.observations!.isNotEmpty) ...[
             const SizedBox(height: 20),
             _buildSectionHeader('OBSERVACIONES CONTRACTUALES'),
             const SizedBox(height: 8),
@@ -173,7 +180,9 @@ class RrhhEmployeeDetailTabContract extends StatelessWidget {
   }
 
   String _formatCurrency(double amount) {
-    return amount.toStringAsFixed(2).replaceAllMapped(
+    return amount
+        .toStringAsFixed(2)
+        .replaceAllMapped(
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (Match m) => '${m[1]}.',
         );

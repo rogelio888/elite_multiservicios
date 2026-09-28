@@ -38,7 +38,10 @@ class RrhhAuditKpis extends StatelessWidget {
     final totalEvents = events.length;
 
     // 2. Usuarios activos (responsables únicos)
-    final uniqueUsers = events.map((e) => e.registeredBy).where((u) => u.isNotEmpty).toSet();
+    final uniqueUsers = events
+        .map((e) => e.registeredBy)
+        .where((u) => u.isNotEmpty)
+        .toSet();
     final activeUsersCount = uniqueUsers.length;
 
     // 3. Categoría más frecuente
@@ -53,7 +56,8 @@ class RrhhAuditKpis extends StatelessWidget {
         ..sort((a, b) => b.value.compareTo(a.value));
       final topEntry = sortedEntries.first;
       mostFrequentCategoryName = RrhhTimelineCategory.getLabel(topEntry.key);
-      mostFrequentCategorySub = '${topEntry.value} eventos (${((topEntry.value / totalEvents) * 100).toStringAsFixed(0)}%)';
+      mostFrequentCategorySub =
+          '${topEntry.value} eventos (${((topEntry.value / totalEvents) * 100).toStringAsFixed(0)}%)';
     }
 
     // 4. Última actividad

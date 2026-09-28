@@ -27,7 +27,8 @@ class RrhhPersonalDirectorioTab extends StatefulWidget {
   });
 
   @override
-  State<RrhhPersonalDirectorioTab> createState() => RrhhPersonalDirectorioTabState();
+  State<RrhhPersonalDirectorioTab> createState() =>
+      RrhhPersonalDirectorioTabState();
 }
 
 class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
@@ -77,17 +78,34 @@ class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
       _inactiveCount = all.where((e) => !e.isActive).length;
 
       final filtered = await repo.listEmployees(
-        status: _quickStatus, employeeType: _employeeType, areaId: _areaId, search: _searchQuery,
+        status: _quickStatus,
+        employeeType: _employeeType,
+        areaId: _areaId,
+        search: _searchQuery,
       );
 
       var result = filtered;
       if (_availabilityStatus != null && _availabilityStatus!.isNotEmpty) {
-        result = result.where((e) => e.availabilityStatus.toUpperCase() == _availabilityStatus!.toUpperCase()).toList();
+        result = result
+            .where(
+              (e) =>
+                  e.availabilityStatus.toUpperCase() ==
+                  _availabilityStatus!.toUpperCase(),
+            )
+            .toList();
       }
 
-      if (mounted) setState(() { _employees = result; _isLoading = false; });
+      if (mounted)
+        setState(() {
+          _employees = result;
+          _isLoading = false;
+        });
     } catch (e) {
-      if (mounted) setState(() { _errorMessage = 'Error al cargar directorio: $e'; _isLoading = false; });
+      if (mounted)
+        setState(() {
+          _errorMessage = 'Error al cargar directorio: $e';
+          _isLoading = false;
+        });
     }
   }
 
@@ -100,7 +118,10 @@ class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
   @override
   Widget build(BuildContext context) {
     if (_errorMessage != null) {
-      return RrhhErrorState(errorMessage: _errorMessage, onRetry: loadEmployees);
+      return RrhhErrorState(
+        errorMessage: _errorMessage,
+        onRetry: loadEmployees,
+      );
     }
     final totalPages = (_employees.length / _pageSize).ceil().clamp(1, 999);
     final startIndex = (_currentPage - 1) * _pageSize;
@@ -120,17 +141,31 @@ class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
               _buildSectionHeader(),
               const SizedBox(height: 14),
               RrhhPersonalFiltersBar(
-                totalCount: _totalCount, activeCount: _activeCount, inactiveCount: _inactiveCount,
-                selectedQuickStatus: _quickStatus, selectedType: _employeeType, selectedAreaId: _areaId,
-                selectedAvailability: _availabilityStatus, areas: _areas,
-                onSearchChanged: (q) => _onFilterUpdated(update: () => _searchQuery = q.isEmpty ? null : q),
-                onQuickStatusChanged: (s) => _onFilterUpdated(update: () => _quickStatus = s),
-                onTypeChanged: (t) => _onFilterUpdated(update: () => _employeeType = t),
-                onAreaChanged: (a) => _onFilterUpdated(update: () => _areaId = a),
-                onAvailabilityChanged: (v) => _onFilterUpdated(update: () => _availabilityStatus = v),
-                onResetFilters: () => _onFilterUpdated(update: () {
-                  _quickStatus = _employeeType = _areaId = _availabilityStatus = _searchQuery = null;
-                }),
+                totalCount: _totalCount,
+                activeCount: _activeCount,
+                inactiveCount: _inactiveCount,
+                selectedQuickStatus: _quickStatus,
+                selectedType: _employeeType,
+                selectedAreaId: _areaId,
+                selectedAvailability: _availabilityStatus,
+                areas: _areas,
+                onSearchChanged: (q) => _onFilterUpdated(
+                  update: () => _searchQuery = q.isEmpty ? null : q,
+                ),
+                onQuickStatusChanged: (s) =>
+                    _onFilterUpdated(update: () => _quickStatus = s),
+                onTypeChanged: (t) =>
+                    _onFilterUpdated(update: () => _employeeType = t),
+                onAreaChanged: (a) =>
+                    _onFilterUpdated(update: () => _areaId = a),
+                onAvailabilityChanged: (v) =>
+                    _onFilterUpdated(update: () => _availabilityStatus = v),
+                onResetFilters: () => _onFilterUpdated(
+                  update: () {
+                    _quickStatus = _employeeType = _areaId =
+                        _availabilityStatus = _searchQuery = null;
+                  },
+                ),
               ),
               const SizedBox(height: 14),
               Container(
@@ -155,32 +190,49 @@ class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
                             padding: EdgeInsets.symmetric(vertical: 40),
                             child: RrhhEmptyState(
                               title: 'No se encontraron colaboradores',
-                              description: 'Intente ajustando o limpiando los filtros seleccionados.',
+                              description:
+                                  'Intente ajustando o limpiando los filtros seleccionados.',
                               icon: Icons.person_off_outlined,
                             ),
                           )
                         else
-                          ...pageItems.map((emp) => RrhhPersonalTableRow(
-                                employee: emp, widths: widths,
-                                onViewDetails: () => RrhhEmployeeDetailDialog.show(
-                                  context,
+                          ...pageItems.map(
+                            (emp) => RrhhPersonalTableRow(
+                              employee: emp,
+                              widths: widths,
+                              onViewDetails: () =>
+                                  RrhhEmployeeDetailDialog.show(
+                                    context,
+                                    emp.id,
+                                    canEdit: widget.canManage,
+                                    canModifyContract: widget.canModifyContract,
+                                  ),
+                              onEdit: () async {
+                                final repo = RrhhRepository.current;
+                                final fullEmp = await repo.getEmployeeById(
                                   emp.id,
-                                  canEdit: widget.canManage,
-                                  canModifyContract: widget.canModifyContract,
-                                ),
-                                onEdit: () async {
-                                  final repo = RrhhRepository.current;
-                                  final fullEmp = await repo.getEmployeeById(emp.id);
-                                  if (context.mounted) {
-                                    final updated = await RrhhEditEmployeeDialog.show(context, fullEmp);
-                                    if (updated == true && context.mounted) {
-                                      loadEmployees();
-                                      RrhhSnackBar.showSuccess(context, 'Ficha actualizada correctamente');
-                                    }
+                                );
+                                if (context.mounted) {
+                                  final updated =
+                                      await RrhhEditEmployeeDialog.show(
+                                        context,
+                                        fullEmp,
+                                      );
+                                  if (updated == true && context.mounted) {
+                                    loadEmployees();
+                                    RrhhSnackBar.showSuccess(
+                                      context,
+                                      'Ficha actualizada correctamente',
+                                    );
                                   }
-                                },
-                                onTerminate: () => RrhhEmployeeDetailDialog.show(context, emp.id),
-                              )),
+                                }
+                              },
+                              onTerminate: () => RrhhEmployeeDetailDialog.show(
+                                context,
+                                emp.id,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -208,8 +260,11 @@ class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
             Text(
               'Directorio de Personal',
               style: GoogleFonts.inter(
-                fontSize: 16, fontWeight: FontWeight.w700,
-                color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: isDark
+                    ? const Color(0xFFF8FAFC)
+                    : const Color(0xFF0F172A),
                 letterSpacing: -0.3,
               ),
             ),
@@ -217,7 +272,10 @@ class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
             Text(
               'Listado oficial de colaboradores activos e inactivos',
               style: GoogleFonts.inter(
-                fontSize: 12, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                fontSize: 12,
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -226,7 +284,10 @@ class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
           RrhhPrimaryActionButton(
             label: 'Contratar Colaborador',
             icon: Icons.person_add_alt_1,
-            onPressed: () => RrhhEmployeeHireWizard.show(context, onCompleted: loadEmployees),
+            onPressed: () => RrhhEmployeeHireWizard.show(
+              context,
+              onCompleted: loadEmployees,
+            ),
           ),
       ],
     );
@@ -244,19 +305,36 @@ class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildTh('CÓDIGO', widths.codigo), _buildTh('FOTO', widths.foto),
-          _buildTh('COLABORADOR', widths.nombre), _buildTh('TIPO', widths.tipo),
-          _buildTh('ÁREA / CARGO', widths.areaCargo), _buildTh('ESPECIALIDAD', widths.especialidad),
-          _buildTh('DISPONIBILIDAD', widths.disponibilidad), _buildTh('EXPED.', widths.expediente),
+          _buildTh('CÓDIGO', widths.codigo),
+          _buildTh('FOTO', widths.foto),
+          _buildTh('COLABORADOR', widths.nombre),
+          _buildTh('TIPO', widths.tipo),
+          _buildTh('ÁREA / CARGO', widths.areaCargo),
+          _buildTh('ESPECIALIDAD', widths.especialidad),
+          _buildTh('DISPONIBILIDAD', widths.disponibilidad),
+          _buildTh('EXPED.', widths.expediente),
           _buildTh('ACCIONES', widths.acciones, align: TextAlign.right),
         ],
       ),
     );
   }
 
-  Widget _buildTh(String title, double width, {TextAlign align = TextAlign.left}) => SizedBox(
+  Widget _buildTh(
+    String title,
+    double width, {
+    TextAlign align = TextAlign.left,
+  }) => SizedBox(
     width: width,
-    child: Text(title, textAlign: align, style: GoogleFonts.inter(fontSize: 10.5, fontWeight: FontWeight.w600, color: const Color(0xFF64748B), letterSpacing: 0.5)),
+    child: Text(
+      title,
+      textAlign: align,
+      style: GoogleFonts.inter(
+        fontSize: 10.5,
+        fontWeight: FontWeight.w600,
+        color: const Color(0xFF64748B),
+        letterSpacing: 0.5,
+      ),
+    ),
   );
 
   Widget _buildPaginationBar(int totalPages, int startIndex, int currentCount) {
@@ -264,24 +342,59 @@ class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Mostrando $start-$end de ${_employees.length} colaboradores', style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B))),
+        Text(
+          'Mostrando $start-$end de ${_employees.length} colaboradores',
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            color: const Color(0xFF64748B),
+          ),
+        ),
         Row(
           children: [
             OutlinedButton(
-              onPressed: _currentPage > 1 ? () => setState(() => _currentPage--) : null,
-              style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFFCBD5E1), side: const BorderSide(color: Color(0xFF1E293B)), padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6)),
+              onPressed: _currentPage > 1
+                  ? () => setState(() => _currentPage--)
+                  : null,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFFCBD5E1),
+                side: const BorderSide(color: Color(0xFF1E293B)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+              ),
               child: const Text('Anterior', style: TextStyle(fontSize: 11.5)),
             ),
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0xFF334155))),
-              child: Text('$_currentPage / $totalPages', style: GoogleFonts.jetBrainsMono(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white)),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E293B),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: const Color(0xFF334155)),
+              ),
+              child: Text(
+                '$_currentPage / $totalPages',
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
             ),
             const SizedBox(width: 8),
             OutlinedButton(
-              onPressed: _currentPage < totalPages ? () => setState(() => _currentPage++) : null,
-              style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFFCBD5E1), side: const BorderSide(color: Color(0xFF1E293B)), padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6)),
+              onPressed: _currentPage < totalPages
+                  ? () => setState(() => _currentPage++)
+                  : null,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFFCBD5E1),
+                side: const BorderSide(color: Color(0xFF1E293B)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+              ),
               child: const Text('Siguiente', style: TextStyle(fontSize: 11.5)),
             ),
           ],
@@ -292,24 +405,84 @@ class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
 
   Widget _buildSkeletonRows(RrhhTableWidths widths) {
     return Column(
-      children: List.generate(6, (_) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(width: widths.codigo, child: Container(width: 60, height: 10, color: const Color(0xFF1E293B))),
-            SizedBox(width: widths.foto, child: Container(width: 28, height: 28, decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(6)))),
-            SizedBox(width: widths.nombre, child: Container(height: 10, color: const Color(0xFF1E293B))),
-            SizedBox(width: widths.tipo, child: Container(width: 50, height: 10, color: const Color(0xFF1E293B))),
-            SizedBox(width: widths.areaCargo, child: Container(height: 10, color: const Color(0xFF1E293B))),
-            SizedBox(width: widths.especialidad, child: Container(width: 70, height: 10, color: const Color(0xFF1E293B))),
-            SizedBox(width: widths.disponibilidad, child: Container(width: 80, height: 10, color: const Color(0xFF1E293B))),
-            SizedBox(width: widths.expediente, child: Container(width: 35, height: 10, color: const Color(0xFF1E293B))),
-            SizedBox(width: widths.acciones, child: Container(width: 50, height: 10, color: const Color(0xFF1E293B))),
-          ],
+      children: List.generate(
+        6,
+        (_) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: widths.codigo,
+                child: Container(
+                  width: 60,
+                  height: 10,
+                  color: const Color(0xFF1E293B),
+                ),
+              ),
+              SizedBox(
+                width: widths.foto,
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: widths.nombre,
+                child: Container(height: 10, color: const Color(0xFF1E293B)),
+              ),
+              SizedBox(
+                width: widths.tipo,
+                child: Container(
+                  width: 50,
+                  height: 10,
+                  color: const Color(0xFF1E293B),
+                ),
+              ),
+              SizedBox(
+                width: widths.areaCargo,
+                child: Container(height: 10, color: const Color(0xFF1E293B)),
+              ),
+              SizedBox(
+                width: widths.especialidad,
+                child: Container(
+                  width: 70,
+                  height: 10,
+                  color: const Color(0xFF1E293B),
+                ),
+              ),
+              SizedBox(
+                width: widths.disponibilidad,
+                child: Container(
+                  width: 80,
+                  height: 10,
+                  color: const Color(0xFF1E293B),
+                ),
+              ),
+              SizedBox(
+                width: widths.expediente,
+                child: Container(
+                  width: 35,
+                  height: 10,
+                  color: const Color(0xFF1E293B),
+                ),
+              ),
+              SizedBox(
+                width: widths.acciones,
+                child: Container(
+                  width: 50,
+                  height: 10,
+                  color: const Color(0xFF1E293B),
+                ),
+              ),
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 }
-

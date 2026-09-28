@@ -26,13 +26,14 @@ class _RrhhCatalogTableWidths {
     this.descripcion,
     required this.estado,
     required this.acciones,
-  }) : total = codigo +
-            nombre +
-            (subTipo ?? 0.0) +
-            (monto ?? 0.0) +
-            (descripcion ?? 0.0) +
-            estado +
-            acciones;
+  }) : total =
+           codigo +
+           nombre +
+           (subTipo ?? 0.0) +
+           (monto ?? 0.0) +
+           (descripcion ?? 0.0) +
+           estado +
+           acciones;
 
   factory _RrhhCatalogTableWidths.calculate({
     required double availableWidth,
@@ -50,7 +51,9 @@ class _RrhhCatalogTableWidths {
         const minNombre = 180.0;
         const minDesc = 220.0;
         const minTotal = fixed + minNombre + minDesc; // 890.0
-        final effectiveWidth = availableWidth > minTotal ? availableWidth : minTotal;
+        final effectiveWidth = availableWidth > minTotal
+            ? availableWidth
+            : minTotal;
         final extra = effectiveWidth - minTotal;
         final nombre = minNombre + (extra * 0.40);
         final desc = minDesc + (extra * 0.60);
@@ -71,7 +74,9 @@ class _RrhhCatalogTableWidths {
         const minNombre = 200.0;
         const minDesc = 240.0;
         const minTotal = fixed + minNombre + minDesc; // 820.0
-        final effectiveWidth = availableWidth > minTotal ? availableWidth : minTotal;
+        final effectiveWidth = availableWidth > minTotal
+            ? availableWidth
+            : minTotal;
         final extra = effectiveWidth - minTotal;
         final nombre = minNombre + (extra * 0.40);
         final desc = minDesc + (extra * 0.60);
@@ -94,7 +99,9 @@ class _RrhhCatalogTableWidths {
         const minNombre = 220.0;
         const minDesc = 260.0;
         const minTotal = fixed + minNombre + minDesc; // 830.0
-        final effectiveWidth = availableWidth > minTotal ? availableWidth : minTotal;
+        final effectiveWidth = availableWidth > minTotal
+            ? availableWidth
+            : minTotal;
         final extra = effectiveWidth - minTotal;
         final nombre = minNombre + (extra * 0.40);
         final desc = minDesc + (extra * 0.60);
@@ -199,7 +206,8 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
         final matchName = item.name.toLowerCase().contains(q);
         final matchDesc = item.description?.toLowerCase().contains(q) ?? false;
         final matchSubType = item.subType?.toLowerCase().contains(q) ?? false;
-        if (!matchCode && !matchName && !matchDesc && !matchSubType) return false;
+        if (!matchCode && !matchName && !matchDesc && !matchSubType)
+          return false;
       }
 
       return true;
@@ -241,7 +249,9 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
 
     if (updatedItem != null && mounted) {
       try {
-        final saved = await RrhhRepository.current.updateCatalogItem(updatedItem);
+        final saved = await RrhhRepository.current.updateCatalogItem(
+          updatedItem,
+        );
         if (!mounted) return;
         setState(() {
           final idx = _items.indexWhere((c) => c.id == saved.id);
@@ -266,21 +276,36 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
           backgroundColor: const Color(0xFF0F172A),
           title: Text(
             'Desactivar Registro',
-            style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: Colors.white, fontSize: 16),
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              fontSize: 16,
+            ),
           ),
           content: Text(
             '¿Está seguro de desactivar "${item.name}" (${item.code})?\n\nNo podrá ser seleccionado en nuevos expedientes de contratación.',
-            style: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 13),
+            style: GoogleFonts.inter(
+              color: const Color(0xFF94A3B8),
+              fontSize: 13,
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancelar', style: TextStyle(color: Color(0xFF94A3B8))),
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(color: Color(0xFF94A3B8)),
+              ),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(ctx, true),
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
-              child: const Text('Desactivar', style: TextStyle(color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEF4444),
+              ),
+              child: const Text(
+                'Desactivar',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -289,7 +314,10 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
     }
 
     try {
-      final updated = item.copyWith(isActive: !item.isActive, updatedAt: DateTime.now());
+      final updated = item.copyWith(
+        isActive: !item.isActive,
+        updatedAt: DateTime.now(),
+      );
       final saved = await RrhhRepository.current.updateCatalogItem(updated);
       if (!mounted) return;
       setState(() {
@@ -350,7 +378,11 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Barra de Selector y Acciones
-                _buildCatalogSelectorBar(totalCount, activeCount, inactiveCount),
+                _buildCatalogSelectorBar(
+                  totalCount,
+                  activeCount,
+                  inactiveCount,
+                ),
                 const SizedBox(height: 16),
 
                 // Contenido: Tabla con LayoutBuilder
@@ -373,49 +405,57 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
                             ),
                           )
                         : _error != null
-                            ? RrhhErrorState(errorMessage: _error!, onRetry: _loadItems)
-                            : filtered.isEmpty
-                                ? RrhhEmptyState(
-                                    title: 'No hay registros en ${_selectedType.title}',
-                                    description: _searchQuery.isNotEmpty
-                                        ? 'No se encontraron coincidencias para "$_searchQuery".'
-                                        : 'Aún no se han configurado elementos para este catálogo.',
-                                    icon: _iconForType(_selectedType),
-                                  )
-                                : LayoutBuilder(
-                                    builder: (context, constraints) {
-                                      final widths = _RrhhCatalogTableWidths.calculate(
-                                        availableWidth: constraints.maxWidth - 32,
-                                        type: _selectedType,
-                                      );
+                        ? RrhhErrorState(
+                            errorMessage: _error!,
+                            onRetry: _loadItems,
+                          )
+                        : filtered.isEmpty
+                        ? RrhhEmptyState(
+                            title: 'No hay registros en ${_selectedType.title}',
+                            description: _searchQuery.isNotEmpty
+                                ? 'No se encontraron coincidencias para "$_searchQuery".'
+                                : 'Aún no se han configurado elementos para este catálogo.',
+                            icon: _iconForType(_selectedType),
+                          )
+                        : LayoutBuilder(
+                            builder: (context, constraints) {
+                              final widths = _RrhhCatalogTableWidths.calculate(
+                                availableWidth: constraints.maxWidth - 32,
+                                type: _selectedType,
+                              );
 
-                                      return SingleChildScrollView(
-                                        scrollDirection: Axis.horizontal,
-                                        child: SizedBox(
-                                          width: (widths.total + 32).clamp(constraints.maxWidth, 3000.0),
-                                          child: Column(
-                                            children: [
-                                              _buildTableHeader(widths),
-                                              Expanded(
-                                                child: ListView.builder(
-                                                  itemCount: filtered.length,
-                                                  itemBuilder: (ctx, index) {
-                                                    final item = filtered[index];
-                                                    return _RrhhCatalogTableRow(
-                                                      item: item,
-                                                      widths: widths,
-                                                      onEdit: () => _openEditDialog(item),
-                                                      onToggleStatus: () => _toggleStatus(item),
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
+                              return SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: SizedBox(
+                                  width: (widths.total + 32).clamp(
+                                    constraints.maxWidth,
+                                    3000.0,
                                   ),
+                                  child: Column(
+                                    children: [
+                                      _buildTableHeader(widths),
+                                      Expanded(
+                                        child: ListView.builder(
+                                          itemCount: filtered.length,
+                                          itemBuilder: (ctx, index) {
+                                            final item = filtered[index];
+                                            return _RrhhCatalogTableRow(
+                                              item: item,
+                                              widths: widths,
+                                              onEdit: () =>
+                                                  _openEditDialog(item),
+                                              onToggleStatus: () =>
+                                                  _toggleStatus(item),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                   ),
                 ),
               ],
@@ -462,7 +502,9 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
                 style: GoogleFonts.inter(
                   fontSize: 19,
                   fontWeight: FontWeight.w700,
-                  color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                  color: isDark
+                      ? const Color(0xFFF8FAFC)
+                      : const Color(0xFF0F172A),
                   letterSpacing: -0.4,
                 ),
               ),
@@ -471,7 +513,9 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
                 'Listas maestras de RRHH',
                 style: GoogleFonts.inter(
                   fontSize: 12.5,
-                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
                 ),
               ),
             ],
@@ -508,21 +552,35 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
                 decoration: BoxDecoration(
                   color: const Color(0xFF111827),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.5)),
+                  border: Border.all(
+                    color: const Color(0xFF2563EB).withValues(alpha: 0.5),
+                  ),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<RrhhCatalogType>(
                     value: _selectedType,
                     dropdownColor: const Color(0xFF0F172A),
-                    icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF60A5FA)),
-                    style: GoogleFonts.inter(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 18,
+                      color: Color(0xFF60A5FA),
+                    ),
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                     items: RrhhCatalogType.values.map((type) {
                       return DropdownMenuItem<RrhhCatalogType>(
                         value: type,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(_iconForType(type), size: 16, color: const Color(0xFF60A5FA)),
+                            Icon(
+                              _iconForType(type),
+                              size: 16,
+                              color: const Color(0xFF60A5FA),
+                            ),
                             const SizedBox(width: 8),
                             Text(type.title),
                           ],
@@ -546,11 +604,22 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
                   style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Buscar en ${_selectedType.title}...',
-                    hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12.5),
-                    prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF64748B)),
+                    hintStyle: GoogleFonts.inter(
+                      color: const Color(0xFF64748B),
+                      fontSize: 12.5,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      size: 18,
+                      color: Color(0xFF64748B),
+                    ),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.close, size: 16, color: Color(0xFF64748B)),
+                            icon: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Color(0xFF64748B),
+                            ),
                             onPressed: () {
                               _searchCtrl.clear();
                               setState(() => _searchQuery = '');
@@ -559,7 +628,10 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
                         : null,
                     filled: true,
                     fillColor: const Color(0xFF111827),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 0,
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(color: Color(0xFF1E293B)),
@@ -595,13 +667,21 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
                 icon: const Icon(Icons.add_rounded, size: 16),
                 label: Text(
                   'Nuevo ${_selectedType.prefix}',
-                  style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 style: FilledButton.styleFrom(
                   backgroundColor: const Color(0xFF2563EB),
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 9,
+                  ),
                 ),
               ),
             ],
@@ -619,10 +699,14 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2563EB).withValues(alpha: 0.15) : const Color(0xFF111827),
+          color: isSelected
+              ? const Color(0xFF2563EB).withValues(alpha: 0.15)
+              : const Color(0xFF111827),
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF1E293B),
+            color: isSelected
+                ? const Color(0xFF2563EB)
+                : const Color(0xFF1E293B),
           ),
         ),
         child: Text(
@@ -630,7 +714,9 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
           style: GoogleFonts.inter(
             fontSize: 11.5,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? const Color(0xFF60A5FA) : const Color(0xFF94A3B8),
+            color: isSelected
+                ? const Color(0xFF60A5FA)
+                : const Color(0xFF94A3B8),
           ),
         ),
       ),
@@ -653,11 +739,14 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
           _buildTh('NOMBRE', widths.nombre),
           if (widths.subTipo != null)
             _buildTh(
-              _selectedType == RrhhCatalogType.bonuses ? 'TIPO BONO' : 'TIPO DESCUENTO',
+              _selectedType == RrhhCatalogType.bonuses
+                  ? 'TIPO BONO'
+                  : 'TIPO DESCUENTO',
               widths.subTipo!,
             ),
           if (widths.monto != null) _buildTh('MONTO SUG.', widths.monto!),
-          if (widths.descripcion != null) _buildTh('DESCRIPCIÓN', widths.descripcion!),
+          if (widths.descripcion != null)
+            _buildTh('DESCRIPCIÓN', widths.descripcion!),
           _buildTh('ESTADO', widths.estado),
           _buildTh('ACCIONES', widths.acciones, align: TextAlign.right),
         ],
@@ -665,7 +754,11 @@ class _RrhhCatalogsViewState extends State<RrhhCatalogsView> {
     );
   }
 
-  Widget _buildTh(String title, double width, {TextAlign align = TextAlign.left}) {
+  Widget _buildTh(
+    String title,
+    double width, {
+    TextAlign align = TextAlign.left,
+  }) {
     return SizedBox(
       width: width,
       child: Text(
@@ -716,7 +809,9 @@ class _RrhhCatalogTableRowState extends State<_RrhhCatalogTableRow> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: _isHovered ? const Color(0xFF131C2E) : Colors.transparent,
-          border: const Border(bottom: BorderSide(color: Color(0xFF1E293B), width: 1)),
+          border: const Border(
+            bottom: BorderSide(color: Color(0xFF1E293B), width: 1),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -727,7 +822,10 @@ class _RrhhCatalogTableRowState extends State<_RrhhCatalogTableRow> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF2563EB).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(4),
@@ -767,7 +865,10 @@ class _RrhhCatalogTableRowState extends State<_RrhhCatalogTableRow> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 7,
+                      vertical: 2.5,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF38BDF8).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(4),
@@ -797,7 +898,9 @@ class _RrhhCatalogTableRowState extends State<_RrhhCatalogTableRow> {
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: item.defaultAmount != null ? const Color(0xFF10B981) : const Color(0xFF64748B),
+                    color: item.defaultAmount != null
+                        ? const Color(0xFF10B981)
+                        : const Color(0xFF64748B),
                   ),
                 ),
               ),
@@ -810,8 +913,12 @@ class _RrhhCatalogTableRowState extends State<_RrhhCatalogTableRow> {
                   item.description ?? 'Sin descripción adicional',
                   style: GoogleFonts.inter(
                     fontSize: 11.5,
-                    color: item.description != null ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
-                    fontStyle: item.description != null ? FontStyle.normal : FontStyle.italic,
+                    color: item.description != null
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
+                    fontStyle: item.description != null
+                        ? FontStyle.normal
+                        : FontStyle.italic,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -824,9 +931,16 @@ class _RrhhCatalogTableRowState extends State<_RrhhCatalogTableRow> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
-                    color: (item.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B)).withValues(alpha: 0.15),
+                    color:
+                        (item.isActive
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFF64748B))
+                            .withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Row(
@@ -836,7 +950,9 @@ class _RrhhCatalogTableRowState extends State<_RrhhCatalogTableRow> {
                         width: 6,
                         height: 6,
                         decoration: BoxDecoration(
-                          color: item.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B),
+                          color: item.isActive
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFF64748B),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -846,7 +962,9 @@ class _RrhhCatalogTableRowState extends State<_RrhhCatalogTableRow> {
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                          color: item.isActive ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
+                          color: item.isActive
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFF94A3B8),
                         ),
                       ),
                     ],
@@ -865,13 +983,19 @@ class _RrhhCatalogTableRowState extends State<_RrhhCatalogTableRow> {
                     onPressed: widget.onEdit,
                     style: TextButton.styleFrom(
                       foregroundColor: const Color(0xFF60A5FA),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
                       'Editar',
-                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -879,7 +1003,11 @@ class _RrhhCatalogTableRowState extends State<_RrhhCatalogTableRow> {
                     width: 24,
                     height: 24,
                     child: PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 15, color: Color(0xFF64748B)),
+                      icon: const Icon(
+                        Icons.more_vert,
+                        size: 15,
+                        color: Color(0xFF64748B),
+                      ),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       color: const Color(0xFF0F172A),
@@ -892,9 +1020,13 @@ class _RrhhCatalogTableRowState extends State<_RrhhCatalogTableRow> {
                           child: Row(
                             children: [
                               Icon(
-                                item.isActive ? Icons.block_flipped : Icons.check_circle_outline,
+                                item.isActive
+                                    ? Icons.block_flipped
+                                    : Icons.check_circle_outline,
                                 size: 15,
-                                color: item.isActive ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                                color: item.isActive
+                                    ? const Color(0xFFEF4444)
+                                    : const Color(0xFF10B981),
                               ),
                               const SizedBox(width: 8),
                               Text(

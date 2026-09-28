@@ -105,7 +105,8 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
   Future<void> _pickDateRange() async {
     final picked = await showDateRangePicker(
       context: context,
-      initialDateRange: _selectedDateRange ??
+      initialDateRange:
+          _selectedDateRange ??
           DateTimeRange(
             start: DateTime.now().subtract(const Duration(days: 30)),
             end: DateTime.now().add(const Duration(days: 60)),
@@ -147,7 +148,10 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
         RrhhVacationRecordStatus.enCurso,
       );
       if (!mounted) return;
-      RrhhSnackBar.showSuccess(context, 'Período ${rec.code} marcado en curso.');
+      RrhhSnackBar.showSuccess(
+        context,
+        'Período ${rec.code} marcado en curso.',
+      );
       widget.onRefresh();
     } catch (e) {
       if (!mounted) return;
@@ -162,7 +166,10 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
         RrhhVacationRecordStatus.gozado,
       );
       if (!mounted) return;
-      RrhhSnackBar.showSuccess(context, 'Período ${rec.code} finalizado exitosamente.');
+      RrhhSnackBar.showSuccess(
+        context,
+        'Período ${rec.code} finalizado exitosamente.',
+      );
       widget.onRefresh();
     } catch (e) {
       if (!mounted) return;
@@ -225,7 +232,10 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
             children: [
               Text(
                 'Indica el motivo de la cancelación de ${rec.code} (${rec.employeeName}):',
-                style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8)),
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: const Color(0xFF94A3B8),
+                ),
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -234,7 +244,10 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
                 style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
                 decoration: InputDecoration(
                   hintText: 'Motivo de la cancelación...',
-                  hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+                  hintStyle: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    color: const Color(0xFF64748B),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFF111827),
                   border: OutlineInputBorder(
@@ -255,7 +268,10 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('Cerrar', style: GoogleFonts.inter(color: const Color(0xFF94A3B8))),
+            child: Text(
+              'Cerrar',
+              style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -267,7 +283,10 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
                 Navigator.of(ctx).pop(true);
               }
             },
-            child: Text('Confirmar Cancelación', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+            child: Text(
+              'Confirmar Cancelación',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),
@@ -326,12 +345,19 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
         ),
         content: Text(
           '¿Estás seguro de eliminar permanentemente el registro ${rec.code}?\nEsta acción no se puede deshacer.',
-          style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8), height: 1.4),
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            color: const Color(0xFF94A3B8),
+            height: 1.4,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('Cancelar', style: GoogleFonts.inter(color: const Color(0xFF94A3B8))),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -339,7 +365,10 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
               foregroundColor: Colors.white,
             ),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text('Eliminar', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+            child: Text(
+              'Eliminar',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),
@@ -349,7 +378,10 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
       try {
         await RrhhRepository.current.deleteVacationRecord(rec.id);
         if (!mounted) return;
-        RrhhSnackBar.showSuccess(context, 'Registro ${rec.code} eliminado correctamente.');
+        RrhhSnackBar.showSuccess(
+          context,
+          'Registro ${rec.code} eliminado correctamente.',
+        );
         widget.onRefresh();
       } catch (e) {
         if (!mounted) return;
@@ -374,10 +406,12 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
         // Tabla
         Expanded(
           child: widget.isLoading
-              ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+              ? const Center(
+                  child: CircularProgressIndicator(color: Color(0xFF2563EB)),
+                )
               : filtered.isEmpty
-                  ? _buildEmptyState()
-                  : _buildTable(filtered),
+              ? _buildEmptyState()
+              : _buildTable(filtered),
         ),
       ],
     );
@@ -410,11 +444,21 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
                 style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
                 decoration: InputDecoration(
                   hintText: 'Buscar por código, empleado o notas...',
-                  hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
-                  prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF64748B)),
+                  hintStyle: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    color: const Color(0xFF64748B),
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    size: 18,
+                    color: Color(0xFF64748B),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFF111827),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 0,
+                    horizontal: 10,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: const BorderSide(color: Color(0xFF334155)),
@@ -444,7 +488,11 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
                 child: DropdownButton<String>(
                   dropdownColor: const Color(0xFF0F172A),
                   value: _selectedStatus,
-                  icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF94A3B8)),
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 18,
+                    color: Color(0xFF94A3B8),
+                  ),
                   style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
                   items: statusList.map((item) {
                     return DropdownMenuItem<String>(
@@ -466,7 +514,11 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
             height: 38,
             child: OutlinedButton.icon(
               onPressed: _pickDateRange,
-              icon: const Icon(Icons.calendar_today, size: 15, color: Color(0xFF60A5FA)),
+              icon: const Icon(
+                Icons.calendar_today,
+                size: 15,
+                color: Color(0xFF60A5FA),
+              ),
               label: Text(
                 _selectedDateRange == null
                     ? 'Rango de fechas'
@@ -482,7 +534,9 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
                 backgroundColor: const Color(0xFF111827),
                 side: const BorderSide(color: Color(0xFF334155)),
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ),
@@ -491,10 +545,17 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
           if (_hasActiveFilters)
             TextButton.icon(
               onPressed: _clearFilters,
-              icon: const Icon(Icons.clear_all, size: 16, color: Color(0xFF94A3B8)),
+              icon: const Icon(
+                Icons.clear_all,
+                size: 16,
+                color: Color(0xFF94A3B8),
+              ),
               label: Text(
                 'Limpiar',
-                style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: const Color(0xFF94A3B8),
+                ),
               ),
             ),
         ],
@@ -586,7 +647,11 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.history_outlined, size: 48, color: Color(0xFF334155)),
+            const Icon(
+              Icons.history_outlined,
+              size: 48,
+              color: Color(0xFF334155),
+            ),
             const SizedBox(height: 14),
             Text(
               'No se encontraron registros de vacaciones',
@@ -599,7 +664,10 @@ class _RrhhVacationRecordsTabState extends State<RrhhVacationRecordsTab> {
             const SizedBox(height: 6),
             Text(
               'Intenta modificar los filtros de búsqueda o rango de fechas.',
-              style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                color: const Color(0xFF64748B),
+              ),
             ),
           ],
         ),

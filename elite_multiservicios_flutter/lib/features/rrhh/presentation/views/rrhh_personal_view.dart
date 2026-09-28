@@ -63,7 +63,8 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
   @override
   void didUpdateWidget(covariant RrhhPersonalView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialTab != widget.initialTab && widget.initialTab != null) {
+    if (oldWidget.initialTab != widget.initialTab &&
+        widget.initialTab != null) {
       final init = widget.initialTab?.toLowerCase();
       int newIndex = 0;
       if (init == 'reclutamiento' || init == 'postulantes') {
@@ -194,8 +195,9 @@ class _RrhhPersonalViewState extends State<RrhhPersonalView>
             indicatorColor: const Color(0xFF2563EB),
             indicatorWeight: 2.5,
             labelColor: const Color(0xFF2563EB),
-            unselectedLabelColor:
-                isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+            unselectedLabelColor: isDark
+                ? const Color(0xFF94A3B8)
+                : const Color(0xFF64748B),
             labelStyle: GoogleFonts.inter(
               fontSize: 12.5,
               fontWeight: FontWeight.w600,

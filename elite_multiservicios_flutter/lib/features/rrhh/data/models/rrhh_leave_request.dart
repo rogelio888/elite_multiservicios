@@ -13,7 +13,8 @@ class RrhhLeaveRequest {
   final String reason; // Motivo (obligatorio, >= 20 caracteres)
   final String? evidenceFile; // Nombre del archivo adjunto
   final String? notes; // Observaciones internas (solo RRHH)
-  final String status; // 'pendiente' | 'aprobado' | 'rechazado' | 'en_curso' | 'finalizado' | 'cancelado'
+  final String
+  status; // 'pendiente' | 'aprobado' | 'rechazado' | 'en_curso' | 'finalizado' | 'cancelado'
   final DateTime createdAt;
   final DateTime updatedAt;
   final String createdBy; // Usuario que registró

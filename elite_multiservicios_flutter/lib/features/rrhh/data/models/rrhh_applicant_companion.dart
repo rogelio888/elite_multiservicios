@@ -112,17 +112,23 @@ class RrhhApplicantEvaluation {
       education: education ?? this.education,
       experienceSummary: experienceSummary ?? this.experienceSummary,
       technicalSkills: technicalSkills ?? this.technicalSkills,
-      personalReferenceName: personalReferenceName ?? this.personalReferenceName,
-      personalReferencePhone: personalReferencePhone ?? this.personalReferencePhone,
+      personalReferenceName:
+          personalReferenceName ?? this.personalReferenceName,
+      personalReferencePhone:
+          personalReferencePhone ?? this.personalReferencePhone,
       workReferenceName: workReferenceName ?? this.workReferenceName,
       workReferencePhone: workReferencePhone ?? this.workReferencePhone,
-      rotatingShiftsAvailable: rotatingShiftsAvailable ?? this.rotatingShiftsAvailable,
-      clientBranchesAvailable: clientBranchesAvailable ?? this.clientBranchesAvailable,
+      rotatingShiftsAvailable:
+          rotatingShiftsAvailable ?? this.rotatingShiftsAvailable,
+      clientBranchesAvailable:
+          clientBranchesAvailable ?? this.clientBranchesAvailable,
       drivingLicense: drivingLicense ?? this.drivingLicense,
-      physicalFitnessDeclared: physicalFitnessDeclared ?? this.physicalFitnessDeclared,
+      physicalFitnessDeclared:
+          physicalFitnessDeclared ?? this.physicalFitnessDeclared,
       educationLevel: educationLevel ?? this.educationLevel,
       professionalTitle: professionalTitle ?? this.professionalTitle,
-      professionalCertifications: professionalCertifications ?? this.professionalCertifications,
+      professionalCertifications:
+          professionalCertifications ?? this.professionalCertifications,
       salaryExpectation: salaryExpectation ?? this.salaryExpectation,
     );
   }
@@ -149,7 +155,8 @@ class RrhhApplicantDocumentsChecklist {
   /// Para CAMPO: 6 documentos obligatorios.
   /// Para OFICINA: 5 base obligatorios (FELCC opcional a menos que sea seguridad).
   bool isCompleteFor(String targetType) {
-    final baseOk = hasCiCopy && hasUtilityBill && hasHomeSketch && hasPhoto3x4 && hasSus;
+    final baseOk =
+        hasCiCopy && hasUtilityBill && hasHomeSketch && hasPhoto3x4 && hasSus;
     if (targetType.toUpperCase() == 'CAMPO') {
       return baseOk && hasFelcc;
     }
@@ -167,7 +174,8 @@ class RrhhApplicantDocumentsChecklist {
     return c;
   }
 
-  int totalRequired(String targetType) => targetType.toUpperCase() == 'CAMPO' ? 6 : 5;
+  int totalRequired(String targetType) =>
+      targetType.toUpperCase() == 'CAMPO' ? 6 : 5;
 
   RrhhApplicantDocumentsChecklist copyWith({
     bool? hasCiCopy,
@@ -236,7 +244,8 @@ class RrhhApplicantCompanion {
   }) {
     return RrhhApplicantCompanion(
       applicantId: applicantId ?? this.applicantId,
-      previousApplicationIds: previousApplicationIds ?? this.previousApplicationIds,
+      previousApplicationIds:
+          previousApplicationIds ?? this.previousApplicationIds,
       isEligibleForRehire: isEligibleForRehire ?? this.isEligibleForRehire,
       interviewRecord: interviewRecord ?? this.interviewRecord,
       evaluation: evaluation ?? this.evaluation,

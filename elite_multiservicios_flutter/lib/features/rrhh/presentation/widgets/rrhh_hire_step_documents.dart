@@ -68,8 +68,8 @@ class _RrhhHireStepDocumentsState extends State<RrhhHireStepDocuments> {
     final indicatorText = isCampo
         ? '$checkedCount de 6 documentos obligatorios para personal de campo'
         : (isSecurity
-            ? '$checkedCount de 6 documentos requeridos (FELCC exigido para seguridad)'
-            : '$checkedCount de 5 documentos requeridos para personal de oficina');
+              ? '$checkedCount de 6 documentos requeridos (FELCC exigido para seguridad)'
+              : '$checkedCount de 5 documentos requeridos para personal de oficina');
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -81,7 +81,9 @@ class _RrhhHireStepDocumentsState extends State<RrhhHireStepDocuments> {
           LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth > 580;
-              final colWidth = isWide ? (constraints.maxWidth - 14) / 2 : constraints.maxWidth;
+              final colWidth = isWide
+                  ? (constraints.maxWidth - 14) / 2
+                  : constraints.maxWidth;
 
               return Wrap(
                 spacing: 14,
@@ -94,7 +96,10 @@ class _RrhhHireStepDocumentsState extends State<RrhhHireStepDocuments> {
                       controller: _nameController,
                       icon: Icons.person_outline,
                       hint: 'Ej: Juan Pérez',
-                      onChanged: (v) { form.fullName = v; widget.onChanged(); },
+                      onChanged: (v) {
+                        form.fullName = v;
+                        widget.onChanged();
+                      },
                     ),
                   ),
                   SizedBox(
@@ -104,7 +109,10 @@ class _RrhhHireStepDocumentsState extends State<RrhhHireStepDocuments> {
                       controller: _ciController,
                       icon: Icons.badge_outlined,
                       hint: 'Ej: 5489623 SC',
-                      onChanged: (v) { form.identityCard = v; widget.onChanged(); },
+                      onChanged: (v) {
+                        form.identityCard = v;
+                        widget.onChanged();
+                      },
                     ),
                   ),
                   SizedBox(
@@ -130,7 +138,10 @@ class _RrhhHireStepDocumentsState extends State<RrhhHireStepDocuments> {
                       controller: _birthPlaceController,
                       icon: Icons.location_city_outlined,
                       hint: 'Ej: Santa Cruz',
-                      onChanged: (v) { form.birthPlace = v; widget.onChanged(); },
+                      onChanged: (v) {
+                        form.birthPlace = v;
+                        widget.onChanged();
+                      },
                     ),
                   ),
                   SizedBox(
@@ -141,7 +152,10 @@ class _RrhhHireStepDocumentsState extends State<RrhhHireStepDocuments> {
                       icon: Icons.phone_outlined,
                       hint: 'Ej: 71023456',
                       keyboardType: TextInputType.phone,
-                      onChanged: (v) { form.phone = v; widget.onChanged(); },
+                      onChanged: (v) {
+                        form.phone = v;
+                        widget.onChanged();
+                      },
                     ),
                   ),
                   SizedBox(
@@ -151,7 +165,10 @@ class _RrhhHireStepDocumentsState extends State<RrhhHireStepDocuments> {
                       controller: _addressController,
                       icon: Icons.home_outlined,
                       hint: 'Ej: B/ Las Palmas #12',
-                      onChanged: (v) { form.address = v; widget.onChanged(); },
+                      onChanged: (v) {
+                        form.address = v;
+                        widget.onChanged();
+                      },
                     ),
                   ),
                   SizedBox(
@@ -161,7 +178,10 @@ class _RrhhHireStepDocumentsState extends State<RrhhHireStepDocuments> {
                       controller: _refPersonController,
                       icon: Icons.family_restroom_outlined,
                       hint: 'Ej: María Mendoza',
-                      onChanged: (v) { form.personalReference = v; widget.onChanged(); },
+                      onChanged: (v) {
+                        form.personalReference = v;
+                        widget.onChanged();
+                      },
                     ),
                   ),
                   SizedBox(
@@ -172,7 +192,10 @@ class _RrhhHireStepDocumentsState extends State<RrhhHireStepDocuments> {
                       icon: Icons.contact_phone_outlined,
                       hint: 'Ej: 78899001',
                       keyboardType: TextInputType.phone,
-                      onChanged: (v) { form.referencePhone = v; widget.onChanged(); },
+                      onChanged: (v) {
+                        form.referencePhone = v;
+                        widget.onChanged();
+                      },
                     ),
                   ),
                 ],
@@ -180,25 +203,47 @@ class _RrhhHireStepDocumentsState extends State<RrhhHireStepDocuments> {
             },
           ),
           const SizedBox(height: 20),
-          buildHireSectionHeader('SECCIÓN B — VALIDACIÓN LEGAL DE DOCUMENTOS FÍSICOS'),
+          buildHireSectionHeader(
+            'SECCIÓN B — VALIDACIÓN LEGAL DE DOCUMENTOS FÍSICOS',
+          ),
           const SizedBox(height: 8),
 
           // Indicador de avance documental
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: allDocsValid ? const Color(0xFF10B981).withValues(alpha: 0.12) : const Color(0xFF1E293B),
+              color: allDocsValid
+                  ? const Color(0xFF10B981).withValues(alpha: 0.12)
+                  : const Color(0xFF1E293B),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: allDocsValid ? const Color(0xFF10B981).withValues(alpha: 0.3) : const Color(0xFF334155)),
+              border: Border.all(
+                color: allDocsValid
+                    ? const Color(0xFF10B981).withValues(alpha: 0.3)
+                    : const Color(0xFF334155),
+              ),
             ),
             child: Row(
               children: [
-                Icon(allDocsValid ? Icons.check_circle : Icons.rule_folder_outlined, size: 16, color: allDocsValid ? const Color(0xFF10B981) : const Color(0xFF60A5FA)),
+                Icon(
+                  allDocsValid
+                      ? Icons.check_circle
+                      : Icons.rule_folder_outlined,
+                  size: 16,
+                  color: allDocsValid
+                      ? const Color(0xFF10B981)
+                      : const Color(0xFF60A5FA),
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     indicatorText,
-                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: allDocsValid ? const Color(0xFF34D399) : const Color(0xFFE2E8F0)),
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: allDocsValid
+                          ? const Color(0xFF34D399)
+                          : const Color(0xFFE2E8F0),
+                    ),
                   ),
                 ),
               ],
@@ -213,18 +258,28 @@ class _RrhhHireStepDocumentsState extends State<RrhhHireStepDocuments> {
               decoration: BoxDecoration(
                 color: const Color(0xFFDC2626).withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFDC2626).withValues(alpha: 0.4)),
+                border: Border.all(
+                  color: const Color(0xFFDC2626).withValues(alpha: 0.4),
+                ),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.gavel_outlined, size: 18, color: Color(0xFFF87171)),
+                  const Icon(
+                    Icons.gavel_outlined,
+                    size: 18,
+                    color: Color(0xFFF87171),
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       isSecurity
                           ? 'BLOQUEO LEGAL: El puesto asignado es de Seguridad/Guardia. El Certificado FELCC es OBLIGATORIO por ley para formalizar la contratación.'
                           : 'REQUISITO OBLIGATORIO: Todo personal de campo operativo debe contar con Certificado FELCC verificado para ingresar a sedes de clientes.',
-                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFFFCA5A5)),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFFFCA5A5),
+                      ),
                     ),
                   ),
                 ],
@@ -236,28 +291,96 @@ class _RrhhHireStepDocumentsState extends State<RrhhHireStepDocuments> {
           LayoutBuilder(
             builder: (context, constraints) {
               final isWide = constraints.maxWidth > 580;
-              final colWidth = isWide ? (constraints.maxWidth - 12) / 2 : constraints.maxWidth;
+              final colWidth = isWide
+                  ? (constraints.maxWidth - 12) / 2
+                  : constraints.maxWidth;
 
               return Wrap(
                 spacing: 12,
                 runSpacing: 8,
                 children: [
-                  SizedBox(width: colWidth, child: buildHireDocumentCheckTile(label: 'Fotocopia de C.I.', value: form.hasCiCopy, onChanged: (v) { form.hasCiCopy = v ?? false; widget.onChanged(); setState(() {}); }, badgeText: 'OBLIGATORIO')),
+                  SizedBox(
+                    width: colWidth,
+                    child: buildHireDocumentCheckTile(
+                      label: 'Fotocopia de C.I.',
+                      value: form.hasCiCopy,
+                      onChanged: (v) {
+                        form.hasCiCopy = v ?? false;
+                        widget.onChanged();
+                        setState(() {});
+                      },
+                      badgeText: 'OBLIGATORIO',
+                    ),
+                  ),
                   SizedBox(
                     width: colWidth,
                     child: buildHireDocumentCheckTile(
                       label: 'Certificado FELCC (Antecedentes)',
                       value: form.hasFelccRecord,
-                      onChanged: (v) { form.hasFelccRecord = v ?? false; widget.onChanged(); setState(() {}); },
-                      badgeText: isFelccMandatory ? 'OBLIGATORIO' : 'OPCIONAL (OFICINA)',
+                      onChanged: (v) {
+                        form.hasFelccRecord = v ?? false;
+                        widget.onChanged();
+                        setState(() {});
+                      },
+                      badgeText: isFelccMandatory
+                          ? 'OBLIGATORIO'
+                          : 'OPCIONAL (OFICINA)',
                       isWarningBorder: isFelccMissing,
                       isOptionalBadge: !isFelccMandatory,
                     ),
                   ),
-                  SizedBox(width: colWidth, child: buildHireDocumentCheckTile(label: 'Factura de Luz o Agua (Domicilio)', value: form.hasUtilityBill, onChanged: (v) { form.hasUtilityBill = v ?? false; widget.onChanged(); setState(() {}); }, badgeText: 'OBLIGATORIO')),
-                  SizedBox(width: colWidth, child: buildHireDocumentCheckTile(label: 'Croquis Domiciliario de Ubicación', value: form.hasHomeSketch, onChanged: (v) { form.hasHomeSketch = v ?? false; widget.onChanged(); setState(() {}); }, badgeText: 'OBLIGATORIO')),
-                  SizedBox(width: colWidth, child: buildHireDocumentCheckTile(label: 'Fotografía 3x4 Fondo Rojo', value: form.hasPhoto3x4, onChanged: (v) { form.hasPhoto3x4 = v ?? false; widget.onChanged(); setState(() {}); }, badgeText: 'OBLIGATORIO')),
-                  SizedBox(width: colWidth, child: buildHireDocumentCheckTile(label: 'Constancia Afiliación Seguro SUS', value: form.hasSusInsurance, onChanged: (v) { form.hasSusInsurance = v ?? false; widget.onChanged(); setState(() {}); }, badgeText: 'OBLIGATORIO')),
+                  SizedBox(
+                    width: colWidth,
+                    child: buildHireDocumentCheckTile(
+                      label: 'Factura de Luz o Agua (Domicilio)',
+                      value: form.hasUtilityBill,
+                      onChanged: (v) {
+                        form.hasUtilityBill = v ?? false;
+                        widget.onChanged();
+                        setState(() {});
+                      },
+                      badgeText: 'OBLIGATORIO',
+                    ),
+                  ),
+                  SizedBox(
+                    width: colWidth,
+                    child: buildHireDocumentCheckTile(
+                      label: 'Croquis Domiciliario de Ubicación',
+                      value: form.hasHomeSketch,
+                      onChanged: (v) {
+                        form.hasHomeSketch = v ?? false;
+                        widget.onChanged();
+                        setState(() {});
+                      },
+                      badgeText: 'OBLIGATORIO',
+                    ),
+                  ),
+                  SizedBox(
+                    width: colWidth,
+                    child: buildHireDocumentCheckTile(
+                      label: 'Fotografía 3x4 Fondo Rojo',
+                      value: form.hasPhoto3x4,
+                      onChanged: (v) {
+                        form.hasPhoto3x4 = v ?? false;
+                        widget.onChanged();
+                        setState(() {});
+                      },
+                      badgeText: 'OBLIGATORIO',
+                    ),
+                  ),
+                  SizedBox(
+                    width: colWidth,
+                    child: buildHireDocumentCheckTile(
+                      label: 'Constancia Afiliación Seguro SUS',
+                      value: form.hasSusInsurance,
+                      onChanged: (v) {
+                        form.hasSusInsurance = v ?? false;
+                        widget.onChanged();
+                        setState(() {});
+                      },
+                      badgeText: 'OBLIGATORIO',
+                    ),
+                  ),
                 ],
               );
             },

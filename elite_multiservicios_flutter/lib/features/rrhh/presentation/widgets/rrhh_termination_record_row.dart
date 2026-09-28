@@ -28,7 +28,8 @@ class RrhhTerminationRecordRow extends StatefulWidget {
   });
 
   @override
-  State<RrhhTerminationRecordRow> createState() => _RrhhTerminationRecordRowState();
+  State<RrhhTerminationRecordRow> createState() =>
+      _RrhhTerminationRecordRowState();
 }
 
 class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
@@ -52,7 +53,9 @@ class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
           duration: const Duration(milliseconds: 140),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: _isHovered ? const Color(0xFF162032) : const Color(0xFF0F172A),
+            color: _isHovered
+                ? const Color(0xFF162032)
+                : const Color(0xFF0F172A),
             border: const Border(
               bottom: BorderSide(color: Color(0xFF1E293B), width: 1),
             ),
@@ -80,7 +83,9 @@ class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
                   children: [
                     CircleAvatar(
                       radius: 15,
-                      backgroundColor: const Color(0xFF2563EB).withValues(alpha: 0.2),
+                      backgroundColor: const Color(
+                        0xFF2563EB,
+                      ).withValues(alpha: 0.2),
                       child: Text(
                         _getInitials(item.employeeName),
                         style: GoogleFonts.inter(
@@ -188,14 +193,24 @@ class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
                       label: const Text('Ver'),
                       style: TextButton.styleFrom(
                         foregroundColor: const Color(0xFF38BDF8),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        textStyle: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w600),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        textStyle: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                        ),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),
                     PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 16, color: Color(0xFF94A3B8)),
+                      icon: const Icon(
+                        Icons.more_vert,
+                        size: 16,
+                        color: Color(0xFF94A3B8),
+                      ),
                       tooltip: 'Más opciones',
                       color: const Color(0xFF1E293B),
                       shape: RoundedRectangleBorder(
@@ -230,9 +245,19 @@ class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
                             value: 'edit',
                             child: Row(
                               children: [
-                                const Icon(Icons.edit_outlined, size: 14, color: Color(0xFF38BDF8)),
+                                const Icon(
+                                  Icons.edit_outlined,
+                                  size: 14,
+                                  color: Color(0xFF38BDF8),
+                                ),
                                 const SizedBox(width: 8),
-                                Text('Editar', style: GoogleFonts.inter(fontSize: 12, color: Colors.white)),
+                                Text(
+                                  'Editar',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -241,9 +266,19 @@ class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
                             value: 'start',
                             child: Row(
                               children: [
-                                const Icon(Icons.play_arrow_outlined, size: 14, color: Color(0xFFF59E0B)),
+                                const Icon(
+                                  Icons.play_arrow_outlined,
+                                  size: 14,
+                                  color: Color(0xFFF59E0B),
+                                ),
                                 const SizedBox(width: 8),
-                                Text('Iniciar proceso', style: GoogleFonts.inter(fontSize: 12, color: Colors.white)),
+                                Text(
+                                  'Iniciar proceso',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -252,9 +287,19 @@ class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
                             value: 'payment',
                             child: Row(
                               children: [
-                                const Icon(Icons.check_circle_outline, size: 14, color: Color(0xFF10B981)),
+                                const Icon(
+                                  Icons.check_circle_outline,
+                                  size: 14,
+                                  color: Color(0xFF10B981),
+                                ),
                                 const SizedBox(width: 8),
-                                Text('Marcar pago completado', style: GoogleFonts.inter(fontSize: 12, color: Colors.white)),
+                                Text(
+                                  'Marcar pago completado',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -263,9 +308,19 @@ class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
                             value: 'finalize',
                             child: Row(
                               children: [
-                                const Icon(Icons.task_alt, size: 14, color: Color(0xFF10B981)),
+                                const Icon(
+                                  Icons.task_alt,
+                                  size: 14,
+                                  color: Color(0xFF10B981),
+                                ),
                                 const SizedBox(width: 8),
-                                Text('Finalizar baja laboral', style: GoogleFonts.inter(fontSize: 12, color: Colors.white)),
+                                Text(
+                                  'Finalizar baja laboral',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -274,9 +329,19 @@ class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
                             value: 'cancel',
                             child: Row(
                               children: [
-                                const Icon(Icons.block, size: 14, color: Color(0xFFEF4444)),
+                                const Icon(
+                                  Icons.block,
+                                  size: 14,
+                                  color: Color(0xFFEF4444),
+                                ),
                                 const SizedBox(width: 8),
-                                Text('Cancelar proceso', style: GoogleFonts.inter(fontSize: 12, color: Color(0xFFEF4444))),
+                                Text(
+                                  'Cancelar proceso',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: Color(0xFFEF4444),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -285,9 +350,19 @@ class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
                             value: 'delete',
                             child: Row(
                               children: [
-                                const Icon(Icons.delete_outline, size: 14, color: Color(0xFFEF4444)),
+                                const Icon(
+                                  Icons.delete_outline,
+                                  size: 14,
+                                  color: Color(0xFFEF4444),
+                                ),
                                 const SizedBox(width: 8),
-                                Text('Eliminar registro', style: GoogleFonts.inter(fontSize: 12, color: Color(0xFFEF4444))),
+                                Text(
+                                  'Eliminar registro',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: Color(0xFFEF4444),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -310,7 +385,9 @@ class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
         decoration: BoxDecoration(
           color: const Color(0xFF10B981).withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(5),
-          border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.25)),
+          border: Border.all(
+            color: const Color(0xFF10B981).withValues(alpha: 0.25),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -339,12 +416,18 @@ class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
         decoration: BoxDecoration(
           color: const Color(0xFFEF4444).withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(5),
-          border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.3)),
+          border: Border.all(
+            color: const Color(0xFFEF4444).withValues(alpha: 0.3),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.warning_amber_rounded, size: 11, color: Color(0xFFEF4444)),
+            const Icon(
+              Icons.warning_amber_rounded,
+              size: 11,
+              color: Color(0xFFEF4444),
+            ),
             const SizedBox(width: 4),
             Flexible(
               child: Text(
@@ -368,12 +451,18 @@ class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
       decoration: BoxDecoration(
         color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.25)),
+        border: Border.all(
+          color: const Color(0xFFF59E0B).withValues(alpha: 0.25),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.hourglass_empty_rounded, size: 11, color: Color(0xFFF59E0B)),
+          const Icon(
+            Icons.hourglass_empty_rounded,
+            size: 11,
+            color: Color(0xFFF59E0B),
+          ),
           const SizedBox(width: 4),
           Flexible(
             child: Text(
@@ -394,7 +483,8 @@ class _RrhhTerminationRecordRowState extends State<RrhhTerminationRecordRow> {
   String _getInitials(String name) {
     final parts = name.trim().split(' ').where((p) => p.isNotEmpty).toList();
     if (parts.isEmpty) return 'EM';
-    if (parts.length == 1) return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
+    if (parts.length == 1)
+      return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
     return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
   }
 

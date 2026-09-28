@@ -66,7 +66,8 @@ class _RrhhPersonalFiltersBarState extends State<RrhhPersonalFiltersBar> {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasActiveFilters = widget.selectedType != null ||
+    final bool hasActiveFilters =
+        widget.selectedType != null ||
         widget.selectedAreaId != null ||
         widget.selectedAvailability != null ||
         _searchController.text.isNotEmpty;
@@ -87,7 +88,8 @@ class _RrhhPersonalFiltersBarState extends State<RrhhPersonalFiltersBar> {
             children: [
               _buildSegmentPill(
                 label: 'Todos (${widget.totalCount})',
-                isSelected: widget.selectedQuickStatus == null ||
+                isSelected:
+                    widget.selectedQuickStatus == null ||
                     widget.selectedQuickStatus == 'TODOS',
                 onTap: () => widget.onQuickStatusChanged(null),
               ),
@@ -201,14 +203,28 @@ class _RrhhPersonalFiltersBarState extends State<RrhhPersonalFiltersBar> {
       child: TextField(
         controller: _searchController,
         onChanged: _onSearchInputChanged,
-        style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFFF8FAFC)),
+        style: GoogleFonts.inter(
+          fontSize: 12.5,
+          color: const Color(0xFFF8FAFC),
+        ),
         decoration: InputDecoration(
           hintText: 'Buscar colaborador por nombre, CI, cargo...',
-          hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
-          prefixIcon: const Icon(Icons.search, size: 16, color: Color(0xFF64748B)),
+          hintStyle: GoogleFonts.inter(
+            fontSize: 12,
+            color: const Color(0xFF64748B),
+          ),
+          prefixIcon: const Icon(
+            Icons.search,
+            size: 16,
+            color: Color(0xFF64748B),
+          ),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.close, size: 14, color: Color(0xFF94A3B8)),
+                  icon: const Icon(
+                    Icons.close,
+                    size: 14,
+                    color: Color(0xFF94A3B8),
+                  ),
                   onPressed: () {
                     _searchController.clear();
                     widget.onSearchChanged('');
@@ -231,7 +247,11 @@ class _RrhhPersonalFiltersBarState extends State<RrhhPersonalFiltersBar> {
         isDense: true,
         underline: const SizedBox.shrink(),
         dropdownColor: const Color(0xFF0F172A),
-        icon: const Icon(Icons.arrow_drop_down, size: 18, color: Color(0xFF94A3B8)),
+        icon: const Icon(
+          Icons.arrow_drop_down,
+          size: 18,
+          color: Color(0xFF94A3B8),
+        ),
         items: const [
           DropdownMenuItem(value: null, child: Text('Tipo: TODOS')),
           DropdownMenuItem(value: 'OFICINA', child: Text('Tipo: OFICINA')),
@@ -246,10 +266,12 @@ class _RrhhPersonalFiltersBarState extends State<RrhhPersonalFiltersBar> {
   Widget _buildAreaDropdown() {
     final items = <DropdownMenuItem<int?>>[
       const DropdownMenuItem(value: null, child: Text('Área: TODAS')),
-      ...widget.areas.map((area) => DropdownMenuItem(
-            value: area.id,
-            child: Text(area.name),
-          )),
+      ...widget.areas.map(
+        (area) => DropdownMenuItem(
+          value: area.id,
+          child: Text(area.name),
+        ),
+      ),
     ];
 
     return _buildDropdownContainer(
@@ -258,7 +280,11 @@ class _RrhhPersonalFiltersBarState extends State<RrhhPersonalFiltersBar> {
         isDense: true,
         underline: const SizedBox.shrink(),
         dropdownColor: const Color(0xFF0F172A),
-        icon: const Icon(Icons.arrow_drop_down, size: 18, color: Color(0xFF94A3B8)),
+        icon: const Icon(
+          Icons.arrow_drop_down,
+          size: 18,
+          color: Color(0xFF94A3B8),
+        ),
         items: items,
         onChanged: widget.onAreaChanged,
         style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFF8FAFC)),
@@ -273,13 +299,20 @@ class _RrhhPersonalFiltersBarState extends State<RrhhPersonalFiltersBar> {
         isDense: true,
         underline: const SizedBox.shrink(),
         dropdownColor: const Color(0xFF0F172A),
-        icon: const Icon(Icons.arrow_drop_down, size: 18, color: Color(0xFF94A3B8)),
+        icon: const Icon(
+          Icons.arrow_drop_down,
+          size: 18,
+          color: Color(0xFF94A3B8),
+        ),
         items: const [
           DropdownMenuItem(value: null, child: Text('Disponibilidad: TODAS')),
           DropdownMenuItem(value: 'DISPONIBLE', child: Text('DISPONIBLE')),
           DropdownMenuItem(value: 'ASIGNADO', child: Text('ASIGNADO')),
           DropdownMenuItem(value: 'CON_PERMISO', child: Text('CON PERMISO')),
-          DropdownMenuItem(value: 'DE_VACACIONES', child: Text('DE VACACIONES')),
+          DropdownMenuItem(
+            value: 'DE_VACACIONES',
+            child: Text('DE VACACIONES'),
+          ),
           DropdownMenuItem(value: 'SUSPENDIDO', child: Text('SUSPENDIDO')),
         ],
         onChanged: widget.onAvailabilityChanged,
@@ -307,7 +340,11 @@ class _RrhhPersonalFiltersBarState extends State<RrhhPersonalFiltersBar> {
       height: 36,
       child: IconButton(
         tooltip: 'Limpiar Filtros',
-        icon: const Icon(Icons.filter_alt_off_outlined, size: 17, color: Color(0xFFEF4444)),
+        icon: const Icon(
+          Icons.filter_alt_off_outlined,
+          size: 17,
+          color: Color(0xFFEF4444),
+        ),
         onPressed: () {
           _searchController.clear();
           widget.onResetFilters();

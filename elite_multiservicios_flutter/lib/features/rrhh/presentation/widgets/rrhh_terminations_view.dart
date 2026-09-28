@@ -24,7 +24,8 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
   // Filtros
   final TextEditingController _searchController = TextEditingController();
   String _selectedType = 'TODOS'; // 'TODOS' | causal
-  String _selectedStatus = 'TODOS'; // 'TODOS' | 'registrada' | 'en_proceso' | 'finalizada' | 'cancelada'
+  String _selectedStatus =
+      'TODOS'; // 'TODOS' | 'registrada' | 'en_proceso' | 'finalizada' | 'cancelada'
   DateTimeRange? _selectedDateRange;
 
   @override
@@ -96,7 +97,8 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
       if (_selectedDateRange != null) {
         final start = _selectedDateRange!.start;
         final end = _selectedDateRange!.end;
-        if (item.terminationDate.isBefore(start) || item.terminationDate.isAfter(end.add(const Duration(days: 1)))) {
+        if (item.terminationDate.isBefore(start) ||
+            item.terminationDate.isAfter(end.add(const Duration(days: 1)))) {
           return false;
         }
       }
@@ -152,10 +154,15 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
         RrhhTerminationStatus.enProceso,
         reason: 'Proceso formal de baja iniciado por RRHH.',
       );
-      if (mounted) RrhhSnackBar.showSuccess(context, 'Expediente ${item.code} ahora está En Proceso.');
+      if (mounted)
+        RrhhSnackBar.showSuccess(
+          context,
+          'Expediente ${item.code} ahora está En Proceso.',
+        );
       await _loadData();
     } catch (e) {
-      if (mounted) RrhhSnackBar.showError(context, 'Error al iniciar proceso: $e');
+      if (mounted)
+        RrhhSnackBar.showError(context, 'Error al iniciar proceso: $e');
     }
   }
 
@@ -167,7 +174,11 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
         paymentCompleted: true,
         paymentCompletedAt: DateTime.now(),
       );
-      if (mounted) RrhhSnackBar.showSuccess(context, 'Pago de finiquito registrado exitosamente.');
+      if (mounted)
+        RrhhSnackBar.showSuccess(
+          context,
+          'Pago de finiquito registrado exitosamente.',
+        );
       await _loadData();
     } catch (e) {
       if (mounted) RrhhSnackBar.showError(context, 'Error al marcar pago: $e');
@@ -181,10 +192,15 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
         RrhhTerminationStatus.finalizada,
         reason: 'Desvinculación y baja laboral completada definitivamente.',
       );
-      if (mounted) RrhhSnackBar.showSuccess(context, 'Baja completada. El empleado pasó a estado BAJA.');
+      if (mounted)
+        RrhhSnackBar.showSuccess(
+          context,
+          'Baja completada. El empleado pasó a estado BAJA.',
+        );
       await _loadData();
     } catch (e) {
-      if (mounted) RrhhSnackBar.showError(context, 'Error al finalizar baja: $e');
+      if (mounted)
+        RrhhSnackBar.showError(context, 'Error al finalizar baja: $e');
     }
   }
 
@@ -195,7 +211,8 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
         RrhhTerminationStatus.cancelada,
         reason: 'Proceso de baja cancelado por jefatura de RRHH.',
       );
-      if (mounted) RrhhSnackBar.showInfo(context, 'Expediente ${item.code} cancelado.');
+      if (mounted)
+        RrhhSnackBar.showInfo(context, 'Expediente ${item.code} cancelado.');
       await _loadData();
     } catch (e) {
       if (mounted) RrhhSnackBar.showError(context, 'Error al cancelar: $e');
@@ -213,24 +230,49 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
         ),
         title: Row(
           children: [
-            const Icon(Icons.delete_outline, color: Color(0xFFEF4444), size: 20),
+            const Icon(
+              Icons.delete_outline,
+              color: Color(0xFFEF4444),
+              size: 20,
+            ),
             const SizedBox(width: 8),
-            Text('Eliminar Registro', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+            Text(
+              'Eliminar Registro',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
           ],
         ),
         content: Text(
           '¿Eliminar permanentemente el registro ${item.code}? Esta acción solo está disponible en estado "Registrada".',
-          style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8)),
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            color: const Color(0xFF94A3B8),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('Cancelar', style: GoogleFonts.inter(color: const Color(0xFF94A3B8))),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
-            child: Text('Eliminar', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+            ),
+            child: Text(
+              'Eliminar',
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
           ),
         ],
       ),
@@ -240,7 +282,10 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
       try {
         await RrhhRepository.current.deleteTerminationRecord(item.id);
         if (mounted) {
-          RrhhSnackBar.showSuccess(context, 'Registro ${item.code} eliminado correctamente.');
+          RrhhSnackBar.showSuccess(
+            context,
+            'Registro ${item.code} eliminado correctamente.',
+          );
         }
         await _loadData();
       } catch (e) {
@@ -259,27 +304,55 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
 
     final filtered = _filteredRecords;
     final totalCount = _records.length;
-    final registeredCount = _records.where((r) => r.status == RrhhTerminationStatus.registrada).length;
-    final inProgressCount = _records.where((r) => r.status == RrhhTerminationStatus.enProceso).length;
-    final finalizedCount = _records.where((r) => r.status == RrhhTerminationStatus.finalizada).length;
-    final cancelledCount = _records.where((r) => r.status == RrhhTerminationStatus.cancelada).length;
+    final registeredCount = _records
+        .where((r) => r.status == RrhhTerminationStatus.registrada)
+        .length;
+    final inProgressCount = _records
+        .where((r) => r.status == RrhhTerminationStatus.enProceso)
+        .length;
+    final finalizedCount = _records
+        .where((r) => r.status == RrhhTerminationStatus.finalizada)
+        .length;
+    final cancelledCount = _records
+        .where((r) => r.status == RrhhTerminationStatus.cancelada)
+        .length;
 
     // Métricas para los 4 KPIs
     final now = DateTime.now();
     final monthTerminations = _records
-        .where((r) => r.terminationDate.year == now.year && r.terminationDate.month == now.month)
+        .where(
+          (r) =>
+              r.terminationDate.year == now.year &&
+              r.terminationDate.month == now.month,
+        )
         .length;
-    final pendingPaymentCount = _records.where((r) => !r.paymentCompleted && r.status != RrhhTerminationStatus.cancelada).length;
-    final resignationsCount = _records.where((r) => r.terminationType == RrhhTerminationTypes.renunciaVoluntaria).length;
-    final dismissalsCount = _records.where((r) => RrhhTerminationTypes.isDismissal(r.terminationType)).length;
-    final expiredFiniquitosCount = _records.where((r) => r.isPaymentExpired).length;
+    final pendingPaymentCount = _records
+        .where(
+          (r) =>
+              !r.paymentCompleted &&
+              r.status != RrhhTerminationStatus.cancelada,
+        )
+        .length;
+    final resignationsCount = _records
+        .where(
+          (r) => r.terminationType == RrhhTerminationTypes.renunciaVoluntaria,
+        )
+        .length;
+    final dismissalsCount = _records
+        .where((r) => RrhhTerminationTypes.isDismissal(r.terminationType))
+        .length;
+    final expiredFiniquitosCount = _records
+        .where((r) => r.isPaymentExpired)
+        .length;
 
     const minTableWidth = 980.0;
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final contentWidth = constraints.maxWidth - 48.0;
-        final tableWidth = contentWidth > minTableWidth ? contentWidth : minTableWidth;
+        final tableWidth = contentWidth > minTableWidth
+            ? contentWidth
+            : minTableWidth;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -335,24 +408,38 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
                             )
                           else if (filtered.isEmpty)
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 20),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 48,
+                                horizontal: 20,
+                              ),
                               child: Center(
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.inbox_outlined, size: 48, color: Color(0xFF64748B)),
+                                    const Icon(
+                                      Icons.inbox_outlined,
+                                      size: 48,
+                                      color: Color(0xFF64748B),
+                                    ),
                                     const SizedBox(height: 12),
                                     Text(
                                       _hasActiveFilters
                                           ? 'No se encontraron desvinculaciones que coincidan con los filtros aplicados.'
                                           : 'No hay desvinculaciones laborales registradas.',
-                                      style: GoogleFonts.inter(fontSize: 13.5, color: const Color(0xFF94A3B8)),
+                                      style: GoogleFonts.inter(
+                                        fontSize: 13.5,
+                                        color: const Color(0xFF94A3B8),
+                                      ),
                                     ),
                                     if (_hasActiveFilters) ...[
                                       const SizedBox(height: 12),
                                       ElevatedButton(
                                         onPressed: _clearFilters,
-                                        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB)),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color(
+                                            0xFF2563EB,
+                                          ),
+                                        ),
                                         child: const Text('Limpiar filtros'),
                                       ),
                                     ],
@@ -361,16 +448,19 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
                               ),
                             )
                           else
-                            ...filtered.map((item) => RrhhTerminationRecordRow(
-                                  record: item,
-                                  onTap: () => _openDetailDrawer(item),
-                                  onEdit: () => _handleEdit(item),
-                                  onStartProcess: () => _handleStartProcess(item),
-                                  onMarkPaymentCompleted: () => _handleMarkPaymentCompleted(item),
-                                  onFinalize: () => _handleFinalize(item),
-                                  onCancel: () => _handleCancel(item),
-                                  onDelete: () => _handleDelete(item),
-                                )),
+                            ...filtered.map(
+                              (item) => RrhhTerminationRecordRow(
+                                record: item,
+                                onTap: () => _openDetailDrawer(item),
+                                onEdit: () => _handleEdit(item),
+                                onStartProcess: () => _handleStartProcess(item),
+                                onMarkPaymentCompleted: () =>
+                                    _handleMarkPaymentCompleted(item),
+                                onFinalize: () => _handleFinalize(item),
+                                onCancel: () => _handleCancel(item),
+                                onDelete: () => _handleDelete(item),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -383,7 +473,10 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
               if (!_isLoading && _records.isNotEmpty)
                 Text(
                   'Mostrando ${filtered.length} de $totalCount desvinculaciones registradas',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF64748B),
+                  ),
                 ),
             ],
           ),
@@ -407,7 +500,9 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                  color: isDark
+                      ? const Color(0xFFF8FAFC)
+                      : const Color(0xFF0F172A),
                   letterSpacing: -0.3,
                 ),
               ),
@@ -416,7 +511,9 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
                 'Registro y gestión de bajas laborales, finiquitos y plazos legales (LGT Bolivia)',
                 style: GoogleFonts.inter(
                   fontSize: 12,
-                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
                 ),
               ),
             ],
@@ -473,9 +570,13 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
             _buildKpiCard(
               title: 'Finiquitos vencidos',
               value: '$expiredFiniquitosCount',
-              subtitle: expiredFiniquitosCount > 0 ? 'Alerta: Fuera de los 15 días' : 'Sin moras legales',
+              subtitle: expiredFiniquitosCount > 0
+                  ? 'Alerta: Fuera de los 15 días'
+                  : 'Sin moras legales',
               icon: Icons.warning_amber_rounded,
-              color: expiredFiniquitosCount > 0 ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+              color: expiredFiniquitosCount > 0
+                  ? const Color(0xFFEF4444)
+                  : const Color(0xFF10B981),
               highlightRed: expiredFiniquitosCount > 0,
               width: cardWidth > 200 ? cardWidth : double.infinity,
             ),
@@ -501,7 +602,9 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
         color: const Color(0xFF0D111C),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: highlightRed ? const Color(0xFFEF4444).withValues(alpha: 0.5) : const Color(0xFF1E293B),
+          color: highlightRed
+              ? const Color(0xFFEF4444).withValues(alpha: 0.5)
+              : const Color(0xFF1E293B),
         ),
       ),
       child: Row(
@@ -519,21 +622,31 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF94A3B8))),
+                Text(
+                  title,
+                  style: GoogleFonts.inter(
+                    fontSize: 11.5,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ),
                 const SizedBox(height: 2),
                 Text(
                   value,
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: highlightRed ? const Color(0xFFEF4444) : Colors.white,
+                    color: highlightRed
+                        ? const Color(0xFFEF4444)
+                        : Colors.white,
                   ),
                 ),
                 Text(
                   subtitle,
                   style: GoogleFonts.inter(
                     fontSize: 10.5,
-                    color: highlightRed ? const Color(0xFFFCA5A5) : const Color(0xFF64748B),
+                    color: highlightRed
+                        ? const Color(0xFFFCA5A5)
+                        : const Color(0xFF64748B),
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -601,11 +714,22 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
                   style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Buscar empleado o código BAJA...',
-                    hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12.5),
-                    prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF64748B)),
+                    hintStyle: GoogleFonts.inter(
+                      color: const Color(0xFF64748B),
+                      fontSize: 12.5,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      size: 18,
+                      color: Color(0xFF64748B),
+                    ),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.close, size: 16, color: Color(0xFF64748B)),
+                            icon: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Color(0xFF64748B),
+                            ),
                             onPressed: () {
                               _searchController.clear();
                               setState(() {});
@@ -614,7 +738,10 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
                         : null,
                     filled: true,
                     fillColor: const Color(0xFF111827),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 0,
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(color: Color(0xFF1E293B)),
@@ -640,17 +767,51 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
                   child: DropdownButton<String>(
                     value: _selectedType,
                     dropdownColor: const Color(0xFF0F172A),
-                    icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF94A3B8)),
-                    style: GoogleFonts.inter(color: Colors.white, fontSize: 12.5),
-                    hint: Text('Todos los tipos', style: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 12.5)),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 18,
+                      color: Color(0xFF94A3B8),
+                    ),
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 12.5,
+                    ),
+                    hint: Text(
+                      'Todos los tipos',
+                      style: GoogleFonts.inter(
+                        color: const Color(0xFF94A3B8),
+                        fontSize: 12.5,
+                      ),
+                    ),
                     items: const [
-                      DropdownMenuItem(value: 'TODOS', child: Text('Todos los tipos')),
-                      DropdownMenuItem(value: RrhhTerminationTypes.renunciaVoluntaria, child: Text('Renuncia Voluntaria')),
-                      DropdownMenuItem(value: RrhhTerminationTypes.despidoJustificado, child: Text('Despido Justificado')),
-                      DropdownMenuItem(value: RrhhTerminationTypes.despidoInjustificado, child: Text('Despido Injustificado')),
-                      DropdownMenuItem(value: RrhhTerminationTypes.finDeContrato, child: Text('Fin de Contrato')),
-                      DropdownMenuItem(value: RrhhTerminationTypes.jubilacion, child: Text('Jubilación')),
-                      DropdownMenuItem(value: RrhhTerminationTypes.abandonoDeTrabajo, child: Text('Abandono de Trabajo')),
+                      DropdownMenuItem(
+                        value: 'TODOS',
+                        child: Text('Todos los tipos'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhTerminationTypes.renunciaVoluntaria,
+                        child: Text('Renuncia Voluntaria'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhTerminationTypes.despidoJustificado,
+                        child: Text('Despido Justificado'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhTerminationTypes.despidoInjustificado,
+                        child: Text('Despido Injustificado'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhTerminationTypes.finDeContrato,
+                        child: Text('Fin de Contrato'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhTerminationTypes.jubilacion,
+                        child: Text('Jubilación'),
+                      ),
+                      DropdownMenuItem(
+                        value: RrhhTerminationTypes.abandonoDeTrabajo,
+                        child: Text('Abandono de Trabajo'),
+                      ),
                     ],
                     onChanged: (val) {
                       if (val != null) setState(() => _selectedType = val);
@@ -667,14 +828,26 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
                   height: 38,
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    color: _selectedDateRange != null ? const Color(0xFF2563EB).withValues(alpha: 0.15) : const Color(0xFF111827),
+                    color: _selectedDateRange != null
+                        ? const Color(0xFF2563EB).withValues(alpha: 0.15)
+                        : const Color(0xFF111827),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: _selectedDateRange != null ? const Color(0xFF2563EB) : const Color(0xFF1E293B)),
+                    border: Border.all(
+                      color: _selectedDateRange != null
+                          ? const Color(0xFF2563EB)
+                          : const Color(0xFF1E293B),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.date_range, size: 16, color: _selectedDateRange != null ? const Color(0xFF38BDF8) : const Color(0xFF94A3B8)),
+                      Icon(
+                        Icons.date_range,
+                        size: 16,
+                        color: _selectedDateRange != null
+                            ? const Color(0xFF38BDF8)
+                            : const Color(0xFF94A3B8),
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         _selectedDateRange != null
@@ -682,14 +855,21 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
                             : 'Rango de fechas',
                         style: GoogleFonts.inter(
                           fontSize: 12.5,
-                          color: _selectedDateRange != null ? Colors.white : const Color(0xFF94A3B8),
+                          color: _selectedDateRange != null
+                              ? Colors.white
+                              : const Color(0xFF94A3B8),
                         ),
                       ),
                       if (_selectedDateRange != null) ...[
                         const SizedBox(width: 6),
                         GestureDetector(
-                          onTap: () => setState(() => _selectedDateRange = null),
-                          child: const Icon(Icons.close, size: 14, color: Color(0xFF94A3B8)),
+                          onTap: () =>
+                              setState(() => _selectedDateRange = null),
+                          child: const Icon(
+                            Icons.close,
+                            size: 14,
+                            color: Color(0xFF94A3B8),
+                          ),
                         ),
                       ],
                     ],
@@ -704,7 +884,10 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
                   label: const Text('Limpiar'),
                   style: TextButton.styleFrom(
                     foregroundColor: const Color(0xFFEF4444),
-                    textStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+                    textStyle: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
             ],
@@ -716,13 +899,25 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
             children: [
               _buildFilterChip('Todos ($total)', 'TODOS'),
               const SizedBox(width: 6),
-              _buildFilterChip('Registradas ($registered)', RrhhTerminationStatus.registrada),
+              _buildFilterChip(
+                'Registradas ($registered)',
+                RrhhTerminationStatus.registrada,
+              ),
               const SizedBox(width: 6),
-              _buildFilterChip('En proceso ($inProgress)', RrhhTerminationStatus.enProceso),
+              _buildFilterChip(
+                'En proceso ($inProgress)',
+                RrhhTerminationStatus.enProceso,
+              ),
               const SizedBox(width: 6),
-              _buildFilterChip('Finalizadas ($finalized)', RrhhTerminationStatus.finalizada),
+              _buildFilterChip(
+                'Finalizadas ($finalized)',
+                RrhhTerminationStatus.finalizada,
+              ),
               const SizedBox(width: 6),
-              _buildFilterChip('Canceladas ($cancelled)', RrhhTerminationStatus.cancelada),
+              _buildFilterChip(
+                'Canceladas ($cancelled)',
+                RrhhTerminationStatus.cancelada,
+              ),
             ],
           ),
         ],
@@ -738,10 +933,14 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2563EB).withValues(alpha: 0.15) : const Color(0xFF111827),
+          color: isSelected
+              ? const Color(0xFF2563EB).withValues(alpha: 0.15)
+              : const Color(0xFF111827),
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF1E293B),
+            color: isSelected
+                ? const Color(0xFF2563EB)
+                : const Color(0xFF1E293B),
           ),
         ),
         child: Text(
@@ -749,7 +948,9 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-            color: isSelected ? const Color(0xFF60A5FA) : const Color(0xFF94A3B8),
+            color: isSelected
+                ? const Color(0xFF60A5FA)
+                : const Color(0xFF94A3B8),
           ),
         ),
       ),
@@ -813,11 +1014,11 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
   }
 
   TextStyle get _headerStyle => GoogleFonts.inter(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        color: const Color(0xFF64748B),
-        letterSpacing: 0.5,
-      );
+    fontSize: 11,
+    fontWeight: FontWeight.w700,
+    color: const Color(0xFF64748B),
+    letterSpacing: 0.5,
+  );
 
   Widget _buildErrorWidget() {
     return Center(
@@ -836,7 +1037,9 @@ class _RrhhTerminationsViewState extends State<RrhhTerminationsView> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadData,
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2563EB),
+              ),
               child: const Text('Reintentar'),
             ),
           ],

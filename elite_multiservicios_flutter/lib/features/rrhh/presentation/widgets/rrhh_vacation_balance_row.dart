@@ -26,7 +26,8 @@ class RrhhVacationBalanceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canBook = balance.pendingDays > 0 &&
+    final canBook =
+        balance.pendingDays > 0 &&
         balance.balanceStatus != RrhhVacationBalanceStatus.sinDerecho;
 
     final progress = balance.assignedDays > 0
@@ -35,7 +36,9 @@ class RrhhVacationBalanceRow extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isEven ? const Color(0xFF0F172A) : const Color(0xFF0B132B).withValues(alpha: 0.5),
+        color: isEven
+            ? const Color(0xFF0F172A)
+            : const Color(0xFF0B132B).withValues(alpha: 0.5),
         border: const Border(
           bottom: BorderSide(color: Color(0xFF1E293B), width: 1),
         ),
@@ -50,7 +53,9 @@ class RrhhVacationBalanceRow extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 17,
-                  backgroundColor: const Color(0xFF2563EB).withValues(alpha: 0.2),
+                  backgroundColor: const Color(
+                    0xFF2563EB,
+                  ).withValues(alpha: 0.2),
                   child: Text(
                     balance.employeeName.isNotEmpty
                         ? balance.employeeName[0].toUpperCase()
@@ -235,11 +240,12 @@ class RrhhVacationBalanceRow extends StatelessWidget {
                           balance.daysUntilAnniversary! > 0
                               ? 'en ${balance.daysUntilAnniversary} días'
                               : balance.daysUntilAnniversary == 0
-                                  ? 'Hoy'
-                                  : 'Venció hace ${balance.daysUntilAnniversary!.abs()} d',
+                              ? 'Hoy'
+                              : 'Venció hace ${balance.daysUntilAnniversary!.abs()} d',
                           style: GoogleFonts.inter(
                             fontSize: 10.5,
-                            color: (balance.daysUntilAnniversary! <= 30 &&
+                            color:
+                                (balance.daysUntilAnniversary! <= 30 &&
                                     balance.daysUntilAnniversary! >= 0)
                                 ? const Color(0xFFF59E0B)
                                 : const Color(0xFF64748B),
@@ -269,7 +275,10 @@ class RrhhVacationBalanceRow extends StatelessWidget {
                           ? const Color(0xFF2563EB).withValues(alpha: 0.5)
                           : const Color(0xFF334155),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     minimumSize: const Size(0, 24),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     visualDensity: VisualDensity.compact,
@@ -313,7 +322,11 @@ class RrhhVacationBalanceRow extends StatelessWidget {
                       value: 'history',
                       child: Row(
                         children: [
-                          const Icon(Icons.history, size: 16, color: Color(0xFF38BDF8)),
+                          const Icon(
+                            Icons.history,
+                            size: 16,
+                            color: Color(0xFF38BDF8),
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'Ver historial',
@@ -329,7 +342,11 @@ class RrhhVacationBalanceRow extends StatelessWidget {
                       value: 'adjust',
                       child: Row(
                         children: [
-                          const Icon(Icons.tune, size: 16, color: Color(0xFFF59E0B)),
+                          const Icon(
+                            Icons.tune,
+                            size: 16,
+                            color: Color(0xFFF59E0B),
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'Ajustar saldo',

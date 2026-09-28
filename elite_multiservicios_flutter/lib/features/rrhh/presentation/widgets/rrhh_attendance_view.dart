@@ -109,7 +109,11 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
           ),
           title: Row(
             children: [
-              const Icon(Icons.download_done_rounded, color: Color(0xFF10B981), size: 22),
+              const Icon(
+                Icons.download_done_rounded,
+                color: Color(0xFF10B981),
+                size: 22,
+              ),
               const SizedBox(width: 10),
               Text(
                 'Reporte de Asistencia Generado',
@@ -127,7 +131,10 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
             children: [
               Text(
                 'Se generó el consolidado de asistencia (${_records.length} registros) en formato tabular CSV para nómina.',
-                style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFFCBD5E1)),
+                style: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  color: const Color(0xFFCBD5E1),
+                ),
               ),
               const SizedBox(height: 12),
               Container(
@@ -161,7 +168,9 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                 Navigator.of(ctx).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Descargando archivo asistencia_campo_export.csv...'),
+                    content: Text(
+                      'Descargando archivo asistencia_campo_export.csv...',
+                    ),
                     backgroundColor: Color(0xFF10B981),
                   ),
                 );
@@ -274,7 +283,10 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 1.5,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF334155),
                       borderRadius: BorderRadius.circular(4),
@@ -303,7 +315,11 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
         ),
         OutlinedButton.icon(
           onPressed: _handleExportReport,
-          icon: const Icon(Icons.download_rounded, size: 14, color: Color(0xFF94A3B8)),
+          icon: const Icon(
+            Icons.download_rounded,
+            size: 14,
+            color: Color(0xFF94A3B8),
+          ),
           label: Text(
             'Exportar reporte',
             style: GoogleFonts.inter(
@@ -315,7 +331,9 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Color(0xFF334155)),
             padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6),
+            ),
             backgroundColor: const Color(0xFF0D111C),
           ),
         ),
@@ -324,7 +342,8 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
   }
 
   Widget _buildFiltersBar() {
-    final hasActiveFilters = _searchQuery.isNotEmpty ||
+    final hasActiveFilters =
+        _searchQuery.isNotEmpty ||
         _selectedDateRange != null ||
         _selectedStatus != 'TODOS' ||
         _selectedClient != 'TODOS' ||
@@ -376,25 +395,44 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                     height: 36,
                     child: TextField(
                       controller: _searchController,
-                      style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
+                      style: GoogleFonts.inter(
+                        fontSize: 12.5,
+                        color: Colors.white,
+                      ),
                       decoration: InputDecoration(
                         hintText: 'Buscar empleado, cliente...',
-                        hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
-                        prefixIcon: const Icon(Icons.search_rounded, size: 16, color: Color(0xFF64748B)),
+                        hintStyle: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: const Color(0xFF64748B),
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search_rounded,
+                          size: 16,
+                          color: Color(0xFF64748B),
+                        ),
                         filled: true,
                         fillColor: const Color(0xFF161F30),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 0,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(6),
-                          borderSide: const BorderSide(color: Color(0xFF1E293B)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF1E293B),
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(6),
-                          borderSide: const BorderSide(color: Color(0xFF1E293B)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF1E293B),
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(6),
-                          borderSide: const BorderSide(color: Color(0xFF3B82F6)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF3B82F6),
+                          ),
                         ),
                       ),
                       onChanged: (val) {
@@ -411,7 +449,8 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                         context: context,
                         firstDate: DateTime(2025),
                         lastDate: DateTime(2030),
-                        initialDateRange: _selectedDateRange ??
+                        initialDateRange:
+                            _selectedDateRange ??
                             DateTimeRange(
                               start: DateTime(2026, 9, 20),
                               end: DateTime(2026, 9, 26),
@@ -435,7 +474,11 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                         _loadRecords();
                       }
                     },
-                    icon: const Icon(Icons.calendar_today_rounded, size: 14, color: Color(0xFF94A3B8)),
+                    icon: const Icon(
+                      Icons.calendar_today_rounded,
+                      size: 14,
+                      color: Color(0xFF94A3B8),
+                    ),
                     label: Text(
                       _selectedDateRange != null
                           ? '${DateFormat('dd/MM').format(_selectedDateRange!.start)} - ${DateFormat('dd/MM').format(_selectedDateRange!.end)}'
@@ -443,16 +486,25 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: _selectedDateRange != null ? const Color(0xFF60A5FA) : const Color(0xFFCBD5E1),
+                        color: _selectedDateRange != null
+                            ? const Color(0xFF60A5FA)
+                            : const Color(0xFFCBD5E1),
                       ),
                     ),
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(
-                        color: _selectedDateRange != null ? const Color(0xFF2563EB) : const Color(0xFF1E293B),
+                        color: _selectedDateRange != null
+                            ? const Color(0xFF2563EB)
+                            : const Color(0xFF1E293B),
                       ),
                       backgroundColor: const Color(0xFF161F30),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                     ),
                   ),
 
@@ -469,8 +521,15 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                       child: DropdownButton<String>(
                         value: _selectedClient,
                         dropdownColor: const Color(0xFF0F172A),
-                        icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF94A3B8), size: 18),
-                        style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFCBD5E1)),
+                        icon: const Icon(
+                          Icons.arrow_drop_down,
+                          color: Color(0xFF94A3B8),
+                          size: 18,
+                        ),
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: const Color(0xFFCBD5E1),
+                        ),
                         items: clients.map((c) {
                           return DropdownMenuItem(
                             value: c,
@@ -500,8 +559,15 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                       child: DropdownButton<String>(
                         value: _selectedService,
                         dropdownColor: const Color(0xFF0F172A),
-                        icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF94A3B8), size: 18),
-                        style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFCBD5E1)),
+                        icon: const Icon(
+                          Icons.arrow_drop_down,
+                          color: Color(0xFF94A3B8),
+                          size: 18,
+                        ),
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: const Color(0xFFCBD5E1),
+                        ),
                         items: services.map((s) {
                           return DropdownMenuItem(
                             value: s,
@@ -521,7 +587,11 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                   if (hasActiveFilters)
                     TextButton.icon(
                       onPressed: _clearFilters,
-                      icon: const Icon(Icons.clear_rounded, size: 14, color: Color(0xFFEF4444)),
+                      icon: const Icon(
+                        Icons.clear_rounded,
+                        size: 14,
+                        color: Color(0xFFEF4444),
+                      ),
                       label: Text(
                         'Limpiar filtros',
                         style: GoogleFonts.inter(
@@ -531,7 +601,10 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                         ),
                       ),
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 6,
+                        ),
                       ),
                     ),
                 ],
@@ -549,13 +622,25 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
               children: [
                 _buildStatusFilterPill('TODOS', 'Todos'),
                 const SizedBox(width: 8),
-                _buildStatusFilterPill(RrhhAttendanceStatus.presente, 'Presentes'),
+                _buildStatusFilterPill(
+                  RrhhAttendanceStatus.presente,
+                  'Presentes',
+                ),
                 const SizedBox(width: 8),
-                _buildStatusFilterPill(RrhhAttendanceStatus.tarde, 'Con Tardanza'),
+                _buildStatusFilterPill(
+                  RrhhAttendanceStatus.tarde,
+                  'Con Tardanza',
+                ),
                 const SizedBox(width: 8),
-                _buildStatusFilterPill(RrhhAttendanceStatus.ausente, 'Ausentes'),
+                _buildStatusFilterPill(
+                  RrhhAttendanceStatus.ausente,
+                  'Ausentes',
+                ),
                 const SizedBox(width: 8),
-                _buildStatusFilterPill(RrhhAttendanceStatus.justificado, 'Justificados'),
+                _buildStatusFilterPill(
+                  RrhhAttendanceStatus.justificado,
+                  'Justificados',
+                ),
               ],
             ),
           ),
@@ -580,7 +665,9 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
           color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF161F30),
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: isSelected ? const Color(0xFF3B82F6) : const Color(0xFF1E293B),
+            color: isSelected
+                ? const Color(0xFF3B82F6)
+                : const Color(0xFF1E293B),
           ),
         ),
         child: Text(
@@ -607,7 +694,9 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           const minWidth = 1180.0;
-          final tableWidth = constraints.maxWidth > minWidth ? constraints.maxWidth : minWidth;
+          final tableWidth = constraints.maxWidth > minWidth
+              ? constraints.maxWidth
+              : minWidth;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -627,7 +716,9 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 40),
                           child: Center(
-                            child: CircularProgressIndicator(color: Color(0xFF2563EB)),
+                            child: CircularProgressIndicator(
+                              color: Color(0xFF2563EB),
+                            ),
                           ),
                         )
                       else if (_errorMessage != null)
@@ -644,7 +735,11 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
                           child: Center(
                             child: Column(
                               children: [
-                                const Icon(Icons.inbox_outlined, size: 40, color: Color(0xFF64748B)),
+                                const Icon(
+                                  Icons.inbox_outlined,
+                                  size: 40,
+                                  color: Color(0xFF64748B),
+                                ),
                                 const SizedBox(height: 10),
                                 Text(
                                   'No se encontraron registros de asistencia de campo',
@@ -689,7 +784,10 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
 
               // Footer de la tabla
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 decoration: const BoxDecoration(
                   color: Color(0xFF0D111C),
                   border: Border(top: BorderSide(color: Color(0xFF1E293B))),
@@ -742,7 +840,11 @@ class _RrhhAttendanceViewState extends State<RrhhAttendanceView> {
           _buildColumnHeader('TARDANZA', flex: 11),
           _buildColumnHeader('ESTADO', flex: 11),
           _buildColumnHeader('OBSERVACIONES', flex: 18),
-          _buildColumnHeader('ACCIONES', flex: 7, alignment: Alignment.centerRight),
+          _buildColumnHeader(
+            'ACCIONES',
+            flex: 7,
+            alignment: Alignment.centerRight,
+          ),
         ],
       ),
     );

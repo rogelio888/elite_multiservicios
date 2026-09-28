@@ -65,7 +65,9 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
     _nameCtrl = TextEditingController(text: item?.name ?? '');
     _descCtrl = TextEditingController(text: item?.description ?? '');
     _amountCtrl = TextEditingController(
-      text: item?.defaultAmount != null ? item!.defaultAmount!.toStringAsFixed(2) : '',
+      text: item?.defaultAmount != null
+          ? item!.defaultAmount!.toStringAsFixed(2)
+          : '',
     );
 
     if (type == RrhhCatalogType.bonuses) {
@@ -97,12 +99,14 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
     final now = DateTime.now();
 
     double? amount;
-    if (widget.catalogType == RrhhCatalogType.bonuses && _amountCtrl.text.trim().isNotEmpty) {
+    if (widget.catalogType == RrhhCatalogType.bonuses &&
+        _amountCtrl.text.trim().isNotEmpty) {
       amount = double.tryParse(_amountCtrl.text.trim().replaceAll(',', '.'));
     }
 
     String? subTypeVal;
-    if (widget.catalogType == RrhhCatalogType.bonuses || widget.catalogType == RrhhCatalogType.deductions) {
+    if (widget.catalogType == RrhhCatalogType.bonuses ||
+        widget.catalogType == RrhhCatalogType.deductions) {
       subTypeVal = _subType;
     }
 
@@ -164,7 +168,9 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            isEdit ? 'Editar en ${type.title}' : 'Nuevo en ${type.title}',
+                            isEdit
+                                ? 'Editar en ${type.title}'
+                                : 'Nuevo en ${type.title}',
                             style: GoogleFonts.inter(
                               fontSize: 16.5,
                               fontWeight: FontWeight.w700,
@@ -184,7 +190,11 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, size: 20, color: Color(0xFF94A3B8)),
+                      icon: const Icon(
+                        Icons.close,
+                        size: 20,
+                        color: Color(0xFF94A3B8),
+                      ),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
@@ -222,7 +232,9 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
                               }
                               final trimmed = val.trim().toUpperCase();
                               final duplicate = widget.existingItems.any(
-                                (c) => c.code.toUpperCase() == trimmed && c.id != widget.item?.id,
+                                (c) =>
+                                    c.code.toUpperCase() == trimmed &&
+                                    c.id != widget.item?.id,
                               );
                               if (duplicate) return 'Ya existe';
                               return null;
@@ -242,7 +254,10 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
                           const SizedBox(height: 6),
                           TextFormField(
                             controller: _nameCtrl,
-                            style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 13,
+                            ),
                             decoration: _inputDecoration(
                               hintText: 'Ej: Banco Unión, CNS, Indefinido...',
                             ),
@@ -255,9 +270,12 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
                               }
                               final trimmed = val.trim().toLowerCase();
                               final duplicate = widget.existingItems.any(
-                                (c) => c.name.toLowerCase() == trimmed && c.id != widget.item?.id,
+                                (c) =>
+                                    c.name.toLowerCase() == trimmed &&
+                                    c.id != widget.item?.id,
                               );
-                              if (duplicate) return 'Ya existe un registro con este nombre';
+                              if (duplicate)
+                                return 'Ya existe un registro con este nombre';
                               return null;
                             },
                           ),
@@ -278,29 +296,55 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildLabel('TIPO DE BONIFICACIÓN', isRequired: true),
+                            _buildLabel(
+                              'TIPO DE BONIFICACIÓN',
+                              isRequired: true,
+                            ),
                             const SizedBox(height: 6),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF111827),
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: const Color(0xFF1E293B)),
+                                border: Border.all(
+                                  color: const Color(0xFF1E293B),
+                                ),
                               ),
                               child: DropdownButtonHideUnderline(
                                 child: DropdownButton<String>(
-                                  value: _subType.isEmpty ? 'Fija mensual' : _subType,
+                                  value: _subType.isEmpty
+                                      ? 'Fija mensual'
+                                      : _subType,
                                   dropdownColor: const Color(0xFF0F172A),
                                   isExpanded: true,
-                                  icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF94A3B8)),
-                                  style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+                                  icon: const Icon(
+                                    Icons.keyboard_arrow_down,
+                                    size: 18,
+                                    color: Color(0xFF94A3B8),
+                                  ),
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                  ),
                                   items: const [
-                                    DropdownMenuItem(value: 'Fija mensual', child: Text('Fija mensual')),
-                                    DropdownMenuItem(value: 'Por evento', child: Text('Por evento / Producción')),
-                                    DropdownMenuItem(value: 'Variable', child: Text('Variable (Desempeño)')),
+                                    DropdownMenuItem(
+                                      value: 'Fija mensual',
+                                      child: Text('Fija mensual'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'Por evento',
+                                      child: Text('Por evento / Producción'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'Variable',
+                                      child: Text('Variable (Desempeño)'),
+                                    ),
                                   ],
                                   onChanged: (val) {
-                                    if (val != null) setState(() => _subType = val);
+                                    if (val != null)
+                                      setState(() => _subType = val);
                                   },
                                 ),
                               ),
@@ -319,11 +363,19 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
                             const SizedBox(height: 6),
                             TextFormField(
                               controller: _amountCtrl,
-                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
                               inputFormatters: [
-                                FilteringTextInputFormatter.allow(RegExp(r'^\d+[\.,]?\d{0,2}')),
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d+[\.,]?\d{0,2}'),
+                                ),
                               ],
-                              style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontSize: 13,
+                              ),
                               decoration: _inputDecoration(
                                 hintText: '0.00',
                                 prefixText: 'Bs. ',
@@ -356,12 +408,28 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
                             value: _subType.isEmpty ? 'Fijo' : _subType,
                             dropdownColor: const Color(0xFF0F172A),
                             isExpanded: true,
-                            icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF94A3B8)),
-                            style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+                            icon: const Icon(
+                              Icons.keyboard_arrow_down,
+                              size: 18,
+                              color: Color(0xFF94A3B8),
+                            ),
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 13,
+                            ),
                             items: const [
-                              DropdownMenuItem(value: 'Fijo', child: Text('Fijo mensual')),
-                              DropdownMenuItem(value: 'Porcentaje', child: Text('Porcentaje sobre sueldo')),
-                              DropdownMenuItem(value: 'Por evento', child: Text('Por evento / Cuota única')),
+                              DropdownMenuItem(
+                                value: 'Fijo',
+                                child: Text('Fijo mensual'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'Porcentaje',
+                                child: Text('Porcentaje sobre sueldo'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'Por evento',
+                                child: Text('Por evento / Cuota única'),
+                              ),
                             ],
                             onChanged: (val) {
                               if (val != null) setState(() => _subType = val);
@@ -383,9 +451,13 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
                     TextFormField(
                       controller: _descCtrl,
                       maxLines: 2,
-                      style: GoogleFonts.inter(color: Colors.white, fontSize: 12.5),
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 12.5,
+                      ),
                       decoration: _inputDecoration(
-                        hintText: 'Detalle sobre la aplicación legal, administrativa u operativa...',
+                        hintText:
+                            'Detalle sobre la aplicación legal, administrativa u operativa...',
                       ),
                     ),
                   ],
@@ -394,7 +466,10 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
 
                 // Toggle Activo / Inactivo
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF111827),
                     borderRadius: BorderRadius.circular(8),
@@ -428,7 +503,9 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
                       Switch(
                         value: _isActive,
                         activeThumbColor: const Color(0xFF10B981),
-                        activeTrackColor: const Color(0xFF10B981).withValues(alpha: 0.25),
+                        activeTrackColor: const Color(
+                          0xFF10B981,
+                        ).withValues(alpha: 0.25),
                         inactiveThumbColor: const Color(0xFF64748B),
                         inactiveTrackColor: const Color(0xFF1E293B),
                         onChanged: (val) => setState(() => _isActive = val),
@@ -447,12 +524,20 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF94A3B8),
                         side: const BorderSide(color: Color(0xFF334155)),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 11,
+                        ),
                       ),
                       child: Text(
                         'Cancelar',
-                        style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500),
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -461,12 +546,20 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
                       style: FilledButton.styleFrom(
                         backgroundColor: const Color(0xFF2563EB),
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 11,
+                        ),
                       ),
                       child: Text(
                         isEdit ? 'Actualizar Registro' : 'Crear Registro',
-                        style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -496,7 +589,11 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
           const SizedBox(width: 4),
           const Text(
             '*',
-            style: TextStyle(color: Color(0xFFEF4444), fontSize: 12, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Color(0xFFEF4444),
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ],
@@ -510,10 +607,19 @@ class _RrhhCatalogEditDialogState extends State<RrhhCatalogEditDialog> {
   }) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12.5),
+      hintStyle: GoogleFonts.inter(
+        color: const Color(0xFF64748B),
+        fontSize: 12.5,
+      ),
       prefixText: prefixText,
-      prefixStyle: GoogleFonts.inter(color: const Color(0xFF60A5FA), fontSize: 13, fontWeight: FontWeight.w600),
-      prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 16, color: const Color(0xFF64748B)) : null,
+      prefixStyle: GoogleFonts.inter(
+        color: const Color(0xFF60A5FA),
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+      ),
+      prefixIcon: prefixIcon != null
+          ? Icon(prefixIcon, size: 16, color: const Color(0xFF64748B))
+          : null,
       filled: true,
       fillColor: const Color(0xFF111827),
       isDense: true,

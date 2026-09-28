@@ -23,7 +23,8 @@ class RrhhApplicantEditDialog extends StatefulWidget {
   }
 
   @override
-  State<RrhhApplicantEditDialog> createState() => _RrhhApplicantEditDialogState();
+  State<RrhhApplicantEditDialog> createState() =>
+      _RrhhApplicantEditDialogState();
 }
 
 class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
@@ -48,7 +49,17 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
   RrhhArea? _selectedArea;
   RrhhSpecialty? _selectedSpecialty;
 
-  static const List<String> _ciExtList = ['SC', 'LP', 'CB', 'OR', 'PT', 'TJ', 'CH', 'BE', 'PD'];
+  static const List<String> _ciExtList = [
+    'SC',
+    'LP',
+    'CB',
+    'OR',
+    'PT',
+    'TJ',
+    'CH',
+    'BE',
+    'PD',
+  ];
 
   @override
   void initState() {
@@ -104,14 +115,20 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
   void _syncDropdowns() {
     final areas = _filteredAreas;
     if (widget.applicant != null) {
-      _selectedArea = areas.where((a) => a.id == widget.applicant!.areaId).firstOrNull ?? areas.firstOrNull;
+      _selectedArea =
+          areas.where((a) => a.id == widget.applicant!.areaId).firstOrNull ??
+          areas.firstOrNull;
     } else {
       _selectedArea = areas.firstOrNull;
     }
 
     final specs = _filteredSpecialties;
     if (widget.applicant != null) {
-      _selectedSpecialty = specs.where((s) => s.id == widget.applicant!.specialtyId).firstOrNull ?? specs.firstOrNull;
+      _selectedSpecialty =
+          specs
+              .where((s) => s.id == widget.applicant!.specialtyId)
+              .firstOrNull ??
+          specs.firstOrNull;
     } else {
       _selectedSpecialty = specs.firstOrNull;
     }
@@ -119,9 +136,21 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
 
   List<RrhhArea> get _filteredAreas {
     if (_targetType == 'CAMPO') {
-      return _allAreas.where((a) => a.name.toLowerCase().contains('operac') || a.name.toLowerCase().contains('servici')).toList();
+      return _allAreas
+          .where(
+            (a) =>
+                a.name.toLowerCase().contains('operac') ||
+                a.name.toLowerCase().contains('servici'),
+          )
+          .toList();
     } else {
-      return _allAreas.where((a) => !a.name.toLowerCase().contains('operac') || a.name.toLowerCase().contains('admin')).toList();
+      return _allAreas
+          .where(
+            (a) =>
+                !a.name.toLowerCase().contains('operac') ||
+                a.name.toLowerCase().contains('admin'),
+          )
+          .toList();
     }
   }
 
@@ -139,9 +168,18 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
 
     // Validación de edad mínima (18 años)
     final now = DateTime.now();
-    final age = now.year - _birthDate!.year - ((now.month < _birthDate!.month || (now.month == _birthDate!.month && now.day < _birthDate!.day)) ? 1 : 0);
+    final age =
+        now.year -
+        _birthDate!.year -
+        ((now.month < _birthDate!.month ||
+                (now.month == _birthDate!.month && now.day < _birthDate!.day))
+            ? 1
+            : 0);
     if (age < 18) {
-      setState(() => _errorMsg = 'El postulante debe ser mayor de edad (mínimo 18 años). Edad calculada: $age años.');
+      setState(
+        () => _errorMsg =
+            'El postulante debe ser mayor de edad (mínimo 18 años). Edad calculada: $age años.',
+      );
       return;
     }
 
@@ -151,7 +189,10 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
     }
 
     if (_targetType == 'CAMPO' && _selectedSpecialty == null) {
-      setState(() => _errorMsg = 'Para personal de CAMPO, la especialidad técnica es obligatoria.');
+      setState(
+        () => _errorMsg =
+            'Para personal de CAMPO, la especialidad técnica es obligatoria.',
+      );
       return;
     }
 
@@ -180,7 +221,10 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
             setState(() => _isSaving = false);
             return;
           }
-          previousIds = matches.map((m) => m.id ?? 0).where((id) => id > 0).toList();
+          previousIds = matches
+              .map((m) => m.id ?? 0)
+              .where((id) => id > 0)
+              .toList();
         }
       }
 
@@ -257,10 +301,14 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                             width: 42,
                             height: 42,
                             decoration: BoxDecoration(
-                              color: const Color(0xFF0284C7).withValues(alpha: 0.15),
+                              color: const Color(
+                                0xFF0284C7,
+                              ).withValues(alpha: 0.15),
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: const Color(0xFF0284C7).withValues(alpha: 0.3),
+                                color: const Color(
+                                  0xFF0284C7,
+                                ).withValues(alpha: 0.3),
                               ),
                             ),
                             child: const Icon(
@@ -294,7 +342,11 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.close, color: Color(0xFF64748B), size: 20),
+                            icon: const Icon(
+                              Icons.close,
+                              color: Color(0xFF64748B),
+                              size: 20,
+                            ),
                             onPressed: () => Navigator.of(context).pop(false),
                           ),
                         ],
@@ -305,18 +357,31 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEF4444).withValues(alpha: 0.1),
+                            color: const Color(
+                              0xFFEF4444,
+                            ).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.3)),
+                            border: Border.all(
+                              color: const Color(
+                                0xFFEF4444,
+                              ).withValues(alpha: 0.3),
+                            ),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.error_outline, color: Color(0xFFEF4444), size: 16),
+                              const Icon(
+                                Icons.error_outline,
+                                color: Color(0xFFEF4444),
+                                size: 16,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   _errorMsg!,
-                                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFFCA5A5)),
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: const Color(0xFFFCA5A5),
+                                  ),
                                 ),
                               ),
                             ],
@@ -362,7 +427,9 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                         label: 'NOMBRE COMPLETO *',
                         hint: 'Ej: Juan Carlos Pérez Mamani',
                         icon: Icons.person_outline,
-                        validator: (v) => (v == null || v.trim().isEmpty) ? 'Ingresa el nombre completo.' : null,
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Ingresa el nombre completo.'
+                            : null,
                       ),
                       const SizedBox(height: 12),
 
@@ -377,7 +444,9 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                               label: 'CÉDULA DE IDENTIDAD *',
                               hint: 'Ej: 8899001',
                               icon: Icons.credit_card_outlined,
-                              validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido.' : null,
+                              validator: (v) => (v == null || v.trim().isEmpty)
+                                  ? 'Requerido.'
+                                  : null,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -391,9 +460,19 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                                   initialValue: _ciExt,
                                   isExpanded: true,
                                   dropdownColor: const Color(0xFF1E293B),
-                                  style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    color: Colors.white,
+                                  ),
                                   decoration: _inputDecoration(),
-                                  items: _ciExtList.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                                  items: _ciExtList
+                                      .map(
+                                        (e) => DropdownMenuItem(
+                                          value: e,
+                                          child: Text(e),
+                                        ),
+                                      )
+                                      .toList(),
                                   onChanged: (v) {
                                     if (v != null) setState(() => _ciExt = v);
                                   },
@@ -409,7 +488,9 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                               label: 'TELÉFONO / CELULAR *',
                               hint: 'Ej: 78912345',
                               icon: Icons.phone_outlined,
-                              validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido.' : null,
+                              validator: (v) => (v == null || v.trim().isEmpty)
+                                  ? 'Requerido.'
+                                  : null,
                             ),
                           ),
                         ],
@@ -423,11 +504,14 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                           Expanded(
                             child: _buildTextField(
                               controller: _emailCtrl,
-                              label: _targetType == 'OFICINA' ? 'CORREO ELECTRÓNICO *' : 'CORREO ELECTRÓNICO (OPCIONAL)',
+                              label: _targetType == 'OFICINA'
+                                  ? 'CORREO ELECTRÓNICO *'
+                                  : 'CORREO ELECTRÓNICO (OPCIONAL)',
                               hint: 'ejemplo@correo.com',
                               icon: Icons.email_outlined,
                               validator: (v) {
-                                if (_targetType == 'OFICINA' && (v == null || v.trim().isEmpty)) {
+                                if (_targetType == 'OFICINA' &&
+                                    (v == null || v.trim().isEmpty)) {
                                   return 'El correo es obligatorio para personal de oficina.';
                                 }
                                 return null;
@@ -444,23 +528,35 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                                   onTap: () async {
                                     final d = await showDatePicker(
                                       context: context,
-                                      initialDate: _birthDate ?? DateTime(2000, 1, 1),
+                                      initialDate:
+                                          _birthDate ?? DateTime(2000, 1, 1),
                                       firstDate: DateTime(1950),
-                                      lastDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
+                                      lastDate: DateTime.now().subtract(
+                                        const Duration(days: 365 * 18),
+                                      ),
                                     );
-                                    if (d != null) setState(() => _birthDate = d);
+                                    if (d != null)
+                                      setState(() => _birthDate = d);
                                   },
                                   child: Container(
                                     height: 48,
-                                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFF1E293B),
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: const Color(0xFF334155)),
+                                      border: Border.all(
+                                        color: const Color(0xFF334155),
+                                      ),
                                     ),
                                     child: Row(
                                       children: [
-                                        const Icon(Icons.calendar_today_outlined, color: Color(0xFF38BDF8), size: 16),
+                                        const Icon(
+                                          Icons.calendar_today_outlined,
+                                          color: Color(0xFF38BDF8),
+                                          size: 16,
+                                        ),
                                         const SizedBox(width: 8),
                                         Text(
                                           _birthDate == null
@@ -468,7 +564,9 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                                               : '${_birthDate!.day.toString().padLeft(2, '0')}/${_birthDate!.month.toString().padLeft(2, '0')}/${_birthDate!.year}',
                                           style: GoogleFonts.inter(
                                             fontSize: 13,
-                                            color: _birthDate == null ? const Color(0xFF64748B) : Colors.white,
+                                            color: _birthDate == null
+                                                ? const Color(0xFF64748B)
+                                                : Colors.white,
                                           ),
                                         ),
                                       ],
@@ -495,39 +593,69 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                                   initialValue: _selectedArea,
                                   isExpanded: true,
                                   dropdownColor: const Color(0xFF1E293B),
-                                  style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    color: Colors.white,
+                                  ),
                                   decoration: _inputDecoration(),
                                   items: _filteredAreas
-                                      .map((a) => DropdownMenuItem(value: a, child: Text(a.name, overflow: TextOverflow.ellipsis)))
+                                      .map(
+                                        (a) => DropdownMenuItem(
+                                          value: a,
+                                          child: Text(
+                                            a.name,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      )
                                       .toList(),
                                   onChanged: (a) {
                                     setState(() {
                                       _selectedArea = a;
                                       final specs = _filteredSpecialties;
-                                      _selectedSpecialty = specs.isNotEmpty ? specs.first : null;
+                                      _selectedSpecialty = specs.isNotEmpty
+                                          ? specs.first
+                                          : null;
                                     });
                                   },
                                 ),
                               ],
                             ),
                           ),
-                          if (_targetType == 'CAMPO' || _showAdvancedSpecialty) ...[
+                          if (_targetType == 'CAMPO' ||
+                              _showAdvancedSpecialty) ...[
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _fieldLabel(_targetType == 'CAMPO' ? 'ESPECIALIDAD *' : 'ESPECIALIDAD (OPCIONAL)'),
+                                  _fieldLabel(
+                                    _targetType == 'CAMPO'
+                                        ? 'ESPECIALIDAD *'
+                                        : 'ESPECIALIDAD (OPCIONAL)',
+                                  ),
                                   DropdownButtonFormField<RrhhSpecialty>(
                                     initialValue: _selectedSpecialty,
                                     isExpanded: true,
                                     dropdownColor: const Color(0xFF1E293B),
-                                    style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+                                    style: GoogleFonts.inter(
+                                      fontSize: 13,
+                                      color: Colors.white,
+                                    ),
                                     decoration: _inputDecoration(),
                                     items: _filteredSpecialties
-                                        .map((s) => DropdownMenuItem(value: s, child: Text(s.name, overflow: TextOverflow.ellipsis)))
+                                        .map(
+                                          (s) => DropdownMenuItem(
+                                            value: s,
+                                            child: Text(
+                                              s.name,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        )
                                         .toList(),
-                                    onChanged: (s) => setState(() => _selectedSpecialty = s),
+                                    onChanged: (s) =>
+                                        setState(() => _selectedSpecialty = s),
                                   ),
                                 ],
                               ),
@@ -536,18 +664,28 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                         ],
                       ),
 
-                      if (_targetType == 'OFICINA' && !_showAdvancedSpecialty) ...[
+                      if (_targetType == 'OFICINA' &&
+                          !_showAdvancedSpecialty) ...[
                         const SizedBox(height: 8),
                         InkWell(
-                          onTap: () => setState(() => _showAdvancedSpecialty = true),
+                          onTap: () =>
+                              setState(() => _showAdvancedSpecialty = true),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.add_circle_outline, color: Color(0xFF38BDF8), size: 14),
+                              const Icon(
+                                Icons.add_circle_outline,
+                                color: Color(0xFF38BDF8),
+                                size: 14,
+                              ),
                               const SizedBox(width: 6),
                               Text(
                                 'Mostrar especialidad técnica avanzada',
-                                style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF38BDF8), fontWeight: FontWeight.w500),
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: const Color(0xFF38BDF8),
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ],
                           ),
@@ -563,27 +701,57 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
                             style: OutlinedButton.styleFrom(
                               foregroundColor: const Color(0xFF94A3B8),
                               side: const BorderSide(color: Color(0xFF334155)),
-                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                             ),
-                            onPressed: _isSaving ? null : () => Navigator.of(context).pop(false),
-                            child: Text('Cancelar', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
+                            onPressed: _isSaving
+                                ? null
+                                : () => Navigator.of(context).pop(false),
+                            child: Text(
+                              'Cancelar',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 12),
                           ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF0284C7),
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                             ),
                             onPressed: _isSaving ? null : _handleSave,
                             icon: _isSaving
-                                ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                ? const SizedBox(
+                                    width: 14,
+                                    height: 14,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
                                 : const Icon(Icons.check, size: 16),
                             label: Text(
-                              _isSaving ? 'Verificando...' : 'Registrar Postulante',
-                              style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+                              _isSaving
+                                  ? 'Verificando...'
+                                  : 'Registrar Postulante',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ],
@@ -596,7 +764,11 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
     );
   }
 
-  Widget _buildTypeButton({required String type, required String label, required IconData icon}) {
+  Widget _buildTypeButton({
+    required String type,
+    required String label,
+    required IconData icon,
+  }) {
     final isSelected = _targetType == type;
     return InkWell(
       onTap: () {
@@ -618,7 +790,11 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 16, color: isSelected ? Colors.white : const Color(0xFF94A3B8)),
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected ? Colors.white : const Color(0xFF94A3B8),
+            ),
             const SizedBox(width: 6),
             Text(
               label,
@@ -664,7 +840,10 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
           controller: controller,
           validator: validator,
           style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
-          decoration: _inputDecoration(hint: hint, prefixIcon: Icon(icon, color: const Color(0xFF38BDF8), size: 16)),
+          decoration: _inputDecoration(
+            hint: hint,
+            prefixIcon: Icon(icon, color: const Color(0xFF38BDF8), size: 16),
+          ),
         ),
       ],
     );
@@ -674,7 +853,10 @@ class _RrhhApplicantEditDialogState extends State<RrhhApplicantEditDialog> {
     return InputDecoration(
       hintText: hint,
       prefixIcon: prefixIcon,
-      hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+      hintStyle: GoogleFonts.inter(
+        fontSize: 12,
+        color: const Color(0xFF64748B),
+      ),
       filled: true,
       fillColor: const Color(0xFF1E293B),
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),

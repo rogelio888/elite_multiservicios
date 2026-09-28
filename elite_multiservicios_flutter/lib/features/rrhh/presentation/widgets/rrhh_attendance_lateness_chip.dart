@@ -31,7 +31,10 @@ class RrhhAttendanceLatenessChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF064E3B).withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.3), width: 1),
+          border: Border.all(
+            color: const Color(0xFF10B981).withValues(alpha: 0.3),
+            width: 1,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -59,11 +62,15 @@ class RrhhAttendanceLatenessChip extends StatelessWidget {
     }
 
     final bool isSevere = lateMinutes! > 15;
-    final Color dotColor = isSevere ? const Color(0xFFEF4444) : const Color(0xFFF59E0B);
+    final Color dotColor = isSevere
+        ? const Color(0xFFEF4444)
+        : const Color(0xFFF59E0B);
     final Color bgColor = isSevere
         ? const Color(0xFF7F1D1D).withValues(alpha: 0.3)
         : const Color(0xFF78350F).withValues(alpha: 0.3);
-    final Color textColor = isSevere ? const Color(0xFFF87171) : const Color(0xFFFBBF24);
+    final Color textColor = isSevere
+        ? const Color(0xFFF87171)
+        : const Color(0xFFFBBF24);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),

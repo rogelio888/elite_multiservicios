@@ -23,10 +23,14 @@ class RrhhPlaceholderView extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0B0F19) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF0B0F19)
+          : const Color(0xFFF8FAFC),
       body: Center(
         child: Container(
-          constraints: const Duration(milliseconds: 300) == Duration.zero ? null : const BoxConstraints(maxWidth: 580),
+          constraints: const Duration(milliseconds: 300) == Duration.zero
+              ? null
+              : const BoxConstraints(maxWidth: 580),
           margin: const EdgeInsets.all(24),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
           decoration: BoxDecoration(
@@ -61,7 +65,10 @@ class RrhhPlaceholderView extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF59E0B).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(6),
@@ -93,7 +100,9 @@ class RrhhPlaceholderView extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   height: 1.5,
-                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
                 ),
               ),
               const SizedBox(height: 24),
@@ -104,7 +113,9 @@ class RrhhPlaceholderView extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontSize: 11.5,
                   fontStyle: FontStyle.italic,
-                  color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                  color: isDark
+                      ? const Color(0xFF64748B)
+                      : const Color(0xFF94A3B8),
                 ),
               ),
             ],

@@ -40,7 +40,10 @@ class RrhhEmptyState extends StatelessWidget {
           Text(
             description,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8)),
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: const Color(0xFF94A3B8),
+            ),
           ),
         ],
       ),
@@ -86,9 +89,13 @@ class RrhhErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              errorMessage ?? 'Ocurrió un error inesperado al conectar con el repositorio.',
+              errorMessage ??
+                  'Ocurrió un error inesperado al conectar con el repositorio.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFFCA5A5)),
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: const Color(0xFFFCA5A5),
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
@@ -98,7 +105,9 @@ class RrhhErrorState extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFDC2626),
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ],
@@ -132,7 +141,11 @@ class RrhhForbiddenState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.lock_person_outlined, size: 48, color: Color(0xFFF59E0B)),
+            const Icon(
+              Icons.lock_person_outlined,
+              size: 48,
+              color: Color(0xFFF59E0B),
+            ),
             const SizedBox(height: 16),
             Text(
               '403 - Acceso Denegado',
@@ -146,7 +159,10 @@ class RrhhForbiddenState extends StatelessWidget {
             Text(
               'No cuenta con los privilegios suficientes para consultar este módulo.\nRequiere $requiredPermission',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8)),
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: const Color(0xFF94A3B8),
+              ),
             ),
           ],
         ),

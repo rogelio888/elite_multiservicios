@@ -151,14 +151,17 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
     final timeFormatter = DateFormat('HH:mm:ss');
 
     final buffer = StringBuffer();
-    buffer.writeln('Código,Fecha,Hora,Usuario,Categoría,Empleado,Título,Descripción,Referencia');
+    buffer.writeln(
+      'Código,Fecha,Hora,Usuario,Categoría,Empleado,Título,Descripción,Referencia',
+    );
 
     for (final e in _events) {
       final date = dateFormatter.format(e.date);
       final time = timeFormatter.format(e.date);
       final user = '"${e.registeredBy.replaceAll('"', '""')}"';
       final cat = '"${e.category.replaceAll('"', '""')}"';
-      final emp = '"${(e.employeeName ?? (e.employeeId > 0 ? 'EMP-${e.employeeId}' : 'N/A')).replaceAll('"', '""')}"';
+      final emp =
+          '"${(e.employeeName ?? (e.employeeId > 0 ? 'EMP-${e.employeeId}' : 'N/A')).replaceAll('"', '""')}"';
       final title = '"${e.title.replaceAll('"', '""')}"';
       final desc = '"${e.description.replaceAll('"', '""')}"';
       final ref = '"${(e.sourceCode ?? e.code).replaceAll('"', '""')}"';
@@ -178,7 +181,11 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
         ),
         title: Row(
           children: [
-            const Icon(Icons.download_done_rounded, color: Color(0xFF10B981), size: 22),
+            const Icon(
+              Icons.download_done_rounded,
+              color: Color(0xFF10B981),
+              size: 22,
+            ),
             const SizedBox(width: 10),
             Text(
               'Bitácora de Auditoría Exportada',
@@ -196,7 +203,10 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
           children: [
             Text(
               'Se preparó el libro consolidado de auditoría (${_events.length} eventos) con sello temporal y firma de integridad.',
-              style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFFCBD5E1)),
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                color: const Color(0xFFCBD5E1),
+              ),
             ),
             const SizedBox(height: 12),
             Container(
@@ -212,16 +222,26 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
                 children: [
                   Text(
                     'Formato: CSV Oficial de Auditoría RRHH',
-                    style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF93C5FD)),
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF93C5FD),
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Registros: ${_events.length} eventos auditados',
-                    style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF94A3B8)),
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: const Color(0xFF94A3B8),
+                    ),
                   ),
                   Text(
                     'Generado: ${DateFormat('dd/MM/yyyy HH:mm:ss').format(DateTime.now())}',
-                    style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF94A3B8)),
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: const Color(0xFF94A3B8),
+                    ),
                   ),
                 ],
               ),
@@ -250,12 +270,17 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
             icon: const Icon(Icons.file_download_outlined, size: 16),
             label: Text(
               'Descargar Archivo',
-              style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2563EB),
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
             ),
           ),
         ],
@@ -338,11 +363,17 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1E293B),
                       borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: const Color(0xFF334155), width: 0.8),
+                      border: Border.all(
+                        color: const Color(0xFF334155),
+                        width: 0.8,
+                      ),
                     ),
                     child: Text(
                       'Trazabilidad Inmutable',
@@ -368,7 +399,11 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
         ),
         OutlinedButton.icon(
           onPressed: _handleExportAuditLog,
-          icon: const Icon(Icons.download_rounded, size: 15, color: Color(0xFF93C5FD)),
+          icon: const Icon(
+            Icons.download_rounded,
+            size: 15,
+            color: Color(0xFF93C5FD),
+          ),
           label: Text(
             'Exportar bitácora',
             style: GoogleFonts.inter(
@@ -380,7 +415,9 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Color(0xFF334155)),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
             backgroundColor: const Color(0xFF0D111C),
           ),
         ),
@@ -416,12 +453,24 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
                   },
                   style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Buscar por código EVT, título, usuario o colaborador...',
-                    hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
-                    prefixIcon: const Icon(Icons.search_rounded, size: 18, color: Color(0xFF64748B)),
+                    hintText:
+                        'Buscar por código EVT, título, usuario o colaborador...',
+                    hintStyle: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: const Color(0xFF64748B),
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      size: 18,
+                      color: Color(0xFF64748B),
+                    ),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear, size: 16, color: Color(0xFF64748B)),
+                            icon: const Icon(
+                              Icons.clear,
+                              size: 16,
+                              color: Color(0xFF64748B),
+                            ),
                             onPressed: () {
                               _searchController.clear();
                               setState(() => _searchQuery = '');
@@ -430,7 +479,10 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
                           )
                         : null,
                     isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                     filled: true,
                     fillColor: const Color(0xFF090D16),
                     border: OutlineInputBorder(
@@ -457,9 +509,12 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
                     context: context,
                     firstDate: DateTime(2025, 1, 1),
                     lastDate: DateTime(2027, 12, 31),
-                    initialDateRange: _selectedDateRange ??
+                    initialDateRange:
+                        _selectedDateRange ??
                         DateTimeRange(
-                          start: DateTime.now().subtract(const Duration(days: 30)),
+                          start: DateTime.now().subtract(
+                            const Duration(days: 30),
+                          ),
                           end: DateTime.now(),
                         ),
                     builder: (ctx, child) {
@@ -482,22 +537,37 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
                     _loadEvents();
                   }
                 },
-                icon: const Icon(Icons.calendar_today_outlined, size: 14, color: Color(0xFF94A3B8)),
+                icon: const Icon(
+                  Icons.calendar_today_outlined,
+                  size: 14,
+                  color: Color(0xFF94A3B8),
+                ),
                 label: Text(
                   dateRangeLabel,
                   style: GoogleFonts.inter(
                     fontSize: 12,
-                    color: _selectedDateRange != null ? const Color(0xFF93C5FD) : const Color(0xFFCBD5E1),
-                    fontWeight: _selectedDateRange != null ? FontWeight.w600 : FontWeight.w400,
+                    color: _selectedDateRange != null
+                        ? const Color(0xFF93C5FD)
+                        : const Color(0xFFCBD5E1),
+                    fontWeight: _selectedDateRange != null
+                        ? FontWeight.w600
+                        : FontWeight.w400,
                   ),
                 ),
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(
-                    color: _selectedDateRange != null ? const Color(0xFF2563EB) : const Color(0xFF1E293B),
+                    color: _selectedDateRange != null
+                        ? const Color(0xFF2563EB)
+                        : const Color(0xFF1E293B),
                   ),
                   backgroundColor: const Color(0xFF090D16),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 11,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
             ],
@@ -554,7 +624,11 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
                 const SizedBox(width: 10),
                 TextButton.icon(
                   onPressed: _clearFilters,
-                  icon: const Icon(Icons.filter_alt_off_outlined, size: 14, color: Color(0xFFEF4444)),
+                  icon: const Icon(
+                    Icons.filter_alt_off_outlined,
+                    size: 14,
+                    color: Color(0xFFEF4444),
+                  ),
                   label: Text(
                     'Limpiar filtros',
                     style: GoogleFonts.inter(
@@ -564,7 +638,10 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
                     ),
                   ),
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
                   ),
                 ),
               ],
@@ -594,14 +671,24 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
           value: items.contains(value) ? value : items.first,
           isExpanded: true,
           dropdownColor: const Color(0xFF0F172A),
-          icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: Color(0xFF64748B)),
-          style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFE2E8F0)),
+          icon: const Icon(
+            Icons.keyboard_arrow_down_rounded,
+            size: 16,
+            color: Color(0xFF64748B),
+          ),
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            color: const Color(0xFFE2E8F0),
+          ),
           items: items.map((item) {
             return DropdownMenuItem<T>(
               value: item,
               child: Text(
                 itemLabel(item),
-                style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFE2E8F0)),
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: const Color(0xFFE2E8F0),
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             );
@@ -625,14 +712,24 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
           value: _selectedEmployeeId,
           isExpanded: true,
           dropdownColor: const Color(0xFF0F172A),
-          icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: Color(0xFF64748B)),
-          style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFE2E8F0)),
+          icon: const Icon(
+            Icons.keyboard_arrow_down_rounded,
+            size: 16,
+            color: Color(0xFF64748B),
+          ),
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            color: const Color(0xFFE2E8F0),
+          ),
           items: [
             DropdownMenuItem<int?>(
               value: null,
               child: Text(
                 'Todos los colaboradores',
-                style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFE2E8F0)),
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: const Color(0xFFE2E8F0),
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -641,7 +738,10 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
                 value: emp.id,
                 child: Text(
                   '${emp.code} · ${emp.fullName}',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFE2E8F0)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFFE2E8F0),
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               );
@@ -719,7 +819,11 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.history_edu_outlined, size: 40, color: Color(0xFF475569)),
+                    const Icon(
+                      Icons.history_edu_outlined,
+                      size: 40,
+                      color: Color(0xFF475569),
+                    ),
                     const SizedBox(height: 12),
                     Text(
                       'No se encontraron eventos en la bitácora',
@@ -732,7 +836,10 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
                     const SizedBox(height: 4),
                     Text(
                       'Intenta ajustar el rango de fechas, los filtros seleccionados o el término de búsqueda.',
-                      style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: const Color(0xFF64748B),
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -758,7 +865,11 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
     );
   }
 
-  Widget _buildHeaderColumn(String title, {required int flex, bool alignRight = false}) {
+  Widget _buildHeaderColumn(
+    String title, {
+    required int flex,
+    bool alignRight = false,
+  }) {
     return Expanded(
       flex: flex,
       child: Align(

@@ -28,7 +28,15 @@ class _RrhhScheduleTableWidths {
     required this.empleados,
     required this.estado,
     required this.acciones,
-  }) : total = codigo + nombre + turnos + horasSemanales + tipoTrabajador + empleados + estado + acciones;
+  }) : total =
+           codigo +
+           nombre +
+           turnos +
+           horasSemanales +
+           tipoTrabajador +
+           empleados +
+           estado +
+           acciones;
 
   factory _RrhhScheduleTableWidths.calculate(double availableWidth) {
     const fixedWidth = 115.0 + 95.0 + 105.0 + 95.0 + 100.0 + 125.0; // 635.0
@@ -36,7 +44,9 @@ class _RrhhScheduleTableWidths {
     const minTurnos = 170.0;
     const minTotal = fixedWidth + minNombre + minTurnos; // 985.0
 
-    final effectiveWidth = availableWidth > minTotal ? availableWidth : minTotal;
+    final effectiveWidth = availableWidth > minTotal
+        ? availableWidth
+        : minTotal;
     final extra = effectiveWidth - minTotal;
     final nombre = minNombre + (extra * 0.55);
     final turnos = minTurnos + (extra * 0.45);
@@ -153,11 +163,19 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
           ),
           title: Row(
             children: [
-              const Icon(Icons.warning_amber_rounded, color: Color(0xFFF59E0B), size: 22),
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: Color(0xFFF59E0B),
+                size: 22,
+              ),
               const SizedBox(width: 10),
               Text(
                 'Desactivar Horario Base',
-                style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
@@ -167,7 +185,10 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
             children: [
               Text(
                 '¿Está seguro de desactivar la plantilla "${schedule.name}" (${schedule.code})?',
-                style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFFCBD5E1)),
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: const Color(0xFFCBD5E1),
+                ),
               ),
               if (schedule.assignedEmployeesCount > 0) ...[
                 const SizedBox(height: 12),
@@ -176,16 +197,25 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
                   decoration: BoxDecoration(
                     color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: const Color(0xFFF59E0B).withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.info_outline, size: 16, color: Color(0xFFF59E0B)),
+                      const Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: Color(0xFFF59E0B),
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Advertencia: Este horario base cuenta con ${schedule.assignedEmployeesCount} colaboradores activos con este contrato.',
-                          style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFFFDE68A)),
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: const Color(0xFFFDE68A),
+                          ),
                         ),
                       ),
                     ],
@@ -197,15 +227,23 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text('Cancelar', style: GoogleFonts.inter(color: const Color(0xFF94A3B8))),
+              child: Text(
+                'Cancelar',
+                style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+              ),
             ),
             FilledButton(
               onPressed: () => Navigator.of(ctx).pop(true),
               style: FilledButton.styleFrom(
                 backgroundColor: const Color(0xFFEF4444),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
               ),
-              child: Text('Desactivar', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+              child: Text(
+                'Desactivar',
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              ),
             ),
           ],
         ),
@@ -215,7 +253,10 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
     }
 
     try {
-      final updated = schedule.copyWith(isActive: !schedule.isActive, updatedAt: DateTime.now());
+      final updated = schedule.copyWith(
+        isActive: !schedule.isActive,
+        updatedAt: DateTime.now(),
+      );
       final saved = await RrhhRepository.current.updateBaseSchedule(updated);
 
       setState(() {
@@ -250,7 +291,9 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
     final filtered = _schedules.where((s) {
       if (_statusFilter == 'ACTIVE' && !s.isActive) return false;
       if (_statusFilter == 'INACTIVE' && s.isActive) return false;
-      if (_workerFilter != 'ALL' && s.workerType.toLowerCase() != _workerFilter.toLowerCase()) return false;
+      if (_workerFilter != 'ALL' &&
+          s.workerType.toLowerCase() != _workerFilter.toLowerCase())
+        return false;
       if (_searchQuery.isEmpty) return true;
       final q = _searchQuery.toLowerCase();
       return s.name.toLowerCase().contains(q) ||
@@ -300,17 +343,20 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
                             padding: EdgeInsets.symmetric(vertical: 40),
                             child: RrhhEmptyState(
                               title: 'No se encontraron horarios base',
-                              description: 'Intente ajustando el término de búsqueda o los filtros de perfil/estado.',
+                              description:
+                                  'Intente ajustando el término de búsqueda o los filtros de perfil/estado.',
                               icon: Icons.date_range_outlined,
                             ),
                           )
                         else
-                          ...filtered.map((sch) => _RrhhScheduleTableRow(
-                                schedule: sch,
-                                widths: widths,
-                                onEdit: () => _openEditSchedule(sch),
-                                onToggleStatus: () => _toggleScheduleStatus(sch),
-                              )),
+                          ...filtered.map(
+                            (sch) => _RrhhScheduleTableRow(
+                              schedule: sch,
+                              widths: widths,
+                              onEdit: () => _openEditSchedule(sch),
+                              onToggleStatus: () => _toggleScheduleStatus(sch),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -320,7 +366,10 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
               if (!_isLoading && _schedules.isNotEmpty)
                 Text(
                   'Mostrando ${filtered.length} de $totalCount horarios base plantillas',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF64748B),
+                  ),
                 ),
             ],
           ),
@@ -343,7 +392,9 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
               style: GoogleFonts.inter(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                color: isDark
+                    ? const Color(0xFFF8FAFC)
+                    : const Color(0xFF0F172A),
                 letterSpacing: -0.3,
               ),
             ),
@@ -352,7 +403,9 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
               'Plantillas de asignación semanal que combinan turnos para el personal',
               style: GoogleFonts.inter(
                 fontSize: 12,
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -362,12 +415,17 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
           icon: const Icon(Icons.add_rounded, size: 16),
           label: Text(
             'Nuevo Horario',
-            style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
+            style: GoogleFonts.inter(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           style: FilledButton.styleFrom(
             backgroundColor: const Color(0xFF2563EB),
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
           ),
         ),
@@ -404,11 +462,22 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
                   style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Buscar horario o turno...',
-                    hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12.5),
-                    prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF64748B)),
+                    hintStyle: GoogleFonts.inter(
+                      color: const Color(0xFF64748B),
+                      fontSize: 12.5,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      size: 18,
+                      color: Color(0xFF64748B),
+                    ),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.close, size: 16, color: Color(0xFF64748B)),
+                            icon: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Color(0xFF64748B),
+                            ),
                             onPressed: () {
                               _searchCtrl.clear();
                               setState(() => _searchQuery = '');
@@ -417,7 +486,10 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
                         : null,
                     filled: true,
                     fillColor: const Color(0xFF111827),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 0,
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(color: Color(0xFF1E293B)),
@@ -443,12 +515,25 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
                   child: DropdownButton<String>(
                     value: _workerFilter,
                     dropdownColor: const Color(0xFF0F172A),
-                    icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF94A3B8)),
-                    style: GoogleFonts.inter(color: Colors.white, fontSize: 12.5),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 18,
+                      color: Color(0xFF94A3B8),
+                    ),
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 12.5,
+                    ),
                     items: const [
-                      DropdownMenuItem(value: 'ALL', child: Text('Todos los perfiles')),
+                      DropdownMenuItem(
+                        value: 'ALL',
+                        child: Text('Todos los perfiles'),
+                      ),
                       DropdownMenuItem(value: 'CAMPO', child: Text('Campo')),
-                      DropdownMenuItem(value: 'OFICINA', child: Text('Oficina')),
+                      DropdownMenuItem(
+                        value: 'OFICINA',
+                        child: Text('Oficina'),
+                      ),
                       DropdownMenuItem(value: 'Ambos', child: Text('Ambos')),
                     ],
                     onChanged: (val) {
@@ -484,10 +569,14 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2563EB).withValues(alpha: 0.15) : const Color(0xFF111827),
+          color: isSelected
+              ? const Color(0xFF2563EB).withValues(alpha: 0.15)
+              : const Color(0xFF111827),
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF1E293B),
+            color: isSelected
+                ? const Color(0xFF2563EB)
+                : const Color(0xFF1E293B),
           ),
         ),
         child: Text(
@@ -495,7 +584,9 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? const Color(0xFF60A5FA) : const Color(0xFF94A3B8),
+            color: isSelected
+                ? const Color(0xFF60A5FA)
+                : const Color(0xFF94A3B8),
           ),
         ),
       ),
@@ -527,7 +618,11 @@ class _RrhhTurnosTabSchedulesState extends State<RrhhTurnosTabSchedules> {
     );
   }
 
-  Widget _buildTh(String title, double width, {TextAlign align = TextAlign.left}) {
+  Widget _buildTh(
+    String title,
+    double width, {
+    TextAlign align = TextAlign.left,
+  }) {
     return SizedBox(
       width: width,
       child: Text(
@@ -612,7 +707,9 @@ class _RrhhScheduleTableRowState extends State<_RrhhScheduleTableRow> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: _isHovered ? const Color(0xFF131C2E) : Colors.transparent,
-          border: const Border(bottom: BorderSide(color: Color(0xFF1E293B), width: 0.8)),
+          border: const Border(
+            bottom: BorderSide(color: Color(0xFF1E293B), width: 0.8),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -658,11 +755,17 @@ class _RrhhScheduleTableRowState extends State<_RrhhScheduleTableRow> {
                   children: s.includedShiftCodes.map((code) {
                     return Container(
                       margin: const EdgeInsets.only(right: 4),
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2.5,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF1E293B),
                         borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: const Color(0xFF334155), width: 0.6),
+                        border: Border.all(
+                          color: const Color(0xFF334155),
+                          width: 0.6,
+                        ),
                       ),
                       child: Text(
                         code,
@@ -697,11 +800,17 @@ class _RrhhScheduleTableRowState extends State<_RrhhScheduleTableRow> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: workerColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: workerColor.withValues(alpha: 0.3), width: 0.8),
+                    border: Border.all(
+                      color: workerColor.withValues(alpha: 0.3),
+                      width: 0.8,
+                    ),
                   ),
                   child: Text(
                     s.workerType.toUpperCase(),
@@ -722,7 +831,10 @@ class _RrhhScheduleTableRowState extends State<_RrhhScheduleTableRow> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E293B),
                     borderRadius: BorderRadius.circular(12),
@@ -745,9 +857,16 @@ class _RrhhScheduleTableRowState extends State<_RrhhScheduleTableRow> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
-                    color: (s.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B)).withValues(alpha: 0.15),
+                    color:
+                        (s.isActive
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFF64748B))
+                            .withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Row(
@@ -757,7 +876,9 @@ class _RrhhScheduleTableRowState extends State<_RrhhScheduleTableRow> {
                         width: 6,
                         height: 6,
                         decoration: BoxDecoration(
-                          color: s.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B),
+                          color: s.isActive
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFF64748B),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -767,7 +888,9 @@ class _RrhhScheduleTableRowState extends State<_RrhhScheduleTableRow> {
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                          color: s.isActive ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
+                          color: s.isActive
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFF94A3B8),
                         ),
                       ),
                     ],
@@ -786,13 +909,19 @@ class _RrhhScheduleTableRowState extends State<_RrhhScheduleTableRow> {
                     onPressed: widget.onEdit,
                     style: TextButton.styleFrom(
                       foregroundColor: const Color(0xFF60A5FA),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
                       'Editar',
-                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -800,7 +929,11 @@ class _RrhhScheduleTableRowState extends State<_RrhhScheduleTableRow> {
                     width: 24,
                     height: 24,
                     child: PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 15, color: Color(0xFF64748B)),
+                      icon: const Icon(
+                        Icons.more_vert,
+                        size: 15,
+                        color: Color(0xFF64748B),
+                      ),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       color: const Color(0xFF0F172A),
@@ -813,13 +946,19 @@ class _RrhhScheduleTableRowState extends State<_RrhhScheduleTableRow> {
                           child: Row(
                             children: [
                               Icon(
-                                s.isActive ? Icons.block_flipped : Icons.check_circle_outline,
+                                s.isActive
+                                    ? Icons.block_flipped
+                                    : Icons.check_circle_outline,
                                 size: 15,
-                                color: s.isActive ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                                color: s.isActive
+                                    ? const Color(0xFFEF4444)
+                                    : const Color(0xFF10B981),
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                s.isActive ? 'Desactivar Horario' : 'Activar Horario',
+                                s.isActive
+                                    ? 'Desactivar Horario'
+                                    : 'Activar Horario',
                                 style: GoogleFonts.inter(fontSize: 12.5),
                               ),
                             ],

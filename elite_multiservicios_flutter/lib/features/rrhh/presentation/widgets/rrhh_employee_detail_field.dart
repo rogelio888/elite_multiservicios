@@ -63,7 +63,11 @@ class RrhhEmployeeDetailField extends StatelessWidget {
                       const SizedBox(width: 4),
                       const Tooltip(
                         message: 'Dato confidencial / protegido',
-                        child: Icon(Icons.lock_outline, size: 11, color: Color(0xFF94A3B8)),
+                        child: Icon(
+                          Icons.lock_outline,
+                          size: 11,
+                          color: Color(0xFF94A3B8),
+                        ),
                       ),
                     ],
                   ],

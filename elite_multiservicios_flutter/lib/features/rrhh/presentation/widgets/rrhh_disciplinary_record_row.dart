@@ -25,7 +25,8 @@ class RrhhDisciplinaryRecordRow extends StatefulWidget {
   });
 
   @override
-  State<RrhhDisciplinaryRecordRow> createState() => _RrhhDisciplinaryRecordRowState();
+  State<RrhhDisciplinaryRecordRow> createState() =>
+      _RrhhDisciplinaryRecordRowState();
 }
 
 class _RrhhDisciplinaryRecordRowState extends State<RrhhDisciplinaryRecordRow> {
@@ -36,11 +37,14 @@ class _RrhhDisciplinaryRecordRowState extends State<RrhhDisciplinaryRecordRow> {
     final item = widget.record;
     final isRegistrada = item.status == RrhhDisciplinaryStatus.registrada;
     final isEnDescargo = item.status == RrhhDisciplinaryStatus.enDescargo;
-    final canRegisterDischarge = (isRegistrada || isEnDescargo) &&
+    final canRegisterDischarge =
+        (isRegistrada || isEnDescargo) &&
         item.requiresDischarge &&
         (item.dischargeText == null || item.dischargeText!.isEmpty);
-    final canApplySanction = isEnDescargo || (isRegistrada && !item.requiresDischarge);
-    final canArchive = item.status != RrhhDisciplinaryStatus.archivada &&
+    final canApplySanction =
+        isEnDescargo || (isRegistrada && !item.requiresDischarge);
+    final canArchive =
+        item.status != RrhhDisciplinaryStatus.archivada &&
         item.status != RrhhDisciplinaryStatus.cerrada;
 
     return MouseRegion(
@@ -53,7 +57,9 @@ class _RrhhDisciplinaryRecordRowState extends State<RrhhDisciplinaryRecordRow> {
           duration: const Duration(milliseconds: 140),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: _isHovered ? const Color(0xFF162032) : const Color(0xFF0F172A),
+            color: _isHovered
+                ? const Color(0xFF162032)
+                : const Color(0xFF0F172A),
             border: const Border(
               bottom: BorderSide(color: Color(0xFF1E293B), width: 1),
             ),
@@ -81,7 +87,9 @@ class _RrhhDisciplinaryRecordRowState extends State<RrhhDisciplinaryRecordRow> {
                   children: [
                     CircleAvatar(
                       radius: 15,
-                      backgroundColor: const Color(0xFF2563EB).withValues(alpha: 0.2),
+                      backgroundColor: const Color(
+                        0xFF2563EB,
+                      ).withValues(alpha: 0.2),
                       child: Text(
                         _getInitials(item.employeeName),
                         style: GoogleFonts.inter(
@@ -170,11 +178,20 @@ class _RrhhDisciplinaryRecordRowState extends State<RrhhDisciplinaryRecordRow> {
                 child: Center(
                   child: item.suspensionDays != null && item.suspensionDays! > 0
                       ? Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2.5,
+                          ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF97316).withValues(alpha: 0.15),
+                            color: const Color(
+                              0xFFF97316,
+                            ).withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: const Color(0xFFF97316).withValues(alpha: 0.3)),
+                            border: Border.all(
+                              color: const Color(
+                                0xFFF97316,
+                              ).withValues(alpha: 0.3),
+                            ),
                           ),
                           child: Text(
                             '${item.suspensionDays}d',
@@ -208,14 +225,24 @@ class _RrhhDisciplinaryRecordRowState extends State<RrhhDisciplinaryRecordRow> {
                       label: const Text('Ver'),
                       style: TextButton.styleFrom(
                         foregroundColor: const Color(0xFF38BDF8),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        textStyle: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w600),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        textStyle: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                        ),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),
                     PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 16, color: Color(0xFF94A3B8)),
+                      icon: const Icon(
+                        Icons.more_vert,
+                        size: 16,
+                        color: Color(0xFF94A3B8),
+                      ),
                       tooltip: 'Más opciones',
                       color: const Color(0xFF1E293B),
                       elevation: 4,
@@ -251,11 +278,18 @@ class _RrhhDisciplinaryRecordRowState extends State<RrhhDisciplinaryRecordRow> {
                             height: 36,
                             child: Row(
                               children: [
-                                const Icon(Icons.info_outline, size: 15, color: Color(0xFF38BDF8)),
+                                const Icon(
+                                  Icons.info_outline,
+                                  size: 15,
+                                  color: Color(0xFF38BDF8),
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Ver detalle',
-                                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFE2E8F0)),
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: const Color(0xFFE2E8F0),
+                                  ),
                                 ),
                               ],
                             ),
@@ -269,11 +303,18 @@ class _RrhhDisciplinaryRecordRowState extends State<RrhhDisciplinaryRecordRow> {
                               height: 36,
                               child: Row(
                                 children: [
-                                  const Icon(Icons.assignment_outlined, size: 15, color: Color(0xFFF59E0B)),
+                                  const Icon(
+                                    Icons.assignment_outlined,
+                                    size: 15,
+                                    color: Color(0xFFF59E0B),
+                                  ),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Registrar descargo',
-                                    style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFE2E8F0)),
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: const Color(0xFFE2E8F0),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -288,11 +329,18 @@ class _RrhhDisciplinaryRecordRowState extends State<RrhhDisciplinaryRecordRow> {
                               height: 36,
                               child: Row(
                                 children: [
-                                  const Icon(Icons.gavel_outlined, size: 15, color: Color(0xFFEF4444)),
+                                  const Icon(
+                                    Icons.gavel_outlined,
+                                    size: 15,
+                                    color: Color(0xFFEF4444),
+                                  ),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Aplicar sanción',
-                                    style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFE2E8F0)),
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: const Color(0xFFE2E8F0),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -307,11 +355,18 @@ class _RrhhDisciplinaryRecordRowState extends State<RrhhDisciplinaryRecordRow> {
                               height: 36,
                               child: Row(
                                 children: [
-                                  const Icon(Icons.archive_outlined, size: 15, color: Color(0xFF10B981)),
+                                  const Icon(
+                                    Icons.archive_outlined,
+                                    size: 15,
+                                    color: Color(0xFF10B981),
+                                  ),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Archivar',
-                                    style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFE2E8F0)),
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: const Color(0xFFE2E8F0),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -327,11 +382,18 @@ class _RrhhDisciplinaryRecordRowState extends State<RrhhDisciplinaryRecordRow> {
                               height: 36,
                               child: Row(
                                 children: [
-                                  const Icon(Icons.delete_outline, size: 15, color: Color(0xFFEF4444)),
+                                  const Icon(
+                                    Icons.delete_outline,
+                                    size: 15,
+                                    color: Color(0xFFEF4444),
+                                  ),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Eliminar',
-                                    style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFEF4444)),
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: const Color(0xFFEF4444),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -359,7 +421,8 @@ class _RrhhDisciplinaryRecordRowState extends State<RrhhDisciplinaryRecordRow> {
   String _getInitials(String name) {
     final parts = name.trim().split(RegExp(r'\s+'));
     if (parts.isEmpty) return 'EM';
-    if (parts.length == 1) return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
+    if (parts.length == 1)
+      return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
     return (parts[0][0] + parts[1][0]).toUpperCase();
   }
 }

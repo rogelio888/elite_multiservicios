@@ -5,9 +5,24 @@ import 'package:google_fonts/google_fonts.dart';
 Widget buildHireSectionHeader(String title) {
   return Row(
     children: [
-      Container(width: 3, height: 12, decoration: BoxDecoration(color: const Color(0xFF2563EB), borderRadius: BorderRadius.circular(2))),
+      Container(
+        width: 3,
+        height: 12,
+        decoration: BoxDecoration(
+          color: const Color(0xFF2563EB),
+          borderRadius: BorderRadius.circular(2),
+        ),
+      ),
       const SizedBox(width: 8),
-      Text(title, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: const Color(0xFF94A3B8), letterSpacing: 0.6)),
+      Text(
+        title,
+        style: GoogleFonts.inter(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: const Color(0xFF94A3B8),
+          letterSpacing: 0.6,
+        ),
+      ),
     ],
   );
 }
@@ -25,24 +40,53 @@ Widget buildHireDropdownField<T>({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(label, style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w500, color: const Color(0xFF94A3B8))),
+      Text(
+        label,
+        style: GoogleFonts.inter(
+          fontSize: 11.5,
+          fontWeight: FontWeight.w500,
+          color: const Color(0xFF94A3B8),
+        ),
+      ),
       const SizedBox(height: 6),
       DropdownButtonFormField<T>(
         initialValue: value,
         items: items,
         onChanged: enabled ? onChanged : null,
         isExpanded: true,
-        hint: hint != null ? Text(hint, style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF475569))) : null,
+        hint: hint != null
+            ? Text(
+                hint,
+                style: GoogleFonts.inter(
+                  fontSize: 12.5,
+                  color: const Color(0xFF475569),
+                ),
+              )
+            : null,
         dropdownColor: const Color(0xFF0F172A),
         style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFFF8FAFC)),
         decoration: InputDecoration(
           prefixIcon: Icon(icon, size: 16, color: const Color(0xFF64748B)),
           filled: true,
-          fillColor: enabled ? const Color(0xFF111827) : const Color(0xFF0F172A),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E293B))),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E293B))),
-          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF2563EB))),
+          fillColor: enabled
+              ? const Color(0xFF111827)
+              : const Color(0xFF0F172A),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 10,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Color(0xFF1E293B)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Color(0xFF1E293B)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Color(0xFF2563EB)),
+          ),
         ),
       ),
     ],
@@ -59,11 +103,19 @@ Widget buildHireDatePickerField({
   DateTime? firstDate,
   DateTime? lastDate,
 }) {
-  final formatted = '${currentDate.day.toString().padLeft(2, '0')}/${currentDate.month.toString().padLeft(2, '0')}/${currentDate.year}';
+  final formatted =
+      '${currentDate.day.toString().padLeft(2, '0')}/${currentDate.month.toString().padLeft(2, '0')}/${currentDate.year}';
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(label, style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w500, color: const Color(0xFF94A3B8))),
+      Text(
+        label,
+        style: GoogleFonts.inter(
+          fontSize: 11.5,
+          fontWeight: FontWeight.w500,
+          color: const Color(0xFF94A3B8),
+        ),
+      ),
       const SizedBox(height: 6),
       InkWell(
         onTap: () async {
@@ -78,14 +130,28 @@ Widget buildHireDatePickerField({
         borderRadius: BorderRadius.circular(8),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-          decoration: BoxDecoration(color: const Color(0xFF111827), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFF1E293B))),
+          decoration: BoxDecoration(
+            color: const Color(0xFF111827),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: const Color(0xFF1E293B)),
+          ),
           child: Row(
             children: [
               Icon(icon, size: 16, color: const Color(0xFF64748B)),
               const SizedBox(width: 10),
-              Text(formatted, style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFFF8FAFC))),
+              Text(
+                formatted,
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: const Color(0xFFF8FAFC),
+                ),
+              ),
               const Spacer(),
-              const Icon(Icons.calendar_today_outlined, size: 15, color: Color(0xFF64748B)),
+              const Icon(
+                Icons.calendar_today_outlined,
+                size: 15,
+                color: Color(0xFF64748B),
+              ),
             ],
           ),
         ),
@@ -106,7 +172,14 @@ Widget buildHireInputField({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(label, style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w500, color: const Color(0xFF94A3B8))),
+      Text(
+        label,
+        style: GoogleFonts.inter(
+          fontSize: 11.5,
+          fontWeight: FontWeight.w500,
+          color: const Color(0xFF94A3B8),
+        ),
+      ),
       const SizedBox(height: 6),
       TextField(
         controller: controller,
@@ -116,13 +189,28 @@ Widget buildHireInputField({
         decoration: InputDecoration(
           prefixIcon: Icon(icon, size: 16, color: const Color(0xFF64748B)),
           hintText: hint,
-          hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF475569)),
+          hintStyle: GoogleFonts.inter(
+            fontSize: 12.5,
+            color: const Color(0xFF475569),
+          ),
           filled: true,
           fillColor: const Color(0xFF111827),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E293B))),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E293B))),
-          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF2563EB))),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 10,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Color(0xFF1E293B)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Color(0xFF1E293B)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Color(0xFF2563EB)),
+          ),
         ),
       ),
     ],
@@ -145,7 +233,9 @@ Widget buildHireDocumentCheckTile({
       side: BorderSide(
         color: isWarningBorder
             ? const Color(0xFFDC2626)
-            : (value ? const Color(0xFF10B981).withValues(alpha: 0.3) : const Color(0xFF1E293B)),
+            : (value
+                  ? const Color(0xFF10B981).withValues(alpha: 0.3)
+                  : const Color(0xFF1E293B)),
       ),
     ),
     clipBehavior: Clip.antiAlias,
@@ -163,7 +253,9 @@ Widget buildHireDocumentCheckTile({
               style: GoogleFonts.inter(
                 fontSize: 12.5,
                 fontWeight: value ? FontWeight.w600 : FontWeight.w400,
-                color: value ? const Color(0xFFF8FAFC) : const Color(0xFF94A3B8),
+                color: value
+                    ? const Color(0xFFF8FAFC)
+                    : const Color(0xFF94A3B8),
               ),
             ),
           ),
@@ -173,7 +265,9 @@ Widget buildHireDocumentCheckTile({
               decoration: BoxDecoration(
                 color: isWarningBorder
                     ? const Color(0xFFDC2626).withValues(alpha: 0.2)
-                    : (isOptionalBadge ? const Color(0xFF334155) : const Color(0xFF10B981).withValues(alpha: 0.2)),
+                    : (isOptionalBadge
+                          ? const Color(0xFF334155)
+                          : const Color(0xFF10B981).withValues(alpha: 0.2)),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -181,7 +275,11 @@ Widget buildHireDocumentCheckTile({
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 8.5,
                   fontWeight: FontWeight.w700,
-                  color: isWarningBorder ? const Color(0xFFF87171) : (isOptionalBadge ? const Color(0xFF94A3B8) : const Color(0xFF34D399)),
+                  color: isWarningBorder
+                      ? const Color(0xFFF87171)
+                      : (isOptionalBadge
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF34D399)),
                 ),
               ),
             ),
@@ -196,7 +294,11 @@ Widget buildHireStepperBar({
   required int currentStep,
   required ValueChanged<int> onStepTapped,
 }) {
-  const steps = ['1. Datos Laborales', '2. Contrato & Sueldo', '3. Validación Legal'];
+  const steps = [
+    '1. Datos Laborales',
+    '2. Contrato & Sueldo',
+    '3. Validación Legal',
+  ];
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
     color: const Color(0xFF0B1120),
@@ -204,7 +306,14 @@ Widget buildHireStepperBar({
       children: List.generate(steps.length * 2 - 1, (index) {
         if (index.isOdd) {
           final isPassed = currentStep > (index ~/ 2);
-          return Expanded(child: Container(height: 2, color: isPassed ? const Color(0xFF2563EB) : const Color(0xFF1E293B)));
+          return Expanded(
+            child: Container(
+              height: 2,
+              color: isPassed
+                  ? const Color(0xFF2563EB)
+                  : const Color(0xFF1E293B),
+            ),
+          );
         }
         final stepIdx = index ~/ 2;
         final isActive = currentStep == stepIdx;
@@ -219,17 +328,39 @@ Widget buildHireStepperBar({
                 width: 26,
                 height: 26,
                 decoration: BoxDecoration(
-                  color: isCompleted ? const Color(0xFF10B981) : (isActive ? const Color(0xFF2563EB) : const Color(0xFF1E293B)),
+                  color: isCompleted
+                      ? const Color(0xFF10B981)
+                      : (isActive
+                            ? const Color(0xFF2563EB)
+                            : const Color(0xFF1E293B)),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: isCompleted
                       ? const Icon(Icons.check, size: 14, color: Colors.white)
-                      : Text('${stepIdx + 1}', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: isActive ? Colors.white : const Color(0xFF94A3B8))),
+                      : Text(
+                          '${stepIdx + 1}',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: isActive
+                                ? Colors.white
+                                : const Color(0xFF94A3B8),
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(width: 8),
-              Text(steps[stepIdx], style: GoogleFonts.inter(fontSize: 12, fontWeight: isActive ? FontWeight.w600 : FontWeight.w400, color: isActive ? const Color(0xFFF8FAFC) : const Color(0xFF94A3B8))),
+              Text(
+                steps[stepIdx],
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                  color: isActive
+                      ? const Color(0xFFF8FAFC)
+                      : const Color(0xFF94A3B8),
+                ),
+              ),
             ],
           ),
         );

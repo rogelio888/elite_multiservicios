@@ -18,7 +18,8 @@ class RrhhOrganizacionTabsView extends StatefulWidget {
   });
 
   @override
-  State<RrhhOrganizacionTabsView> createState() => _RrhhOrganizacionTabsViewState();
+  State<RrhhOrganizacionTabsView> createState() =>
+      _RrhhOrganizacionTabsViewState();
 }
 
 class _RrhhOrganizacionTabsViewState extends State<RrhhOrganizacionTabsView>
@@ -62,7 +63,9 @@ class _RrhhOrganizacionTabsViewState extends State<RrhhOrganizacionTabsView>
             color: isDark ? const Color(0xFF0F172A) : Colors.white,
             border: Border(
               bottom: BorderSide(
-                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                color: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFE2E8F0),
               ),
             ),
           ),
@@ -92,14 +95,18 @@ class _RrhhOrganizacionTabsViewState extends State<RrhhOrganizacionTabsView>
                         style: GoogleFonts.inter(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
-                          color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
                         ),
                       ),
                       Text(
                         'Estructura de áreas, cargos operativos y catálogo de turnos base',
                         style: GoogleFonts.inter(
                           fontSize: 12,
-                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
                         ),
                       ),
                     ],
@@ -114,9 +121,17 @@ class _RrhhOrganizacionTabsViewState extends State<RrhhOrganizacionTabsView>
                 indicatorColor: const Color(0xFF2563EB),
                 indicatorWeight: 2.5,
                 labelColor: const Color(0xFF2563EB),
-                unselectedLabelColor: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
-                labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700),
-                unselectedLabelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500),
+                unselectedLabelColor: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
+                labelStyle: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+                unselectedLabelStyle: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
                 tabs: const [
                   Tab(
                     icon: Icon(Icons.corporate_fare_outlined, size: 18),

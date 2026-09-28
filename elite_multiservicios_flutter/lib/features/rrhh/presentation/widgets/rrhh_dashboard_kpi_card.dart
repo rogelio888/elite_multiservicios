@@ -42,7 +42,9 @@ class _RrhhDashboardKpiCardState extends State<RrhhDashboardKpiCard> {
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      cursor: widget.onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+      cursor: widget.onTap != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOutCubic,
@@ -79,7 +81,9 @@ class _RrhhDashboardKpiCardState extends State<RrhhDashboardKpiCard> {
             borderRadius: BorderRadius.circular(12),
             child: Padding(
               padding: const EdgeInsets.all(20),
-              child: widget.isLoading ? _buildSkeleton() : _buildContent(effectiveBadgeColor),
+              child: widget.isLoading
+                  ? _buildSkeleton()
+                  : _buildContent(effectiveBadgeColor),
             ),
           ),
         ),

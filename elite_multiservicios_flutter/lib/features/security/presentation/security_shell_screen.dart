@@ -180,7 +180,6 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     }
   }
 
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late final AuthService _authService;
   final _service = SecurityApiService();
@@ -220,7 +219,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       _isSecurityExpanded = true;
     } else if ((initialIndex >= 5 && initialIndex <= 8) || initialIndex == 15) {
       _isCrmExpanded = true;
-    } else if ((initialIndex >= 9 && initialIndex <= 14) || initialIndex == 16) {
+    } else if ((initialIndex >= 9 && initialIndex <= 14) ||
+        initialIndex == 16) {
       _isRrhhExpanded = true;
     }
 

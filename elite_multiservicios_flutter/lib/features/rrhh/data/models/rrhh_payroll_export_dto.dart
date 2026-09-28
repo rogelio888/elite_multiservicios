@@ -27,5 +27,6 @@ class RrhhPayrollExportDto {
     this.notes = 'Normal',
   });
 
-  double get netEstimatedTotal => baseSalary + authorizedBonuses - authorizedDeductions;
+  double get netEstimatedTotal =>
+      baseSalary + authorizedBonuses - authorizedDeductions;
 }

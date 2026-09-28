@@ -27,12 +27,18 @@ class _RrhhSpecialtyTableWidths {
   }) : total = codigo + nombre + descripcion + color + estado + acciones;
 
   factory _RrhhSpecialtyTableWidths.calculate(double availableWidth) {
-    const fixedWidth = 110.0 + 110.0 + 95.0 + 125.0; // codigo + color + estado + acciones = 440.0
+    const fixedWidth =
+        110.0 +
+        110.0 +
+        95.0 +
+        125.0; // codigo + color + estado + acciones = 440.0
     const minNombre = 190.0;
     const minDesc = 220.0;
     const minTotal = fixedWidth + minNombre + minDesc; // 850.0
 
-    final effectiveWidth = availableWidth > minTotal ? availableWidth : minTotal;
+    final effectiveWidth = availableWidth > minTotal
+        ? availableWidth
+        : minTotal;
     final extra = effectiveWidth - minTotal;
     final nombre = minNombre + (extra * 0.45);
     final descripcion = minDesc + (extra * 0.55);
@@ -53,10 +59,12 @@ class RrhhOrganizationTabSpecialties extends StatefulWidget {
   const RrhhOrganizationTabSpecialties({super.key});
 
   @override
-  State<RrhhOrganizationTabSpecialties> createState() => _RrhhOrganizationTabSpecialtiesState();
+  State<RrhhOrganizationTabSpecialties> createState() =>
+      _RrhhOrganizationTabSpecialtiesState();
 }
 
-class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpecialties> {
+class _RrhhOrganizationTabSpecialtiesState
+    extends State<RrhhOrganizationTabSpecialties> {
   bool _isLoading = true;
   String? _errorMessage;
 
@@ -164,17 +172,29 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
           ),
           title: Row(
             children: [
-              const Icon(Icons.info_outline, color: Color(0xFF60A5FA), size: 22),
+              const Icon(
+                Icons.info_outline,
+                color: Color(0xFF60A5FA),
+                size: 22,
+              ),
               const SizedBox(width: 10),
               Text(
                 'Desactivar Especialidad',
-                style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
           content: Text(
             '¿Confirma que desea desactivar la especialidad "${specialty.name}"? No se ofrecerá para nuevos colaboradores o postulantes.',
-            style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8), height: 1.45),
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: const Color(0xFF94A3B8),
+              height: 1.45,
+            ),
           ),
           actions: [
             OutlinedButton(
@@ -187,7 +207,9 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              style: FilledButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFFEF4444),
+              ),
               child: const Text('Desactivar'),
             ),
           ],
@@ -248,7 +270,8 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
       if (_statusFilter == 'INACTIVE' && s.isActive) return false;
       if (_searchQuery.isEmpty) return true;
       final q = _searchQuery.toLowerCase();
-      return s.name.toLowerCase().contains(q) || s.code.toLowerCase().contains(q);
+      return s.name.toLowerCase().contains(q) ||
+          s.code.toLowerCase().contains(q);
     }).toList();
 
     final totalCount = _specialties.length;
@@ -291,19 +314,24 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
                           const Padding(
                             padding: EdgeInsets.symmetric(vertical: 40),
                             child: RrhhEmptyState(
-                              title: 'No se encontraron especialidades operativas',
-                              description: 'Intente ajustando el término de búsqueda o el filtro de estado.',
+                              title:
+                                  'No se encontraron especialidades operativas',
+                              description:
+                                  'Intente ajustando el término de búsqueda o el filtro de estado.',
                               icon: Icons.workspace_premium_outlined,
                             ),
                           )
                         else
-                          ...filtered.map((spec) => _RrhhSpecialtyTableRow(
-                                specialty: spec,
-                                widths: widths,
-                                parseHex: _parseHex,
-                                onEdit: () => _openEditSpecialty(spec),
-                                onToggleStatus: () => _toggleSpecialtyStatus(spec),
-                              )),
+                          ...filtered.map(
+                            (spec) => _RrhhSpecialtyTableRow(
+                              specialty: spec,
+                              widths: widths,
+                              parseHex: _parseHex,
+                              onEdit: () => _openEditSpecialty(spec),
+                              onToggleStatus: () =>
+                                  _toggleSpecialtyStatus(spec),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -313,7 +341,10 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
               if (!_isLoading && _specialties.isNotEmpty)
                 Text(
                   'Mostrando ${filtered.length} de $totalCount especialidades operativas',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF64748B),
+                  ),
                 ),
             ],
           ),
@@ -336,7 +367,9 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
               style: GoogleFonts.inter(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                color: isDark
+                    ? const Color(0xFFF8FAFC)
+                    : const Color(0xFF0F172A),
                 letterSpacing: -0.3,
               ),
             ),
@@ -345,7 +378,9 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
               'Catálogo de competencias técnicas y especialidades laborales de campo',
               style: GoogleFonts.inter(
                 fontSize: 12,
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -355,12 +390,17 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
           icon: const Icon(Icons.add_rounded, size: 16),
           label: Text(
             'Nueva Especialidad',
-            style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
+            style: GoogleFonts.inter(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           style: FilledButton.styleFrom(
             backgroundColor: const Color(0xFF2563EB),
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
           ),
         ),
@@ -392,11 +432,22 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
               style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
               decoration: InputDecoration(
                 hintText: 'Buscar por código o nombre...',
-                hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12.5),
-                prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF64748B)),
+                hintStyle: GoogleFonts.inter(
+                  color: const Color(0xFF64748B),
+                  fontSize: 12.5,
+                ),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  size: 18,
+                  color: Color(0xFF64748B),
+                ),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.close, size: 16, color: Color(0xFF64748B)),
+                        icon: const Icon(
+                          Icons.close,
+                          size: 16,
+                          color: Color(0xFF64748B),
+                        ),
                         onPressed: () {
                           _searchCtrl.clear();
                           setState(() => _searchQuery = '');
@@ -405,7 +456,10 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
                     : null,
                 filled: true,
                 fillColor: const Color(0xFF111827),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 0,
+                ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(color: Color(0xFF1E293B)),
@@ -442,10 +496,14 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2563EB).withValues(alpha: 0.15) : const Color(0xFF111827),
+          color: isSelected
+              ? const Color(0xFF2563EB).withValues(alpha: 0.15)
+              : const Color(0xFF111827),
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF1E293B),
+            color: isSelected
+                ? const Color(0xFF2563EB)
+                : const Color(0xFF1E293B),
           ),
         ),
         child: Text(
@@ -453,7 +511,9 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? const Color(0xFF60A5FA) : const Color(0xFF94A3B8),
+            color: isSelected
+                ? const Color(0xFF60A5FA)
+                : const Color(0xFF94A3B8),
           ),
         ),
       ),
@@ -483,7 +543,11 @@ class _RrhhOrganizationTabSpecialtiesState extends State<RrhhOrganizationTabSpec
     );
   }
 
-  Widget _buildTh(String title, double width, {TextAlign align = TextAlign.left}) {
+  Widget _buildTh(
+    String title,
+    double width, {
+    TextAlign align = TextAlign.left,
+  }) {
     return SizedBox(
       width: width,
       child: Text(
@@ -559,7 +623,9 @@ class _RrhhSpecialtyTableRowState extends State<_RrhhSpecialtyTableRow> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: _isHovered ? const Color(0xFF141D30) : Colors.transparent,
-          border: const Border(bottom: BorderSide(color: Color(0xFF1E293B), width: 0.8)),
+          border: const Border(
+            bottom: BorderSide(color: Color(0xFF1E293B), width: 0.8),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -617,7 +683,10 @@ class _RrhhSpecialtyTableRowState extends State<_RrhhSpecialtyTableRow> {
                     decoration: BoxDecoration(
                       color: color,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 7),
@@ -638,7 +707,11 @@ class _RrhhSpecialtyTableRowState extends State<_RrhhSpecialtyTableRow> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: BoxDecoration(
-                  color: (s.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B)).withValues(alpha: 0.15),
+                  color:
+                      (s.isActive
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFF64748B))
+                          .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: Row(
@@ -648,7 +721,9 @@ class _RrhhSpecialtyTableRowState extends State<_RrhhSpecialtyTableRow> {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: s.isActive ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
+                        color: s.isActive
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFF94A3B8),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -658,7 +733,9 @@ class _RrhhSpecialtyTableRowState extends State<_RrhhSpecialtyTableRow> {
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: s.isActive ? const Color(0xFF34D399) : const Color(0xFF94A3B8),
+                        color: s.isActive
+                            ? const Color(0xFF34D399)
+                            : const Color(0xFF94A3B8),
                       ),
                     ),
                   ],
@@ -676,7 +753,10 @@ class _RrhhSpecialtyTableRowState extends State<_RrhhSpecialtyTableRow> {
                     onPressed: widget.onEdit,
                     style: TextButton.styleFrom(
                       foregroundColor: const Color(0xFF94A3B8),
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 3,
+                      ),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
@@ -694,7 +774,11 @@ class _RrhhSpecialtyTableRowState extends State<_RrhhSpecialtyTableRow> {
                     width: 24,
                     height: 24,
                     child: PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 15, color: Color(0xFF64748B)),
+                      icon: const Icon(
+                        Icons.more_vert,
+                        size: 15,
+                        color: Color(0xFF64748B),
+                      ),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       color: const Color(0xFF0F172A),
@@ -707,13 +791,19 @@ class _RrhhSpecialtyTableRowState extends State<_RrhhSpecialtyTableRow> {
                           child: Row(
                             children: [
                               Icon(
-                                s.isActive ? Icons.block_flipped : Icons.check_circle_outline,
+                                s.isActive
+                                    ? Icons.block_flipped
+                                    : Icons.check_circle_outline,
                                 size: 15,
-                                color: s.isActive ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                                color: s.isActive
+                                    ? const Color(0xFFEF4444)
+                                    : const Color(0xFF10B981),
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                s.isActive ? 'Desactivar Especialidad' : 'Activar Especialidad',
+                                s.isActive
+                                    ? 'Desactivar Especialidad'
+                                    : 'Activar Especialidad',
                                 style: GoogleFonts.inter(fontSize: 12.5),
                               ),
                             ],

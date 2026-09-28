@@ -91,7 +91,11 @@ class RrhhDuplicateApplicantDialog extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: Color(0xFF64748B), size: 20),
+                    icon: const Icon(
+                      Icons.close,
+                      color: Color(0xFF64748B),
+                      size: 20,
+                    ),
                     onPressed: () => Navigator.of(context).pop(false),
                   ),
                 ],
@@ -114,7 +118,10 @@ class RrhhDuplicateApplicantDialog extends StatelessWidget {
               const SizedBox(height: 20),
               // Advertencia de negocio
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1E293B),
                   borderRadius: BorderRadius.circular(8),
@@ -150,13 +157,21 @@ class RrhhDuplicateApplicantDialog extends StatelessWidget {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF94A3B8),
                       side: const BorderSide(color: Color(0xFF334155)),
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     onPressed: () => Navigator.of(context).pop(false),
                     child: Text(
                       'Cancelar Registro',
-                      style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -164,14 +179,22 @@ class RrhhDuplicateApplicantDialog extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0284C7),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     onPressed: () => Navigator.of(context).pop(true),
                     icon: const Icon(Icons.add_task, size: 16),
                     label: Text(
                       'Continuar con nuevo POST',
-                      style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
@@ -217,7 +240,8 @@ class RrhhDuplicateApplicantDialog extends StatelessWidget {
         statusLabel = 'RECHAZADO';
     }
 
-    final dateStr = '${app.applicationDate.day.toString().padLeft(2, '0')}/${app.applicationDate.month.toString().padLeft(2, '0')}/${app.applicationDate.year}';
+    final dateStr =
+        '${app.applicationDate.day.toString().padLeft(2, '0')}/${app.applicationDate.month.toString().padLeft(2, '0')}/${app.applicationDate.year}';
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -279,14 +303,17 @@ class RrhhDuplicateApplicantDialog extends StatelessWidget {
               color: const Color(0xFFE2E8F0),
             ),
           ),
-          if (app.discardReason != null && app.discardReason!.trim().isNotEmpty) ...[
+          if (app.discardReason != null &&
+              app.discardReason!.trim().isNotEmpty) ...[
             const SizedBox(height: 6),
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: const Color(0xFFEF4444).withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.2)),
+                border: Border.all(
+                  color: const Color(0xFFEF4444).withValues(alpha: 0.2),
+                ),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,

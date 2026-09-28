@@ -171,7 +171,8 @@ class _RrhhLeaveRequestEditDialogState
         if (l.employeeId != _selectedEmployee!.id) return false;
         if (isEditing && l.id == widget.initialRequest!.id) return false;
         // Solapamiento: [startDate, endDate] se intersecta con [l.startDate, l.endDate]
-        return !(l.endDate.isBefore(_startDate) || l.startDate.isAfter(_endDate));
+        return !(l.endDate.isBefore(_startDate) ||
+            l.startDate.isAfter(_endDate));
       });
 
       if (overlapping.isNotEmpty) {
@@ -189,7 +190,9 @@ class _RrhhLeaveRequestEditDialogState
       final now = DateTime.now();
       final status = approveImmediately
           ? RrhhLeaveStatus.aprobado
-          : (isEditing ? widget.initialRequest!.status : RrhhLeaveStatus.pendiente);
+          : (isEditing
+                ? widget.initialRequest!.status
+                : RrhhLeaveStatus.pendiente);
 
       final leaveObj = RrhhLeaveRequest(
         id: isEditing ? widget.initialRequest!.id : 0,
@@ -212,9 +215,15 @@ class _RrhhLeaveRequestEditDialogState
         status: status,
         createdAt: isEditing ? widget.initialRequest!.createdAt : now,
         updatedAt: now,
-        createdBy: isEditing ? widget.initialRequest!.createdBy : 'Lic. Laura Mendoza',
-        approvedAt: approveImmediately ? now : widget.initialRequest?.approvedAt,
-        approvedBy: approveImmediately ? 'Lic. Laura Mendoza' : widget.initialRequest?.approvedBy,
+        createdBy: isEditing
+            ? widget.initialRequest!.createdBy
+            : 'Lic. Laura Mendoza',
+        approvedAt: approveImmediately
+            ? now
+            : widget.initialRequest?.approvedAt,
+        approvedBy: approveImmediately
+            ? 'Lic. Laura Mendoza'
+            : widget.initialRequest?.approvedBy,
         rejectionReason: widget.initialRequest?.rejectionReason,
       );
 
@@ -229,7 +238,9 @@ class _RrhhLeaveRequestEditDialogState
           context,
           approveImmediately
               ? 'Permiso registrado y aprobado exitosamente.'
-              : (isEditing ? 'Permiso actualizado correctamente.' : 'Permiso guardado como Pendiente.'),
+              : (isEditing
+                    ? 'Permiso actualizado correctamente.'
+                    : 'Permiso guardado como Pendiente.'),
         );
         Navigator.of(context).pop(true);
       }
@@ -260,7 +271,9 @@ class _RrhhLeaveRequestEditDialogState
               child: _isLoadingEmployees
                   ? const Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2563EB)),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFF2563EB),
+                        ),
                       ),
                     )
                   : SingleChildScrollView(
@@ -308,7 +321,9 @@ class _RrhhLeaveRequestEditDialogState
             decoration: BoxDecoration(
               color: const Color(0xFF2563EB).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.3)),
+              border: Border.all(
+                color: const Color(0xFF2563EB).withValues(alpha: 0.3),
+              ),
             ),
             child: const Icon(
               Icons.fact_check_outlined,
@@ -322,7 +337,9 @@ class _RrhhLeaveRequestEditDialogState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditing ? 'Editar Solicitud de Permiso' : 'Registrar Permiso o Licencia',
+                  isEditing
+                      ? 'Editar Solicitud de Permiso'
+                      : 'Registrar Permiso o Licencia',
                   style: GoogleFonts.inter(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -362,7 +379,9 @@ class _RrhhLeaveRequestEditDialogState
           dropdownColor: const Color(0xFF1E293B),
           style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
           icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF94A3B8)),
-          decoration: _inputDecoration(hint: 'Seleccionar colaborador activo...'),
+          decoration: _inputDecoration(
+            hint: 'Seleccionar colaborador activo...',
+          ),
           items: _employees.map((emp) {
             return DropdownMenuItem<RrhhEmployeeSummaryDto>(
               value: emp,
@@ -375,7 +394,8 @@ class _RrhhLeaveRequestEditDialogState
           onChanged: (emp) {
             setState(() => _selectedEmployee = emp);
           },
-          validator: (val) => val == null ? 'Debe seleccionar un empleado' : null,
+          validator: (val) =>
+              val == null ? 'Debe seleccionar un empleado' : null,
         ),
         if (_selectedEmployee != null) ...[
           const SizedBox(height: 8),
@@ -388,7 +408,11 @@ class _RrhhLeaveRequestEditDialogState
             ),
             child: Row(
               children: [
-                const Icon(Icons.badge_outlined, size: 16, color: Color(0xFF38BDF8)),
+                const Icon(
+                  Icons.badge_outlined,
+                  size: 16,
+                  color: Color(0xFF38BDF8),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -410,7 +434,9 @@ class _RrhhLeaveRequestEditDialogState
 
   Widget _buildLeaveTypeAndPaidRow() {
     final isMandatoryPaid = RrhhLeaveTypes.isMandatoryPaid(_selectedLeaveType);
-    final isMandatoryUnpaid = RrhhLeaveTypes.isMandatoryUnpaid(_selectedLeaveType);
+    final isMandatoryUnpaid = RrhhLeaveTypes.isMandatoryUnpaid(
+      _selectedLeaveType,
+    );
     final canToggle = RrhhLeaveTypes.canTogglePaid(_selectedLeaveType);
 
     return Column(
@@ -432,7 +458,10 @@ class _RrhhLeaveRequestEditDialogState
                     isExpanded: true,
                     dropdownColor: const Color(0xFF1E293B),
                     style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
-                    icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF94A3B8)),
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Color(0xFF94A3B8),
+                    ),
                     decoration: _inputDecoration(),
                     items: RrhhLeaveTypes.all.map((t) {
                       return DropdownMenuItem(
@@ -477,7 +506,9 @@ class _RrhhLeaveRequestEditDialogState
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          _isPaid ? 'Con goce de haberes' : 'Sin goce de haberes',
+                          _isPaid
+                              ? 'Con goce de haberes'
+                              : 'Sin goce de haberes',
                           style: GoogleFonts.inter(
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
@@ -515,11 +546,18 @@ class _RrhhLeaveRequestEditDialogState
           const SizedBox(height: 6),
           Row(
             children: [
-              const Icon(Icons.info_outline, size: 14, color: Color(0xFF10B981)),
+              const Icon(
+                Icons.info_outline,
+                size: 14,
+                color: Color(0xFF10B981),
+              ),
               const SizedBox(width: 6),
               Text(
                 'Este tipo de permiso es pagado por ley y no afectará el salario del colaborador.',
-                style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF10B981)),
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  color: const Color(0xFF10B981),
+                ),
               ),
             ],
           ),
@@ -527,11 +565,18 @@ class _RrhhLeaveRequestEditDialogState
           const SizedBox(height: 6),
           Row(
             children: [
-              const Icon(Icons.info_outline, size: 14, color: Color(0xFFF59E0B)),
+              const Icon(
+                Icons.info_outline,
+                size: 14,
+                color: Color(0xFFF59E0B),
+              ),
               const SizedBox(width: 6),
               Text(
                 'Permiso sin goce de haberes: se reportará a nómina para deducción proporcional.',
-                style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFFF59E0B)),
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  color: const Color(0xFFF59E0B),
+                ),
               ),
             ],
           ),
@@ -662,11 +707,18 @@ class _RrhhLeaveRequestEditDialogState
         ),
         child: Row(
           children: [
-            const Icon(Icons.calendar_today_outlined, size: 16, color: Color(0xFF94A3B8)),
+            const Icon(
+              Icons.calendar_today_outlined,
+              size: 16,
+              color: Color(0xFF94A3B8),
+            ),
             const SizedBox(width: 10),
             Text(
               '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}',
-              style: GoogleFonts.jetBrainsMono(fontSize: 12.5, color: Colors.white),
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 12.5,
+                color: Colors.white,
+              ),
             ),
           ],
         ),
@@ -684,7 +736,10 @@ class _RrhhLeaveRequestEditDialogState
             _fieldLabel('MOTIVO / JUSTIFICACIÓN (OBLIGATORIO) *'),
             Text(
               'Mínimo 20 caracteres',
-              style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFF64748B)),
+              style: GoogleFonts.inter(
+                fontSize: 10.5,
+                color: const Color(0xFF64748B),
+              ),
             ),
           ],
         ),
@@ -694,7 +749,8 @@ class _RrhhLeaveRequestEditDialogState
           maxLines: 3,
           style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
           decoration: _inputDecoration(
-            hint: 'Detallar el motivo formal de la ausencia, solicitud o licencia médica...',
+            hint:
+                'Detallar el motivo formal de la ausencia, solicitud o licencia médica...',
           ),
           validator: (val) {
             if (val == null || val.trim().isEmpty) {
@@ -711,7 +767,9 @@ class _RrhhLeaveRequestEditDialogState
   }
 
   Widget _buildEvidenceField() {
-    final requiresEvidence = RrhhLeaveTypes.requiresEvidence(_selectedLeaveType);
+    final requiresEvidence = RrhhLeaveTypes.requiresEvidence(
+      _selectedLeaveType,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -727,7 +785,10 @@ class _RrhhLeaveRequestEditDialogState
             if (requiresEvidence)
               Text(
                 'Requerido por tipo de licencia',
-                style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFFF59E0B)),
+                style: GoogleFonts.inter(
+                  fontSize: 10.5,
+                  color: const Color(0xFFF59E0B),
+                ),
               ),
           ],
         ),
@@ -758,14 +819,20 @@ class _RrhhLeaveRequestEditDialogState
                     ? 'certificado_cns_${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}.pdf'
                     : 'adjunto_permiso_${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}.pdf';
                 setState(() => _evidenceController.text = defaultName);
-                RrhhSnackBar.showInfo(context, 'Archivo adjuntado: $defaultName');
+                RrhhSnackBar.showInfo(
+                  context,
+                  'Archivo adjuntado: $defaultName',
+                );
               },
               icon: const Icon(Icons.attach_file, size: 16),
               label: const Text('Adjuntar'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF1E293B),
                 foregroundColor: const Color(0xFF38BDF8),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                   side: const BorderSide(color: Color(0xFF334155)),
@@ -809,7 +876,8 @@ class _RrhhLeaveRequestEditDialogState
           maxLines: 2,
           style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
           decoration: _inputDecoration(
-            hint: 'Anotaciones administrativas, seguimiento interno de RRHH o cobertura...',
+            hint:
+                'Anotaciones administrativas, seguimiento interno de RRHH o cobertura...',
           ),
         ),
       ],
@@ -831,7 +899,10 @@ class _RrhhLeaveRequestEditDialogState
   InputDecoration _inputDecoration({String? hint}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+      hintStyle: GoogleFonts.inter(
+        fontSize: 12.5,
+        color: const Color(0xFF64748B),
+      ),
       filled: true,
       fillColor: const Color(0xFF0F172A),
       isDense: true,
@@ -866,52 +937,76 @@ class _RrhhLeaveRequestEditDialogState
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           OutlinedButton(
-            onPressed: _isSaving ? null : () => Navigator.of(context).pop(false),
+            onPressed: _isSaving
+                ? null
+                : () => Navigator.of(context).pop(false),
             style: OutlinedButton.styleFrom(
               foregroundColor: const Color(0xFF94A3B8),
               side: const BorderSide(color: Color(0xFF334155)),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             child: Text(
               'Cancelar',
-              style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           const SizedBox(width: 12),
           OutlinedButton.icon(
-            onPressed: _isSaving ? null : () => _handleSave(approveImmediately: false),
+            onPressed: _isSaving
+                ? null
+                : () => _handleSave(approveImmediately: false),
             icon: const Icon(Icons.pending_actions_outlined, size: 16),
             label: Text(
               isEditing ? 'Guardar Cambios' : 'Guardar como Pendiente',
-              style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             style: OutlinedButton.styleFrom(
               foregroundColor: const Color(0xFFF59E0B),
               side: const BorderSide(color: Color(0xFFF59E0B)),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           ),
           const SizedBox(width: 12),
           ElevatedButton.icon(
-            onPressed: _isSaving ? null : () => _handleSave(approveImmediately: true),
+            onPressed: _isSaving
+                ? null
+                : () => _handleSave(approveImmediately: true),
             icon: _isSaving
                 ? const SizedBox(
                     width: 14,
                     height: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
                 : const Icon(Icons.check_circle_outline, size: 16),
             label: Text(
               _isSaving ? 'Guardando...' : 'Guardar y Aprobar',
-              style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2563EB),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           ),
         ],

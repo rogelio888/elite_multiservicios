@@ -97,7 +97,10 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
       final schedules = await RrhhRepository.current.listBaseSchedules();
       int highest = 0;
       for (final s in schedules) {
-        final match = RegExp(r'^HORARIO-(\d+)$', caseSensitive: false).firstMatch(s.code);
+        final match = RegExp(
+          r'^HORARIO-(\d+)$',
+          caseSensitive: false,
+        ).firstMatch(s.code);
         if (match != null) {
           final n = int.tryParse(match.group(1)!) ?? 0;
           if (n > highest) highest = n;
@@ -160,7 +163,10 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
 
     final distinctShifts = _distinctShiftCodes;
     if (distinctShifts.isEmpty) {
-      setState(() => _errorMessage = 'Debe asignar al menos un turno a algún día de la semana.');
+      setState(
+        () => _errorMessage =
+            'Debe asignar al menos un turno a algún día de la semana.',
+      );
       return;
     }
 
@@ -182,18 +188,22 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
       if (codeDup) {
         setState(() {
           _isSaving = false;
-          _errorMessage = 'El código "$codeNorm" ya está en uso por otro horario.';
+          _errorMessage =
+              'El código "$codeNorm" ya está en uso por otro horario.';
         });
         return;
       }
 
       final nameDup = existing.any(
-        (s) => s.name.trim().toLowerCase() == nameNorm && s.id != widget.schedule?.id,
+        (s) =>
+            s.name.trim().toLowerCase() == nameNorm &&
+            s.id != widget.schedule?.id,
       );
       if (nameDup) {
         setState(() {
           _isSaving = false;
-          _errorMessage = 'El nombre "${_nameCtrl.text.trim()}" ya existe en el catálogo.';
+          _errorMessage =
+              'El nombre "${_nameCtrl.text.trim()}" ya existe en el catálogo.';
         });
         return;
       }
@@ -217,11 +227,13 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
               updatedAt: DateTime.now(),
             ),
           );
-          shiftDays.add(RrhhScheduleShiftDay(
-            shiftCode: shiftCode,
-            shiftName: sh.name,
-            dayOfWeek: day,
-          ));
+          shiftDays.add(
+            RrhhScheduleShiftDay(
+              shiftCode: shiftCode,
+              shiftName: sh.name,
+              dayOfWeek: day,
+            ),
+          );
         }
       }
 
@@ -235,7 +247,9 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
           shiftDays: shiftDays,
           workerType: _workerType,
           totalWeeklyHours: weeklyHrs,
-          description: _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
+          description: _descCtrl.text.trim().isEmpty
+              ? null
+              : _descCtrl.text.trim(),
           isActive: _isActive,
           updatedAt: DateTime.now(),
         );
@@ -249,7 +263,9 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
           shiftDays: shiftDays,
           workerType: _workerType,
           totalWeeklyHours: weeklyHrs,
-          description: _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
+          description: _descCtrl.text.trim().isEmpty
+              ? null
+              : _descCtrl.text.trim(),
           isActive: _isActive,
           assignedEmployeesCount: 0,
           createdAt: DateTime.now(),
@@ -321,7 +337,10 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
                                 if (val == null || val.trim().isEmpty) {
                                   return 'El código es obligatorio';
                                 }
-                                if (!RegExp(r'^HORARIO-[A-Z0-9]+$', caseSensitive: false).hasMatch(val.trim())) {
+                                if (!RegExp(
+                                  r'^HORARIO-[A-Z0-9]+$',
+                                  caseSensitive: false,
+                                ).hasMatch(val.trim())) {
                                   return 'Formato: HORARIO-XXX';
                                 }
                                 return null;
@@ -373,9 +392,14 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                              color: const Color(
+                                0xFF2563EB,
+                              ).withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
@@ -394,19 +418,30 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
                       if (_isLoadingShifts)
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 20),
-                          child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                          child: Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
                         )
                       else if (_availableShifts.isEmpty)
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF59E0B).withValues(alpha: 0.1),
+                            color: const Color(
+                              0xFFF59E0B,
+                            ).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+                            border: Border.all(
+                              color: const Color(
+                                0xFFF59E0B,
+                              ).withValues(alpha: 0.3),
+                            ),
                           ),
                           child: Text(
                             'No hay turnos activos creados. Debe registrar al menos un turno en la pestaña "Turnos" antes de configurar un horario base.',
-                            style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFFDE68A)),
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: const Color(0xFFFDE68A),
+                            ),
                           ),
                         )
                       else
@@ -418,12 +453,21 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
                           ),
                           child: Column(
                             children: daysMeta.map((d) {
-                              final currentShiftCode = _dayShiftAssignments[d.$1];
+                              final currentShiftCode =
+                                  _dayShiftAssignments[d.$1];
                               final isWeekend = d.$1 == 6 || d.$1 == 7;
                               return Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
                                 decoration: const BoxDecoration(
-                                  border: Border(bottom: BorderSide(color: Color(0xFF1E293B), width: 0.7)),
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: Color(0xFF1E293B),
+                                      width: 0.7,
+                                    ),
+                                  ),
                                 ),
                                 child: Row(
                                   children: [
@@ -432,8 +476,12 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
                                       height: 24,
                                       decoration: BoxDecoration(
                                         color: isWeekend
-                                            ? const Color(0xFF8B5CF6).withValues(alpha: 0.2)
-                                            : const Color(0xFF2563EB).withValues(alpha: 0.2),
+                                            ? const Color(
+                                                0xFF8B5CF6,
+                                              ).withValues(alpha: 0.2)
+                                            : const Color(
+                                                0xFF2563EB,
+                                              ).withValues(alpha: 0.2),
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       alignment: Alignment.center,
@@ -442,7 +490,9 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
                                         style: GoogleFonts.inter(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w700,
-                                          color: isWeekend ? const Color(0xFFA78BFA) : const Color(0xFF60A5FA),
+                                          color: isWeekend
+                                              ? const Color(0xFFA78BFA)
+                                              : const Color(0xFF60A5FA),
                                         ),
                                       ),
                                     ),
@@ -452,32 +502,52 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
                                         child: DropdownButton<String?>(
                                           value: currentShiftCode,
                                           isDense: true,
-                                          dropdownColor: const Color(0xFF0F172A),
-                                          icon: const Icon(Icons.keyboard_arrow_down, size: 16, color: Color(0xFF64748B)),
+                                          dropdownColor: const Color(
+                                            0xFF0F172A,
+                                          ),
+                                          icon: const Icon(
+                                            Icons.keyboard_arrow_down,
+                                            size: 16,
+                                            color: Color(0xFF64748B),
+                                          ),
                                           hint: Text(
                                             'Día Libre / Sin turno asignado',
-                                            style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12,
+                                              color: const Color(0xFF64748B),
+                                            ),
                                           ),
                                           items: [
                                             DropdownMenuItem<String?>(
                                               value: null,
                                               child: Text(
                                                 '— Día Libre (Sin Turno) —',
-                                                style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 12,
+                                                  color: const Color(
+                                                    0xFF94A3B8,
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                            ..._availableShifts.map((sh) => DropdownMenuItem<String?>(
-                                                  value: sh.code,
-                                                  child: Row(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      Text(
-                                                        '${sh.code}: ${sh.name} (${sh.formattedTimeRange})',
-                                                        style: GoogleFonts.inter(fontSize: 12, color: Colors.white),
+                                            ..._availableShifts.map(
+                                              (sh) => DropdownMenuItem<String?>(
+                                                value: sh.code,
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Text(
+                                                      '${sh.code}: ${sh.name} (${sh.formattedTimeRange})',
+                                                      style: GoogleFonts.inter(
+                                                        fontSize: 12,
+                                                        color: Colors.white,
                                                       ),
-                                                    ],
-                                                  ),
-                                                )),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
                                           ],
                                           onChanged: (val) {
                                             setState(() {
@@ -489,7 +559,11 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
                                     ),
                                     if (currentShiftCode != null)
                                       IconButton(
-                                        icon: const Icon(Icons.close, size: 14, color: Color(0xFF64748B)),
+                                        icon: const Icon(
+                                          Icons.close,
+                                          size: 14,
+                                          color: Color(0xFF64748B),
+                                        ),
                                         tooltip: 'Quitar turno de este día',
                                         onPressed: () {
                                           setState(() {
@@ -511,7 +585,8 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
                       _buildTextField(
                         label: 'Descripción de la Plantilla (Opcional)',
                         controller: _descCtrl,
-                        hint: 'Detalles operativos, rotaciones o recomendaciones de uso',
+                        hint:
+                            'Detalles operativos, rotaciones o recomendaciones de uso',
                         maxLines: 2,
                       ),
                       const SizedBox(height: 16),
@@ -546,7 +621,11 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
               color: const Color(0xFF2563EB).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.date_range_rounded, color: Color(0xFF60A5FA), size: 20),
+            child: const Icon(
+              Icons.date_range_rounded,
+              color: Color(0xFF60A5FA),
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -554,7 +633,9 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _isEditing ? 'Editar Horario Base' : 'Nuevo Horario Base (Plantilla)',
+                  _isEditing
+                      ? 'Editar Horario Base'
+                      : 'Nuevo Horario Base (Plantilla)',
                   style: GoogleFonts.inter(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -565,7 +646,10 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
                   _isEditing
                       ? 'Modifique la combinación semanal de turnos y tipo de personal'
                       : 'Configure una plantilla semanal que combina turnos para el personal',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF94A3B8),
+                  ),
                 ),
               ],
             ),
@@ -601,7 +685,9 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
                 duration: const Duration(milliseconds: 150),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: isSelected ? t.$3.withValues(alpha: 0.15) : const Color(0xFF111827),
+                  color: isSelected
+                      ? t.$3.withValues(alpha: 0.15)
+                      : const Color(0xFF111827),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: isSelected ? t.$3 : const Color(0xFF1E293B),
@@ -642,7 +728,9 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
               Icon(
                 _isActive ? Icons.check_circle_outline : Icons.block_flipped,
                 size: 18,
-                color: _isActive ? const Color(0xFF10B981) : const Color(0xFF64748B),
+                color: _isActive
+                    ? const Color(0xFF10B981)
+                    : const Color(0xFF64748B),
               ),
               const SizedBox(width: 10),
               Column(
@@ -650,11 +738,20 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
                 children: [
                   Text(
                     'Estado del Horario Base',
-                    style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                   Text(
-                    _isActive ? 'Activo para asignación de nuevos expedientes' : 'Inactivo (No elegible)',
-                    style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF94A3B8)),
+                    _isActive
+                        ? 'Activo para asignación de nuevos expedientes'
+                        : 'Inactivo (No elegible)',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: const Color(0xFF94A3B8),
+                    ),
                   ),
                 ],
               ),
@@ -677,7 +774,9 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
       decoration: BoxDecoration(
         color: const Color(0xFFEF4444).withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.4)),
+        border: Border.all(
+          color: const Color(0xFFEF4444).withValues(alpha: 0.4),
+        ),
       ),
       child: Row(
         children: [
@@ -686,7 +785,10 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
           Expanded(
             child: Text(
               _errorMessage!,
-              style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFFCA5A5)),
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: const Color(0xFFFCA5A5),
+              ),
             ),
           ),
         ],
@@ -718,14 +820,24 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
           controller: controller,
           maxLines: maxLines,
           style: isMonospace
-              ? GoogleFonts.jetBrainsMono(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)
+              ? GoogleFonts.jetBrainsMono(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                )
               : GoogleFonts.inter(color: Colors.white, fontSize: 13),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12.5),
+            hintStyle: GoogleFonts.inter(
+              color: const Color(0xFF64748B),
+              fontSize: 12.5,
+            ),
             filled: true,
             fillColor: const Color(0xFF111827),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 10,
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0xFF1E293B)),
@@ -765,7 +877,9 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
             style: OutlinedButton.styleFrom(
               foregroundColor: const Color(0xFF94A3B8),
               side: const BorderSide(color: Color(0xFF1E293B)),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             ),
             child: Text('Cancelar', style: GoogleFonts.inter(fontSize: 13)),
@@ -777,17 +891,27 @@ class _RrhhScheduleEditDialogState extends State<RrhhScheduleEditDialog> {
                 ? const SizedBox(
                     width: 14,
                     height: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
                 : const Icon(Icons.check_rounded, size: 16),
             label: Text(
-              _isSaving ? 'Guardando...' : (_isEditing ? 'Guardar Cambios' : 'Crear Horario'),
-              style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+              _isSaving
+                  ? 'Guardando...'
+                  : (_isEditing ? 'Guardar Cambios' : 'Crear Horario'),
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             style: FilledButton.styleFrom(
               backgroundColor: const Color(0xFF2563EB),
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
             ),
           ),

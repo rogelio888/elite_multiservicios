@@ -12,7 +12,10 @@ class RrhhEmployeePreviewDialog extends StatelessWidget {
     required this.employee,
   });
 
-  static Future<void> show(BuildContext context, RrhhEmployeeSummaryDto employee) {
+  static Future<void> show(
+    BuildContext context,
+    RrhhEmployeeSummaryDto employee,
+  ) {
     return showDialog<void>(
       context: context,
       builder: (ctx) => RrhhEmployeePreviewDialog(employee: employee),
@@ -29,11 +32,19 @@ class RrhhEmployeePreviewDialog extends StatelessWidget {
       ),
       title: Row(
         children: [
-          const Icon(Icons.folder_shared_outlined, color: Color(0xFF2563EB), size: 20),
+          const Icon(
+            Icons.folder_shared_outlined,
+            color: Color(0xFF2563EB),
+            size: 20,
+          ),
           const SizedBox(width: 8),
           Text(
             'Expediente 360° • ${employee.code}',
-            style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
         ],
       ),
@@ -43,12 +54,19 @@ class RrhhEmployeePreviewDialog extends StatelessWidget {
         children: [
           Text(
             employee.fullName,
-            style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600, color: const Color(0xFFF8FAFC)),
+            style: GoogleFonts.inter(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFFF8FAFC),
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             '${employee.position} • ${employee.area} (${employee.employeeType})',
-            style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: const Color(0xFF94A3B8),
+            ),
           ),
           const SizedBox(height: 16),
           Container(
@@ -59,7 +77,11 @@ class RrhhEmployeePreviewDialog extends StatelessWidget {
             ),
             child: Text(
               'La ficha integral 360° con documentos de ley, asignación de operaciones e historial se implementará en la Pantalla 03.',
-              style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF93C5FD), height: 1.4),
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: const Color(0xFF93C5FD),
+                height: 1.4,
+              ),
             ),
           ),
         ],
@@ -67,7 +89,10 @@ class RrhhEmployeePreviewDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cerrar', style: TextStyle(color: Color(0xFF94A3B8))),
+          child: const Text(
+            'Cerrar',
+            style: TextStyle(color: Color(0xFF94A3B8)),
+          ),
         ),
       ],
     );

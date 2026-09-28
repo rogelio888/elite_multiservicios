@@ -80,7 +80,8 @@ class RrhhPipelineTransitionRules {
 class RrhhRecruitmentKanban extends StatelessWidget {
   final List<RrhhApplicantSummaryDto> applicants;
   final void Function(RrhhApplicantSummaryDto applicant) onCardTap;
-  final void Function(RrhhApplicantSummaryDto applicant, String targetStage) onApplicantDropped;
+  final void Function(RrhhApplicantSummaryDto applicant, String targetStage)
+  onApplicantDropped;
 
   const RrhhRecruitmentKanban({
     super.key,
@@ -91,12 +92,24 @@ class RrhhRecruitmentKanban extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final nuevos = applicants.where((a) => a.status.toUpperCase() == 'NUEVO').toList();
-    final enRevision = applicants.where((a) => a.status.toUpperCase() == 'EN_REVISION').toList();
-    final entrevista = applicants.where((a) => a.status.toUpperCase() == 'ENTREVISTA').toList();
-    final pruebas = applicants.where((a) => a.status.toUpperCase() == 'PRUEBAS').toList();
-    final seleccionados = applicants.where((a) => a.status.toUpperCase() == 'SELECCIONADO').toList();
-    final rechazados = applicants.where((a) => a.status.toUpperCase() == 'RECHAZADO').toList();
+    final nuevos = applicants
+        .where((a) => a.status.toUpperCase() == 'NUEVO')
+        .toList();
+    final enRevision = applicants
+        .where((a) => a.status.toUpperCase() == 'EN_REVISION')
+        .toList();
+    final entrevista = applicants
+        .where((a) => a.status.toUpperCase() == 'ENTREVISTA')
+        .toList();
+    final pruebas = applicants
+        .where((a) => a.status.toUpperCase() == 'PRUEBAS')
+        .toList();
+    final seleccionados = applicants
+        .where((a) => a.status.toUpperCase() == 'SELECCIONADO')
+        .toList();
+    final rechazados = applicants
+        .where((a) => a.status.toUpperCase() == 'RECHAZADO')
+        .toList();
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -104,9 +117,14 @@ class RrhhRecruitmentKanban extends StatelessWidget {
         const double totalGaps = gap * 5; // 5 separaciones entre 6 columnas
         const double minColWidth = 250.0;
         const double maxColWidth = 340.0;
-        final double calculatedColWidth = (constraints.maxWidth - totalGaps) / 6;
-        final double colWidth = calculatedColWidth.clamp(minColWidth, maxColWidth);
-        final bool needsScroll = constraints.maxWidth < ((minColWidth * 6) + totalGaps);
+        final double calculatedColWidth =
+            (constraints.maxWidth - totalGaps) / 6;
+        final double colWidth = calculatedColWidth.clamp(
+          minColWidth,
+          maxColWidth,
+        );
+        final bool needsScroll =
+            constraints.maxWidth < ((minColWidth * 6) + totalGaps);
 
         final kanbanRow = Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,

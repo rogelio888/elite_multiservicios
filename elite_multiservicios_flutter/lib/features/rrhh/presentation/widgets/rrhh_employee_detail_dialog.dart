@@ -55,7 +55,8 @@ class RrhhEmployeeDetailDialog extends StatefulWidget {
   }
 
   @override
-  State<RrhhEmployeeDetailDialog> createState() => _RrhhEmployeeDetailDialogState();
+  State<RrhhEmployeeDetailDialog> createState() =>
+      _RrhhEmployeeDetailDialogState();
 }
 
 class _RrhhEmployeeDetailDialogState extends State<RrhhEmployeeDetailDialog>
@@ -133,12 +134,16 @@ class _RrhhEmployeeDetailDialogState extends State<RrhhEmployeeDetailDialog>
 
     return CallbackShortcuts(
       bindings: {
-        const SingleActivator(LogicalKeyboardKey.escape): () => Navigator.of(context).pop(),
+        const SingleActivator(LogicalKeyboardKey.escape): () =>
+            Navigator.of(context).pop(),
       },
       child: Focus(
         autofocus: true,
         child: Dialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 24,
+          ),
           backgroundColor: const Color(0xFF0F172A),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
@@ -176,7 +181,8 @@ class _RrhhEmployeeDetailDialogState extends State<RrhhEmployeeDetailDialog>
         padding: EdgeInsets.all(32),
         child: RrhhEmptyState(
           title: 'Colaborador no encontrado',
-          description: 'No se encontró el registro del empleado en la base de datos.',
+          description:
+              'No se encontró el registro del empleado en la base de datos.',
           icon: Icons.person_off_outlined,
         ),
       );
@@ -191,19 +197,25 @@ class _RrhhEmployeeDetailDialogState extends State<RrhhEmployeeDetailDialog>
           canModifyContract: widget.canModifyContract,
           onClose: () => Navigator.of(context).pop(),
           onEdit: () async {
-            final updated =
-                await RrhhEditEmployeeDialog.show(context, _employee!);
+            final updated = await RrhhEditEmployeeDialog.show(
+              context,
+              _employee!,
+            );
             if (updated == true) {
               await _loadEmployeeData();
               if (mounted) {
                 RrhhSnackBar.showSuccess(
-                    context, 'Ficha actualizada correctamente');
+                  context,
+                  'Ficha actualizada correctamente',
+                );
               }
             }
           },
           onModifyContract: () async {
-            final result =
-                await RrhhContractModificationDialog.show(context, _employee!);
+            final result = await RrhhContractModificationDialog.show(
+              context,
+              _employee!,
+            );
             if (result != null && result.success) {
               await _loadEmployeeData();
               if (mounted) {
@@ -237,8 +249,14 @@ class _RrhhEmployeeDetailDialogState extends State<RrhhEmployeeDetailDialog>
             indicatorWeight: 2,
             labelColor: const Color(0xFF2563EB),
             unselectedLabelColor: const Color(0xFF94A3B8),
-            labelStyle: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
-            unselectedLabelStyle: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w500),
+            labelStyle: GoogleFonts.inter(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+            ),
+            unselectedLabelStyle: GoogleFonts.inter(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w500,
+            ),
             tabs: const [
               Tab(height: 38, text: '1. Datos Personales'),
               Tab(height: 38, text: '2. Contrato & Salario'),
@@ -281,27 +299,49 @@ class _RrhhEmployeeDetailDialogState extends State<RrhhEmployeeDetailDialog>
         children: [
           Row(
             children: [
-              Container(width: 52, height: 52, decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(10))),
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(width: 220, height: 16, color: const Color(0xFF1E293B)),
+                    Container(
+                      width: 220,
+                      height: 16,
+                      color: const Color(0xFF1E293B),
+                    ),
                     const SizedBox(height: 8),
-                    Container(width: 320, height: 12, color: const Color(0xFF1E293B)),
+                    Container(
+                      width: 320,
+                      height: 12,
+                      color: const Color(0xFF1E293B),
+                    ),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 24),
-          Container(width: double.infinity, height: 38, color: const Color(0xFF111827)),
+          Container(
+            width: double.infinity,
+            height: 38,
+            color: const Color(0xFF111827),
+          ),
           const SizedBox(height: 20),
           Expanded(
             child: Container(
               width: double.infinity,
-              decoration: BoxDecoration(color: const Color(0xFF111827), borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(
+                color: const Color(0xFF111827),
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           ),
         ],

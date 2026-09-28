@@ -49,7 +49,10 @@ class RrhhSanctionTypeChip extends StatelessWidget {
   }
 
   (Color, String) _getConfig(String? type) {
-    if (type == null || type.isEmpty || type == 'ninguna' || type == 'sin_sancion') {
+    if (type == null ||
+        type.isEmpty ||
+        type == 'ninguna' ||
+        type == 'sin_sancion') {
       return (const Color(0xFF64748B), 'Sin sanción');
     }
     switch (type.toLowerCase()) {

@@ -33,8 +33,10 @@ class RrhhRecruitmentApplicantDrawer extends StatefulWidget {
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 250),
       transitionBuilder: (ctx, a1, _, child) => SlideTransition(
-        position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
-            .animate(CurvedAnimation(parent: a1, curve: Curves.easeOutCubic)),
+        position: Tween<Offset>(
+          begin: const Offset(1, 0),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(parent: a1, curve: Curves.easeOutCubic)),
         child: child,
       ),
       pageBuilder: (ctx, _, _) => Align(
@@ -97,7 +99,8 @@ class _RrhhRecruitmentApplicantDrawerState
       if (!mounted) return;
 
       final st = app.status.toUpperCase();
-      _expandFase2 = (st == 'ENTREVISTA' || st == 'PRUEBAS' || st == 'SELECCIONADO');
+      _expandFase2 =
+          (st == 'ENTREVISTA' || st == 'PRUEBAS' || st == 'SELECCIONADO');
       _expandFase3 = (st == 'SELECCIONADO');
 
       setState(() {
@@ -116,7 +119,12 @@ class _RrhhRecruitmentApplicantDrawerState
     }
   }
 
-  Future<void> _changeStatus(String newStatus, {String? notes, String? discardReason, bool? isEligibleForRehire}) async {
+  Future<void> _changeStatus(
+    String newStatus, {
+    String? notes,
+    String? discardReason,
+    bool? isEligibleForRehire,
+  }) async {
     setState(() => _isActionRunning = true);
     try {
       final updated = await RrhhRepository.current.updateApplicantStatus(
@@ -128,14 +136,23 @@ class _RrhhRecruitmentApplicantDrawerState
       );
       if (newStatus == 'SELECCIONADO') {
         try {
-          var dossier = await RrhhRepository.current.getDossierByApplicantId(widget.applicantId);
-          dossier ??= await RrhhRepository.current.createDossierForApplicant(widget.applicantId);
+          var dossier = await RrhhRepository.current.getDossierByApplicantId(
+            widget.applicantId,
+          );
+          dossier ??= await RrhhRepository.current.createDossierForApplicant(
+            widget.applicantId,
+          );
         } catch (_) {}
         if (_companion != null) {
-          await RrhhRepository.current.saveApplicantCompanion(widget.applicantId, _companion!);
+          await RrhhRepository.current.saveApplicantCompanion(
+            widget.applicantId,
+            _companion!,
+          );
         }
       }
-      final comp = await RrhhRepository.current.getApplicantCompanion(widget.applicantId);
+      final comp = await RrhhRepository.current.getApplicantCompanion(
+        widget.applicantId,
+      );
 
       if (mounted) {
         final st = updated.status.toUpperCase();
@@ -190,7 +207,10 @@ class _RrhhRecruitmentApplicantDrawerState
 
     if (updatedEval != null) {
       final newComp = _companion!.copyWith(evaluation: updatedEval);
-      await RrhhRepository.current.saveApplicantCompanion(widget.applicantId, newComp);
+      await RrhhRepository.current.saveApplicantCompanion(
+        widget.applicantId,
+        newComp,
+      );
       setState(() => _companion = newComp);
       widget.onStatusChanged?.call();
     }
@@ -222,7 +242,10 @@ class _RrhhRecruitmentApplicantDrawerState
     }
 
     final newComp = _companion!.copyWith(documents: docs);
-    await RrhhRepository.current.saveApplicantCompanion(widget.applicantId, newComp);
+    await RrhhRepository.current.saveApplicantCompanion(
+      widget.applicantId,
+      newComp,
+    );
     setState(() => _companion = newComp);
   }
 
@@ -237,7 +260,10 @@ class _RrhhRecruitmentApplicantDrawerState
     );
 
     if (record != null) {
-      await RrhhRepository.current.addInterviewRecord(widget.applicantId, record);
+      await RrhhRepository.current.addInterviewRecord(
+        widget.applicantId,
+        record,
+      );
       await _loadData();
     }
   }
@@ -249,15 +275,30 @@ class _RrhhRecruitmentApplicantDrawerState
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF0F172A),
-        title: Text('Reactivar Postulación', style: GoogleFonts.inter(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+        title: Text(
+          'Reactivar Postulación',
+          style: GoogleFonts.inter(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         content: Text(
           '¿Deseas registrar una NUEVA postulación para ${_applicant!.fullName} vinculada al historial previo?',
-          style: GoogleFonts.inter(color: const Color(0xFFCBD5E1), fontSize: 13),
+          style: GoogleFonts.inter(
+            color: const Color(0xFFCBD5E1),
+            fontSize: 13,
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancelar'),
+          ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: const Color(0xFF0284C7)),
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF0284C7),
+            ),
             onPressed: () => Navigator.of(ctx).pop(true),
             child: const Text('Reactivar como NUEVO'),
           ),
@@ -304,54 +345,74 @@ class _RrhhRecruitmentApplicantDrawerState
       decoration: const BoxDecoration(
         color: Color(0xFF0F172A),
         border: Border(left: BorderSide(color: Color(0xFF1E293B), width: 1.5)),
-        boxShadow: [BoxShadow(color: Colors.black54, blurRadius: 24, offset: Offset(-4, 0))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black54,
+            blurRadius: 24,
+            offset: Offset(-4, 0),
+          ),
+        ],
       ),
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF0284C7)))
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFF0284C7)),
+            )
           : _applicant == null
-              ? Center(child: Text(_errorMsg ?? 'Postulante no encontrado', style: const TextStyle(color: Colors.white)))
-              : Column(
-                  children: [
-                    _buildHeader(),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // 1. Fase 1: Datos del postulante (Siempre visible)
-                            _buildSectionFase1Personal(),
-                            const SizedBox(height: 12),
-
-                            // 2. Fase 2: Evaluación completa (Colapsable)
-                            _buildSectionFase2Evaluation(),
-                            const SizedBox(height: 12),
-
-                            // 3. Fase 3: Documentos requeridos (Colapsable con checkboxes)
-                            _buildSectionFase3Documents(),
-                            const SizedBox(height: 12),
-
-                            // 4. Registro de Entrevista (Visible si ENTREVISTA, PRUEBAS, SELECCIONADO, RECHAZADO)
-                            if (_shouldShowInterviewSection) ...[
-                              _buildSectionInterview(),
-                              const SizedBox(height: 12),
-                            ],
-
-                            // 5. Historial de transiciones y postulaciones anteriores
-                            _buildSectionTimelineAndPast(),
-                          ],
-                        ),
-                      ),
+          ? Center(
+              child: Text(
+                _errorMsg ?? 'Postulante no encontrado',
+                style: const TextStyle(color: Colors.white),
+              ),
+            )
+          : Column(
+              children: [
+                _buildHeader(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 14,
                     ),
-                    _buildBottomBar(),
-                  ],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 1. Fase 1: Datos del postulante (Siempre visible)
+                        _buildSectionFase1Personal(),
+                        const SizedBox(height: 12),
+
+                        // 2. Fase 2: Evaluación completa (Colapsable)
+                        _buildSectionFase2Evaluation(),
+                        const SizedBox(height: 12),
+
+                        // 3. Fase 3: Documentos requeridos (Colapsable con checkboxes)
+                        _buildSectionFase3Documents(),
+                        const SizedBox(height: 12),
+
+                        // 4. Registro de Entrevista (Visible si ENTREVISTA, PRUEBAS, SELECCIONADO, RECHAZADO)
+                        if (_shouldShowInterviewSection) ...[
+                          _buildSectionInterview(),
+                          const SizedBox(height: 12),
+                        ],
+
+                        // 5. Historial de transiciones y postulaciones anteriores
+                        _buildSectionTimelineAndPast(),
+                      ],
+                    ),
+                  ),
                 ),
+                _buildBottomBar(),
+              ],
+            ),
     );
   }
 
   bool get _shouldShowInterviewSection {
     final st = _applicant?.status.toUpperCase() ?? '';
-    return st == 'ENTREVISTA' || st == 'PRUEBAS' || st == 'SELECCIONADO' || st == 'RECHAZADO' || st == 'CONTRATADO';
+    return st == 'ENTREVISTA' ||
+        st == 'PRUEBAS' ||
+        st == 'SELECCIONADO' ||
+        st == 'RECHAZADO' ||
+        st == 'CONTRATADO';
   }
 
   Widget _buildHeader() {
@@ -383,7 +444,10 @@ class _RrhhRecruitmentApplicantDrawerState
                     _statusBadge(a.status),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF1E293B),
                         borderRadius: BorderRadius.circular(4),
@@ -437,7 +501,14 @@ class _RrhhRecruitmentApplicantDrawerState
     int? age;
     if (a.birthDate != null) {
       final now = DateTime.now();
-      age = now.year - a.birthDate!.year - ((now.month < a.birthDate!.month || (now.month == a.birthDate!.month && now.day < a.birthDate!.day)) ? 1 : 0);
+      age =
+          now.year -
+          a.birthDate!.year -
+          ((now.month < a.birthDate!.month ||
+                  (now.month == a.birthDate!.month &&
+                      now.day < a.birthDate!.day))
+              ? 1
+              : 0);
     }
 
     return Container(
@@ -456,7 +527,11 @@ class _RrhhRecruitmentApplicantDrawerState
             children: [
               Row(
                 children: [
-                  const Icon(Icons.badge_outlined, color: Color(0xFF38BDF8), size: 16),
+                  const Icon(
+                    Icons.badge_outlined,
+                    color: Color(0xFF38BDF8),
+                    size: 16,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'FASE 1: DATOS GENERALES',
@@ -490,7 +565,10 @@ class _RrhhRecruitmentApplicantDrawerState
           _itemRow('Cédula de Identidad', a.identityCard, isLocked: true),
           _itemRow('Teléfono / Celular', a.phone),
           _itemRow('Correo Electrónico', a.email ?? 'No registrado'),
-          _itemRow('Fecha Nacimiento', '$b ${age != null ? "($age años)" : ""}'),
+          _itemRow(
+            'Fecha Nacimiento',
+            '$b ${age != null ? "($age años)" : ""}',
+          ),
           _itemRow('Área Aspirada', a.targetArea ?? 'No asignada'),
           _itemRow('Especialidad', a.specialty ?? 'General'),
         ],
@@ -513,7 +591,9 @@ class _RrhhRecruitmentApplicantDrawerState
         color: const Color(0xFF0D111C),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: isComplete ? const Color(0xFF10B981).withValues(alpha: 0.4) : const Color(0xFF1E293B),
+          color: isComplete
+              ? const Color(0xFF10B981).withValues(alpha: 0.4)
+              : const Color(0xFF1E293B),
         ),
       ),
       child: Column(
@@ -526,7 +606,9 @@ class _RrhhRecruitmentApplicantDrawerState
               child: Row(
                 children: [
                   Icon(
-                    isCampo ? Icons.fact_check_outlined : Icons.assignment_outlined,
+                    isCampo
+                        ? Icons.fact_check_outlined
+                        : Icons.assignment_outlined,
                     color: const Color(0xFF818CF8),
                     size: 16,
                   ),
@@ -543,9 +625,16 @@ class _RrhhRecruitmentApplicantDrawerState
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
-                      color: (isComplete ? const Color(0xFF10B981) : const Color(0xFFF59E0B)).withValues(alpha: 0.15),
+                      color:
+                          (isComplete
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFFF59E0B))
+                              .withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -553,13 +642,17 @@ class _RrhhRecruitmentApplicantDrawerState
                       style: GoogleFonts.inter(
                         fontSize: 9.5,
                         fontWeight: FontWeight.w700,
-                        color: isComplete ? const Color(0xFF10B981) : const Color(0xFFF59E0B),
+                        color: isComplete
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFFF59E0B),
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Icon(
-                    _expandFase2 ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    _expandFase2
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
                     color: const Color(0xFF64748B),
                     size: 18,
                   ),
@@ -575,24 +668,74 @@ class _RrhhRecruitmentApplicantDrawerState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (isCampo) ...[
-                    _itemRow('Formación / Educación', comp.evaluation.education ?? 'Sin registrar'),
-                    _itemRow('Exp. Operativa', comp.evaluation.experienceSummary ?? 'Sin registrar'),
-                    _itemRow('Habilidades', comp.evaluation.technicalSkills.isEmpty ? 'Ninguna' : comp.evaluation.technicalSkills.join(', ')),
-                    _itemRow('Turnos Rotativos', comp.evaluation.rotatingShiftsAvailable ? 'Disponible ✓' : 'No disponible ✗'),
-                    _itemRow('Sedes Externas', comp.evaluation.clientBranchesAvailable ? 'Disponible ✓' : 'No disponible ✗'),
-                    _itemRow('Aptitud Física', comp.evaluation.physicalFitnessDeclared ? 'Apto declarado ✓' : 'Pendiente ✗'),
+                    _itemRow(
+                      'Formación / Educación',
+                      comp.evaluation.education ?? 'Sin registrar',
+                    ),
+                    _itemRow(
+                      'Exp. Operativa',
+                      comp.evaluation.experienceSummary ?? 'Sin registrar',
+                    ),
+                    _itemRow(
+                      'Habilidades',
+                      comp.evaluation.technicalSkills.isEmpty
+                          ? 'Ninguna'
+                          : comp.evaluation.technicalSkills.join(', '),
+                    ),
+                    _itemRow(
+                      'Turnos Rotativos',
+                      comp.evaluation.rotatingShiftsAvailable
+                          ? 'Disponible ✓'
+                          : 'No disponible ✗',
+                    ),
+                    _itemRow(
+                      'Sedes Externas',
+                      comp.evaluation.clientBranchesAvailable
+                          ? 'Disponible ✓'
+                          : 'No disponible ✗',
+                    ),
+                    _itemRow(
+                      'Aptitud Física',
+                      comp.evaluation.physicalFitnessDeclared
+                          ? 'Apto declarado ✓'
+                          : 'Pendiente ✗',
+                    ),
                     if (comp.evaluation.drivingLicense != null)
-                      _itemRow('Licencia Conducir', comp.evaluation.drivingLicense!),
+                      _itemRow(
+                        'Licencia Conducir',
+                        comp.evaluation.drivingLicense!,
+                      ),
                   ] else ...[
-                    _itemRow('Nivel Educativo', comp.evaluation.educationLevel ?? 'Sin registrar'),
+                    _itemRow(
+                      'Nivel Educativo',
+                      comp.evaluation.educationLevel ?? 'Sin registrar',
+                    ),
                     if (comp.evaluation.professionalTitle != null)
-                      _itemRow('Título Profesional', comp.evaluation.professionalTitle!),
-                    _itemRow('Exp. Administrativa', comp.evaluation.experienceSummary ?? 'Sin registrar'),
-                    _itemRow('Competencias', comp.evaluation.technicalSkills.isEmpty ? 'Ninguna' : comp.evaluation.technicalSkills.join(', ')),
+                      _itemRow(
+                        'Título Profesional',
+                        comp.evaluation.professionalTitle!,
+                      ),
+                    _itemRow(
+                      'Exp. Administrativa',
+                      comp.evaluation.experienceSummary ?? 'Sin registrar',
+                    ),
+                    _itemRow(
+                      'Competencias',
+                      comp.evaluation.technicalSkills.isEmpty
+                          ? 'Ninguna'
+                          : comp.evaluation.technicalSkills.join(', '),
+                    ),
                     if (comp.evaluation.professionalCertifications != null)
-                      _itemRow('Certificaciones', comp.evaluation.professionalCertifications!),
-                    if (comp.evaluation.salaryExpectation != null && comp.evaluation.salaryExpectation! > 0)
-                      _itemRow('Pretensión Salarial', 'Bs. ${comp.evaluation.salaryExpectation!.toStringAsFixed(0)}'),
+                      _itemRow(
+                        'Certificaciones',
+                        comp.evaluation.professionalCertifications!,
+                      ),
+                    if (comp.evaluation.salaryExpectation != null &&
+                        comp.evaluation.salaryExpectation! > 0)
+                      _itemRow(
+                        'Pretensión Salarial',
+                        'Bs. ${comp.evaluation.salaryExpectation!.toStringAsFixed(0)}',
+                      ),
                   ],
 
                   const SizedBox(height: 8),
@@ -616,13 +759,21 @@ class _RrhhRecruitmentApplicantDrawerState
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF38BDF8),
                         side: const BorderSide(color: Color(0xFF0284C7)),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                       ),
                       onPressed: _handleEditEvaluation,
                       icon: const Icon(Icons.edit_note, size: 16),
                       label: Text(
-                        isComplete ? 'Modificar Evaluación' : 'Completar Fase 2',
-                        style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600),
+                        isComplete
+                            ? 'Modificar Evaluación'
+                            : 'Completar Fase 2',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -652,7 +803,9 @@ class _RrhhRecruitmentApplicantDrawerState
         color: const Color(0xFF0D111C),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: isComplete ? const Color(0xFF10B981).withValues(alpha: 0.4) : const Color(0xFF1E293B),
+          color: isComplete
+              ? const Color(0xFF10B981).withValues(alpha: 0.4)
+              : const Color(0xFF1E293B),
         ),
       ),
       child: Column(
@@ -664,7 +817,11 @@ class _RrhhRecruitmentApplicantDrawerState
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Row(
                 children: [
-                  const Icon(Icons.folder_shared_outlined, color: Color(0xFFF59E0B), size: 16),
+                  const Icon(
+                    Icons.folder_shared_outlined,
+                    color: Color(0xFFF59E0B),
+                    size: 16,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -678,9 +835,16 @@ class _RrhhRecruitmentApplicantDrawerState
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
-                      color: (isComplete ? const Color(0xFF10B981) : const Color(0xFFF59E0B)).withValues(alpha: 0.15),
+                      color:
+                          (isComplete
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFFF59E0B))
+                              .withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -688,13 +852,17 @@ class _RrhhRecruitmentApplicantDrawerState
                       style: GoogleFonts.inter(
                         fontSize: 9.5,
                         fontWeight: FontWeight.w700,
-                        color: isComplete ? const Color(0xFF10B981) : const Color(0xFFF59E0B),
+                        color: isComplete
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFFF59E0B),
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Icon(
-                    _expandFase3 ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    _expandFase3
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
                     color: const Color(0xFF64748B),
                     size: 18,
                   ),
@@ -708,13 +876,35 @@ class _RrhhRecruitmentApplicantDrawerState
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               child: Column(
                 children: [
-                  _docCheckboxTile('Fotocopia Cédula de Identidad *', comp.documents.hasCiCopy, (v) => _handleDocumentToggle('CI', v)),
-                  _docCheckboxTile('Aviso de Cobranza Luz / Agua *', comp.documents.hasUtilityBill, (v) => _handleDocumentToggle('AVISO_LUZ_AGUA', v)),
-                  _docCheckboxTile('Croquis Domiciliario Verificado *', comp.documents.hasHomeSketch, (v) => _handleDocumentToggle('CROQUIS', v)),
-                  _docCheckboxTile('Fotografía 3x4 Fondo Rojo *', comp.documents.hasPhoto3x4, (v) => _handleDocumentToggle('FOTO', v)),
-                  _docCheckboxTile('Constancia Afiliación SUS *', comp.documents.hasSus, (v) => _handleDocumentToggle('SUS', v)),
                   _docCheckboxTile(
-                    isCampo ? 'Certificado Antecedentes FELCC *' : 'Certificado FELCC (Condicional a Seguridad)',
+                    'Fotocopia Cédula de Identidad *',
+                    comp.documents.hasCiCopy,
+                    (v) => _handleDocumentToggle('CI', v),
+                  ),
+                  _docCheckboxTile(
+                    'Aviso de Cobranza Luz / Agua *',
+                    comp.documents.hasUtilityBill,
+                    (v) => _handleDocumentToggle('AVISO_LUZ_AGUA', v),
+                  ),
+                  _docCheckboxTile(
+                    'Croquis Domiciliario Verificado *',
+                    comp.documents.hasHomeSketch,
+                    (v) => _handleDocumentToggle('CROQUIS', v),
+                  ),
+                  _docCheckboxTile(
+                    'Fotografía 3x4 Fondo Rojo *',
+                    comp.documents.hasPhoto3x4,
+                    (v) => _handleDocumentToggle('FOTO', v),
+                  ),
+                  _docCheckboxTile(
+                    'Constancia Afiliación SUS *',
+                    comp.documents.hasSus,
+                    (v) => _handleDocumentToggle('SUS', v),
+                  ),
+                  _docCheckboxTile(
+                    isCampo
+                        ? 'Certificado Antecedentes FELCC *'
+                        : 'Certificado FELCC (Condicional a Seguridad)',
                     comp.documents.hasFelcc,
                     (v) => _handleDocumentToggle('FELCC', v),
                     isRequired: isCampo,
@@ -728,7 +918,12 @@ class _RrhhRecruitmentApplicantDrawerState
     );
   }
 
-  Widget _docCheckboxTile(String title, bool value, ValueChanged<bool> onChanged, {bool isRequired = true}) {
+  Widget _docCheckboxTile(
+    String title,
+    bool value,
+    ValueChanged<bool> onChanged, {
+    bool isRequired = true,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: InkWell(
@@ -737,7 +932,9 @@ class _RrhhRecruitmentApplicantDrawerState
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: value ? const Color(0xFF10B981).withValues(alpha: 0.08) : Colors.transparent,
+            color: value
+                ? const Color(0xFF10B981).withValues(alpha: 0.08)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
           ),
           child: Row(
@@ -766,7 +963,9 @@ class _RrhhRecruitmentApplicantDrawerState
               Icon(
                 value ? Icons.check_circle : Icons.radio_button_unchecked,
                 size: 15,
-                color: value ? const Color(0xFF10B981) : const Color(0xFF475569),
+                color: value
+                    ? const Color(0xFF10B981)
+                    : const Color(0xFF475569),
               ),
             ],
           ),
@@ -798,7 +997,11 @@ class _RrhhRecruitmentApplicantDrawerState
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Row(
                 children: [
-                  const Icon(Icons.record_voice_over_outlined, color: Color(0xFFA855F7), size: 16),
+                  const Icon(
+                    Icons.record_voice_over_outlined,
+                    color: Color(0xFFA855F7),
+                    size: 16,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -815,16 +1018,27 @@ class _RrhhRecruitmentApplicantDrawerState
                     _interviewResultBadge(rec.result)
                   else
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF64748B).withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: Text('SIN REGISTRO', style: GoogleFonts.inter(fontSize: 9.5, color: const Color(0xFF94A3B8))),
+                      child: Text(
+                        'SIN REGISTRO',
+                        style: GoogleFonts.inter(
+                          fontSize: 9.5,
+                          color: const Color(0xFF94A3B8),
+                        ),
+                      ),
                     ),
                   const SizedBox(width: 8),
                   Icon(
-                    _expandInterview ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    _expandInterview
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
                     color: const Color(0xFF64748B),
                     size: 18,
                   ),
@@ -841,32 +1055,62 @@ class _RrhhRecruitmentApplicantDrawerState
                       children: [
                         Text(
                           'Aún no se ha asentado el registro formal de la entrevista.',
-                          style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8), fontStyle: FontStyle.italic),
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: const Color(0xFF94A3B8),
+                            fontStyle: FontStyle.italic,
+                          ),
                         ),
                         const SizedBox(height: 10),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF0284C7),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 8,
+                            ),
                           ),
                           onPressed: _handleInterviewRecord,
-                          icon: const Icon(Icons.add_comment_outlined, size: 15),
-                          label: Text('Registrar Entrevista', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600)),
+                          icon: const Icon(
+                            Icons.add_comment_outlined,
+                            size: 15,
+                          ),
+                          label: Text(
+                            'Registrar Entrevista',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ],
                     )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _itemRow('Fecha y Hora', '${rec.dateTime.day}/${rec.dateTime.month}/${rec.dateTime.year} — ${rec.dateTime.hour.toString().padLeft(2, '0')}:${rec.dateTime.minute.toString().padLeft(2, '0')}'),
+                        _itemRow(
+                          'Fecha y Hora',
+                          '${rec.dateTime.day}/${rec.dateTime.month}/${rec.dateTime.year} — ${rec.dateTime.hour.toString().padLeft(2, '0')}:${rec.dateTime.minute.toString().padLeft(2, '0')}',
+                        ),
                         _itemRow('Modalidad', rec.modality),
-                        _itemRow('Entrevistadores', rec.interviewers.join(', ')),
+                        _itemRow(
+                          'Entrevistadores',
+                          rec.interviewers.join(', '),
+                        ),
                         _itemRow('Resultado', rec.result),
-                        if (rec.rejectionReason != null && rec.rejectionReason!.isNotEmpty)
+                        if (rec.rejectionReason != null &&
+                            rec.rejectionReason!.isNotEmpty)
                           _itemRow('Motivo No Apto', rec.rejectionReason!),
                         const SizedBox(height: 6),
-                        Text('Conclusiones & Notas:', style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFF94A3B8), fontWeight: FontWeight.w600)),
+                        Text(
+                          'Conclusiones & Notas:',
+                          style: GoogleFonts.inter(
+                            fontSize: 10.5,
+                            color: const Color(0xFF94A3B8),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         const SizedBox(height: 4),
                         Container(
                           width: double.infinity,
@@ -875,7 +1119,13 @@ class _RrhhRecruitmentApplicantDrawerState
                             color: const Color(0xFF1E293B),
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: Text(rec.notes, style: GoogleFonts.inter(fontSize: 11.5, color: Colors.white)),
+                          child: Text(
+                            rec.notes,
+                            style: GoogleFonts.inter(
+                              fontSize: 11.5,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 10),
                         Align(
@@ -884,11 +1134,17 @@ class _RrhhRecruitmentApplicantDrawerState
                             style: OutlinedButton.styleFrom(
                               foregroundColor: const Color(0xFF38BDF8),
                               side: const BorderSide(color: Color(0xFF0284C7)),
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
                             ),
                             onPressed: _handleInterviewRecord,
                             icon: const Icon(Icons.edit, size: 14),
-                            label: Text('Editar Registro', style: GoogleFonts.inter(fontSize: 11)),
+                            label: Text(
+                              'Editar Registro',
+                              style: GoogleFonts.inter(fontSize: 11),
+                            ),
                           ),
                         ),
                       ],
@@ -922,7 +1178,11 @@ class _RrhhRecruitmentApplicantDrawerState
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Row(
                 children: [
-                  const Icon(Icons.history_outlined, color: Color(0xFF94A3B8), size: 16),
+                  const Icon(
+                    Icons.history_outlined,
+                    color: Color(0xFF94A3B8),
+                    size: 16,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -937,11 +1197,16 @@ class _RrhhRecruitmentApplicantDrawerState
                   ),
                   Text(
                     '${comp.history.length} eventos',
-                    style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B)),
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: const Color(0xFF64748B),
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Icon(
-                    _expandHistory ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    _expandHistory
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
                     color: const Color(0xFF64748B),
                     size: 18,
                   ),
@@ -957,7 +1222,9 @@ class _RrhhRecruitmentApplicantDrawerState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Línea de tiempo
-                  ...comp.history.reversed.map((entry) => _buildTimelineEntry(entry)),
+                  ...comp.history.reversed.map(
+                    (entry) => _buildTimelineEntry(entry),
+                  ),
 
                   // Postulaciones previas (CAMBIO 9)
                   if (_previousApplicants.isNotEmpty) ...[
@@ -974,36 +1241,55 @@ class _RrhhRecruitmentApplicantDrawerState
                       ),
                     ),
                     const SizedBox(height: 8),
-                    ..._previousApplicants.map((prev) => Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1E293B),
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: const Color(0xFF334155)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    '${prev.code} • ${prev.applicationDate.day}/${prev.applicationDate.month}/${prev.applicationDate.year}',
-                                    style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w700, color: Colors.white),
+                    ..._previousApplicants.map(
+                      (prev) => Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E293B),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: const Color(0xFF334155)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '${prev.code} • ${prev.applicationDate.day}/${prev.applicationDate.month}/${prev.applicationDate.year}',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
                                   ),
-                                  _statusBadge(prev.status),
-                                ],
-                              ),
-                              const SizedBox(height: 3),
-                              Text('${prev.targetPosition} (${prev.targetType})', style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF94A3B8))),
-                              if (prev.discardReason != null && prev.discardReason!.isNotEmpty) ...[
-                                const SizedBox(height: 4),
-                                Text('Motivo: ${prev.discardReason}', style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFFFCA5A5))),
+                                ),
+                                _statusBadge(prev.status),
                               ],
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              '${prev.targetPosition} (${prev.targetType})',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: const Color(0xFF94A3B8),
+                              ),
+                            ),
+                            if (prev.discardReason != null &&
+                                prev.discardReason!.isNotEmpty) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                'Motivo: ${prev.discardReason}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10.5,
+                                  color: const Color(0xFFFCA5A5),
+                                ),
+                              ),
                             ],
-                          ),
-                        )),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ],
               ),
@@ -1047,22 +1333,36 @@ class _RrhhRecruitmentApplicantDrawerState
                   children: [
                     Text(
                       '${entry.fromStatus} → ${entry.toStatus}',
-                      style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w700, color: Colors.white),
+                      style: GoogleFonts.inter(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
                     ),
                     Text(
                       '${entry.timestamp.day}/${entry.timestamp.month} ${entry.timestamp.hour.toString().padLeft(2, '0')}:${entry.timestamp.minute.toString().padLeft(2, '0')}',
-                      style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF64748B)),
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        color: const Color(0xFF64748B),
+                      ),
                     ),
                   ],
                 ),
                 Text(
                   'Por: ${entry.author}',
-                  style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFF94A3B8)),
+                  style: GoogleFonts.inter(
+                    fontSize: 10.5,
+                    color: const Color(0xFF94A3B8),
+                  ),
                 ),
                 if (entry.notes != null && entry.notes!.isNotEmpty)
                   Text(
                     entry.notes!,
-                    style: GoogleFonts.inter(fontSize: 10.5, color: const Color(0xFFCBD5E1), fontStyle: FontStyle.italic),
+                    style: GoogleFonts.inter(
+                      fontSize: 10.5,
+                      color: const Color(0xFFCBD5E1),
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
               ],
             ),
@@ -1099,9 +1399,17 @@ class _RrhhRecruitmentApplicantDrawerState
                       foregroundColor: const Color(0xFFEF4444),
                       side: const BorderSide(color: Color(0xFFEF4444)),
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                    child: Text('Rechazar', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'Rechazar',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -1112,14 +1420,24 @@ class _RrhhRecruitmentApplicantDrawerState
                 Expanded(
                   flex: 2,
                   child: ElevatedButton(
-                    onPressed: _isActionRunning ? null : () => _changeStatus('EN_REVISION'),
+                    onPressed: _isActionRunning
+                        ? null
+                        : () => _changeStatus('EN_REVISION'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF818CF8),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                    child: Text('Avanzar a Revisión', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'Avanzar a Revisión',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
 
@@ -1127,41 +1445,71 @@ class _RrhhRecruitmentApplicantDrawerState
                 Expanded(
                   flex: 2,
                   child: ElevatedButton(
-                    onPressed: _isActionRunning ? null : () => _changeStatus('ENTREVISTA'),
+                    onPressed: _isActionRunning
+                        ? null
+                        : () => _changeStatus('ENTREVISTA'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFF59E0B),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                    child: Text('Avanzar a Entrevista', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'Avanzar a Entrevista',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
 
               if (st == 'ENTREVISTA') ...[
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: _isActionRunning ? null : () => _changeStatus('PRUEBAS'),
+                    onPressed: _isActionRunning
+                        ? null
+                        : () => _changeStatus('PRUEBAS'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFFA855F7),
                       side: const BorderSide(color: Color(0xFFA855F7)),
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                    child: Text('A Pruebas', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'A Pruebas',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: _isActionRunning ? null : () => _changeStatus('SELECCIONADO'),
+                    onPressed: _isActionRunning
+                        ? null
+                        : () => _changeStatus('SELECCIONADO'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF10B981),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                    child: Text('Seleccionar', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'Seleccionar',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -1170,14 +1518,24 @@ class _RrhhRecruitmentApplicantDrawerState
                 Expanded(
                   flex: 2,
                   child: ElevatedButton(
-                    onPressed: _isActionRunning ? null : () => _changeStatus('SELECCIONADO'),
+                    onPressed: _isActionRunning
+                        ? null
+                        : () => _changeStatus('SELECCIONADO'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF10B981),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                    child: Text('Marcar como Seleccionado', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'Marcar como Seleccionado',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
 
@@ -1212,16 +1570,23 @@ class _RrhhRecruitmentApplicantDrawerState
                               );
                             } catch (e) {
                               if (mounted) {
-                                RrhhSnackBar.showError(context, 'Error al abrir expediente: $e');
+                                RrhhSnackBar.showError(
+                                  context,
+                                  'Error al abrir expediente: $e',
+                                );
                               }
                             } finally {
-                              if (mounted) setState(() => _isActionRunning = false);
+                              if (mounted)
+                                setState(() => _isActionRunning = false);
                             }
                           },
                     icon: const Icon(Icons.assignment_outlined, size: 16),
                     label: Text(
                       'Abrir Expediente de Contratación',
-                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2563EB),
@@ -1229,7 +1594,9 @@ class _RrhhRecruitmentApplicantDrawerState
                       disabledBackgroundColor: const Color(0xFF334155),
                       disabledForegroundColor: const Color(0xFF64748B),
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                 ),
@@ -1239,12 +1606,20 @@ class _RrhhRecruitmentApplicantDrawerState
                   child: ElevatedButton.icon(
                     onPressed: _isActionRunning ? null : _handleReactivate,
                     icon: const Icon(Icons.replay_outlined, size: 16),
-                    label: Text('Reactivar como nuevo POST', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
+                    label: Text(
+                      'Reactivar como nuevo POST',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0284C7),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                 ),
@@ -1256,12 +1631,18 @@ class _RrhhRecruitmentApplicantDrawerState
                     decoration: BoxDecoration(
                       color: const Color(0xFF10B981).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                      ),
                     ),
                     alignment: Alignment.center,
                     child: Text(
                       'Colaborador Contratado (En Nómina Activa)',
-                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF10B981)),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF10B981),
+                      ),
                     ),
                   ),
                 ),
@@ -1285,12 +1666,20 @@ class _RrhhRecruitmentApplicantDrawerState
                 if (isLocked)
                   const Padding(
                     padding: EdgeInsets.only(right: 4),
-                    child: Icon(Icons.lock_outline, size: 11, color: Color(0xFFF59E0B)),
+                    child: Icon(
+                      Icons.lock_outline,
+                      size: 11,
+                      color: Color(0xFFF59E0B),
+                    ),
                   ),
                 Expanded(
                   child: Text(
                     label,
-                    style: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 11, fontWeight: FontWeight.w500),
+                    style: GoogleFonts.inter(
+                      color: const Color(0xFF94A3B8),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
@@ -1299,7 +1688,11 @@ class _RrhhRecruitmentApplicantDrawerState
           Expanded(
             child: Text(
               value,
-              style: GoogleFonts.inter(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -1342,7 +1735,11 @@ class _RrhhRecruitmentApplicantDrawerState
       ),
       child: Text(
         status.toUpperCase(),
-        style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: color),
+        style: GoogleFonts.inter(
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
       ),
     );
   }
@@ -1360,7 +1757,11 @@ class _RrhhRecruitmentApplicantDrawerState
       ),
       child: Text(
         result.toUpperCase(),
-        style: GoogleFonts.inter(fontSize: 9.5, fontWeight: FontWeight.w700, color: c),
+        style: GoogleFonts.inter(
+          fontSize: 9.5,
+          fontWeight: FontWeight.w700,
+          color: c,
+        ),
       ),
     );
   }

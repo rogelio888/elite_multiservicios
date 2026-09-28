@@ -84,9 +84,11 @@ class _RrhhVacationsViewState extends State<RrhhVacationsView>
   // Métricas calculadas para el Panel de Resumen (4 Cards)
   int get _employeesWithAvailableBalance {
     return _balances
-        .where((b) =>
-            b.pendingDays > 0 &&
-            b.balanceStatus != RrhhVacationBalanceStatus.sinDerecho)
+        .where(
+          (b) =>
+              b.pendingDays > 0 &&
+              b.balanceStatus != RrhhVacationBalanceStatus.sinDerecho,
+        )
         .length;
   }
 

@@ -248,7 +248,8 @@ class _RrhhContractModificationDialogState
 
   bool get _isStep1Valid {
     if (_selectedReason == null) return false;
-    if (_selectedReason == 'Otro' && _otherReasonController.text.trim().isEmpty) {
+    if (_selectedReason == 'Otro' &&
+        _otherReasonController.text.trim().isEmpty) {
       return false;
     }
     if (_justificationController.text.trim().length < 20) return false;
@@ -264,7 +265,8 @@ class _RrhhContractModificationDialogState
     final repo = RrhhRepository.current;
     final emp = widget.employee;
 
-    final newSalary = double.tryParse(_salaryController.text.trim()) ??
+    final newSalary =
+        double.tryParse(_salaryController.text.trim()) ??
         emp.agreedSalary ??
         0.0;
     final newFullName = _fullNameController.text.trim();
@@ -333,12 +335,17 @@ class _RrhhContractModificationDialogState
         _selectedShiftId != emp.shiftId?.toString()) {
       diffLines.add('• Turno asignado actualizado (ID: $_selectedShiftId)');
     }
-    if (newBaseLocation.isNotEmpty && newBaseLocation != (emp.baseLocation ?? emp.workplace)) {
-      diffLines.add('• Sede base: ${emp.baseLocation ?? emp.workplace} → $newBaseLocation');
+    if (newBaseLocation.isNotEmpty &&
+        newBaseLocation != (emp.baseLocation ?? emp.workplace)) {
+      diffLines.add(
+        '• Sede base: ${emp.baseLocation ?? emp.workplace} → $newBaseLocation',
+      );
     }
     if (_selectedSupervisorId != null &&
         _selectedSupervisorId != emp.supervisorEmployeeId?.toString()) {
-      diffLines.add('• Supervisor directo: ${emp.supervisor} → ${supervisorObj.fullName}');
+      diffLines.add(
+        '• Supervisor directo: ${emp.supervisor} → ${supervisorObj.fullName}',
+      );
     }
     if (newFullName != emp.fullName) {
       diffLines.add('• Nombre: ${emp.fullName} → $newFullName');
@@ -363,8 +370,12 @@ class _RrhhContractModificationDialogState
         position: posObj.name,
         positionId: int.tryParse(_selectedPositionId ?? ''),
         shiftId: _selectedShiftId,
-        baseLocation: newBaseLocation.isNotEmpty ? newBaseLocation : emp.baseLocation,
-        supervisor: _selectedSupervisorId != null ? supervisorObj.fullName : emp.supervisor,
+        baseLocation: newBaseLocation.isNotEmpty
+            ? newBaseLocation
+            : emp.baseLocation,
+        supervisor: _selectedSupervisorId != null
+            ? supervisorObj.fullName
+            : emp.supervisor,
         supervisorEmployeeId: _selectedSupervisorId,
         updatedAt: DateTime.now(),
       );
@@ -384,7 +395,9 @@ class _RrhhContractModificationDialogState
       descBuffer.writeln(
         'Cambio contractual — Motivo: $effectiveReason — $formattedEffective por $userName',
       );
-      descBuffer.writeln('Justificación: ${_justificationController.text.trim()}');
+      descBuffer.writeln(
+        'Justificación: ${_justificationController.text.trim()}',
+      );
       if (diffLines.isNotEmpty) {
         descBuffer.writeln('Modificaciones registradas:');
         for (final line in diffLines) {
@@ -453,13 +466,14 @@ class _RrhhContractModificationDialogState
               child: _isLoadingCatalogs
                   ? const Center(
                       child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Color(0xFF2563EB)),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFF2563EB),
+                        ),
                       ),
                     )
                   : (_currentStep == 1
-                      ? _buildStep1Justification()
-                      : _buildStep2Form()),
+                        ? _buildStep1Justification()
+                        : _buildStep2Form()),
             ),
             const Divider(height: 1, color: Color(0xFF1E293B)),
             _buildFooter(),
@@ -518,8 +532,7 @@ class _RrhhContractModificationDialogState
                         color: const Color(0xFF2563EB).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(4),
                         border: Border.all(
-                          color:
-                              const Color(0xFF2563EB).withValues(alpha: 0.4),
+                          color: const Color(0xFF2563EB).withValues(alpha: 0.4),
                         ),
                       ),
                       child: Text(
@@ -618,13 +631,18 @@ class _RrhhContractModificationDialogState
             hint: Text(
               'Seleccionar motivo del cambio',
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF64748B)),
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: const Color(0xFF64748B),
+              ),
             ),
             items: _reasonOptions
-                .map((r) => DropdownMenuItem(
-                      value: r,
-                      child: Text(r, overflow: TextOverflow.ellipsis),
-                    ))
+                .map(
+                  (r) => DropdownMenuItem(
+                    value: r,
+                    child: Text(r, overflow: TextOverflow.ellipsis),
+                  ),
+                )
                 .toList(),
             onChanged: (val) => setState(() => _selectedReason = val),
             dropdownColor: const Color(0xFF1E293B),
@@ -792,8 +810,11 @@ class _RrhhContractModificationDialogState
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.attach_file,
-                      size: 16, color: Color(0xFF38BDF8)),
+                  const Icon(
+                    Icons.attach_file,
+                    size: 16,
+                    color: Color(0xFF38BDF8),
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -807,7 +828,11 @@ class _RrhhContractModificationDialogState
                   IconButton(
                     onPressed: () =>
                         setState(() => _attachedDocumentName = null),
-                    icon: const Icon(Icons.close, size: 16, color: Color(0xFFEF4444)),
+                    icon: const Icon(
+                      Icons.close,
+                      size: 16,
+                      color: Color(0xFFEF4444),
+                    ),
                     tooltip: 'Quitar documento',
                     visualDensity: VisualDensity.compact,
                   ),
@@ -831,8 +856,10 @@ class _RrhhContractModificationDialogState
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF94A3B8),
                 side: const BorderSide(color: Color(0xFF334155)),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 11,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -874,8 +901,11 @@ class _RrhhContractModificationDialogState
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.info_outline,
-                              size: 14, color: Color(0xFF38BDF8)),
+                          const Icon(
+                            Icons.info_outline,
+                            size: 14,
+                            color: Color(0xFF38BDF8),
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             'Motivo: $effectiveReason',
@@ -963,7 +993,9 @@ class _RrhhContractModificationDialogState
                       label: 'Tipo de contrato *',
                       value: _contractType,
                       items: _contractTypeOptions
-                          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                          .map(
+                            (e) => DropdownMenuItem(value: e, child: Text(e)),
+                          )
                           .toList(),
                       onChanged: (val) {
                         if (val != null) setState(() => _contractType = val);
@@ -977,7 +1009,9 @@ class _RrhhContractModificationDialogState
                       label: 'Jornada laboral *',
                       value: _workdayType,
                       items: _workdayOptions
-                          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                          .map(
+                            (e) => DropdownMenuItem(value: e, child: Text(e)),
+                          )
                           .toList(),
                       onChanged: (val) {
                         if (val != null) setState(() => _workdayType = val);
@@ -1046,7 +1080,10 @@ class _RrhhContractModificationDialogState
                       label: 'Moneda',
                       value: _currency,
                       items: const [
-                        DropdownMenuItem(value: 'BOB', child: Text('BOB (Bs.)')),
+                        DropdownMenuItem(
+                          value: 'BOB',
+                          child: Text('BOB (Bs.)'),
+                        ),
                         DropdownMenuItem(value: 'USD', child: Text('USD (\$)')),
                       ],
                       onChanged: (val) {
@@ -1061,7 +1098,9 @@ class _RrhhContractModificationDialogState
                       label: 'Modalidad de pago',
                       value: _paymentModality,
                       items: _paymentModalityOptions
-                          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                          .map(
+                            (e) => DropdownMenuItem(value: e, child: Text(e)),
+                          )
                           .toList(),
                       onChanged: (val) {
                         if (val != null) setState(() => _paymentModality = val);
@@ -1134,11 +1173,14 @@ class _RrhhContractModificationDialogState
                           .map(
                             (s) => DropdownMenuItem(
                               value: s.id.toString(),
-                              child: Text('${s.name} (${s.startTime} - ${s.endTime})'),
+                              child: Text(
+                                '${s.name} (${s.startTime} - ${s.endTime})',
+                              ),
                             ),
                           )
                           .toList(),
-                      onChanged: (val) => setState(() => _selectedShiftId = val),
+                      onChanged: (val) =>
+                          setState(() => _selectedShiftId = val),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -1167,8 +1209,7 @@ class _RrhhContractModificationDialogState
                     ),
                   ),
                 ],
-                onChanged: (val) =>
-                    setState(() => _selectedSupervisorId = val),
+                onChanged: (val) => setState(() => _selectedSupervisorId = val),
               ),
             ],
           ),
@@ -1345,8 +1386,14 @@ class _RrhhContractModificationDialogState
     return InputDecoration(
       hintText: hint,
       prefixText: prefixText,
-      prefixStyle: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF38BDF8)),
-      hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+      prefixStyle: GoogleFonts.inter(
+        fontSize: 13,
+        color: const Color(0xFF38BDF8),
+      ),
+      hintStyle: GoogleFonts.inter(
+        fontSize: 12.5,
+        color: const Color(0xFF64748B),
+      ),
       filled: true,
       fillColor: const Color(0xFF0F172A),
       isDense: true,
@@ -1382,8 +1429,10 @@ class _RrhhContractModificationDialogState
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF94A3B8),
                 side: const BorderSide(color: Color(0xFF334155)),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 11,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -1414,8 +1463,10 @@ class _RrhhContractModificationDialogState
                 foregroundColor: Colors.white,
                 disabledBackgroundColor: const Color(0xFF1E293B),
                 disabledForegroundColor: const Color(0xFF475569),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 11),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 11,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -1423,7 +1474,9 @@ class _RrhhContractModificationDialogState
             ),
           ] else ...[
             OutlinedButton.icon(
-              onPressed: _isSaving ? null : () => setState(() => _currentStep = 1),
+              onPressed: _isSaving
+                  ? null
+                  : () => setState(() => _currentStep = 1),
               icon: const Icon(Icons.arrow_back, size: 15),
               label: Text(
                 'Atrás',
@@ -1435,8 +1488,10 @@ class _RrhhContractModificationDialogState
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF94A3B8),
                 side: const BorderSide(color: Color(0xFF334155)),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 11,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -1465,8 +1520,10 @@ class _RrhhContractModificationDialogState
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF10B981),
                 foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
+                  vertical: 11,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),

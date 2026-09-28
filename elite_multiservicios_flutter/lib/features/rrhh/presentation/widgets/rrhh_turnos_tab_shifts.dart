@@ -30,14 +30,26 @@ class _RrhhShiftTableWidths {
     required this.empleados,
     required this.estado,
     required this.acciones,
-  }) : total = codigo + nombre + horario + duracion + dias + tipo + empleados + estado + acciones;
+  }) : total =
+           codigo +
+           nombre +
+           horario +
+           duracion +
+           dias +
+           tipo +
+           empleados +
+           estado +
+           acciones;
 
   factory _RrhhShiftTableWidths.calculate(double availableWidth) {
-    const fixedWidth = 110.0 + 115.0 + 85.0 + 145.0 + 105.0 + 95.0 + 100.0 + 125.0; // 880.0
+    const fixedWidth =
+        110.0 + 115.0 + 85.0 + 145.0 + 105.0 + 95.0 + 100.0 + 125.0; // 880.0
     const minNombre = 180.0;
     const minTotal = fixedWidth + minNombre; // 1060.0
 
-    final effectiveWidth = availableWidth > minTotal ? availableWidth : minTotal;
+    final effectiveWidth = availableWidth > minTotal
+        ? availableWidth
+        : minTotal;
     final nombre = effectiveWidth - fixedWidth;
 
     return _RrhhShiftTableWidths(
@@ -153,11 +165,19 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
           ),
           title: Row(
             children: [
-              const Icon(Icons.warning_amber_rounded, color: Color(0xFFF59E0B), size: 22),
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: Color(0xFFF59E0B),
+                size: 22,
+              ),
               const SizedBox(width: 10),
               Text(
                 'Desactivar Turno',
-                style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
@@ -167,7 +187,10 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
             children: [
               Text(
                 '¿Está seguro de desactivar el turno "${shift.name}" (${shift.code})?',
-                style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFFCBD5E1)),
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: const Color(0xFFCBD5E1),
+                ),
               ),
               if (shift.assignedEmployeesCount > 0) ...[
                 const SizedBox(height: 12),
@@ -176,16 +199,25 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
                   decoration: BoxDecoration(
                     color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: const Color(0xFFF59E0B).withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.info_outline, size: 16, color: Color(0xFFF59E0B)),
+                      const Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: Color(0xFFF59E0B),
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Atención: Este turno cuenta con ${shift.assignedEmployeesCount} colaboradores asignados.',
-                          style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFFFDE68A)),
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: const Color(0xFFFDE68A),
+                          ),
                         ),
                       ),
                     ],
@@ -197,15 +229,23 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text('Cancelar', style: GoogleFonts.inter(color: const Color(0xFF94A3B8))),
+              child: Text(
+                'Cancelar',
+                style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+              ),
             ),
             FilledButton(
               onPressed: () => Navigator.of(ctx).pop(true),
               style: FilledButton.styleFrom(
                 backgroundColor: const Color(0xFFEF4444),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
               ),
-              child: Text('Desactivar', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+              child: Text(
+                'Desactivar',
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              ),
             ),
           ],
         ),
@@ -215,7 +255,10 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
     }
 
     try {
-      final updated = shift.copyWith(isActive: !shift.isActive, updatedAt: DateTime.now());
+      final updated = shift.copyWith(
+        isActive: !shift.isActive,
+        updatedAt: DateTime.now(),
+      );
       final saved = await RrhhRepository.current.updateShift(updated);
 
       setState(() {
@@ -250,7 +293,9 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
     final filtered = _shifts.where((s) {
       if (_statusFilter == 'ACTIVE' && !s.isActive) return false;
       if (_statusFilter == 'INACTIVE' && s.isActive) return false;
-      if (_typeFilter != 'ALL' && s.shiftType.toLowerCase() != _typeFilter.toLowerCase()) return false;
+      if (_typeFilter != 'ALL' &&
+          s.shiftType.toLowerCase() != _typeFilter.toLowerCase())
+        return false;
       if (_searchQuery.isEmpty) return true;
       final q = _searchQuery.toLowerCase();
       return s.name.toLowerCase().contains(q) ||
@@ -299,17 +344,20 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
                             padding: EdgeInsets.symmetric(vertical: 40),
                             child: RrhhEmptyState(
                               title: 'No se encontraron turnos de trabajo',
-                              description: 'Intente ajustando el término de búsqueda o los filtros de jornada/estado.',
+                              description:
+                                  'Intente ajustando el término de búsqueda o los filtros de jornada/estado.',
                               icon: Icons.schedule_outlined,
                             ),
                           )
                         else
-                          ...filtered.map((sh) => _RrhhShiftTableRow(
-                                shift: sh,
-                                widths: widths,
-                                onEdit: () => _openEditShift(sh),
-                                onToggleStatus: () => _toggleShiftStatus(sh),
-                              )),
+                          ...filtered.map(
+                            (sh) => _RrhhShiftTableRow(
+                              shift: sh,
+                              widths: widths,
+                              onEdit: () => _openEditShift(sh),
+                              onToggleStatus: () => _toggleShiftStatus(sh),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -319,7 +367,10 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
               if (!_isLoading && _shifts.isNotEmpty)
                 Text(
                   'Mostrando ${filtered.length} de $totalCount turnos de trabajo',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF64748B),
+                  ),
                 ),
             ],
           ),
@@ -342,7 +393,9 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
               style: GoogleFonts.inter(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                color: isDark
+                    ? const Color(0xFFF8FAFC)
+                    : const Color(0xFF0F172A),
                 letterSpacing: -0.3,
               ),
             ),
@@ -351,7 +404,9 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
               'Bloques horarios reutilizables para la programación de personal',
               style: GoogleFonts.inter(
                 fontSize: 12,
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -361,12 +416,17 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
           icon: const Icon(Icons.add_rounded, size: 16),
           label: Text(
             'Nuevo Turno',
-            style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
+            style: GoogleFonts.inter(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           style: FilledButton.styleFrom(
             backgroundColor: const Color(0xFF2563EB),
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
           ),
         ),
@@ -403,11 +463,22 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
                   style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Buscar turno...',
-                    hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12.5),
-                    prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF64748B)),
+                    hintStyle: GoogleFonts.inter(
+                      color: const Color(0xFF64748B),
+                      fontSize: 12.5,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      size: 18,
+                      color: Color(0xFF64748B),
+                    ),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.close, size: 16, color: Color(0xFF64748B)),
+                            icon: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Color(0xFF64748B),
+                            ),
                             onPressed: () {
                               _searchCtrl.clear();
                               setState(() => _searchQuery = '');
@@ -416,7 +487,10 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
                         : null,
                     filled: true,
                     fillColor: const Color(0xFF111827),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 0,
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(color: Color(0xFF1E293B)),
@@ -442,13 +516,32 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
                   child: DropdownButton<String>(
                     value: _typeFilter,
                     dropdownColor: const Color(0xFF0F172A),
-                    icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF94A3B8)),
-                    style: GoogleFonts.inter(color: Colors.white, fontSize: 12.5),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 18,
+                      color: Color(0xFF94A3B8),
+                    ),
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 12.5,
+                    ),
                     items: const [
-                      DropdownMenuItem(value: 'ALL', child: Text('Todas las jornadas')),
-                      DropdownMenuItem(value: 'Completa', child: Text('Completa')),
-                      DropdownMenuItem(value: 'Parcial', child: Text('Parcial')),
-                      DropdownMenuItem(value: 'Nocturna', child: Text('Nocturna')),
+                      DropdownMenuItem(
+                        value: 'ALL',
+                        child: Text('Todas las jornadas'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Completa',
+                        child: Text('Completa'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Parcial',
+                        child: Text('Parcial'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Nocturna',
+                        child: Text('Nocturna'),
+                      ),
                     ],
                     onChanged: (val) {
                       if (val != null) setState(() => _typeFilter = val);
@@ -483,10 +576,14 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2563EB).withValues(alpha: 0.15) : const Color(0xFF111827),
+          color: isSelected
+              ? const Color(0xFF2563EB).withValues(alpha: 0.15)
+              : const Color(0xFF111827),
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF1E293B),
+            color: isSelected
+                ? const Color(0xFF2563EB)
+                : const Color(0xFF1E293B),
           ),
         ),
         child: Text(
@@ -494,7 +591,9 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? const Color(0xFF60A5FA) : const Color(0xFF94A3B8),
+            color: isSelected
+                ? const Color(0xFF60A5FA)
+                : const Color(0xFF94A3B8),
           ),
         ),
       ),
@@ -527,7 +626,11 @@ class _RrhhTurnosTabShiftsState extends State<RrhhTurnosTabShifts> {
     );
   }
 
-  Widget _buildTh(String title, double width, {TextAlign align = TextAlign.left}) {
+  Widget _buildTh(
+    String title,
+    double width, {
+    TextAlign align = TextAlign.left,
+  }) {
     return SizedBox(
       width: width,
       child: Text(
@@ -614,7 +717,9 @@ class _RrhhShiftTableRowState extends State<_RrhhShiftTableRow> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: _isHovered ? const Color(0xFF131C2E) : Colors.transparent,
-          border: const Border(bottom: BorderSide(color: Color(0xFF1E293B), width: 0.8)),
+          border: const Border(
+            bottom: BorderSide(color: Color(0xFF1E293B), width: 0.8),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -657,9 +762,13 @@ class _RrhhShiftTableRowState extends State<_RrhhShiftTableRow> {
               child: Row(
                 children: [
                   Icon(
-                    s.isCrossMidnight ? Icons.nights_stay_outlined : Icons.access_time_rounded,
+                    s.isCrossMidnight
+                        ? Icons.nights_stay_outlined
+                        : Icons.access_time_rounded,
                     size: 13,
-                    color: s.isCrossMidnight ? const Color(0xFFF59E0B) : const Color(0xFF64748B),
+                    color: s.isCrossMidnight
+                        ? const Color(0xFFF59E0B)
+                        : const Color(0xFF64748B),
                   ),
                   const SizedBox(width: 5),
                   Expanded(
@@ -713,11 +822,17 @@ class _RrhhShiftTableRowState extends State<_RrhhShiftTableRow> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: typeColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: typeColor.withValues(alpha: 0.3), width: 0.8),
+                    border: Border.all(
+                      color: typeColor.withValues(alpha: 0.3),
+                      width: 0.8,
+                    ),
                   ),
                   child: Text(
                     s.shiftType.toUpperCase(),
@@ -738,7 +853,10 @@ class _RrhhShiftTableRowState extends State<_RrhhShiftTableRow> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E293B),
                     borderRadius: BorderRadius.circular(12),
@@ -761,9 +879,16 @@ class _RrhhShiftTableRowState extends State<_RrhhShiftTableRow> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
-                    color: (s.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B)).withValues(alpha: 0.15),
+                    color:
+                        (s.isActive
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFF64748B))
+                            .withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Row(
@@ -773,7 +898,9 @@ class _RrhhShiftTableRowState extends State<_RrhhShiftTableRow> {
                         width: 6,
                         height: 6,
                         decoration: BoxDecoration(
-                          color: s.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B),
+                          color: s.isActive
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFF64748B),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -783,7 +910,9 @@ class _RrhhShiftTableRowState extends State<_RrhhShiftTableRow> {
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                          color: s.isActive ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
+                          color: s.isActive
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFF94A3B8),
                         ),
                       ),
                     ],
@@ -802,13 +931,19 @@ class _RrhhShiftTableRowState extends State<_RrhhShiftTableRow> {
                     onPressed: widget.onEdit,
                     style: TextButton.styleFrom(
                       foregroundColor: const Color(0xFF60A5FA),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
                       'Editar',
-                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -816,7 +951,11 @@ class _RrhhShiftTableRowState extends State<_RrhhShiftTableRow> {
                     width: 24,
                     height: 24,
                     child: PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 15, color: Color(0xFF64748B)),
+                      icon: const Icon(
+                        Icons.more_vert,
+                        size: 15,
+                        color: Color(0xFF64748B),
+                      ),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       color: const Color(0xFF0F172A),
@@ -829,13 +968,19 @@ class _RrhhShiftTableRowState extends State<_RrhhShiftTableRow> {
                           child: Row(
                             children: [
                               Icon(
-                                s.isActive ? Icons.block_flipped : Icons.check_circle_outline,
+                                s.isActive
+                                    ? Icons.block_flipped
+                                    : Icons.check_circle_outline,
                                 size: 15,
-                                color: s.isActive ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                                color: s.isActive
+                                    ? const Color(0xFFEF4444)
+                                    : const Color(0xFF10B981),
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                s.isActive ? 'Desactivar Turno' : 'Activar Turno',
+                                s.isActive
+                                    ? 'Desactivar Turno'
+                                    : 'Activar Turno',
                                 style: GoogleFonts.inter(fontSize: 12.5),
                               ),
                             ],

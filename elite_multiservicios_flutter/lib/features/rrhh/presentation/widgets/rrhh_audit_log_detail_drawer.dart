@@ -20,7 +20,8 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
   });
 
   String _generateIntegrityHash(RrhhTimelineEvent e) {
-    final raw = '${e.id}-${e.date.toIso8601String()}-${e.registeredBy}-${e.title}-${e.category}';
+    final raw =
+        '${e.id}-${e.date.toIso8601String()}-${e.registeredBy}-${e.title}-${e.category}';
     final bytes = utf8.encode(raw);
     final digest = sha256.convert(bytes);
     return digest.toString().substring(0, 32);
@@ -39,7 +40,7 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
       'septiembre',
       'octubre',
       'noviembre',
-      'diciembre'
+      'diciembre',
     ];
     final day = date.day.toString().padLeft(2, '0');
     final month = months[date.month - 1];
@@ -53,8 +54,14 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final formattedFullDate = _formatFullDate(event.date);
 
-    final empName = event.employeeName ?? (event.employeeId > 0 ? 'Colaborador #${event.employeeId}' : 'General');
-    final empCode = event.employeeCode ?? (event.employeeId > 0 ? 'EMP-${event.employeeId.toString().padLeft(3, '0')}' : null);
+    final empName =
+        event.employeeName ??
+        (event.employeeId > 0 ? 'Colaborador #${event.employeeId}' : 'General');
+    final empCode =
+        event.employeeCode ??
+        (event.employeeId > 0
+            ? 'EMP-${event.employeeId.toString().padLeft(3, '0')}'
+            : null);
 
     final hash = _generateIntegrityHash(event);
 
@@ -105,11 +112,17 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 7,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: const Color(0xFF1E293B),
                               borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: const Color(0xFF334155), width: 0.8),
+                              border: Border.all(
+                                color: const Color(0xFF334155),
+                                width: 0.8,
+                              ),
                             ),
                             child: Text(
                               event.code,
@@ -135,7 +148,11 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: onClose,
-                  icon: const Icon(Icons.close_rounded, size: 20, color: Color(0xFF94A3B8)),
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    size: 20,
+                    color: Color(0xFF94A3B8),
+                  ),
                   tooltip: 'Cerrar detalle',
                   splashRadius: 18,
                 ),
@@ -155,37 +172,55 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
                   const SizedBox(height: 18),
 
                   // Sección 1: Datos del Evento
-                  _buildSectionHeader('1. DATOS DEL EVENTO', Icons.receipt_long_rounded),
+                  _buildSectionHeader(
+                    '1. DATOS DEL EVENTO',
+                    Icons.receipt_long_rounded,
+                  ),
                   const SizedBox(height: 10),
                   _buildEventCard(formattedFullDate),
                   const SizedBox(height: 18),
 
                   // Sección 2: Responsable / Usuario que hizo el cambio
-                  _buildSectionHeader('2. RESPONSABLE DE LA OPERACIÓN', Icons.badge_outlined),
+                  _buildSectionHeader(
+                    '2. RESPONSABLE DE LA OPERACIÓN',
+                    Icons.badge_outlined,
+                  ),
                   const SizedBox(height: 10),
                   _buildUserCard(),
                   const SizedBox(height: 18),
 
                   // Sección 3: Colaborador afectado
-                  _buildSectionHeader('3. COLABORADOR AFECTADO', Icons.person_outline_rounded),
+                  _buildSectionHeader(
+                    '3. COLABORADOR AFECTADO',
+                    Icons.person_outline_rounded,
+                  ),
                   const SizedBox(height: 10),
                   _buildEmployeeCard(context, empName, empCode),
                   const SizedBox(height: 18),
 
                   // Sección 4: Tabla de Cambios (Anterior / Nuevo)
-                  _buildSectionHeader('4. REGISTRO COMPARATIVO DE CAMBIOS', Icons.compare_arrows_rounded),
+                  _buildSectionHeader(
+                    '4. REGISTRO COMPARATIVO DE CAMBIOS',
+                    Icons.compare_arrows_rounded,
+                  ),
                   const SizedBox(height: 10),
                   _buildChangesCard(),
                   const SizedBox(height: 18),
 
                   // Sección 5: Documentos y Archivos Relacionados
-                  _buildSectionHeader('5. DOCUMENTOS Y CONSTANCIAS', Icons.attach_file_rounded),
+                  _buildSectionHeader(
+                    '5. DOCUMENTOS Y CONSTANCIAS',
+                    Icons.attach_file_rounded,
+                  ),
                   const SizedBox(height: 10),
                   _buildDocumentsCard(context),
                   const SizedBox(height: 18),
 
                   // Sección 6: Metadatos y Trazabilidad de Integridad
-                  _buildSectionHeader('6. INTEGRIDAD Y METADATOS TÉCNICOS', Icons.verified_user_outlined),
+                  _buildSectionHeader(
+                    '6. INTEGRIDAD Y METADATOS TÉCNICOS',
+                    Icons.verified_user_outlined,
+                  ),
                   const SizedBox(height: 10),
                   _buildMetadataCard(hash),
                   const SizedBox(height: 20),
@@ -204,7 +239,9 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B).withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF3B82F6).withValues(alpha: 0.4)),
+        border: Border.all(
+          color: const Color(0xFF3B82F6).withValues(alpha: 0.4),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,7 +252,11 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
               color: const Color(0xFF2563EB).withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.lock_clock_rounded, color: Color(0xFF60A5FA), size: 16),
+            child: const Icon(
+              Icons.lock_clock_rounded,
+              color: Color(0xFF60A5FA),
+              size: 16,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -283,7 +324,10 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
               RrhhAuditCategoryChip(category: event.category),
               if (event.sourceCode != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E293B),
                     borderRadius: BorderRadius.circular(4),
@@ -322,7 +366,11 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
           const SizedBox(height: 10),
           Row(
             children: [
-              const Icon(Icons.access_time_rounded, size: 13, color: Color(0xFF64748B)),
+              const Icon(
+                Icons.access_time_rounded,
+                size: 13,
+                color: Color(0xFF64748B),
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
@@ -382,7 +430,11 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.computer_outlined, size: 11, color: Color(0xFF64748B)),
+                      const Icon(
+                        Icons.computer_outlined,
+                        size: 11,
+                        color: Color(0xFF64748B),
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         'IP: ${event.ipAddress}',
@@ -402,7 +454,11 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildEmployeeCard(BuildContext context, String empName, String? empCode) {
+  Widget _buildEmployeeCard(
+    BuildContext context,
+    String empName,
+    String? empCode,
+  ) {
     final hasEmployee = event.employeeId > 0;
 
     return Container(
@@ -421,7 +477,11 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
               CircleAvatar(
                 radius: 16,
                 backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.2),
-                child: const Icon(Icons.badge_outlined, size: 16, color: Color(0xFF34D399)),
+                child: const Icon(
+                  Icons.badge_outlined,
+                  size: 16,
+                  color: Color(0xFF34D399),
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -454,10 +514,16 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
                   onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (ctx) => RrhhEmployeeDetailDialog(employeeId: event.employeeId),
+                      builder: (ctx) => RrhhEmployeeDetailDialog(
+                        employeeId: event.employeeId,
+                      ),
                     );
                   },
-                  icon: const Icon(Icons.open_in_new_rounded, size: 13, color: Color(0xFF60A5FA)),
+                  icon: const Icon(
+                    Icons.open_in_new_rounded,
+                    size: 13,
+                    color: Color(0xFF60A5FA),
+                  ),
                   label: Text(
                     'Expediente',
                     style: GoogleFonts.inter(
@@ -468,8 +534,13 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
                   ),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFF334155)),
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
                   ),
                 ),
               ],
@@ -494,7 +565,11 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.info_outline_rounded, size: 15, color: Color(0xFF64748B)),
+            const Icon(
+              Icons.info_outline_rounded,
+              size: 15,
+              color: Color(0xFF64748B),
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -529,7 +604,9 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
                 topLeft: Radius.circular(8),
                 topRight: Radius.circular(8),
               ),
-              border: Border(bottom: BorderSide(color: Color(0xFF1E293B), width: 1)),
+              border: Border(
+                bottom: BorderSide(color: Color(0xFF1E293B), width: 1),
+              ),
             ),
             child: Row(
               children: [
@@ -578,8 +655,17 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
               decoration: BoxDecoration(
-                color: idx.isEven ? const Color(0xFF0D111C) : const Color(0xFF0A0E1A),
-                border: isLast ? null : const Border(bottom: BorderSide(color: Color(0xFF1E293B), width: 0.8)),
+                color: idx.isEven
+                    ? const Color(0xFF0D111C)
+                    : const Color(0xFF0A0E1A),
+                border: isLast
+                    ? null
+                    : const Border(
+                        bottom: BorderSide(
+                          color: Color(0xFF1E293B),
+                          width: 0.8,
+                        ),
+                      ),
               ),
               child: Row(
                 children: [
@@ -601,7 +687,9 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         color: const Color(0xFFF87171),
-                        decoration: c.oldValue != null && c.oldValue != '—' ? TextDecoration.lineThrough : null,
+                        decoration: c.oldValue != null && c.oldValue != '—'
+                            ? TextDecoration.lineThrough
+                            : null,
                       ),
                     ),
                   ),
@@ -639,7 +727,11 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.attach_file_rounded, size: 15, color: Color(0xFF64748B)),
+            const Icon(
+              Icons.attach_file_rounded,
+              size: 15,
+              color: Color(0xFF64748B),
+            ),
             const SizedBox(width: 8),
             Text(
               'Sin documentos digitales adjuntos a este registro.',
@@ -674,7 +766,11 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.picture_as_pdf_outlined, color: Color(0xFFEF4444), size: 16),
+                const Icon(
+                  Icons.picture_as_pdf_outlined,
+                  color: Color(0xFFEF4444),
+                  size: 16,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -729,15 +825,27 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
           const SizedBox(height: 6),
           _buildMetaRow('Hash de Integridad (SHA-256)', hash, isMono: true),
           const SizedBox(height: 6),
-          _buildMetaRow('Creado en Servidor', DateFormat('dd/MM/yyyy HH:mm:ss').format(event.createdAt)),
+          _buildMetaRow(
+            'Creado en Servidor',
+            DateFormat('dd/MM/yyyy HH:mm:ss').format(event.createdAt),
+          ),
           const SizedBox(height: 6),
-          _buildMetaRow('Estado Auditoría', 'INMUTABLE · VERIFICADO', color: const Color(0xFF10B981)),
+          _buildMetaRow(
+            'Estado Auditoría',
+            'INMUTABLE · VERIFICADO',
+            color: const Color(0xFF10B981),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildMetaRow(String label, String value, {bool isMono = false, Color? color}) {
+  Widget _buildMetaRow(
+    String label,
+    String value, {
+    bool isMono = false,
+    Color? color,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

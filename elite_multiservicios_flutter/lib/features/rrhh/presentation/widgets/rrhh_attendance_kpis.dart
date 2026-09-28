@@ -14,12 +14,17 @@ class RrhhAttendanceKpis extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 1. Asistencias registradas (presentes o con tardanza)
-    final registeredCount = records.where((r) => r.isPresent || r.isLate).length;
+    final registeredCount = records
+        .where((r) => r.isPresent || r.isLate)
+        .length;
 
     // 2. Tardanzas y minutos acumulados
     final lateRecords = records.where((r) => r.isLate).toList();
     final lateCount = lateRecords.length;
-    final totalLateMinutes = lateRecords.fold<int>(0, (sum, r) => sum + (r.lateMinutes ?? 0));
+    final totalLateMinutes = lateRecords.fold<int>(
+      0,
+      (sum, r) => sum + (r.lateMinutes ?? 0),
+    );
 
     // 3. Ausencias (justificadas e injustificadas)
     final justifiedCount = records.where((r) => r.isJustified).length;
@@ -27,12 +32,17 @@ class RrhhAttendanceKpis extends StatelessWidget {
     final totalAbsences = justifiedCount + unjustifiedCount;
 
     // 4. Horas trabajadas totales
-    final totalHours = records.fold<double>(0.0, (sum, r) => sum + (r.workedHours ?? 0.0));
+    final totalHours = records.fold<double>(
+      0.0,
+      (sum, r) => sum + (r.workedHours ?? 0.0),
+    );
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final isNarrow = constraints.maxWidth < 900;
-        final cardWidth = isNarrow ? (constraints.maxWidth - 12) / 2 : (constraints.maxWidth - 36) / 4;
+        final cardWidth = isNarrow
+            ? (constraints.maxWidth - 12) / 2
+            : (constraints.maxWidth - 36) / 4;
 
         final cards = [
           _buildKpiCard(

@@ -19,7 +19,8 @@ class RrhhAttendanceRecordRow extends StatefulWidget {
   });
 
   @override
-  State<RrhhAttendanceRecordRow> createState() => _RrhhAttendanceRecordRowState();
+  State<RrhhAttendanceRecordRow> createState() =>
+      _RrhhAttendanceRecordRowState();
 }
 
 class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
@@ -52,7 +53,9 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
           decoration: BoxDecoration(
             color: _isHovered
                 ? const Color(0xFF1E293B).withValues(alpha: 0.6)
-                : (widget.isEven ? const Color(0xFF0F1523) : const Color(0xFF0D111C)),
+                : (widget.isEven
+                      ? const Color(0xFF0F1523)
+                      : const Color(0xFF0D111C)),
             border: const Border(
               bottom: BorderSide(color: Color(0xFF1E293B), width: 1),
             ),
@@ -81,7 +84,9 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
                   children: [
                     CircleAvatar(
                       radius: 14,
-                      backgroundColor: const Color(0xFF2563EB).withValues(alpha: 0.25),
+                      backgroundColor: const Color(
+                        0xFF2563EB,
+                      ).withValues(alpha: 0.25),
                       child: Text(
                         _getInitials(r.employeeName),
                         style: GoogleFonts.inter(
@@ -174,13 +179,18 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
                 flex: 9,
                 child: RichText(
                   text: TextSpan(
-                    style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF94A3B8)),
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      color: const Color(0xFF94A3B8),
+                    ),
                     children: [
                       TextSpan(text: '$entryProg / '),
                       TextSpan(
                         text: entryReal,
                         style: TextStyle(
-                          color: r.isLate ? const Color(0xFFFBBF24) : Colors.white,
+                          color: r.isLate
+                              ? const Color(0xFFFBBF24)
+                              : Colors.white,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -194,7 +204,10 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
                 flex: 9,
                 child: RichText(
                   text: TextSpan(
-                    style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF94A3B8)),
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      color: const Color(0xFF94A3B8),
+                    ),
                     children: [
                       TextSpan(text: '$exitProg / '),
                       TextSpan(
@@ -213,11 +226,15 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
               Expanded(
                 flex: 7,
                 child: Text(
-                  r.workedHours != null && r.workedHours! > 0 ? '${r.workedHours!.toStringAsFixed(1)}h' : '—',
+                  r.workedHours != null && r.workedHours! > 0
+                      ? '${r.workedHours!.toStringAsFixed(1)}h'
+                      : '—',
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: r.workedHours != null && r.workedHours! > 0 ? const Color(0xFF38BDF8) : const Color(0xFF64748B),
+                    color: r.workedHours != null && r.workedHours! > 0
+                        ? const Color(0xFF38BDF8)
+                        : const Color(0xFF64748B),
                   ),
                 ),
               ),
@@ -268,15 +285,24 @@ class _RrhhAttendanceRecordRowState extends State<RrhhAttendanceRecordRow> {
                   child: OutlinedButton(
                     onPressed: widget.onTap,
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       minimumSize: Size.zero,
                       side: const BorderSide(color: Color(0xFF334155)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.visibility_outlined, size: 12, color: Color(0xFF94A3B8)),
+                        const Icon(
+                          Icons.visibility_outlined,
+                          size: 12,
+                          color: Color(0xFF94A3B8),
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           'Ver',

@@ -9,7 +9,8 @@ class RrhhApplicantSummaryDto {
   final String targetType; // 'OFICINA' | 'CAMPO'
   final String targetPosition;
   final String specialty;
-  final String status; // 'NUEVO' | 'EN_EVALUACION' | 'SELECCIONADO' | 'RECHAZADO' | 'CONTRATADO'
+  final String
+  status; // 'NUEVO' | 'EN_EVALUACION' | 'SELECCIONADO' | 'RECHAZADO' | 'CONTRATADO'
   final DateTime applicationDate;
   final bool hasCv;
 

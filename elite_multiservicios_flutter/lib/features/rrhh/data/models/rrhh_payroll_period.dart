@@ -114,9 +114,13 @@ class RrhhPayrollPeriod {
       year: json['year'] as int,
       month: json['month'] as int,
       status: json['status'] as String,
-      closedAt: json['closedAt'] != null ? DateTime.parse(json['closedAt'] as String) : null,
+      closedAt: json['closedAt'] != null
+          ? DateTime.parse(json['closedAt'] as String)
+          : null,
       closedBy: json['closedBy'] as String?,
-      sentAt: json['sentAt'] != null ? DateTime.parse(json['sentAt'] as String) : null,
+      sentAt: json['sentAt'] != null
+          ? DateTime.parse(json['sentAt'] as String)
+          : null,
       sentBy: json['sentBy'] as String?,
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -157,7 +161,8 @@ class RrhhPayrollItem {
   final int employeeId;
   final String employeeCode;
   final String employeeName;
-  final String sourceType; // 'permiso' | 'vacacion' | 'incidencia' | 'desvinculacion'
+  final String
+  sourceType; // 'permiso' | 'vacacion' | 'incidencia' | 'desvinculacion'
   final int sourceId; // referencia al registro original
   final String sourceCode; // PERM-XXX, VAC-XXX, INC-XXX, BAJA-XXX
   final DateTime effectiveDate;
@@ -249,7 +254,9 @@ class RrhhPayrollItem {
       effectiveDate: DateTime.parse(json['effectiveDate'] as String),
       description: json['description'] as String,
       impactType: json['impactType'] as String,
-      impactAmount: json['impactAmount'] != null ? (json['impactAmount'] as num).toDouble() : null,
+      impactAmount: json['impactAmount'] != null
+          ? (json['impactAmount'] as num).toDouble()
+          : null,
       notes: json['notes'] as String?,
     );
   }
@@ -262,7 +269,12 @@ abstract class RrhhPayrollSourceType {
   static const String incidencia = 'incidencia';
   static const String desvinculacion = 'desvinculacion';
 
-  static const List<String> all = [permiso, vacacion, incidencia, desvinculacion];
+  static const List<String> all = [
+    permiso,
+    vacacion,
+    incidencia,
+    desvinculacion,
+  ];
 
   static String label(String type) {
     switch (type.toLowerCase()) {

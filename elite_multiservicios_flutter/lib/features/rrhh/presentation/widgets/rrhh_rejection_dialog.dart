@@ -80,7 +80,9 @@ class _RrhhRejectionDialogState extends State<RrhhRejectionDialog> {
     Navigator.of(context).pop(
       RrhhRejectionResult(
         reason: _selectedReason,
-        detail: _detailCtrl.text.trim().isEmpty ? null : _detailCtrl.text.trim(),
+        detail: _detailCtrl.text.trim().isEmpty
+            ? null
+            : _detailCtrl.text.trim(),
         isEligibleForRehire: _isEligibleForRehire,
       ),
     );
@@ -152,7 +154,11 @@ class _RrhhRejectionDialogState extends State<RrhhRejectionDialog> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Color(0xFF64748B), size: 20),
+                      icon: const Icon(
+                        Icons.close,
+                        color: Color(0xFF64748B),
+                        size: 20,
+                      ),
                       onPressed: () => Navigator.of(context).pop(null),
                     ),
                   ],
@@ -175,10 +181,17 @@ class _RrhhRejectionDialogState extends State<RrhhRejectionDialog> {
                   dropdownColor: const Color(0xFF1E293B),
                   style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.list_alt, color: Color(0xFF64748B), size: 18),
+                    prefixIcon: const Icon(
+                      Icons.list_alt,
+                      color: Color(0xFF64748B),
+                      size: 18,
+                    ),
                     filled: true,
                     fillColor: const Color(0xFF1E293B),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(color: Color(0xFF334155)),
@@ -192,7 +205,9 @@ class _RrhhRejectionDialogState extends State<RrhhRejectionDialog> {
                       borderSide: const BorderSide(color: Color(0xFFEF4444)),
                     ),
                   ),
-                  items: _reasons.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
+                  items: _reasons
+                      .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                      .toList(),
                   onChanged: (val) {
                     if (val != null) setState(() => _selectedReason = val);
                   },
@@ -201,7 +216,9 @@ class _RrhhRejectionDialogState extends State<RrhhRejectionDialog> {
 
                 // Detalle del motivo
                 Text(
-                  isOther ? 'DETALLE DEL MOTIVO *' : 'OBSERVACIONES O DETALLE (OPCIONAL)',
+                  isOther
+                      ? 'DETALLE DEL MOTIVO *'
+                      : 'OBSERVACIONES O DETALLE (OPCIONAL)',
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
@@ -224,7 +241,10 @@ class _RrhhRejectionDialogState extends State<RrhhRejectionDialog> {
                     hintText: isOther
                         ? 'Explica claramente por qué se rechaza la postulación...'
                         : 'Notas adicionales sobre el descarte...',
-                    hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                    hintStyle: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: const Color(0xFF64748B),
+                    ),
                     filled: true,
                     fillColor: const Color(0xFF1E293B),
                     contentPadding: const EdgeInsets.all(12),
@@ -253,7 +273,10 @@ class _RrhhRejectionDialogState extends State<RrhhRejectionDialog> {
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     child: CheckboxListTile(
                       value: _isEligibleForRehire,
                       contentPadding: EdgeInsets.zero,
@@ -261,13 +284,21 @@ class _RrhhRejectionDialogState extends State<RrhhRejectionDialog> {
                       activeColor: const Color(0xFF0284C7),
                       title: Text(
                         '¿Es elegible para re-postular en futuras convocatorias?',
-                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white),
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
                       ),
                       subtitle: Text(
                         'Si se desmarca, se emitirá una alerta preventiva si vuelve a postular.',
-                        style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B)),
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: const Color(0xFF64748B),
+                        ),
                       ),
-                      onChanged: (val) => setState(() => _isEligibleForRehire = val ?? true),
+                      onChanged: (val) =>
+                          setState(() => _isEligibleForRehire = val ?? true),
                     ),
                   ),
                 ),
@@ -281,13 +312,21 @@ class _RrhhRejectionDialogState extends State<RrhhRejectionDialog> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF94A3B8),
                         side: const BorderSide(color: Color(0xFF334155)),
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       onPressed: () => Navigator.of(context).pop(null),
                       child: Text(
                         'Cancelar',
-                        style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -295,14 +334,22 @@ class _RrhhRejectionDialogState extends State<RrhhRejectionDialog> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFDC2626),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       onPressed: _submit,
                       icon: const Icon(Icons.person_off, size: 16),
                       label: Text(
                         'Confirmar Rechazo',
-                        style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],

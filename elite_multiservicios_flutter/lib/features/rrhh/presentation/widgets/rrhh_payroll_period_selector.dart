@@ -69,7 +69,11 @@ class RrhhPayrollPeriodSelector extends StatelessWidget {
               child: DropdownButton<int>(
                 value: selectedPeriod?.id,
                 dropdownColor: const Color(0xFF0F172A),
-                icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF94A3B8), size: 16),
+                icon: const Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: Color(0xFF94A3B8),
+                  size: 16,
+                ),
                 style: GoogleFonts.inter(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,

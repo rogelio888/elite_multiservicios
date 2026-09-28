@@ -49,13 +49,20 @@ class RrhhTerminationTypes {
 
 /// Causales justificadas de despido según el Artículo 16 de la Ley General del Trabajo (Bolivia)
 class RrhhJustifiedCauses {
-  static const String perjuicioMaterial = 'Perjuicio material intencional en los instrumentos de trabajo';
-  static const String revelacionSecretos = 'Revelación de secretos industriales o comerciales';
-  static const String imprudenciasSeguridad = 'Imprudencias o descuidos que afecten a la seguridad o higiene';
-  static const String incumplimientoContrato = 'Incumplimiento total o parcial del convenio o contrato de trabajo';
-  static const String abusoConfianzaRobo = 'Abuso de confianza, robo o hurto por el trabajador';
-  static const String viasDeHecho = 'Vías de hecho, injurias o conducta inmoral en el trabajo';
-  static const String abandonoMasa = 'Abandono de trabajo (3 días consecutivos o 6 discontinuos)';
+  static const String perjuicioMaterial =
+      'Perjuicio material intencional en los instrumentos de trabajo';
+  static const String revelacionSecretos =
+      'Revelación de secretos industriales o comerciales';
+  static const String imprudenciasSeguridad =
+      'Imprudencias o descuidos que afecten a la seguridad o higiene';
+  static const String incumplimientoContrato =
+      'Incumplimiento total o parcial del convenio o contrato de trabajo';
+  static const String abusoConfianzaRobo =
+      'Abuso de confianza, robo o hurto por el trabajador';
+  static const String viasDeHecho =
+      'Vías de hecho, injurias o conducta inmoral en el trabajo';
+  static const String abandonoMasa =
+      'Abandono de trabajo (3 días consecutivos o 6 discontinuos)';
 
   static const List<String> all = [
     perjuicioMaterial,
@@ -107,7 +114,8 @@ class RrhhTerminationRecord {
   final String employeeCode; // Snapshot 'EMP-XXX'
   final String employeeName; // Snapshot nombre completo
   final String terminationType; // RrhhTerminationTypes
-  final String? justifiedCause; // Causa específica si es despido justificado (Art. 16 LGT)
+  final String?
+  justifiedCause; // Causa específica si es despido justificado (Art. 16 LGT)
   final DateTime terminationDate; // Fecha efectiva de baja
   final DateTime lastWorkDay; // Último día trabajado
   final String reason; // Motivo detallado (≥30 caracteres)
@@ -130,7 +138,8 @@ class RrhhTerminationRecord {
   final DateTime? notifiedAt;
 
   // Estado y auditoría
-  final String status; // 'registrada' | 'en_proceso' | 'finalizada' | 'cancelada'
+  final String
+  status; // 'registrada' | 'en_proceso' | 'finalizada' | 'cancelada'
   final DateTime createdAt;
   final DateTime updatedAt;
   final String createdBy;
@@ -172,14 +181,16 @@ class RrhhTerminationRecord {
   /// Determina si el plazo legal de 15 días para pago de finiquito ha vencido
   bool get isPaymentExpired {
     if (paymentCompleted) return false;
-    final deadline = paymentDeadline ?? lastWorkDay.add(const Duration(days: 15));
+    final deadline =
+        paymentDeadline ?? lastWorkDay.add(const Duration(days: 15));
     final now = DateTime.now();
     return now.isAfter(deadline);
   }
 
   /// Días restantes antes del vencimiento del plazo legal de 15 días (o negativos si está vencido)
   int get daysUntilPaymentDeadline {
-    final deadline = paymentDeadline ?? lastWorkDay.add(const Duration(days: 15));
+    final deadline =
+        paymentDeadline ?? lastWorkDay.add(const Duration(days: 15));
     final now = DateTime.now();
     return deadline.difference(now).inDays;
   }
@@ -225,12 +236,15 @@ class RrhhTerminationRecord {
       terminationDate: terminationDate ?? this.terminationDate,
       lastWorkDay: lastWorkDay ?? this.lastWorkDay,
       reason: reason ?? this.reason,
-      resignationLetterFile: resignationLetterFile ?? this.resignationLetterFile,
+      resignationLetterFile:
+          resignationLetterFile ?? this.resignationLetterFile,
       terminationMemoFile: terminationMemoFile ?? this.terminationMemoFile,
       workCertificateFile: workCertificateFile ?? this.workCertificateFile,
       settlementFile: settlementFile ?? this.settlementFile,
-      hasPendingObligations: hasPendingObligations ?? this.hasPendingObligations,
-      pendingObligationsDetail: pendingObligationsDetail ?? this.pendingObligationsDetail,
+      hasPendingObligations:
+          hasPendingObligations ?? this.hasPendingObligations,
+      pendingObligationsDetail:
+          pendingObligationsDetail ?? this.pendingObligationsDetail,
       paymentDeadline: paymentDeadline ?? this.paymentDeadline,
       paymentCompleted: paymentCompleted ?? this.paymentCompleted,
       paymentCompletedAt: paymentCompletedAt ?? this.paymentCompletedAt,

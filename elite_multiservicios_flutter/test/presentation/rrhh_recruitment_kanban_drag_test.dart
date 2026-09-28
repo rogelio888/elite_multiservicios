@@ -24,7 +24,9 @@ void main() {
       ];
     });
 
-    testWidgets('renders kanban and card in correct initial column', (tester) async {
+    testWidgets('renders kanban and card in correct initial column', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1920, 1080);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -84,7 +86,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       // Mover hacia la columna En Revisión
-      await gesture.moveTo(tester.getCenter(enRevisionColFinder) + const Offset(0, 80));
+      await gesture.moveTo(
+        tester.getCenter(enRevisionColFinder) + const Offset(0, 80),
+      );
       await tester.pump(const Duration(milliseconds: 100));
 
       // Soltar
@@ -95,7 +99,9 @@ void main() {
       expect(droppedTargetStage, equals('EN_REVISION'));
     });
 
-    testWidgets('rejects invalid drag from NUEVO to SELECCIONADO', (tester) async {
+    testWidgets('rejects invalid drag from NUEVO to SELECCIONADO', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1920, 1080);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -126,7 +132,9 @@ void main() {
       final gesture = await tester.startGesture(tester.getCenter(cardFinder));
       await tester.pump(const Duration(milliseconds: 100));
 
-      await gesture.moveTo(tester.getCenter(seleccionadosColFinder) + const Offset(0, 80));
+      await gesture.moveTo(
+        tester.getCenter(seleccionadosColFinder) + const Offset(0, 80),
+      );
       await tester.pump(const Duration(milliseconds: 100));
 
       await gesture.up();
@@ -137,59 +145,64 @@ void main() {
       expect(droppedTargetStage, isNull);
     });
 
-    testWidgets('allows backward drag from EN_REVISION to NUEVO for error correction', (tester) async {
-      tester.view.physicalSize = const Size(1920, 1080);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
+    testWidgets(
+      'allows backward drag from EN_REVISION to NUEVO for error correction',
+      (tester) async {
+        tester.view.physicalSize = const Size(1920, 1080);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
 
-      final applicantInRevision = [
-        RrhhApplicantSummaryDto(
-          id: 2,
-          code: 'POST-002',
-          fullName: 'Carlos Gómez',
-          targetType: 'OFICINA',
-          targetPosition: 'Analista Contable',
-          specialty: 'Contabilidad General',
-          applicationDate: DateTime(2026, 9, 20),
-          hasCv: true,
-          status: 'EN_REVISION',
-        ),
-      ];
+        final applicantInRevision = [
+          RrhhApplicantSummaryDto(
+            id: 2,
+            code: 'POST-002',
+            fullName: 'Carlos Gómez',
+            targetType: 'OFICINA',
+            targetPosition: 'Analista Contable',
+            specialty: 'Contabilidad General',
+            applicationDate: DateTime(2026, 9, 20),
+            hasCv: true,
+            status: 'EN_REVISION',
+          ),
+        ];
 
-      RrhhApplicantSummaryDto? droppedApplicant;
-      String? droppedTargetStage;
+        RrhhApplicantSummaryDto? droppedApplicant;
+        String? droppedTargetStage;
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: RrhhRecruitmentKanban(
-              applicants: applicantInRevision,
-              onCardTap: (_) {},
-              onApplicantDropped: (applicant, targetStage) {
-                droppedApplicant = applicant;
-                droppedTargetStage = targetStage;
-              },
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: RrhhRecruitmentKanban(
+                applicants: applicantInRevision,
+                onCardTap: (_) {},
+                onApplicantDropped: (applicant, targetStage) {
+                  droppedApplicant = applicant;
+                  droppedTargetStage = targetStage;
+                },
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      final cardFinder = find.byType(RrhhRecruitmentKanbanCard);
-      final nuevosColFinder = find.text('1. Nuevos');
+        final cardFinder = find.byType(RrhhRecruitmentKanbanCard);
+        final nuevosColFinder = find.text('1. Nuevos');
 
-      // Drag and drop hacia columna 1. Nuevos (retroceso permitido)
-      final gesture = await tester.startGesture(tester.getCenter(cardFinder));
-      await tester.pump(const Duration(milliseconds: 100));
+        // Drag and drop hacia columna 1. Nuevos (retroceso permitido)
+        final gesture = await tester.startGesture(tester.getCenter(cardFinder));
+        await tester.pump(const Duration(milliseconds: 100));
 
-      await gesture.moveTo(tester.getCenter(nuevosColFinder) + const Offset(0, 80));
-      await tester.pump(const Duration(milliseconds: 100));
+        await gesture.moveTo(
+          tester.getCenter(nuevosColFinder) + const Offset(0, 80),
+        );
+        await tester.pump(const Duration(milliseconds: 100));
 
-      await gesture.up();
-      await tester.pumpAndSettle();
+        await gesture.up();
+        await tester.pumpAndSettle();
 
-      expect(droppedApplicant?.id, equals(2));
-      expect(droppedTargetStage, equals('NUEVO'));
-    });
+        expect(droppedApplicant?.id, equals(2));
+        expect(droppedTargetStage, equals('NUEVO'));
+      },
+    );
   });
 }

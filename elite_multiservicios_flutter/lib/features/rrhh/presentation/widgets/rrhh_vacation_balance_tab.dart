@@ -150,7 +150,10 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
               const SizedBox(height: 12),
               Text(
                 'Nuevo saldo disponible (días):',
-                style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: const Color(0xFF94A3B8),
+                ),
               ),
               const SizedBox(height: 6),
               TextFormField(
@@ -167,14 +170,18 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
                 ),
                 validator: (val) {
                   final n = int.tryParse(val?.trim() ?? '');
-                  if (n == null || n < 0) return 'Ingresa un número de días válido';
+                  if (n == null || n < 0)
+                    return 'Ingresa un número de días válido';
                   return null;
                 },
               ),
               const SizedBox(height: 14),
               Text(
                 'Justificación legal / administrativa obligatoria:',
-                style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: const Color(0xFF94A3B8),
+                ),
               ),
               const SizedBox(height: 6),
               TextFormField(
@@ -182,8 +189,12 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
                 maxLines: 2,
                 style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
                 decoration: InputDecoration(
-                  hintText: 'Ej. Omisión de programación 2025, acuerdo escrito...',
-                  hintStyle: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                  hintText:
+                      'Ej. Omisión de programación 2025, acuerdo escrito...',
+                  hintStyle: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF64748B),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFF111827),
                   border: OutlineInputBorder(
@@ -204,7 +215,10 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('Cancelar', style: GoogleFonts.inter(color: const Color(0xFF94A3B8))),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -216,7 +230,10 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
                 Navigator.of(ctx).pop(true);
               }
             },
-            child: Text('Aplicar Ajuste', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+            child: Text(
+              'Aplicar Ajuste',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+            ),
           ),
         ],
       ),
@@ -244,10 +261,12 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
         // Tabla
         Expanded(
           child: widget.isLoading
-              ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+              ? const Center(
+                  child: CircularProgressIndicator(color: Color(0xFF2563EB)),
+                )
               : filtered.isEmpty
-                  ? _buildEmptyState()
-                  : _buildTable(filtered),
+              ? _buildEmptyState()
+              : _buildTable(filtered),
         ),
       ],
     );
@@ -281,11 +300,21 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
                 style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
                 decoration: InputDecoration(
                   hintText: 'Buscar por nombre o código...',
-                  hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
-                  prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF64748B)),
+                  hintStyle: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    color: const Color(0xFF64748B),
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    size: 18,
+                    color: Color(0xFF64748B),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFF111827),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 0,
+                    horizontal: 10,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: const BorderSide(color: Color(0xFF334155)),
@@ -315,7 +344,11 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
                 child: DropdownButton<String>(
                   dropdownColor: const Color(0xFF0F172A),
                   value: _selectedStatus,
-                  icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF94A3B8)),
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 18,
+                    color: Color(0xFF94A3B8),
+                  ),
                   style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
                   items: statusList.map((item) {
                     return DropdownMenuItem<String>(
@@ -349,16 +382,29 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
                     value: _selectedAreaId,
                     hint: Text(
                       'Todas las áreas',
-                      style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF94A3B8)),
+                      style: GoogleFonts.inter(
+                        fontSize: 12.5,
+                        color: const Color(0xFF94A3B8),
+                      ),
                     ),
-                    icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF94A3B8)),
-                    style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 18,
+                      color: Color(0xFF94A3B8),
+                    ),
+                    style: GoogleFonts.inter(
+                      fontSize: 12.5,
+                      color: Colors.white,
+                    ),
                     items: [
                       DropdownMenuItem<int?>(
                         value: null,
                         child: Text(
                           'Todas las áreas',
-                          style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
+                          style: GoogleFonts.inter(
+                            fontSize: 12.5,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                       ..._areas.map((a) {
@@ -366,7 +412,10 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
                           value: a.id,
                           child: Text(
                             a.name,
-                            style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
+                            style: GoogleFonts.inter(
+                              fontSize: 12.5,
+                              color: Colors.white,
+                            ),
                           ),
                         );
                       }),
@@ -382,10 +431,17 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
           if (_hasActiveFilters)
             TextButton.icon(
               onPressed: _clearFilters,
-              icon: const Icon(Icons.clear_all, size: 16, color: Color(0xFF94A3B8)),
+              icon: const Icon(
+                Icons.clear_all,
+                size: 16,
+                color: Color(0xFF94A3B8),
+              ),
               label: Text(
                 'Limpiar',
-                style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: const Color(0xFF94A3B8),
+                ),
               ),
             ),
         ],
@@ -417,7 +473,9 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
                         isEven: index % 2 == 0,
                         onProgramar: () => _handleProgramar(b),
                         onViewHistory: () {
-                          widget.onFilterEmployeeInHistory?.call(b.employeeName);
+                          widget.onFilterEmployeeInHistory?.call(
+                            b.employeeName,
+                          );
                         },
                         onAdjustBalance: () => _handleAdjustBalance(b),
                       );
@@ -477,7 +535,11 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.beach_access_outlined, size: 48, color: Color(0xFF334155)),
+            const Icon(
+              Icons.beach_access_outlined,
+              size: 48,
+              color: Color(0xFF334155),
+            ),
             const SizedBox(height: 14),
             Text(
               'No se encontraron colaboradores con saldo',
@@ -490,7 +552,10 @@ class _RrhhVacationBalanceTabState extends State<RrhhVacationBalanceTab> {
             const SizedBox(height: 6),
             Text(
               'Intenta ajustar los filtros de búsqueda o estado de saldo.',
-              style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+              style: GoogleFonts.inter(
+                fontSize: 12.5,
+                color: const Color(0xFF64748B),
+              ),
             ),
           ],
         ),

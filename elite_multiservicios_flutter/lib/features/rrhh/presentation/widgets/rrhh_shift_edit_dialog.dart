@@ -44,8 +44,12 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
     _nameCtrl = TextEditingController(text: s?.name ?? '');
     _descCtrl = TextEditingController(text: s?.description ?? '');
 
-    _startTime = s != null ? _parseTime(s.startTime) : const TimeOfDay(hour: 8, minute: 0);
-    _endTime = s != null ? _parseTime(s.endTime) : const TimeOfDay(hour: 16, minute: 0);
+    _startTime = s != null
+        ? _parseTime(s.startTime)
+        : const TimeOfDay(hour: 8, minute: 0);
+    _endTime = s != null
+        ? _parseTime(s.endTime)
+        : const TimeOfDay(hour: 16, minute: 0);
     _selectedDays = s != null ? List<int>.from(s.workDays) : [1, 2, 3, 4, 5];
     _shiftType = s?.shiftType ?? 'Completa';
     _isActive = s?.isActive ?? true;
@@ -71,7 +75,10 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
       final shifts = await RrhhRepository.current.listShifts();
       int highest = 0;
       for (final s in shifts) {
-        final match = RegExp(r'^TURNO-(\d+)$', caseSensitive: false).firstMatch(s.code);
+        final match = RegExp(
+          r'^TURNO-(\d+)$',
+          caseSensitive: false,
+        ).firstMatch(s.code);
         if (match != null) {
           final n = int.tryParse(match.group(1)!) ?? 0;
           if (n > highest) highest = n;
@@ -150,12 +157,18 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedDays.isEmpty) {
-      setState(() => _errorMessage = 'Debe seleccionar al menos un día de la semana.');
+      setState(
+        () => _errorMessage = 'Debe seleccionar al menos un día de la semana.',
+      );
       return;
     }
 
-    if (_startTime.hour == _endTime.hour && _startTime.minute == _endTime.minute) {
-      setState(() => _errorMessage = 'La hora de inicio y fin no pueden ser exactamente iguales.');
+    if (_startTime.hour == _endTime.hour &&
+        _startTime.minute == _endTime.minute) {
+      setState(
+        () => _errorMessage =
+            'La hora de inicio y fin no pueden ser exactamente iguales.',
+      );
       return;
     }
 
@@ -177,18 +190,21 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
       if (codeDup) {
         setState(() {
           _isSaving = false;
-          _errorMessage = 'El código "$codeNorm" ya está en uso por otro turno.';
+          _errorMessage =
+              'El código "$codeNorm" ya está en uso por otro turno.';
         });
         return;
       }
 
       final nameDup = existingShifts.any(
-        (s) => s.name.trim().toLowerCase() == nameNorm && s.id != widget.shift?.id,
+        (s) =>
+            s.name.trim().toLowerCase() == nameNorm && s.id != widget.shift?.id,
       );
       if (nameDup) {
         setState(() {
           _isSaving = false;
-          _errorMessage = 'El nombre "${_nameCtrl.text.trim()}" ya existe en el catálogo.';
+          _errorMessage =
+              'El nombre "${_nameCtrl.text.trim()}" ya existe en el catálogo.';
         });
         return;
       }
@@ -204,7 +220,9 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
           endTime: endStr,
           workDays: _selectedDays,
           shiftType: _shiftType,
-          description: _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
+          description: _descCtrl.text.trim().isEmpty
+              ? null
+              : _descCtrl.text.trim(),
           isActive: _isActive,
           updatedAt: DateTime.now(),
         );
@@ -218,7 +236,9 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
           endTime: endStr,
           workDays: _selectedDays,
           shiftType: _shiftType,
-          description: _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
+          description: _descCtrl.text.trim().isEmpty
+              ? null
+              : _descCtrl.text.trim(),
           isActive: _isActive,
           assignedEmployeesCount: 0,
           createdAt: DateTime.now(),
@@ -280,7 +300,10 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
                                 if (val == null || val.trim().isEmpty) {
                                   return 'El código es obligatorio';
                                 }
-                                if (!RegExp(r'^TURNO-[A-Z0-9]+$', caseSensitive: false).hasMatch(val.trim())) {
+                                if (!RegExp(
+                                  r'^TURNO-[A-Z0-9]+$',
+                                  caseSensitive: false,
+                                ).hasMatch(val.trim())) {
                                   return 'Formato: TURNO-XXX';
                                 }
                                 return null;
@@ -326,7 +349,11 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Icon(Icons.arrow_forward_rounded, size: 18, color: Color(0xFF64748B)),
+                          const Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 18,
+                            color: Color(0xFF64748B),
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: _buildTimePickerCard(
@@ -341,7 +368,10 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
 
                       // Badge de duración y advertencia de medianoche
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF111827),
                           borderRadius: BorderRadius.circular(8),
@@ -350,9 +380,13 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
                         child: Row(
                           children: [
                             Icon(
-                              _isCrossMidnight ? Icons.nights_stay_outlined : Icons.timer_outlined,
+                              _isCrossMidnight
+                                  ? Icons.nights_stay_outlined
+                                  : Icons.timer_outlined,
                               size: 16,
-                              color: _isCrossMidnight ? const Color(0xFFF59E0B) : const Color(0xFF60A5FA),
+                              color: _isCrossMidnight
+                                  ? const Color(0xFFF59E0B)
+                                  : const Color(0xFF60A5FA),
                             ),
                             const SizedBox(width: 8),
                             Text(
@@ -366,9 +400,14 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
                             if (_isCrossMidnight) ...[
                               const Spacer(),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF59E0B).withValues(alpha: 0.15),
+                                  color: const Color(
+                                    0xFFF59E0B,
+                                  ).withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
@@ -416,7 +455,8 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
                       _buildTextField(
                         label: 'Descripción u Observaciones (Opcional)',
                         controller: _descCtrl,
-                        hint: 'Especificaciones de alcance, sedes sugeridas o notas operativas',
+                        hint:
+                            'Especificaciones de alcance, sedes sugeridas o notas operativas',
                         maxLines: 2,
                       ),
                       const SizedBox(height: 16),
@@ -451,7 +491,11 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
               color: const Color(0xFF2563EB).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.schedule_rounded, color: Color(0xFF60A5FA), size: 20),
+            child: const Icon(
+              Icons.schedule_rounded,
+              color: Color(0xFF60A5FA),
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -459,7 +503,9 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _isEditing ? 'Editar Turno de Trabajo' : 'Nuevo Turno de Trabajo',
+                  _isEditing
+                      ? 'Editar Turno de Trabajo'
+                      : 'Nuevo Turno de Trabajo',
                   style: GoogleFonts.inter(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -470,7 +516,10 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
                   _isEditing
                       ? 'Actualice los parámetros horarios y días laborables del turno'
                       : 'Defina un nuevo bloque horario reutilizable para la asignación de personal',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF94A3B8),
+                  ),
                 ),
               ],
             ),
@@ -503,14 +552,21 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.access_time_rounded, size: 18, color: Color(0xFF60A5FA)),
+            const Icon(
+              Icons.access_time_rounded,
+              size: 18,
+              color: Color(0xFF60A5FA),
+            ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: const Color(0xFF64748B),
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -524,7 +580,11 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
               ],
             ),
             const Spacer(),
-            const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF64748B)),
+            const Icon(
+              Icons.keyboard_arrow_down,
+              size: 18,
+              color: Color(0xFF64748B),
+            ),
           ],
         ),
       ),
@@ -566,12 +626,16 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
               height: 40,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? (isWeekend ? const Color(0xFF8B5CF6) : const Color(0xFF2563EB))
+                    ? (isWeekend
+                          ? const Color(0xFF8B5CF6)
+                          : const Color(0xFF2563EB))
                     : const Color(0xFF111827),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: isSelected
-                      ? (isWeekend ? const Color(0xFFA78BFA) : const Color(0xFF3B82F6))
+                      ? (isWeekend
+                            ? const Color(0xFFA78BFA)
+                            : const Color(0xFF3B82F6))
                       : const Color(0xFF1E293B),
                   width: isSelected ? 1.5 : 1.0,
                 ),
@@ -612,7 +676,9 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
                 duration: const Duration(milliseconds: 150),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: isSelected ? t.$3.withValues(alpha: 0.15) : const Color(0xFF111827),
+                  color: isSelected
+                      ? t.$3.withValues(alpha: 0.15)
+                      : const Color(0xFF111827),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: isSelected ? t.$3 : const Color(0xFF1E293B),
@@ -652,7 +718,9 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
               Icon(
                 _isActive ? Icons.check_circle_outline : Icons.block_flipped,
                 size: 18,
-                color: _isActive ? const Color(0xFF10B981) : const Color(0xFF64748B),
+                color: _isActive
+                    ? const Color(0xFF10B981)
+                    : const Color(0xFF64748B),
               ),
               const SizedBox(width: 10),
               Column(
@@ -660,11 +728,20 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
                 children: [
                   Text(
                     'Estado del Turno',
-                    style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                   Text(
-                    _isActive ? 'Activo para asignación de nuevos horarios' : 'Inactivo (No elegible en nuevas plantillas)',
-                    style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF94A3B8)),
+                    _isActive
+                        ? 'Activo para asignación de nuevos horarios'
+                        : 'Inactivo (No elegible en nuevas plantillas)',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: const Color(0xFF94A3B8),
+                    ),
                   ),
                 ],
               ),
@@ -687,7 +764,9 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
       decoration: BoxDecoration(
         color: const Color(0xFFEF4444).withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.4)),
+        border: Border.all(
+          color: const Color(0xFFEF4444).withValues(alpha: 0.4),
+        ),
       ),
       child: Row(
         children: [
@@ -696,7 +775,10 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
           Expanded(
             child: Text(
               _errorMessage!,
-              style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFFFCA5A5)),
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: const Color(0xFFFCA5A5),
+              ),
             ),
           ),
         ],
@@ -728,14 +810,24 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
           controller: controller,
           maxLines: maxLines,
           style: isMonospace
-              ? GoogleFonts.jetBrainsMono(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)
+              ? GoogleFonts.jetBrainsMono(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                )
               : GoogleFonts.inter(color: Colors.white, fontSize: 13),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12.5),
+            hintStyle: GoogleFonts.inter(
+              color: const Color(0xFF64748B),
+              fontSize: 12.5,
+            ),
             filled: true,
             fillColor: const Color(0xFF111827),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 10,
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0xFF1E293B)),
@@ -775,7 +867,9 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
             style: OutlinedButton.styleFrom(
               foregroundColor: const Color(0xFF94A3B8),
               side: const BorderSide(color: Color(0xFF1E293B)),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             ),
             child: Text('Cancelar', style: GoogleFonts.inter(fontSize: 13)),
@@ -787,17 +881,27 @@ class _RrhhShiftEditDialogState extends State<RrhhShiftEditDialog> {
                 ? const SizedBox(
                     width: 14,
                     height: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
                 : const Icon(Icons.check_rounded, size: 16),
             label: Text(
-              _isSaving ? 'Guardando...' : (_isEditing ? 'Guardar Cambios' : 'Crear Turno'),
-              style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+              _isSaving
+                  ? 'Guardando...'
+                  : (_isEditing ? 'Guardar Cambios' : 'Crear Turno'),
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             style: FilledButton.styleFrom(
               backgroundColor: const Color(0xFF2563EB),
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
             ),
           ),

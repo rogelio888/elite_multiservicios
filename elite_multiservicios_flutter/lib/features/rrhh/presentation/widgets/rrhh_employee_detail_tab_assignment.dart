@@ -32,7 +32,11 @@ class RrhhEmployeeDetailTabAssignment extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.lock_clock_outlined, size: 16, color: Color(0xFF94A3B8)),
+                const Icon(
+                  Icons.lock_clock_outlined,
+                  size: 16,
+                  color: Color(0xFF94A3B8),
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -76,7 +80,11 @@ class RrhhEmployeeDetailTabAssignment extends StatelessWidget {
               color: const Color(0xFF10B981).withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.check_circle_outline, color: Color(0xFF10B981), size: 24),
+            child: const Icon(
+              Icons.check_circle_outline,
+              color: Color(0xFF10B981),
+              size: 24,
+            ),
           ),
           const SizedBox(height: 12),
           Text(
@@ -110,7 +118,9 @@ class RrhhEmployeeDetailTabAssignment extends StatelessWidget {
         LayoutBuilder(
           builder: (context, constraints) {
             final isWide = constraints.maxWidth > 580;
-            final colWidth = isWide ? (constraints.maxWidth - 12) / 2 : constraints.maxWidth;
+            final colWidth = isWide
+                ? (constraints.maxWidth - 12) / 2
+                : constraints.maxWidth;
 
             return Wrap(
               spacing: 12,
@@ -200,7 +210,10 @@ class RrhhEmployeeDetailTabAssignment extends StatelessWidget {
             ),
             child: Text(
               a.notes!,
-              style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: const Color(0xFF94A3B8),
+              ),
             ),
           ),
         ],

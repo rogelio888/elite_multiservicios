@@ -12,8 +12,13 @@ class RrhhHiringRepository {
   const RrhhHiringRepository(this.session);
 
   /// Helper que identifica si un cargo, área o especialidad corresponde a Seguridad Física.
-  bool _isSecurityPosition({String? position, String? area, String? specialty}) {
-    final combined = '${position ?? ''} ${area ?? ''} ${specialty ?? ''}'.toLowerCase();
+  bool _isSecurityPosition({
+    String? position,
+    String? area,
+    String? specialty,
+  }) {
+    final combined = '${position ?? ''} ${area ?? ''} ${specialty ?? ''}'
+        .toLowerCase();
     return combined.contains('seguridad') ||
         combined.contains('guardia') ||
         combined.contains('vigilante') ||
@@ -50,14 +55,16 @@ class RrhhHiringRepository {
     final isCampo = workplaceType.toUpperCase() == 'CAMPO';
     final posLower = targetPosition.toLowerCase();
     final isSecurity = _isSecurityPosition(position: targetPosition);
-    final isProfessional = posLower.contains('lic') ||
+    final isProfessional =
+        posLower.contains('lic') ||
         posLower.contains('ing') ||
         posLower.contains('contador') ||
         posLower.contains('abogad') ||
         posLower.contains('jefe') ||
         posLower.contains('coordinador') ||
         posLower.contains('analista');
-    final requiresDriver = posLower.contains('chofer') ||
+    final requiresDriver =
+        posLower.contains('chofer') ||
         posLower.contains('conductor') ||
         posLower.contains('mensajero') ||
         posLower.contains('móvil') ||
@@ -70,42 +77,54 @@ class RrhhHiringRepository {
         code: 'CI',
         name: 'Fotocopia de Cédula de Identidad',
         isRequired: true,
-        status: (recruitmentValidatedDocs?['CI'] == true) ? 'validado' : 'pendiente',
+        status: (recruitmentValidatedDocs?['CI'] == true)
+            ? 'validado'
+            : 'pendiente',
         validatedInRecruitment: recruitmentValidatedDocs?['CI'] == true,
       ),
       RrhhDossierDocument(
         code: 'AVISO',
         name: 'Aviso de luz o agua',
         isRequired: true,
-        status: (recruitmentValidatedDocs?['AVISO'] == true) ? 'validado' : 'pendiente',
+        status: (recruitmentValidatedDocs?['AVISO'] == true)
+            ? 'validado'
+            : 'pendiente',
         validatedInRecruitment: recruitmentValidatedDocs?['AVISO'] == true,
       ),
       RrhhDossierDocument(
         code: 'CROQUIS',
         name: 'Croquis domiciliario',
         isRequired: true,
-        status: (recruitmentValidatedDocs?['CROQUIS'] == true) ? 'validado' : 'pendiente',
+        status: (recruitmentValidatedDocs?['CROQUIS'] == true)
+            ? 'validado'
+            : 'pendiente',
         validatedInRecruitment: recruitmentValidatedDocs?['CROQUIS'] == true,
       ),
       RrhhDossierDocument(
         code: 'FOTO',
         name: 'Foto 3x4 fondo rojo',
         isRequired: true,
-        status: (recruitmentValidatedDocs?['FOTO'] == true) ? 'validado' : 'pendiente',
+        status: (recruitmentValidatedDocs?['FOTO'] == true)
+            ? 'validado'
+            : 'pendiente',
         validatedInRecruitment: recruitmentValidatedDocs?['FOTO'] == true,
       ),
       RrhhDossierDocument(
         code: 'SUS',
         name: 'Constancia SUS',
         isRequired: true,
-        status: (recruitmentValidatedDocs?['SUS'] == true) ? 'validado' : 'pendiente',
+        status: (recruitmentValidatedDocs?['SUS'] == true)
+            ? 'validado'
+            : 'pendiente',
         validatedInRecruitment: recruitmentValidatedDocs?['SUS'] == true,
       ),
       RrhhDossierDocument(
         code: 'FELCC',
         name: 'Certificado FELCC',
         isRequired: felccRequired,
-        status: (recruitmentValidatedDocs?['FELCC'] == true) ? 'validado' : 'pendiente',
+        status: (recruitmentValidatedDocs?['FELCC'] == true)
+            ? 'validado'
+            : 'pendiente',
         validatedInRecruitment: recruitmentValidatedDocs?['FELCC'] == true,
       ),
       RrhhDossierDocument(
@@ -264,13 +283,15 @@ class RrhhHiringRepository {
         if (status != null && status.trim().isNotEmpty) {
           expr = expr & t.status.equals(status.trim().toLowerCase());
         } else {
-          expr = expr &
+          expr =
+              expr &
               t.status.notEquals('convertido') &
               t.status.notEquals('cancelado');
         }
         if (search != null && search.trim().isNotEmpty) {
           final query = '%${search.trim()}%';
-          expr = expr &
+          expr =
+              expr &
               (t.code.ilike(query) |
                   t.applicantCode.ilike(query) |
                   t.applicantName.ilike(query));
@@ -296,17 +317,22 @@ class RrhhHiringRepository {
     }
 
     final requiredDocs = documentChecklist.where((d) => d.isRequired);
-    final allRequiredOk = requiredDocs.isNotEmpty &&
+    final allRequiredOk =
+        requiredDocs.isNotEmpty &&
         requiredDocs.every((d) => d.status.toLowerCase() == 'validado');
-    final hasAnyProgress =
-        documentChecklist.any((d) => d.status.toLowerCase() != 'pendiente');
+    final hasAnyProgress = documentChecklist.any(
+      (d) => d.status.toLowerCase() != 'pendiente',
+    );
 
-    final computedStatus = sectionStatus ??
+    final computedStatus =
+        sectionStatus ??
         (allRequiredOk
             ? 'completa'
             : (hasAnyProgress ? 'en_proceso' : 'pendiente'));
 
-    final newStatus = dossier.status == 'abierto' ? 'en_proceso' : dossier.status;
+    final newStatus = dossier.status == 'abierto'
+        ? 'en_proceso'
+        : dossier.status;
     final now = DateTime.now().toUtc();
 
     final updated = dossier.copyWith(
@@ -333,7 +359,9 @@ class RrhhHiringRepository {
       throw EntityNotFoundException('RrhhHiringDossier', id);
     }
 
-    final newStatus = dossier.status == 'abierto' ? 'en_proceso' : dossier.status;
+    final newStatus = dossier.status == 'abierto'
+        ? 'en_proceso'
+        : dossier.status;
     final now = DateTime.now().toUtc();
 
     final updated = dossier.copyWith(
@@ -365,7 +393,9 @@ class RrhhHiringRepository {
       throw EntityNotFoundException('RrhhHiringDossier', id);
     }
 
-    final newStatus = dossier.status == 'abierto' ? 'en_proceso' : dossier.status;
+    final newStatus = dossier.status == 'abierto'
+        ? 'en_proceso'
+        : dossier.status;
     final now = DateTime.now().toUtc();
 
     final updated = dossier.copyWith(
@@ -402,7 +432,9 @@ class RrhhHiringRepository {
       throw EntityNotFoundException('RrhhHiringDossier', id);
     }
 
-    final newStatus = dossier.status == 'abierto' ? 'en_proceso' : dossier.status;
+    final newStatus = dossier.status == 'abierto'
+        ? 'en_proceso'
+        : dossier.status;
     final now = DateTime.now().toUtc();
 
     final updated = dossier.copyWith(
@@ -441,7 +473,9 @@ class RrhhHiringRepository {
       throw EntityNotFoundException('RrhhHiringDossier', id);
     }
 
-    final newStatus = dossier.status == 'abierto' ? 'en_proceso' : dossier.status;
+    final newStatus = dossier.status == 'abierto'
+        ? 'en_proceso'
+        : dossier.status;
     final now = DateTime.now().toUtc();
 
     final updated = dossier.copyWith(
@@ -516,7 +550,9 @@ class RrhhHiringRepository {
     }
 
     if (dossier.status == 'convertido' || dossier.employeeId != null) {
-      throw ConflictException('El expediente ya fue convertido previamente a empleado.');
+      throw ConflictException(
+        'El expediente ya fue convertido previamente a empleado.',
+      );
     }
 
     // Validación de secciones completas
@@ -532,7 +568,9 @@ class RrhhHiringRepository {
 
     final applicantId = dossier.applicantId;
     if (applicantId == null) {
-      throw ValidationException('El expediente no tiene un postulante asociado.');
+      throw ValidationException(
+        'El expediente no tiene un postulante asociado.',
+      );
     }
 
     final applicant = await RrhhApplicant.db.findFirstRow(
@@ -577,7 +615,10 @@ class RrhhHiringRepository {
         birthPlace: 'Santa Cruz de la Sierra',
         identityCard: applicant.identityCard,
         phone: applicant.phone,
-        address: dossier.fullAddress ?? applicant.address ?? 'Sin dirección registrada',
+        address:
+            dossier.fullAddress ??
+            applicant.address ??
+            'Sin dirección registrada',
         occupation: applicant.targetPosition ?? 'Personal Operativo',
         personalReference: applicant.referencePerson ?? 'Referencia personal',
         referencePhone: applicant.referencePhone ?? applicant.phone,
@@ -590,12 +631,15 @@ class RrhhHiringRepository {
         specialtyId: applicant.specialtyId,
         workplace: dossier.baseLocation ?? 'Planta Central',
         supervisor: dossier.supervisorEmployeeId ?? 'Sin asignar',
-        realStartDate: dossier.effectiveStartDate ?? dossier.contractStartDate ?? now,
-        fiscalStartDate: dossier.contractStartDate ?? dossier.effectiveStartDate ?? now,
+        realStartDate:
+            dossier.effectiveStartDate ?? dossier.contractStartDate ?? now,
+        fiscalStartDate:
+            dossier.contractStartDate ?? dossier.effectiveStartDate ?? now,
         agreedSalary: dossier.baseSalary ?? 0.0,
         contractType: dossier.contractType ?? 'INDEFINIDO',
         contractEndDate: dossier.contractEndDate,
-        observations: 'Alta formal de empleado desde expediente ${dossier.code}',
+        observations:
+            'Alta formal de empleado desde expediente ${dossier.code}',
         status: 'ACTIVO',
         availabilityStatus: 'DISPONIBLE',
         paymentModality: dossier.paymentModality ?? 'MENSUAL',
@@ -663,7 +707,8 @@ class RrhhHiringRepository {
         employeeId: insertedEmployee.id!,
         date: now,
         title: 'Alta de empleado desde expediente',
-        description: 'Alta de empleado desde expediente de contratación ${dossier.code}. Código asignado: ${insertedEmployee.code}.',
+        description:
+            'Alta de empleado desde expediente de contratación ${dossier.code}. Código asignado: ${insertedEmployee.code}.',
         category: 'CONTRATACION',
         registeredBy: createdBy,
         createdAt: now,

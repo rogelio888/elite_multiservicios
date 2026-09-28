@@ -676,7 +676,10 @@ class _RrhhLeaveRequestsViewState extends State<RrhhLeaveRequestsView> {
                   child: TextField(
                     controller: _searchController,
                     onChanged: (_) => setState(() {}),
-                    style: GoogleFonts.inter(fontSize: 12.5, color: Colors.white),
+                    style: GoogleFonts.inter(
+                      fontSize: 12.5,
+                      color: Colors.white,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Buscar por empleado, código PERM o motivo...',
                       hintStyle: GoogleFonts.inter(
@@ -893,8 +896,9 @@ class _RrhhLeaveRequestsViewState extends State<RrhhLeaveRequestsView> {
                       },
                       labelStyle: GoogleFonts.inter(
                         fontSize: 11,
-                        fontWeight:
-                            isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
                         color: isSelected
                             ? Colors.white
                             : const Color(0xFF94A3B8),
@@ -939,8 +943,9 @@ class _RrhhLeaveRequestsViewState extends State<RrhhLeaveRequestsView> {
                       },
                       labelStyle: GoogleFonts.inter(
                         fontSize: 11,
-                        fontWeight:
-                            isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
                         color: isSelected
                             ? Colors.white
                             : const Color(0xFF94A3B8),

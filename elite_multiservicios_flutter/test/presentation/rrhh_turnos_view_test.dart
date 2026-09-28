@@ -19,14 +19,19 @@ void main() {
   }
 
   group('RrhhTurnosView (Pantalla 07) Tests', () {
-    testWidgets('renders view with header and Tab 1 Turnos by default', (tester) async {
+    testWidgets('renders view with header and Tab 1 Turnos by default', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(1280, 800));
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
       // Verificar encabezado ejecutivo
       expect(find.text('Turnos y Horarios Base'), findsOneWidget);
-      expect(find.text('Catálogo de turnos de trabajo y horarios plantilla'), findsOneWidget);
+      expect(
+        find.text('Catálogo de turnos de trabajo y horarios plantilla'),
+        findsOneWidget,
+      );
 
       // Verificar las 2 pestañas
       expect(find.text('1. Turnos'), findsOneWidget);
@@ -43,7 +48,9 @@ void main() {
       expect(find.text('Turno Mañana'), findsOneWidget);
     });
 
-    testWidgets('switches to Tab 2 Horarios Base and displays schedules list', (tester) async {
+    testWidgets('switches to Tab 2 Horarios Base and displays schedules list', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(1280, 800));
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();

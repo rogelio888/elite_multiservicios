@@ -37,7 +37,8 @@ class RrhhRoutes {
   // ---------------------------------------------------------------------------
   static const String directorio = '/rrhh/personal/directorio';
   static const String contrataciones = '/rrhh/personal/contrataciones';
-  static const String contratacionesDetalle = '/rrhh/personal/contrataciones/:dossierId';
+  static const String contratacionesDetalle =
+      '/rrhh/personal/contrataciones/:dossierId';
   static const String expediente = '/rrhh/expediente';
   static const String postulantes = '/rrhh/postulantes';
   static const String contratacion = '/rrhh/contratacion';
@@ -50,7 +51,8 @@ class RrhhRoutes {
   static const String disciplina = '/rrhh/disciplina';
   static const String novedadesDisciplina = '/rrhh/novedades/disciplina';
   static const String bajas = '/rrhh/bajas';
-  static const String novedadesDesvinculaciones = '/rrhh/novedades/desvinculaciones';
+  static const String novedadesDesvinculaciones =
+      '/rrhh/novedades/desvinculaciones';
   static const String novedadesNomina = '/rrhh/novedades-nomina';
   static const String novedadesNominaAlt = '/rrhh/novedades/nomina';
   static const String asistenciaCampo = '/rrhh/asistencia-campo';
@@ -207,7 +209,10 @@ class RrhhRoutes {
         return const RrhhCatalogsView();
       default:
         if (route.startsWith('/rrhh/personal/contrataciones/')) {
-          final idStr = route.replaceFirst('/rrhh/personal/contrataciones/', '');
+          final idStr = route.replaceFirst(
+            '/rrhh/personal/contrataciones/',
+            '',
+          );
           final dossierId = int.tryParse(idStr) ?? 1;
           return RrhhHiringDossierDetailView(dossierId: dossierId);
         }

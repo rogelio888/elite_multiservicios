@@ -50,7 +50,10 @@ class RrhhEmployeeDetailHeader extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF2563EB).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(6),
@@ -91,9 +94,14 @@ class RrhhEmployeeDetailHeader extends StatelessWidget {
                         foregroundColor: const Color(0xFFCBD5E1),
                         disabledForegroundColor: const Color(0xFF64748B),
                         side: BorderSide(
-                          color: canEdit ? const Color(0xFF334155) : const Color(0xFF1E293B),
+                          color: canEdit
+                              ? const Color(0xFF334155)
+                              : const Color(0xFF1E293B),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 7,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(7),
                         ),
@@ -101,7 +109,10 @@ class RrhhEmployeeDetailHeader extends StatelessWidget {
                       icon: const Icon(Icons.edit_outlined, size: 14),
                       label: Text(
                         'Editar Ficha',
-                        style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -118,9 +129,14 @@ class RrhhEmployeeDetailHeader extends StatelessWidget {
                         foregroundColor: const Color(0xFFF59E0B),
                         disabledForegroundColor: const Color(0xFF64748B),
                         side: BorderSide(
-                          color: canModifyContract ? const Color(0xFFB45309) : const Color(0xFF1E293B),
+                          color: canModifyContract
+                              ? const Color(0xFFB45309)
+                              : const Color(0xFF1E293B),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 7,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(7),
                         ),
@@ -128,7 +144,10 @@ class RrhhEmployeeDetailHeader extends StatelessWidget {
                       icon: const Icon(Icons.history_edu_outlined, size: 14),
                       label: Text(
                         'Modificar Datos Contractuales',
-                        style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -157,7 +176,10 @@ class RrhhEmployeeDetailHeader extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1E293B),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFF334155), width: 1.2),
+                  border: Border.all(
+                    color: const Color(0xFF334155),
+                    width: 1.2,
+                  ),
                 ),
                 alignment: Alignment.center,
                 child: Text(
@@ -195,14 +217,23 @@ class RrhhEmployeeDetailHeader extends StatelessWidget {
                         const SizedBox(width: 10),
                         // Badge Estado
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 2.5,
+                          ),
                           decoration: BoxDecoration(
-                            color: (isActive ? const Color(0xFF10B981) : const Color(0xFF64748B))
-                                .withValues(alpha: 0.12),
+                            color:
+                                (isActive
+                                        ? const Color(0xFF10B981)
+                                        : const Color(0xFF64748B))
+                                    .withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: (isActive ? const Color(0xFF10B981) : const Color(0xFF64748B))
-                                  .withValues(alpha: 0.3),
+                              color:
+                                  (isActive
+                                          ? const Color(0xFF10B981)
+                                          : const Color(0xFF64748B))
+                                      .withValues(alpha: 0.3),
                             ),
                           ),
                           child: Text(
@@ -210,7 +241,9 @@ class RrhhEmployeeDetailHeader extends StatelessWidget {
                             style: GoogleFonts.inter(
                               fontSize: 10.5,
                               fontWeight: FontWeight.w600,
-                              color: isActive ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
+                              color: isActive
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFF94A3B8),
                             ),
                           ),
                         ),
@@ -235,11 +268,16 @@ class RrhhEmployeeDetailHeader extends StatelessWidget {
                     ),
 
                     // Email Corporativo si existe
-                    if (employee.corporateEmail != null && employee.corporateEmail!.isNotEmpty) ...[
+                    if (employee.corporateEmail != null &&
+                        employee.corporateEmail!.isNotEmpty) ...[
                       const SizedBox(height: 3),
                       Row(
                         children: [
-                          const Icon(Icons.mail_outline, size: 13, color: Color(0xFF64748B)),
+                          const Icon(
+                            Icons.mail_outline,
+                            size: 13,
+                            color: Color(0xFF64748B),
+                          ),
                           const SizedBox(width: 5),
                           Text(
                             employee.corporateEmail!,
@@ -251,11 +289,16 @@ class RrhhEmployeeDetailHeader extends StatelessWidget {
                           if (RrhhRepository.current.isMock) ...[
                             const SizedBox(width: 6),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                                vertical: 1,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF1E293B),
                                 borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: const Color(0xFF334155)),
+                                border: Border.all(
+                                  color: const Color(0xFF334155),
+                                ),
                               ),
                               child: Text(
                                 'DEMO',
@@ -286,7 +329,9 @@ class RrhhEmployeeDetailHeader extends StatelessWidget {
     if (parts.length >= 2) {
       return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
     }
-    return parts.isNotEmpty && parts[0].isNotEmpty ? parts[0][0].toUpperCase() : 'EM';
+    return parts.isNotEmpty && parts[0].isNotEmpty
+        ? parts[0][0].toUpperCase()
+        : 'EM';
   }
 
   String _calculateAntiquity(DateTime start) {

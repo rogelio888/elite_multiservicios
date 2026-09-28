@@ -23,10 +23,12 @@ class RrhhDisciplinaryEditDialog extends StatefulWidget {
   }
 
   @override
-  State<RrhhDisciplinaryEditDialog> createState() => _RrhhDisciplinaryEditDialogState();
+  State<RrhhDisciplinaryEditDialog> createState() =>
+      _RrhhDisciplinaryEditDialogState();
 }
 
-class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog> {
+class _RrhhDisciplinaryEditDialogState
+    extends State<RrhhDisciplinaryEditDialog> {
   final _formKey = GlobalKey<FormState>();
 
   bool _isLoadingEmployees = true;
@@ -48,12 +50,18 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
   late DateTime _dischargeDeadline;
 
   // Bloque D
-  String _sanctionOption = RrhhSanctionTypes.verbal; // 'verbal' | 'escrita' | 'pecuniaria' | 'suspension' | 'retiro' | 'archivar'
-  final TextEditingController _suspensionDaysController = TextEditingController(text: '1');
-  final TextEditingController _salaryDeductionController = TextEditingController();
-  final TextEditingController _sanctionDescriptionController = TextEditingController();
+  String _sanctionOption = RrhhSanctionTypes
+      .verbal; // 'verbal' | 'escrita' | 'pecuniaria' | 'suspension' | 'retiro' | 'archivar'
+  final TextEditingController _suspensionDaysController = TextEditingController(
+    text: '1',
+  );
+  final TextEditingController _salaryDeductionController =
+      TextEditingController();
+  final TextEditingController _sanctionDescriptionController =
+      TextEditingController();
   bool _notifiedEmployee = true;
-  String _notificationMethod = 'memorandum'; // 'email' | 'presencial' | 'memorandum'
+  String _notificationMethod =
+      'memorandum'; // 'email' | 'presencial' | 'memorandum'
 
   bool _isSaving = false;
 
@@ -72,10 +80,13 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
       _witnessesController.text = item.witnesses ?? '';
       _evidenceController.text = item.evidenceFile ?? '';
       _requiresDischarge = item.requiresDischarge;
-      _dischargeDeadline = item.dischargeDeadline ?? now.add(const Duration(days: 3));
+      _dischargeDeadline =
+          item.dischargeDeadline ?? now.add(const Duration(days: 3));
       _sanctionOption = item.sanctionType ?? 'archivar';
       _suspensionDaysController.text = (item.suspensionDays ?? 1).toString();
-      _salaryDeductionController.text = item.salaryDeduction != null ? item.salaryDeduction!.toStringAsFixed(2) : '';
+      _salaryDeductionController.text = item.salaryDeduction != null
+          ? item.salaryDeduction!.toStringAsFixed(2)
+          : '';
       _sanctionDescriptionController.text = item.sanctionDescription ?? '';
       _notifiedEmployee = item.notifiedEmployee;
       _notificationMethod = item.notificationMethod ?? 'memorandum';
@@ -107,7 +118,8 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
     var added = 0;
     while (added < days) {
       result = result.add(const Duration(days: 1));
-      if (result.weekday != DateTime.saturday && result.weekday != DateTime.sunday) {
+      if (result.weekday != DateTime.saturday &&
+          result.weekday != DateTime.sunday) {
         added++;
       }
     }
@@ -140,7 +152,8 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
   void _onFaultTypeChanged(String newType) {
     setState(() {
       _faultType = newType;
-      if (newType == RrhhFaultTypes.grave || newType == RrhhFaultTypes.gravisima) {
+      if (newType == RrhhFaultTypes.grave ||
+          newType == RrhhFaultTypes.gravisima) {
         _requiresDischarge = true;
         if (_dischargeDeadline.isBefore(DateTime.now())) {
           _dischargeDeadline = _addWorkingDays(DateTime.now(), 3);
@@ -162,9 +175,13 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
 
   String _getSupervisorForArea(String area) {
     final lower = area.toLowerCase();
-    if (lower.contains('operacion') || lower.contains('tecnic') || lower.contains('campo')) {
+    if (lower.contains('operacion') ||
+        lower.contains('tecnic') ||
+        lower.contains('campo')) {
       return 'Ing. Roberto Arteaga (Jefe de Operaciones)';
-    } else if (lower.contains('admin') || lower.contains('financ') || lower.contains('rrhh')) {
+    } else if (lower.contains('admin') ||
+        lower.contains('financ') ||
+        lower.contains('rrhh')) {
       return 'Lic. Laura Mendoza (Jefa de RRHH / Admin)';
     } else if (lower.contains('comercial') || lower.contains('ventas')) {
       return 'Lic. Carlos Salinas (Gerente Comercial)';
@@ -183,12 +200,19 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
     }
 
     if (_descriptionController.text.trim().length < 30) {
-      RrhhSnackBar.showWarning(context, 'La descripción del hecho debe tener al menos 30 caracteres.');
+      RrhhSnackBar.showWarning(
+        context,
+        'La descripción del hecho debe tener al menos 30 caracteres.',
+      );
       return;
     }
 
-    if (_sanctionOption != 'archivar' && _sanctionDescriptionController.text.trim().isEmpty) {
-      RrhhSnackBar.showWarning(context, 'Debe ingresar el texto o descripción de la sanción.');
+    if (_sanctionOption != 'archivar' &&
+        _sanctionDescriptionController.text.trim().isEmpty) {
+      RrhhSnackBar.showWarning(
+        context,
+        'Debe ingresar el texto o descripción de la sanción.',
+      );
       return;
     }
 
@@ -198,7 +222,10 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
     if (_sanctionOption == RrhhSanctionTypes.suspension) {
       suspensionDays = int.tryParse(_suspensionDaysController.text.trim()) ?? 1;
       if (suspensionDays <= 0 || suspensionDays > 5) {
-        RrhhSnackBar.showError(context, 'La suspensión debe ser entre 1 y 5 días según normativa.');
+        RrhhSnackBar.showError(
+          context,
+          'La suspensión debe ser entre 1 y 5 días según normativa.',
+        );
         return;
       }
       salaryDeduction = suspensionDays * _estimatedDailySalary;
@@ -234,15 +261,21 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
         incidentDate: _incidentDate,
         incidentDescription: _descriptionController.text.trim(),
         faultType: _faultType,
-        evidenceFile: _evidenceController.text.trim().isNotEmpty ? _evidenceController.text.trim() : null,
-        witnesses: _witnessesController.text.trim().isNotEmpty ? _witnessesController.text.trim() : null,
+        evidenceFile: _evidenceController.text.trim().isNotEmpty
+            ? _evidenceController.text.trim()
+            : null,
+        witnesses: _witnessesController.text.trim().isNotEmpty
+            ? _witnessesController.text.trim()
+            : null,
         requiresDischarge: _requiresDischarge,
         dischargeDeadline: _requiresDischarge ? _dischargeDeadline : null,
         dischargeText: widget.initialRecord?.dischargeText,
         dischargeDate: widget.initialRecord?.dischargeDate,
         sanctionType: _sanctionOption == 'archivar' ? null : _sanctionOption,
         suspensionDays: suspensionDays,
-        sanctionDescription: _sanctionOption == 'archivar' ? null : _sanctionDescriptionController.text.trim(),
+        sanctionDescription: _sanctionOption == 'archivar'
+            ? null
+            : _sanctionDescriptionController.text.trim(),
         salaryDeduction: salaryDeduction,
         notifiedEmployee: _notifiedEmployee,
         notifiedAt: _notifiedEmployee ? now : null,
@@ -250,9 +283,15 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
         status: isEditing ? widget.initialRecord!.status : initialStatus,
         createdAt: isEditing ? widget.initialRecord!.createdAt : now,
         updatedAt: now,
-        createdBy: isEditing ? widget.initialRecord!.createdBy : 'Lic. Laura Mendoza',
-        sanctionedAt: initialStatus == RrhhDisciplinaryStatus.sancionada ? now : widget.initialRecord?.sanctionedAt,
-        sanctionedBy: initialStatus == RrhhDisciplinaryStatus.sancionada ? 'Lic. Laura Mendoza' : widget.initialRecord?.sanctionedBy,
+        createdBy: isEditing
+            ? widget.initialRecord!.createdBy
+            : 'Lic. Laura Mendoza',
+        sanctionedAt: initialStatus == RrhhDisciplinaryStatus.sancionada
+            ? now
+            : widget.initialRecord?.sanctionedAt,
+        sanctionedBy: initialStatus == RrhhDisciplinaryStatus.sancionada
+            ? 'Lic. Laura Mendoza'
+            : widget.initialRecord?.sanctionedBy,
         notes: widget.initialRecord?.notes,
       );
 
@@ -268,10 +307,10 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
           isEditing
               ? 'Incidencia actualizada correctamente.'
               : (_requiresDischarge
-                  ? 'Incidencia registrada en espera de descargo.'
-                  : (_sanctionOption == 'archivar'
-                      ? 'Incidencia archivada sin sanción.'
-                      : 'Incidencia y sanción registradas exitosamente.')),
+                    ? 'Incidencia registrada en espera de descargo.'
+                    : (_sanctionOption == 'archivar'
+                          ? 'Incidencia archivada sin sanción.'
+                          : 'Incidencia y sanción registradas exitosamente.')),
         );
         Navigator.of(context).pop(true);
       }
@@ -302,7 +341,9 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
               child: _isLoadingEmployees
                   ? const Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2563EB)),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFF2563EB),
+                        ),
                       ),
                     )
                   : SingleChildScrollView(
@@ -343,7 +384,11 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
               color: const Color(0xFFEF4444).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.gavel_outlined, size: 20, color: Color(0xFFEF4444)),
+            child: const Icon(
+              Icons.gavel_outlined,
+              size: 20,
+              color: Color(0xFFEF4444),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -351,7 +396,9 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEditing ? 'Editar Incidencia Disciplinaria' : 'Registrar Incidencia',
+                  isEditing
+                      ? 'Editar Incidencia Disciplinaria'
+                      : 'Registrar Incidencia',
                   style: GoogleFonts.inter(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -361,7 +408,10 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                 const SizedBox(height: 2),
                 Text(
                   'Gestión de faltas, debido proceso, descargo y sanciones conforme a ley',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF94A3B8),
+                  ),
                 ),
               ],
             ),
@@ -392,7 +442,9 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
             dropdownColor: const Color(0xFF1E293B),
             style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
             icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF94A3B8)),
-            decoration: _inputDecoration(hint: 'Seleccionar empleado involucrado...'),
+            decoration: _inputDecoration(
+              hint: 'Seleccionar empleado involucrado...',
+            ),
             items: _employees.map((emp) {
               return DropdownMenuItem<RrhhEmployeeSummaryDto>(
                 value: emp,
@@ -405,7 +457,8 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
             onChanged: (emp) {
               setState(() => _selectedEmployee = emp);
             },
-            validator: (val) => val == null ? 'Debe seleccionar un empleado' : null,
+            validator: (val) =>
+                val == null ? 'Debe seleccionar un empleado' : null,
           ),
           if (_selectedEmployee != null) ...[
             const SizedBox(height: 10),
@@ -421,23 +474,37 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.badge_outlined, size: 16, color: Color(0xFF38BDF8)),
+                      const Icon(
+                        Icons.badge_outlined,
+                        size: 16,
+                        color: Color(0xFF38BDF8),
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         '${_selectedEmployee!.code} • ${_selectedEmployee!.fullName}',
-                        style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600, color: Colors.white),
+                        style: GoogleFonts.inter(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
                   Text(
                     'Cargo: ${_selectedEmployee!.position ?? '---'} | Área: ${_selectedEmployee!.area ?? '---'}',
-                    style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFFCBD5E1)),
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      color: const Color(0xFFCBD5E1),
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     'Supervisor directo: ${_getSupervisorForArea(_selectedEmployee!.area ?? '')}',
-                    style: GoogleFonts.inter(fontSize: 11.5, color: const Color(0xFF94A3B8)),
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      color: const Color(0xFF94A3B8),
+                    ),
                   ),
                 ],
               ),
@@ -475,7 +542,10 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                         }
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF111827),
                           borderRadius: BorderRadius.circular(8),
@@ -483,11 +553,18 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.calendar_today_outlined, size: 16, color: Color(0xFF94A3B8)),
+                            const Icon(
+                              Icons.calendar_today_outlined,
+                              size: 16,
+                              color: Color(0xFF94A3B8),
+                            ),
                             const SizedBox(width: 10),
                             Text(
                               _fmtDate(_incidentDate),
-                              style: GoogleFonts.jetBrainsMono(fontSize: 12.5, color: Colors.white),
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 12.5,
+                                color: Colors.white,
+                              ),
                             ),
                           ],
                         ),
@@ -524,7 +601,10 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                         }
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF111827),
                           borderRadius: BorderRadius.circular(8),
@@ -532,13 +612,20 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.access_time_outlined, size: 16, color: Color(0xFF94A3B8)),
+                            const Icon(
+                              Icons.access_time_outlined,
+                              size: 16,
+                              color: Color(0xFF94A3B8),
+                            ),
                             const SizedBox(width: 10),
                             Text(
                               _incidentTime != null
                                   ? '${_incidentTime!.hour.toString().padLeft(2, '0')}:${_incidentTime!.minute.toString().padLeft(2, '0')}'
                                   : 'No especificada',
-                              style: GoogleFonts.jetBrainsMono(fontSize: 12.5, color: Colors.white),
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 12.5,
+                                color: Colors.white,
+                              ),
                             ),
                           ],
                         ),
@@ -573,15 +660,24 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
             items: const [
               DropdownMenuItem(
                 value: RrhhFaultTypes.leve,
-                child: Text('Falta Leve (llegadas tarde, incumplimiento menor)', overflow: TextOverflow.ellipsis),
+                child: Text(
+                  'Falta Leve (llegadas tarde, incumplimiento menor)',
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               DropdownMenuItem(
                 value: RrhhFaultTypes.grave,
-                child: Text('Falta Grave (inasistencia injustificada, desobediencia, daño)', overflow: TextOverflow.ellipsis),
+                child: Text(
+                  'Falta Grave (inasistencia injustificada, desobediencia, daño)',
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               DropdownMenuItem(
                 value: RrhhFaultTypes.gravisima,
-                child: Text('Falta Gravísima (robo, violencia, abandono de trabajo)', overflow: TextOverflow.ellipsis),
+                child: Text(
+                  'Falta Gravísima (robo, violencia, abandono de trabajo)',
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
             onChanged: (val) {
@@ -596,7 +692,8 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
             maxLines: 3,
             style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
             decoration: _inputDecoration(
-              hint: 'Detalle detalladamente lo sucedido, circunstancias de tiempo, lugar y modo...',
+              hint:
+                  'Detalle detalladamente lo sucedido, circunstancias de tiempo, lugar y modo...',
             ),
             validator: (val) {
               if (val == null || val.trim().length < 30) {
@@ -616,8 +713,13 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                     const SizedBox(height: 6),
                     TextFormField(
                       controller: _witnessesController,
-                      style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
-                      decoration: _inputDecoration(hint: 'Ej: Juan Pérez, María López'),
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: Colors.white,
+                      ),
+                      decoration: _inputDecoration(
+                        hint: 'Ej: Juan Pérez, María López',
+                      ),
                     ),
                   ],
                 ),
@@ -631,15 +733,23 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                     const SizedBox(height: 6),
                     TextFormField(
                       controller: _evidenceController,
-                      style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: Colors.white,
+                      ),
                       decoration: _inputDecoration(
                         hint: 'acta_hecho.pdf, foto_01.jpg',
                         suffixIcon: IconButton(
-                          icon: const Icon(Icons.attach_file, size: 18, color: Color(0xFF38BDF8)),
+                          icon: const Icon(
+                            Icons.attach_file,
+                            size: 18,
+                            color: Color(0xFF38BDF8),
+                          ),
                           tooltip: 'Adjuntar archivo simulado',
                           onPressed: () {
                             if (_evidenceController.text.isEmpty) {
-                              _evidenceController.text = 'evidencia_inc_${DateTime.now().millisecondsSinceEpoch}.pdf';
+                              _evidenceController.text =
+                                  'evidencia_inc_${DateTime.now().millisecondsSinceEpoch}.pdf';
                             }
                           },
                         ),
@@ -680,17 +790,26 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                 ),
                 Expanded(
                   child: InkWell(
-                    onTap: () => setState(() => _requiresDischarge = !_requiresDischarge),
+                    onTap: () => setState(
+                      () => _requiresDischarge = !_requiresDischarge,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           '¿Requiere descargo del empleado?',
-                          style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
                         Text(
                           'Obligatorio por normativa para Faltas Graves o Gravísimas antes de aplicar sanción',
-                          style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF94A3B8)),
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF94A3B8),
+                          ),
                         ),
                       ],
                     ),
@@ -715,7 +834,9 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                             context: context,
                             initialDate: _dischargeDeadline,
                             firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(const Duration(days: 30)),
+                            lastDate: DateTime.now().add(
+                              const Duration(days: 30),
+                            ),
                             builder: (context, child) => Theme(
                               data: ThemeData.dark().copyWith(
                                 colorScheme: const ColorScheme.dark(
@@ -731,7 +852,10 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                           }
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFF111827),
                             borderRadius: BorderRadius.circular(8),
@@ -739,16 +863,26 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.timer_outlined, size: 16, color: Color(0xFFF59E0B)),
+                              const Icon(
+                                Icons.timer_outlined,
+                                size: 16,
+                                color: Color(0xFFF59E0B),
+                              ),
                               const SizedBox(width: 10),
                               Text(
                                 _fmtDate(_dischargeDeadline),
-                                style: GoogleFonts.jetBrainsMono(fontSize: 12.5, color: Colors.white),
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 12.5,
+                                  color: Colors.white,
+                                ),
                               ),
                               const Spacer(),
                               Text(
                                 '(3 días hábiles sugeridos)',
-                                style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B)),
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: const Color(0xFF64748B),
+                                ),
                               ),
                             ],
                           ),
@@ -782,12 +916,48 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
             icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF94A3B8)),
             decoration: _inputDecoration(),
             items: const [
-              DropdownMenuItem(value: RrhhSanctionTypes.verbal, child: Text('Amonestación verbal', overflow: TextOverflow.ellipsis)),
-              DropdownMenuItem(value: RrhhSanctionTypes.escrita, child: Text('Amonestación escrita (memorándum)', overflow: TextOverflow.ellipsis)),
-              DropdownMenuItem(value: RrhhSanctionTypes.pecuniaria, child: Text('Sanción pecuniaria (descuento salarial)', overflow: TextOverflow.ellipsis)),
-              DropdownMenuItem(value: RrhhSanctionTypes.suspension, child: Text('Suspensión sin goce (máx. 5 días)', overflow: TextOverflow.ellipsis)),
-              DropdownMenuItem(value: RrhhSanctionTypes.retiro, child: Text('Retiro / Destitución', overflow: TextOverflow.ellipsis)),
-              DropdownMenuItem(value: 'archivar', child: Text('Archivar sin sanción', overflow: TextOverflow.ellipsis)),
+              DropdownMenuItem(
+                value: RrhhSanctionTypes.verbal,
+                child: Text(
+                  'Amonestación verbal',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              DropdownMenuItem(
+                value: RrhhSanctionTypes.escrita,
+                child: Text(
+                  'Amonestación escrita (memorándum)',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              DropdownMenuItem(
+                value: RrhhSanctionTypes.pecuniaria,
+                child: Text(
+                  'Sanción pecuniaria (descuento salarial)',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              DropdownMenuItem(
+                value: RrhhSanctionTypes.suspension,
+                child: Text(
+                  'Suspensión sin goce (máx. 5 días)',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              DropdownMenuItem(
+                value: RrhhSanctionTypes.retiro,
+                child: Text(
+                  'Retiro / Destitución',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              DropdownMenuItem(
+                value: 'archivar',
+                child: Text(
+                  'Archivar sin sanción',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
             onChanged: (val) {
               if (val != null) {
@@ -809,13 +979,19 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                       TextFormField(
                         controller: _suspensionDaysController,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: Colors.white,
+                        ),
                         decoration: _inputDecoration(hint: '1 - 5'),
                         onChanged: (_) => setState(() {}),
                         validator: (val) {
                           final n = int.tryParse(val ?? '');
-                          if (n == null || n < 1 || n > 5) return 'Máximo 5 días';
+                          if (n == null || n < 1 || n > 5)
+                            return 'Máximo 5 días';
                           return null;
                         },
                       ),
@@ -831,7 +1007,10 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                       _fieldLabel('DESCUENTO SALARIAL ESTIMADO'),
                       const SizedBox(height: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF111827),
                           borderRadius: BorderRadius.circular(8),
@@ -839,7 +1018,11 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.attach_money, size: 16, color: Color(0xFFF97316)),
+                            const Icon(
+                              Icons.attach_money,
+                              size: 16,
+                              color: Color(0xFFF97316),
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Bs. ${((int.tryParse(_suspensionDaysController.text.trim()) ?? 0) * _estimatedDailySalary).toStringAsFixed(2)}',
@@ -852,7 +1035,10 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                             const Spacer(),
                             Text(
                               '(${_suspensionDaysController.text.trim().isEmpty ? "0" : _suspensionDaysController.text.trim()}d × Bs. 150/día)',
-                              style: GoogleFonts.inter(fontSize: 11, color: const Color(0xFF64748B)),
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: const Color(0xFF64748B),
+                              ),
                             ),
                           ],
                         ),
@@ -869,7 +1055,9 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
             const SizedBox(height: 6),
             TextFormField(
               controller: _salaryDeductionController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
               decoration: _inputDecoration(
                 hint: 'Ej: 300.00 (descuento salarial por falta injustificada)',
@@ -891,10 +1079,12 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
               maxLines: 2,
               style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
               decoration: _inputDecoration(
-                hint: 'Texto que se plasmará en el memorándum formal y legajo personal...',
+                hint:
+                    'Texto que se plasmará en el memorándum formal y legajo personal...',
               ),
               validator: (val) {
-                if (_sanctionOption != 'archivar' && (val == null || val.trim().isEmpty)) {
+                if (_sanctionOption != 'archivar' &&
+                    (val == null || val.trim().isEmpty)) {
                   return 'Debe ingresar la descripción de la sanción';
                 }
                 return null;
@@ -908,7 +1098,8 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                 value: _notifiedEmployee,
                 activeColor: const Color(0xFF2563EB),
                 checkColor: Colors.white,
-                onChanged: (val) => setState(() => _notifiedEmployee = val ?? false),
+                onChanged: (val) =>
+                    setState(() => _notifiedEmployee = val ?? false),
               ),
               Text(
                 'Notificar al empleado involucrado',
@@ -922,15 +1113,37 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                     isExpanded: true,
                     dropdownColor: const Color(0xFF1E293B),
                     style: GoogleFonts.inter(fontSize: 12, color: Colors.white),
-                    icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF94A3B8)),
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Color(0xFF94A3B8),
+                    ),
                     decoration: _inputDecoration(hint: 'Método'),
                     items: const [
-                      DropdownMenuItem(value: 'memorandum', child: Text('Memorándum físico firmado', overflow: TextOverflow.ellipsis)),
-                      DropdownMenuItem(value: 'email', child: Text('Correo corporativo', overflow: TextOverflow.ellipsis)),
-                      DropdownMenuItem(value: 'presencial', child: Text('Notificación presencial', overflow: TextOverflow.ellipsis)),
+                      DropdownMenuItem(
+                        value: 'memorandum',
+                        child: Text(
+                          'Memorándum físico firmado',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: 'email',
+                        child: Text(
+                          'Correo corporativo',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: 'presencial',
+                        child: Text(
+                          'Notificación presencial',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                     onChanged: (val) {
-                      if (val != null) setState(() => _notificationMethod = val);
+                      if (val != null)
+                        setState(() => _notificationMethod = val);
                     },
                   ),
                 ),
@@ -986,14 +1199,24 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           OutlinedButton(
-            onPressed: _isSaving ? null : () => Navigator.of(context).pop(false),
+            onPressed: _isSaving
+                ? null
+                : () => Navigator.of(context).pop(false),
             style: OutlinedButton.styleFrom(
               foregroundColor: const Color(0xFF94A3B8),
               side: const BorderSide(color: Color(0xFF334155)),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-            child: Text('Cancelar', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600)),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
           const SizedBox(width: 12),
           ElevatedButton.icon(
@@ -1002,17 +1225,26 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
                 ? const SizedBox(
                     width: 16,
                     height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
                 : const Icon(Icons.check, size: 16, color: Colors.white),
             label: Text(
               isEditing ? 'Guardar Cambios' : 'Registrar Incidencia',
-              style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2563EB),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           ),
         ],
@@ -1032,13 +1264,23 @@ class _RrhhDisciplinaryEditDialogState extends State<RrhhDisciplinaryEditDialog>
     );
   }
 
-  InputDecoration _inputDecoration({String? hint, String? prefixText, Widget? suffixIcon}) {
+  InputDecoration _inputDecoration({
+    String? hint,
+    String? prefixText,
+    Widget? suffixIcon,
+  }) {
     return InputDecoration(
       hintText: hint,
       prefixText: prefixText,
-      prefixStyle: GoogleFonts.inter(color: const Color(0xFFF97316), fontWeight: FontWeight.bold),
+      prefixStyle: GoogleFonts.inter(
+        color: const Color(0xFFF97316),
+        fontWeight: FontWeight.bold,
+      ),
       suffixIcon: suffixIcon,
-      hintStyle: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFF64748B)),
+      hintStyle: GoogleFonts.inter(
+        fontSize: 12.5,
+        color: const Color(0xFF64748B),
+      ),
       filled: true,
       fillColor: const Color(0xFF111827),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),

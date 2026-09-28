@@ -19,9 +19,11 @@ class RrhhDisciplinaryRecord {
   final DateTime? dischargeDate; // Fecha de presentación del descargo
 
   // Sanción
-  final String? sanctionType; // 'verbal' | 'escrita' | 'pecuniaria' | 'suspension' | 'retiro'
+  final String?
+  sanctionType; // 'verbal' | 'escrita' | 'pecuniaria' | 'suspension' | 'retiro'
   final int? suspensionDays; // Días de suspensión (máx 5 por ley)
-  final String? sanctionDescription; // Texto legal / administrativo de la sanción
+  final String?
+  sanctionDescription; // Texto legal / administrativo de la sanción
   final double? salaryDeduction; // Monto a descontar (si aplica)
 
   // Notificación
@@ -30,7 +32,8 @@ class RrhhDisciplinaryRecord {
   final String? notificationMethod; // 'email' | 'presencial' | 'memorandum'
 
   // Estado y Auditoría
-  final String status; // 'registrada' | 'en_descargo' | 'sancionada' | 'apelada' | 'archivada' | 'cerrada'
+  final String
+  status; // 'registrada' | 'en_descargo' | 'sancionada' | 'apelada' | 'archivada' | 'cerrada'
   final DateTime createdAt;
   final DateTime updatedAt;
   final String createdBy;

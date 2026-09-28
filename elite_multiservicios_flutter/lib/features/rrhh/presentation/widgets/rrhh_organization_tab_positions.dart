@@ -34,7 +34,9 @@ class _RrhhPositionTableWidths {
     const minArea = 170.0;
     const minTotal = fixedWidth + minNombre + minArea; // 940.0
 
-    final effectiveWidth = availableWidth > minTotal ? availableWidth : minTotal;
+    final effectiveWidth = availableWidth > minTotal
+        ? availableWidth
+        : minTotal;
     final extra = effectiveWidth - minTotal;
     final nombre = minNombre + (extra * 0.52);
     final area = minArea + (extra * 0.48);
@@ -61,10 +63,12 @@ class RrhhOrganizationTabPositions extends StatefulWidget {
   });
 
   @override
-  State<RrhhOrganizationTabPositions> createState() => _RrhhOrganizationTabPositionsState();
+  State<RrhhOrganizationTabPositions> createState() =>
+      _RrhhOrganizationTabPositionsState();
 }
 
-class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositions> {
+class _RrhhOrganizationTabPositionsState
+    extends State<RrhhOrganizationTabPositions> {
   bool _isLoading = true;
   String? _errorMessage;
 
@@ -189,17 +193,29 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
           ),
           title: Row(
             children: [
-              const Icon(Icons.info_outline, color: Color(0xFF60A5FA), size: 22),
+              const Icon(
+                Icons.info_outline,
+                color: Color(0xFF60A5FA),
+                size: 22,
+              ),
               const SizedBox(width: 10),
               Text(
                 'Desactivar Cargo',
-                style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
           content: Text(
             '¿Confirma que desea desactivar el cargo "${position.name}"? No se ofrecerá para nuevas vacantes.',
-            style: GoogleFonts.inter(fontSize: 13, color: const Color(0xFF94A3B8), height: 1.45),
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: const Color(0xFF94A3B8),
+              height: 1.45,
+            ),
           ),
           actions: [
             OutlinedButton(
@@ -212,7 +228,9 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              style: FilledButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFFEF4444),
+              ),
               child: const Text('Desactivar'),
             ),
           ],
@@ -327,19 +345,24 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
                             padding: EdgeInsets.symmetric(vertical: 40),
                             child: RrhhEmptyState(
                               title: 'No se encontraron cargos de trabajo',
-                              description: 'Intente ajustando el término de búsqueda o los filtros de área/estado.',
+                              description:
+                                  'Intente ajustando el término de búsqueda o los filtros de área/estado.',
                               icon: Icons.badge_outlined,
                             ),
                           )
                         else
-                          ...filtered.map((pos) => _RrhhPositionTableRow(
-                                position: pos,
-                                widths: widths,
-                                areaName: _getAreaName(pos.areaId),
-                                formattedSalary: _formatSalary(pos.suggestedSalary),
-                                onEdit: () => _openEditPosition(pos),
-                                onToggleStatus: () => _togglePositionStatus(pos),
-                              )),
+                          ...filtered.map(
+                            (pos) => _RrhhPositionTableRow(
+                              position: pos,
+                              widths: widths,
+                              areaName: _getAreaName(pos.areaId),
+                              formattedSalary: _formatSalary(
+                                pos.suggestedSalary,
+                              ),
+                              onEdit: () => _openEditPosition(pos),
+                              onToggleStatus: () => _togglePositionStatus(pos),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -349,7 +372,10 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
               if (!_isLoading && _positions.isNotEmpty)
                 Text(
                   'Mostrando ${filtered.length} de $totalCount cargos de trabajo',
-                  style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF64748B),
+                  ),
                 ),
             ],
           ),
@@ -372,7 +398,9 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
               style: GoogleFonts.inter(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+                color: isDark
+                    ? const Color(0xFFF8FAFC)
+                    : const Color(0xFF0F172A),
                 letterSpacing: -0.3,
               ),
             ),
@@ -381,7 +409,9 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
               'Puestos operativos de campo y perfiles administrativos de oficina',
               style: GoogleFonts.inter(
                 fontSize: 12,
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -391,12 +421,17 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
           icon: const Icon(Icons.add_rounded, size: 16),
           label: Text(
             'Nuevo Cargo',
-            style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600),
+            style: GoogleFonts.inter(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           style: FilledButton.styleFrom(
             backgroundColor: const Color(0xFF2563EB),
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
           ),
         ),
@@ -433,11 +468,22 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
                   style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Buscar cargo o área...',
-                    hintStyle: GoogleFonts.inter(color: const Color(0xFF64748B), fontSize: 12.5),
-                    prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF64748B)),
+                    hintStyle: GoogleFonts.inter(
+                      color: const Color(0xFF64748B),
+                      fontSize: 12.5,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      size: 18,
+                      color: Color(0xFF64748B),
+                    ),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.close, size: 16, color: Color(0xFF64748B)),
+                            icon: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Color(0xFF64748B),
+                            ),
                             onPressed: () {
                               _searchCtrl.clear();
                               setState(() => _searchQuery = '');
@@ -446,7 +492,10 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
                         : null,
                     filled: true,
                     fillColor: const Color(0xFF111827),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 0,
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(color: Color(0xFF1E293B)),
@@ -472,18 +521,39 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
                   child: DropdownButton<int?>(
                     value: _areaFilter,
                     dropdownColor: const Color(0xFF0F172A),
-                    icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFF94A3B8)),
-                    style: GoogleFonts.inter(color: Colors.white, fontSize: 12.5),
-                    hint: Text('Todas las áreas', style: GoogleFonts.inter(color: const Color(0xFF94A3B8), fontSize: 12.5)),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 18,
+                      color: Color(0xFF94A3B8),
+                    ),
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 12.5,
+                    ),
+                    hint: Text(
+                      'Todas las áreas',
+                      style: GoogleFonts.inter(
+                        color: const Color(0xFF94A3B8),
+                        fontSize: 12.5,
+                      ),
+                    ),
                     items: [
                       DropdownMenuItem<int?>(
                         value: null,
-                        child: Text('Todas las áreas (${_areas.length})', style: GoogleFonts.inter(fontSize: 12.5)),
+                        child: Text(
+                          'Todas las áreas (${_areas.length})',
+                          style: GoogleFonts.inter(fontSize: 12.5),
+                        ),
                       ),
-                      ..._areas.map((a) => DropdownMenuItem<int?>(
-                            value: a.id,
-                            child: Text(a.name, style: GoogleFonts.inter(fontSize: 12.5)),
-                          )),
+                      ..._areas.map(
+                        (a) => DropdownMenuItem<int?>(
+                          value: a.id,
+                          child: Text(
+                            a.name,
+                            style: GoogleFonts.inter(fontSize: 12.5),
+                          ),
+                        ),
+                      ),
                     ],
                     onChanged: (val) => setState(() => _areaFilter = val),
                   ),
@@ -516,10 +586,14 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2563EB).withValues(alpha: 0.15) : const Color(0xFF111827),
+          color: isSelected
+              ? const Color(0xFF2563EB).withValues(alpha: 0.15)
+              : const Color(0xFF111827),
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF1E293B),
+            color: isSelected
+                ? const Color(0xFF2563EB)
+                : const Color(0xFF1E293B),
           ),
         ),
         child: Text(
@@ -527,7 +601,9 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? const Color(0xFF60A5FA) : const Color(0xFF94A3B8),
+            color: isSelected
+                ? const Color(0xFF60A5FA)
+                : const Color(0xFF94A3B8),
           ),
         ),
       ),
@@ -558,7 +634,11 @@ class _RrhhOrganizationTabPositionsState extends State<RrhhOrganizationTabPositi
     );
   }
 
-  Widget _buildTh(String title, double width, {TextAlign align = TextAlign.left}) {
+  Widget _buildTh(
+    String title,
+    double width, {
+    TextAlign align = TextAlign.left,
+  }) {
     return SizedBox(
       width: width,
       child: Text(
@@ -636,7 +716,9 @@ class _RrhhPositionTableRowState extends State<_RrhhPositionTableRow> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: _isHovered ? const Color(0xFF141D30) : Colors.transparent,
-          border: const Border(bottom: BorderSide(color: Color(0xFF1E293B), width: 0.8)),
+          border: const Border(
+            bottom: BorderSide(color: Color(0xFF1E293B), width: 0.8),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -688,12 +770,23 @@ class _RrhhPositionTableRowState extends State<_RrhhPositionTableRow> {
             SizedBox(
               width: w.tipo,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 2.5,
+                ),
                 decoration: BoxDecoration(
-                  color: (isCampo ? const Color(0xFF38BDF8) : const Color(0xFFA78BFA)).withValues(alpha: 0.12),
+                  color:
+                      (isCampo
+                              ? const Color(0xFF38BDF8)
+                              : const Color(0xFFA78BFA))
+                          .withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(4),
                   border: Border.all(
-                    color: (isCampo ? const Color(0xFF38BDF8) : const Color(0xFFA78BFA)).withValues(alpha: 0.3),
+                    color:
+                        (isCampo
+                                ? const Color(0xFF38BDF8)
+                                : const Color(0xFFA78BFA))
+                            .withValues(alpha: 0.3),
                     width: 0.8,
                   ),
                 ),
@@ -703,7 +796,9 @@ class _RrhhPositionTableRowState extends State<_RrhhPositionTableRow> {
                   style: GoogleFonts.inter(
                     fontSize: 9.5,
                     fontWeight: FontWeight.w700,
-                    color: isCampo ? const Color(0xFF38BDF8) : const Color(0xFFA78BFA),
+                    color: isCampo
+                        ? const Color(0xFF38BDF8)
+                        : const Color(0xFFA78BFA),
                   ),
                 ),
               ),
@@ -714,7 +809,11 @@ class _RrhhPositionTableRowState extends State<_RrhhPositionTableRow> {
               width: w.sueldo,
               child: Row(
                 children: [
-                  const Icon(Icons.lock_outline, size: 12, color: Color(0xFF64748B)),
+                  const Icon(
+                    Icons.lock_outline,
+                    size: 12,
+                    color: Color(0xFF64748B),
+                  ),
                   const SizedBox(width: 5),
                   Expanded(
                     child: Text(
@@ -738,7 +837,11 @@ class _RrhhPositionTableRowState extends State<_RrhhPositionTableRow> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: BoxDecoration(
-                  color: (p.isActive ? const Color(0xFF10B981) : const Color(0xFF64748B)).withValues(alpha: 0.15),
+                  color:
+                      (p.isActive
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFF64748B))
+                          .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: Row(
@@ -748,7 +851,9 @@ class _RrhhPositionTableRowState extends State<_RrhhPositionTableRow> {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: p.isActive ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
+                        color: p.isActive
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFF94A3B8),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -758,7 +863,9 @@ class _RrhhPositionTableRowState extends State<_RrhhPositionTableRow> {
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: p.isActive ? const Color(0xFF34D399) : const Color(0xFF94A3B8),
+                        color: p.isActive
+                            ? const Color(0xFF34D399)
+                            : const Color(0xFF94A3B8),
                       ),
                     ),
                   ],
@@ -776,7 +883,10 @@ class _RrhhPositionTableRowState extends State<_RrhhPositionTableRow> {
                     onPressed: widget.onEdit,
                     style: TextButton.styleFrom(
                       foregroundColor: const Color(0xFF94A3B8),
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 3,
+                      ),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
@@ -794,7 +904,11 @@ class _RrhhPositionTableRowState extends State<_RrhhPositionTableRow> {
                     width: 24,
                     height: 24,
                     child: PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 15, color: Color(0xFF64748B)),
+                      icon: const Icon(
+                        Icons.more_vert,
+                        size: 15,
+                        color: Color(0xFF64748B),
+                      ),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       color: const Color(0xFF0F172A),
@@ -807,13 +921,19 @@ class _RrhhPositionTableRowState extends State<_RrhhPositionTableRow> {
                           child: Row(
                             children: [
                               Icon(
-                                p.isActive ? Icons.block_flipped : Icons.check_circle_outline,
+                                p.isActive
+                                    ? Icons.block_flipped
+                                    : Icons.check_circle_outline,
                                 size: 15,
-                                color: p.isActive ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                                color: p.isActive
+                                    ? const Color(0xFFEF4444)
+                                    : const Color(0xFF10B981),
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                p.isActive ? 'Desactivar Cargo' : 'Activar Cargo',
+                                p.isActive
+                                    ? 'Desactivar Cargo'
+                                    : 'Activar Cargo',
                                 style: GoogleFonts.inter(fontSize: 12.5),
                               ),
                             ],
