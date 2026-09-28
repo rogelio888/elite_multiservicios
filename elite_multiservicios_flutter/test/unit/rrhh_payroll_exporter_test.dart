@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/utils/rrhh_payroll_exporter.dart';
-import 'package:elite_multiservicios_flutter/features/rrhh/data/models/rrhh_employee.dart';
 
 void main() {
   group('RrhhPayrollExporter Tests', () {
     final employees = [
       RrhhEmployee(
-        id: '1',
+        id: 1,
         code: 'EMP-001',
         fullName: 'Juan Carlos Pérez Mendoza',
         birthPlace: 'Santa Cruz',
@@ -28,6 +28,8 @@ void main() {
         contractType: 'Indefinido',
         observations: 'Ninguna',
         status: 'ACTIVO',
+        createdAt: DateTime(2023, 5, 12),
+        updatedAt: DateTime(2023, 5, 12),
       ),
     ];
 
@@ -35,7 +37,6 @@ void main() {
       'Genera planilla XML compatible con Excel con nombre de hoja PSUELDOS',
       () {
         expect(employees.isNotEmpty, isTrue);
-
 
         final xml = RrhhPayrollExporter.generateSpreadsheetXml(
           employees: employees,

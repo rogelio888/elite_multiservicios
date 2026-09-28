@@ -102,14 +102,19 @@ extension RrhhEmployeeSummaryDtoUiExtension on RrhhEmployeeSummaryDto {
 
 /// 4. Extensión para RrhhHiringDossier (Serverpod)
 extension RrhhHiringDossierUiExtension on RrhhHiringDossier {
+  static bool _isSecComplete(String? st) {
+    final s = st?.toLowerCase();
+    return s == 'completa' || s == 'completo';
+  }
+
   int get completedSectionsCount {
     int count = 0;
-    if (section1Status == 'completa') count++;
-    if (section2Status == 'completa') count++;
-    if (section3Status == 'completa') count++;
-    if (section4Status == 'completa') count++;
-    if (section5Status == 'completa') count++;
-    if (section6Status == 'completa') count++;
+    if (_isSecComplete(section1Status)) count++;
+    if (_isSecComplete(section2Status)) count++;
+    if (_isSecComplete(section3Status)) count++;
+    if (_isSecComplete(section4Status)) count++;
+    if (_isSecComplete(section5Status)) count++;
+    if (_isSecComplete(section6Status)) count++;
     return count;
   }
 
@@ -141,25 +146,36 @@ extension RrhhHiringDossierUiExtension on RrhhHiringDossier {
   int get totalRequiredDocsCount =>
       (documentChecklist ?? []).where((d) => d.isRequired).length;
 
-  int get validatedRequiredDocsCount =>
-      (documentChecklist ?? []).where((d) => d.isRequired && d.status == 'validado').length;
+  int get validatedRequiredDocsCount => (documentChecklist ?? [])
+      .where((d) => d.isRequired && d.status == 'validado')
+      .length;
 
   bool get areAllRequiredDocumentsValidated =>
-      totalRequiredDocsCount > 0 && validatedRequiredDocsCount >= totalRequiredDocsCount;
+      totalRequiredDocsCount > 0 &&
+      validatedRequiredDocsCount >= totalRequiredDocsCount;
 
   bool get isReadyForEmployeeCreation =>
-      section1Status == 'completa' &&
-      section2Status == 'completa' &&
-      section3Status == 'completa' &&
-      section4Status == 'completa' &&
-      section5Status == 'completa';
+      _isSecComplete(section1Status) &&
+      _isSecComplete(section2Status) &&
+      _isSecComplete(section3Status) &&
+      _isSecComplete(section4Status) &&
+      _isSecComplete(section5Status);
 
-  String get applicantFullName => applicantName;
-  String get applicantCi => '---';
-  String get applicantPhone => '---';
-  String? get applicantEmail => null;
-  DateTime get applicationDate => createdAt;
-  double? get applicantExpectedSalary => baseSalary;
+  RrhhApplicant? get _registeredApplicant =>
+      RrhhDossierApplicantInfoRegistry.get(
+        applicantId: applicantId,
+        applicantCode: applicantCode,
+      );
+
+  String get applicantFullName =>
+      _registeredApplicant?.fullName ?? applicantName;
+  String get applicantCi => _registeredApplicant?.identityCard ?? '---';
+  String get applicantPhone => _registeredApplicant?.phone ?? '---';
+  String? get applicantEmail => _registeredApplicant?.email;
+  DateTime get applicationDate =>
+      _registeredApplicant?.applicationDate ?? createdAt;
+  double? get applicantExpectedSalary =>
+      _registeredApplicant?.expectedSalary ?? baseSalary;
   String? get healthInsuranceName => healthInsurance;
   String? get healthInsuranceId => healthInsurance;
   String? get afpId => afpName;
@@ -168,14 +184,43 @@ extension RrhhHiringDossierUiExtension on RrhhHiringDossier {
   String get currency => 'BOB';
   String? get paymentModalityId => paymentModality;
   String? get paymentModalityName => paymentModality;
-  String? get areaName => areaId != null ? 'Área #$areaId' : null;
+  String? get areaName =>
+      _registeredApplicant?.targetArea ??
+      (areaId != null ? 'Área #$areaId' : null);
   String? get targetArea => areaName;
-  String? get positionName => positionId != null ? 'Cargo #$positionId' : null;
+  String? get positionName =>
+      _registeredApplicant?.targetPosition ??
+      (positionId != null ? 'Cargo #$positionId' : null);
   String? get targetPosition => positionName;
   String? get shiftName => shiftId != null ? 'Turno #$shiftId' : null;
-  String? get scheduleName => scheduleId != null ? 'Horario #$scheduleId' : null;
-  String? get supervisorName => supervisorEmployeeId != null ? 'Supervisor #$supervisorEmployeeId' : null;
-  String? get workplaceType => baseLocation;
+  String? get scheduleName =>
+      scheduleId != null ? 'Horario #$scheduleId' : null;
+  String? get supervisorName =>
+      supervisorEmployeeId != null ? 'Supervisor #$supervisorEmployeeId' : null;
+  String? get workplaceType => _registeredApplicant?.targetType ?? baseLocation;
+}
+
+/// Registro centralizado en memoria para asociar datos completos del postulante al expediente.
+class RrhhDossierApplicantInfoRegistry {
+  static final Map<int, RrhhApplicant> _applicantsById = {};
+  static final Map<String, RrhhApplicant> _applicantsByCode = {};
+
+  static void register(RrhhApplicant applicant) {
+    if (applicant.id != null) {
+      _applicantsById[applicant.id!] = applicant;
+    }
+    _applicantsByCode[applicant.code] = applicant;
+  }
+
+  static RrhhApplicant? get({int? applicantId, String? applicantCode}) {
+    if (applicantId != null && _applicantsById.containsKey(applicantId)) {
+      return _applicantsById[applicantId];
+    }
+    if (applicantCode != null && _applicantsByCode.containsKey(applicantCode)) {
+      return _applicantsByCode[applicantCode];
+    }
+    return null;
+  }
 }
 
 /// 5. Extensión para RrhhDossierDocument (Serverpod)

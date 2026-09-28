@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart'
     hide RrhhLeaveRequest;
 import 'package:elite_multiservicios_flutter/main.dart' as app;
@@ -500,7 +501,8 @@ class RrhhRepositoryRemote implements RrhhRepository {
               specialty: a.specialty ?? 'General',
               status: a.status,
               applicationDate: a.applicationDate,
-              hasCv: a.hasCvAttached || (a.cvUrl != null && a.cvUrl!.isNotEmpty),
+              hasCv:
+                  a.hasCvAttached || (a.cvUrl != null && a.cvUrl!.isNotEmpty),
             ),
           )
           .toList();
@@ -523,6 +525,7 @@ class RrhhRepositoryRemote implements RrhhRepository {
           message: 'Postulante con ID $id no fue encontrado.',
         );
       }
+      RrhhDossierApplicantInfoRegistry.register(applicant);
       return applicant;
     } catch (e) {
       throw RrhhRemoteException.fromServerpod(e);
@@ -602,12 +605,60 @@ class RrhhRepositoryRemote implements RrhhRepository {
 
       final docsMap = dossier?.documents ?? {};
 
+      // Reconstruir interviewRecord a partir de appApplicant.interviewNotes si existe
+      RrhhInterviewRecord? interview;
+      if (appApplicant.interviewNotes != null &&
+          appApplicant.interviewNotes!.trim().isNotEmpty) {
+        final raw = appApplicant.interviewNotes!.trim();
+        if (raw.startsWith('{') && raw.endsWith('}')) {
+          try {
+            final json = jsonDecode(raw) as Map<String, dynamic>;
+            interview = RrhhInterviewRecord(
+              dateTime:
+                  DateTime.tryParse(json['dateTime'] as String? ?? '') ??
+                  appApplicant.updatedAt,
+              interviewers:
+                  (json['interviewers'] as List<dynamic>?)
+                      ?.map((e) => e.toString())
+                      .toList() ??
+                  const ['Encargada de RRHH'],
+              modality: json['modality'] as String? ?? 'Presencial',
+              notes: json['notes'] as String? ?? '',
+              result: json['result'] as String? ?? 'Apto',
+              rejectionReason: json['rejectionReason'] as String?,
+              attachedUrl: json['attachedUrl'] as String?,
+            );
+          } catch (_) {
+            interview = RrhhInterviewRecord(
+              dateTime: appApplicant.updatedAt,
+              interviewers: const ['Encargada de RRHH'],
+              modality: 'Presencial',
+              notes: raw,
+              result: 'Apto',
+            );
+          }
+        } else {
+          interview = RrhhInterviewRecord(
+            dateTime: appApplicant.updatedAt,
+            interviewers: const ['Encargada de RRHH'],
+            modality: 'Presencial',
+            notes: raw,
+            result: 'Apto',
+          );
+        }
+      }
+
+      final avisoDoc = docsMap['AVISO'] ?? docsMap['AVISO_LUZ_AGUA'];
+
       final initial = RrhhApplicantCompanion(
         applicantId: applicantId,
+        interviewRecord: interview,
         evaluation: RrhhApplicantEvaluation(
           education: appApplicant.education,
           experienceSummary: appApplicant.experienceSummary,
-          technicalSkills: appApplicant.skills != null && appApplicant.skills!.trim().isNotEmpty
+          technicalSkills:
+              appApplicant.skills != null &&
+                  appApplicant.skills!.trim().isNotEmpty
               ? appApplicant.skills!.split(',').map((s) => s.trim()).toList()
               : const [],
           personalReferenceName: appApplicant.referencePerson,
@@ -615,12 +666,24 @@ class RrhhRepositoryRemote implements RrhhRepository {
           salaryExpectation: appApplicant.expectedSalary,
         ),
         documents: RrhhApplicantDocumentsChecklist(
-          hasCiCopy: appApplicant.hasIdentityCardCopy || (docsMap['CI']?.status != null && docsMap['CI']!.status != 'pendiente'),
-          hasFelcc: docsMap['FELCC']?.status != null && docsMap['FELCC']!.status != 'pendiente',
-          hasUtilityBill: docsMap['AVISO_LUZ_AGUA']?.status != null && docsMap['AVISO_LUZ_AGUA']!.status != 'pendiente',
-          hasHomeSketch: docsMap['CROQUIS']?.status != null && docsMap['CROQUIS']!.status != 'pendiente',
-          hasPhoto3x4: docsMap['FOTO']?.status != null && docsMap['FOTO']!.status != 'pendiente',
-          hasSus: docsMap['SUS']?.status != null && docsMap['SUS']!.status != 'pendiente',
+          hasCiCopy:
+              appApplicant.hasIdentityCardCopy ||
+              (docsMap['CI']?.status != null &&
+                  docsMap['CI']!.status != 'pendiente'),
+          hasFelcc:
+              docsMap['FELCC']?.status != null &&
+              docsMap['FELCC']!.status != 'pendiente',
+          hasUtilityBill:
+              avisoDoc?.status != null && avisoDoc!.status != 'pendiente',
+          hasHomeSketch:
+              docsMap['CROQUIS']?.status != null &&
+              docsMap['CROQUIS']!.status != 'pendiente',
+          hasPhoto3x4:
+              docsMap['FOTO']?.status != null &&
+              docsMap['FOTO']!.status != 'pendiente',
+          hasSus:
+              docsMap['SUS']?.status != null &&
+              docsMap['SUS']!.status != 'pendiente',
         ),
       );
       _companions[applicantId] = initial;
@@ -637,11 +700,24 @@ class RrhhRepositoryRemote implements RrhhRepository {
   ) async {
     _companions[applicantId] = companion;
 
-    // 1. Persistir campos de evaluación y documentos en la tabla rrhh_applicant de Serverpod
+    // 1. Persistir campos de evaluación, documentos y entrevista en la tabla rrhh_applicant de Serverpod
     try {
       final existing = await getApplicantById(applicantId);
       final eval = companion.evaluation;
       final docs = companion.documents;
+
+      String? serializedInterview;
+      if (companion.interviewRecord != null) {
+        serializedInterview = jsonEncode({
+          'dateTime': companion.interviewRecord!.dateTime.toIso8601String(),
+          'interviewers': companion.interviewRecord!.interviewers,
+          'modality': companion.interviewRecord!.modality,
+          'notes': companion.interviewRecord!.notes,
+          'result': companion.interviewRecord!.result,
+          'rejectionReason': companion.interviewRecord!.rejectionReason,
+          'attachedUrl': companion.interviewRecord!.attachedUrl,
+        });
+      }
 
       final updated = existing.copyWith(
         education: eval.education ?? eval.educationLevel ?? existing.education,
@@ -649,10 +725,17 @@ class RrhhRepositoryRemote implements RrhhRepository {
         skills: eval.technicalSkills.isNotEmpty
             ? eval.technicalSkills.join(', ')
             : existing.skills,
-        referencePerson: eval.personalReferenceName ?? eval.workReferenceName ?? existing.referencePerson,
-        referencePhone: eval.personalReferencePhone ?? eval.workReferencePhone ?? existing.referencePhone,
+        referencePerson:
+            eval.personalReferenceName ??
+            eval.workReferenceName ??
+            existing.referencePerson,
+        referencePhone:
+            eval.personalReferencePhone ??
+            eval.workReferencePhone ??
+            existing.referencePhone,
         expectedSalary: eval.salaryExpectation ?? existing.expectedSalary,
         hasIdentityCardCopy: docs.hasCiCopy,
+        interviewNotes: serializedInterview ?? existing.interviewNotes,
       );
 
       await updateApplicant(updated);
@@ -662,18 +745,24 @@ class RrhhRepositoryRemote implements RrhhRepository {
     try {
       final dossier = await getDossierByApplicantId(applicantId);
       if (dossier != null && dossier.id != null) {
-        final docsMap = Map<String, RrhhDossierDocument>.from(dossier.documents);
+        final docsMap = Map<String, RrhhDossierDocument>.from(
+          dossier.documents,
+        );
         final d = companion.documents;
         void syncDoc(String key, bool hasDoc) {
           if (docsMap.containsKey(key)) {
             docsMap[key] = docsMap[key]!.copyWith(
               status: hasDoc ? 'recibido' : 'pendiente',
-              receivedAt: hasDoc ? (docsMap[key]!.receivedAt ?? DateTime.now()) : null,
+              receivedAt: hasDoc
+                  ? (docsMap[key]!.receivedAt ?? DateTime.now())
+                  : null,
             );
           }
         }
+
         syncDoc('CI', d.hasCiCopy);
         syncDoc('FELCC', d.hasFelcc);
+        syncDoc('AVISO', d.hasUtilityBill);
         syncDoc('AVISO_LUZ_AGUA', d.hasUtilityBill);
         syncDoc('CROQUIS', d.hasHomeSketch);
         syncDoc('FOTO', d.hasPhoto3x4);
@@ -704,12 +793,22 @@ class RrhhRepositoryRemote implements RrhhRepository {
   ) async {
     final comp = await getApplicantCompanion(applicantId);
     final updatedComp = comp.copyWith(interviewRecord: record);
-    await saveApplicantCompanion(applicantId, updatedComp);
+    _companions[applicantId] = updatedComp;
+
+    final serialized = jsonEncode({
+      'dateTime': record.dateTime.toIso8601String(),
+      'interviewers': record.interviewers,
+      'modality': record.modality,
+      'notes': record.notes,
+      'result': record.result,
+      'rejectionReason': record.rejectionReason,
+      'attachedUrl': record.attachedUrl,
+    });
 
     try {
       final existing = await getApplicantById(applicantId);
       final updated = existing.copyWith(
-        interviewNotes: record.notes,
+        interviewNotes: serialized,
       );
       await updateApplicant(updated);
     } catch (_) {}
@@ -723,10 +822,21 @@ class RrhhRepositoryRemote implements RrhhRepository {
   @override
   Future<List<RrhhHiringDossier>> listActiveDossiers() async {
     try {
-      return await app.client.rrhhHiring.listActiveDossiers(
+      final dossiers = await app.client.rrhhHiring.listActiveDossiers(
         limit: 100,
         offset: 0,
       );
+      for (final d in dossiers) {
+        if (d.applicantId != null &&
+            RrhhDossierApplicantInfoRegistry.get(applicantId: d.applicantId) ==
+                null) {
+          try {
+            final a = await getApplicantById(d.applicantId!);
+            RrhhDossierApplicantInfoRegistry.register(a);
+          } catch (_) {}
+        }
+      }
+      return dossiers;
     } catch (e) {
       throw RrhhRemoteException.fromServerpod(e);
     }
@@ -766,13 +876,29 @@ class RrhhRepositoryRemote implements RrhhRepository {
   @override
   Future<RrhhHiringDossier> updateDossierSection1(
     int id,
-    Map<String, RrhhDossierDocument> documents,
-  ) async {
+    Map<String, RrhhDossierDocument> documents, {
+    String? sectionStatus,
+  }) async {
     try {
+      final docList = documents.values.toList();
+      final requiredDocs = docList.where((d) => d.isRequired);
+      final allRequiredOk =
+          requiredDocs.isNotEmpty &&
+          requiredDocs.every((d) => d.status.toLowerCase() == 'validado');
+      final hasAnyProgress = docList.any(
+        (d) => d.status.toLowerCase() != 'pendiente',
+      );
+
+      final computedStatus =
+          sectionStatus ??
+          (allRequiredOk
+              ? 'completa'
+              : (hasAnyProgress ? 'en_proceso' : 'pendiente'));
+
       return await app.client.rrhhHiring.updateDossierSection1(
         id: id,
-        documentChecklist: documents.values.toList(),
-        sectionStatus: 'completo',
+        documentChecklist: docList,
+        sectionStatus: computedStatus,
       );
     } catch (e) {
       throw RrhhRemoteException.fromServerpod(e);
@@ -1465,7 +1591,10 @@ class RrhhRepositoryRemote implements RrhhRepository {
   }
 
   @override
-  Future<RrhhPayrollPeriod?> getPayrollPeriodByMonth(int year, int month) async {
+  Future<RrhhPayrollPeriod?> getPayrollPeriodByMonth(
+    int year,
+    int month,
+  ) async {
     return null;
   }
 

@@ -63,7 +63,9 @@ class _RrhhHiringDossierDetailViewState
   // Section 3 controllers
   final TextEditingController _s3AddressCtrl = TextEditingController();
   String? _s3MaritalStatus;
-  final TextEditingController _s3ChildrenCtrl = TextEditingController(text: '0');
+  final TextEditingController _s3ChildrenCtrl = TextEditingController(
+    text: '0',
+  );
   final TextEditingController _s3EmergNameCtrl = TextEditingController();
   final TextEditingController _s3EmergPhoneCtrl = TextEditingController();
   String? _s3EmergRelation;
@@ -90,13 +92,15 @@ class _RrhhHiringDossierDetailViewState
   String? _s5ShiftName;
   String? _s5ScheduleId;
   String? _s5ScheduleName;
-  final TextEditingController _s5BaseLocationCtrl =
-      TextEditingController(text: 'Oficina Central Santa Cruz');
+  final TextEditingController _s5BaseLocationCtrl = TextEditingController(
+    text: 'Oficina Central Santa Cruz',
+  );
   String? _s5SupervisorId;
   String? _s5SupervisorName;
   DateTime? _s5EffectiveStartDate;
 
   // Datos originales del postulante para rastreo de origen / pre-carga
+  RrhhApplicant? _applicant;
   String? _applicantAddress;
   String? _applicantEmergName;
   String? _applicantEmergPhone;
@@ -148,17 +152,39 @@ class _RrhhHiringDossierDetailViewState
 
     if (mounted) {
       setState(() {
-        _afpItems = (results[0] as List<RrhhCatalogItem>).where((i) => i.isActive).toList();
-        _healthInsuranceItems = (results[1] as List<RrhhCatalogItem>).where((i) => i.isActive).toList();
-        _contractTypeItems = (results[2] as List<RrhhCatalogItem>).where((i) => i.isActive).toList();
-        _paymentModalityItems = (results[3] as List<RrhhCatalogItem>).where((i) => i.isActive).toList();
-        _bonusCatalogItems = (results[4] as List<RrhhCatalogItem>).where((i) => i.isActive).toList();
-        _deductionCatalogItems = (results[5] as List<RrhhCatalogItem>).where((i) => i.isActive).toList();
-        _shifts = (results[6] as List<RrhhShift>).where((s) => s.isActive).toList();
-        _schedules = (results[7] as List<RrhhBaseSchedule>).where((s) => s.isActive).toList();
-        _areas = (results[8] as List<RrhhArea>).where((a) => a.isActive).toList();
-        _positions = (results[9] as List<RrhhPosition>).where((p) => p.isActive).toList();
-        _supervisors = (results[10] as List<RrhhEmployeeSummaryDto>).where((e) => e.status == 'ACTIVO').toList();
+        _afpItems = (results[0] as List<RrhhCatalogItem>)
+            .where((i) => i.isActive)
+            .toList();
+        _healthInsuranceItems = (results[1] as List<RrhhCatalogItem>)
+            .where((i) => i.isActive)
+            .toList();
+        _contractTypeItems = (results[2] as List<RrhhCatalogItem>)
+            .where((i) => i.isActive)
+            .toList();
+        _paymentModalityItems = (results[3] as List<RrhhCatalogItem>)
+            .where((i) => i.isActive)
+            .toList();
+        _bonusCatalogItems = (results[4] as List<RrhhCatalogItem>)
+            .where((i) => i.isActive)
+            .toList();
+        _deductionCatalogItems = (results[5] as List<RrhhCatalogItem>)
+            .where((i) => i.isActive)
+            .toList();
+        _shifts = (results[6] as List<RrhhShift>)
+            .where((s) => s.isActive)
+            .toList();
+        _schedules = (results[7] as List<RrhhBaseSchedule>)
+            .where((s) => s.isActive)
+            .toList();
+        _areas = (results[8] as List<RrhhArea>)
+            .where((a) => a.isActive)
+            .toList();
+        _positions = (results[9] as List<RrhhPosition>)
+            .where((p) => p.isActive)
+            .toList();
+        _supervisors = (results[10] as List<RrhhEmployeeSummaryDto>)
+            .where((e) => e.status == 'ACTIVO')
+            .toList();
       });
     }
   }
@@ -187,12 +213,18 @@ class _RrhhHiringDossierDetailViewState
     _s4WorkdayType = d.workdayType ?? 'Completa';
     _s4PaymentModalityId = d.paymentModalityId;
     _s4PaymentModalityName = d.paymentModalityName;
-    _s4BaseSalaryCtrl.text = d.baseSalary != null ? d.baseSalary!.toStringAsFixed(0) : '';
+    _s4BaseSalaryCtrl.text = d.baseSalary != null
+        ? d.baseSalary!.toStringAsFixed(0)
+        : '';
     _s4Currency = d.currency;
     _s4StartDate = d.contractStartDate;
     _s4EndDate = d.contractEndDate;
-    _s4Bonuses = d.bonuses != null ? List<RrhhEmployeeBonus>.from(d.bonuses!) : [];
-    _s4Deductions = d.deductions != null ? List<RrhhEmployeeDeduction>.from(d.deductions!) : [];
+    _s4Bonuses = d.bonuses != null
+        ? List<RrhhEmployeeBonus>.from(d.bonuses!)
+        : [];
+    _s4Deductions = d.deductions != null
+        ? List<RrhhEmployeeDeduction>.from(d.deductions!)
+        : [];
   }
 
   void _populateSection5From(RrhhHiringDossier d) {
@@ -204,8 +236,11 @@ class _RrhhHiringDossierDetailViewState
     _s5ShiftName = d.shiftName;
     _s5ScheduleId = d.scheduleId;
     _s5ScheduleName = d.scheduleName;
-    _s5BaseLocationCtrl.text = d.baseLocation ??
-        (d.workplaceType == 'CAMPO' ? 'Puesto Campo / Clientes' : 'Oficina Central Santa Cruz');
+    _s5BaseLocationCtrl.text =
+        d.baseLocation ??
+        (d.workplaceType == 'CAMPO'
+            ? 'Puesto Campo / Clientes'
+            : 'Oficina Central Santa Cruz');
     _s5SupervisorId = d.supervisorEmployeeId;
     _s5SupervisorName = d.supervisorName;
     _s5EffectiveStartDate = d.effectiveStartDate ?? d.contractStartDate;
@@ -219,7 +254,9 @@ class _RrhhHiringDossierDetailViewState
     if (d != null && d.applicantId != null) {
       try {
         app = await RrhhRepository.current.getApplicantById(d.applicantId!);
-        comp = await RrhhRepository.current.getApplicantCompanion(d.applicantId!);
+        comp = await RrhhRepository.current.getApplicantCompanion(
+          d.applicantId!,
+        );
       } catch (_) {}
     }
 
@@ -229,17 +266,24 @@ class _RrhhHiringDossierDetailViewState
         _isLoading = false;
 
         if (app != null || comp != null) {
+          _applicant = app;
+          if (app != null) {
+            RrhhDossierApplicantInfoRegistry.register(app);
+          }
           _applicantAddress = app?.address;
-          _applicantEmergName = comp?.evaluation.personalReferenceName ??
+          _applicantEmergName =
+              comp?.evaluation.personalReferenceName ??
               app?.referencePerson ??
               app?.emergencyContact;
-          _applicantEmergPhone = comp?.evaluation.personalReferencePhone ??
+          _applicantEmergPhone =
+              comp?.evaluation.personalReferencePhone ??
               app?.referencePhone ??
               app?.emergencyPhone;
           _applicantTargetArea = app?.targetArea;
           _applicantTargetPosition = app?.targetPosition;
           _applicantTargetType = app?.targetType;
-          _applicantExpectedSalary = comp?.evaluation.salaryExpectation ??
+          _applicantExpectedSalary =
+              comp?.evaluation.salaryExpectation ??
               d?.applicantExpectedSalary ??
               (app != null &&
                       app.expectedSalary != null &&
@@ -275,8 +319,12 @@ class _RrhhHiringDossierDetailViewState
 
           if (_s5AreaId == null && _applicantTargetArea != null) {
             for (final area in _areas) {
-              if (area.name.toLowerCase().contains(_applicantTargetArea!.toLowerCase()) ||
-                  _applicantTargetArea!.toLowerCase().contains(area.name.toLowerCase())) {
+              if (area.name.toLowerCase().contains(
+                    _applicantTargetArea!.toLowerCase(),
+                  ) ||
+                  _applicantTargetArea!.toLowerCase().contains(
+                    area.name.toLowerCase(),
+                  )) {
                 _s5AreaId = area.id?.toString();
                 _s5AreaName = area.name;
                 break;
@@ -285,8 +333,12 @@ class _RrhhHiringDossierDetailViewState
           }
           if (_s5PositionId == null && _applicantTargetPosition != null) {
             for (final pos in _positions) {
-              if (pos.name.toLowerCase().contains(_applicantTargetPosition!.toLowerCase()) ||
-                  _applicantTargetPosition!.toLowerCase().contains(pos.name.toLowerCase())) {
+              if (pos.name.toLowerCase().contains(
+                    _applicantTargetPosition!.toLowerCase(),
+                  ) ||
+                  _applicantTargetPosition!.toLowerCase().contains(
+                    pos.name.toLowerCase(),
+                  )) {
                 _s5PositionId = pos.id?.toString();
                 _s5PositionName = pos.name;
                 break;
@@ -322,7 +374,10 @@ class _RrhhHiringDossierDetailViewState
       _dossier = _dossier!.copyWith(documentChecklist: docs.values.toList());
     });
 
-    await RrhhRepository.current.updateDossierSection1(_dossier!.id ?? widget.dossierId, docs);
+    await RrhhRepository.current.updateDossierSection1(
+      _dossier!.id ?? widget.dossierId,
+      docs,
+    );
   }
 
   Future<void> _markDocumentReceived(RrhhDossierDocument doc) async {
@@ -494,8 +549,11 @@ class _RrhhHiringDossierDetailViewState
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFF111827),
-                prefixIcon: const Icon(Icons.description_outlined,
-                    size: 16, color: Color(0xFF38BDF8)),
+                prefixIcon: const Icon(
+                  Icons.description_outlined,
+                  size: 16,
+                  color: Color(0xFF38BDF8),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(color: Color(0xFF334155)),
@@ -507,8 +565,10 @@ class _RrhhHiringDossierDetailViewState
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text('Cancelar',
-                style: GoogleFonts.inter(color: const Color(0xFF94A3B8))),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -520,8 +580,10 @@ class _RrhhHiringDossierDetailViewState
               backgroundColor: const Color(0xFF2563EB),
               foregroundColor: Colors.white,
             ),
-            child: Text('Adjuntar Archivo',
-                style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+            child: Text(
+              'Adjuntar Archivo',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),
@@ -543,8 +605,10 @@ class _RrhhHiringDossierDetailViewState
   Future<void> _saveSection1() async {
     if (_dossier == null) return;
     setState(() => _isSaving = true);
-    await RrhhRepository.current
-        .updateDossierSection1(_dossier!.id ?? widget.dossierId, _dossier!.documents);
+    await RrhhRepository.current.updateDossierSection1(
+      _dossier!.id ?? widget.dossierId,
+      _dossier!.documents,
+    );
     await _loadDossier();
     if (mounted) {
       setState(() => _isSaving = false);
@@ -567,8 +631,11 @@ class _RrhhHiringDossierDetailViewState
 
     setState(() => _isSaving = true);
     final updated = _dossier!.copyWith(section1Status: 'completa');
-    await RrhhRepository.current
-        .updateDossierSection1(updated.id ?? widget.dossierId, updated.documents);
+    await RrhhRepository.current.updateDossierSection1(
+      updated.id ?? widget.dossierId,
+      updated.documents,
+      sectionStatus: 'completa',
+    );
     await _loadDossier();
 
     if (mounted) {
@@ -586,7 +653,10 @@ class _RrhhHiringDossierDetailViewState
   Future<void> _toggleDossierStatus() async {
     if (_dossier == null) return;
     final newStatus = _dossier!.status == 'pausado' ? 'abierto' : 'pausado';
-    await RrhhRepository.current.updateDossierStatus(_dossier!.id ?? widget.dossierId, newStatus);
+    await RrhhRepository.current.updateDossierStatus(
+      _dossier!.id ?? widget.dossierId,
+      newStatus,
+    );
     await _loadDossier();
     if (mounted) {
       if (newStatus == 'pausado') {
@@ -619,15 +689,19 @@ class _RrhhHiringDossierDetailViewState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.folder_off_outlined,
-                  size: 48, color: Color(0xFF64748B)),
+              const Icon(
+                Icons.folder_off_outlined,
+                size: 48,
+                color: Color(0xFF64748B),
+              ),
               const SizedBox(height: 12),
               Text(
                 'Expediente no encontrado',
                 style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(height: 16),
               ElevatedButton.icon(
@@ -724,8 +798,11 @@ class _RrhhHiringDossierDetailViewState
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 6),
-                child: Icon(Icons.chevron_right,
-                    size: 14, color: Color(0xFF64748B)),
+                child: Icon(
+                  Icons.chevron_right,
+                  size: 14,
+                  color: Color(0xFF64748B),
+                ),
               ),
               InkWell(
                 onTap: () {
@@ -746,8 +823,11 @@ class _RrhhHiringDossierDetailViewState
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 6),
-                child: Icon(Icons.chevron_right,
-                    size: 14, color: Color(0xFF64748B)),
+                child: Icon(
+                  Icons.chevron_right,
+                  size: 14,
+                  color: Color(0xFF64748B),
+                ),
               ),
               Text(
                 d.applicantCode,
@@ -774,17 +854,22 @@ class _RrhhHiringDossierDetailViewState
                 icon: const Icon(Icons.arrow_back, size: 14),
                 label: const Text('Volver a Contrataciones en Curso'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor:
-                      isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569),
+                  foregroundColor: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF475569),
                   side: BorderSide(
                     color: isDark
                         ? const Color(0xFF1E293B)
                         : const Color(0xFFCBD5E1),
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   textStyle: GoogleFonts.inter(
-                      fontSize: 11.5, fontWeight: FontWeight.w600),
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               const SizedBox(width: 14),
@@ -863,7 +948,9 @@ class _RrhhHiringDossierDetailViewState
                               ? 'Reanudar expediente'
                               : 'Pausar expediente',
                           style: GoogleFonts.inter(
-                              fontSize: 12.5, color: Colors.white),
+                            fontSize: 12.5,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),
@@ -880,12 +967,46 @@ class _RrhhHiringDossierDetailViewState
   Widget _buildApplicantSummaryCard(RrhhHiringDossier d, bool isDark) {
     final initials = d.applicantName.trim().isNotEmpty
         ? d.applicantName
-            .trim()
-            .split(' ')
-            .take(2)
-            .map((w) => w.isNotEmpty ? w[0].toUpperCase() : '')
-            .join()
+              .trim()
+              .split(' ')
+              .take(2)
+              .map((w) => w.isNotEmpty ? w[0].toUpperCase() : '')
+              .join()
         : 'P';
+
+    final ci = _applicant?.identityCard ?? d.applicantCi;
+    final phone = _applicant?.phone ?? d.applicantPhone;
+    final email = (_applicant?.email != null && _applicant!.email!.isNotEmpty)
+        ? _applicant!.email!
+        : (d.applicantEmail ?? 'Sin correo');
+
+    String areaName =
+        _applicantTargetArea ??
+        _applicant?.targetArea ??
+        d.targetArea ??
+        'Área no asignada';
+    if (d.areaId != null) {
+      for (final a in _areas) {
+        if (a.id == d.areaId) {
+          areaName = a.name;
+          break;
+        }
+      }
+    }
+    String posName =
+        _applicantTargetPosition ??
+        _applicant?.targetPosition ??
+        d.targetPosition ??
+        'Cargo no asignado';
+    if (d.positionId != null) {
+      for (final p in _positions) {
+        if (p.id == d.positionId) {
+          posName = p.name;
+          break;
+        }
+      }
+    }
+    final appDate = _applicant?.applicationDate ?? d.applicationDate;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -920,14 +1041,13 @@ class _RrhhHiringDossierDetailViewState
                   spacing: 24,
                   runSpacing: 10,
                   children: [
-                    _miniInfo('Cédula de Identidad', d.applicantCi),
-                    _miniInfo('Teléfono de Contacto', d.applicantPhone),
-                    _miniInfo('Correo Personal', d.applicantEmail ?? 'Sin correo'),
-                    _miniInfo('Área / Cargo',
-                        '${d.targetArea} • ${d.targetPosition}'),
+                    _miniInfo('Cédula de Identidad', ci),
+                    _miniInfo('Teléfono de Contacto', phone),
+                    _miniInfo('Correo Personal', email),
+                    _miniInfo('Área / Cargo', '$areaName • $posName'),
                     _miniInfo(
                       'Fecha de Postulación',
-                      '${d.applicationDate.day}/${d.applicationDate.month}/${d.applicationDate.year}',
+                      '${appDate.day}/${appDate.month}/${appDate.year}',
                     ),
                     _miniInfo(
                       'Paso a Seleccionado',
@@ -953,7 +1073,9 @@ class _RrhhHiringDossierDetailViewState
                   fontWeight: FontWeight.w600,
                   color: d.completedSectionsCount >= 5
                       ? const Color(0xFF10B981)
-                      : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                      : (isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B)),
                 ),
               ),
               const Spacer(),
@@ -975,7 +1097,9 @@ class _RrhhHiringDossierDetailViewState
             child: LinearProgressIndicator(
               value: d.progressFraction,
               minHeight: 5,
-              backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+              backgroundColor: isDark
+                  ? const Color(0xFF1E293B)
+                  : const Color(0xFFE2E8F0),
               valueColor: AlwaysStoppedAnimation<Color>(
                 d.completedSectionsCount >= 5
                     ? const Color(0xFF10B981)
@@ -1017,7 +1141,8 @@ class _RrhhHiringDossierDetailViewState
 
   Widget _buildSection1Accordion(RrhhHiringDossier d, bool isDark) {
     final isExpanded = _expandedSections.contains(1);
-    final isComplete = d.section1Status == 'completa';
+    final isComplete =
+        d.section1Status == 'completa' || d.section1Status == 'completo';
     final isClosed = d.status == 'cerrado';
 
     return Container(
@@ -1112,8 +1237,8 @@ class _RrhhHiringDossierDetailViewState
                           child: LinearProgressIndicator(
                             value: d.totalRequiredDocsCount > 0
                                 ? (d.validatedRequiredDocsCount /
-                                        d.totalRequiredDocsCount)
-                                    .clamp(0.0, 1.0)
+                                          d.totalRequiredDocsCount)
+                                      .clamp(0.0, 1.0)
                                 : 0.0,
                             minHeight: 6,
                             backgroundColor: const Color(0xFF1E293B),
@@ -1157,17 +1282,23 @@ class _RrhhHiringDossierDetailViewState
                             foregroundColor: const Color(0xFF94A3B8),
                             side: const BorderSide(color: Color(0xFF334155)),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 11),
+                              horizontal: 16,
+                              vertical: 11,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
                         FilledButton.icon(
-                          onPressed: (_isSaving ||
+                          onPressed:
+                              (_isSaving ||
                                   !d.areAllRequiredDocumentsValidated ||
                                   isComplete)
                               ? null
                               : _completeSection1,
-                          icon: const Icon(Icons.check_circle_outline, size: 15),
+                          icon: const Icon(
+                            Icons.check_circle_outline,
+                            size: 15,
+                          ),
                           label: Text(
                             isComplete
                                 ? 'Sección 1 Completada'
@@ -1183,7 +1314,9 @@ class _RrhhHiringDossierDetailViewState
                             disabledBackgroundColor: const Color(0xFF1E293B),
                             disabledForegroundColor: const Color(0xFF475569),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 18, vertical: 11),
+                              horizontal: 18,
+                              vertical: 11,
+                            ),
                           ),
                         ),
                       ],
@@ -1204,8 +1337,7 @@ class _RrhhHiringDossierDetailViewState
       children: [
         // Header row
         Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: isDark
                 ? const Color(0xFF1E293B).withValues(alpha: 0.6)
@@ -1298,8 +1430,10 @@ class _RrhhHiringDossierDetailViewState
           separatorBuilder: (_, _) =>
               const Divider(height: 1, color: Color(0xFF1E293B)),
           itemBuilder: (context, idx) {
-            return _buildDocumentRow(docsList[idx],
-                isClosed: d.status == 'cerrado');
+            return _buildDocumentRow(
+              docsList[idx],
+              isClosed: d.status == 'cerrado',
+            );
           },
         ),
       ],
@@ -1317,8 +1451,10 @@ class _RrhhHiringDossierDetailViewState
             child: Row(
               children: [
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF2563EB).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(4),
@@ -1381,8 +1517,11 @@ class _RrhhHiringDossierDetailViewState
               children: [
                 if (doc.scannedFileUrl != null &&
                     doc.scannedFileUrl!.isNotEmpty) ...[
-                  const Icon(Icons.attach_file,
-                      size: 13, color: Color(0xFF38BDF8)),
+                  const Icon(
+                    Icons.attach_file,
+                    size: 13,
+                    color: Color(0xFF38BDF8),
+                  ),
                   const SizedBox(width: 4),
                   Flexible(
                     child: Tooltip(
@@ -1418,9 +1557,13 @@ class _RrhhHiringDossierDetailViewState
                     ),
                   ),
                 ] else ...[
-                  Text('—',
-                      style: GoogleFonts.inter(
-                          fontSize: 11, color: const Color(0xFF64748B))),
+                  Text(
+                    '—',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: const Color(0xFF64748B),
+                    ),
+                  ),
                 ],
               ],
             ),
@@ -1430,123 +1573,158 @@ class _RrhhHiringDossierDetailViewState
             width: 72,
             child: isClosed
                 ? const Center(
-                    child: Icon(Icons.lock_outline,
-                        size: 14, color: Color(0xFF64748B)),
+                    child: Icon(
+                      Icons.lock_outline,
+                      size: 14,
+                      color: Color(0xFF64748B),
+                    ),
                   )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                // Primary action: contextual to document status
-                if (doc.status == 'pendiente' || doc.status == 'rechazado')
-                  _actionIconButton(
-                    icon: Icons.check_circle_outline,
-                    color: const Color(0xFF10B981),
-                    tooltip: 'Validar Documento',
-                    onPressed: () => _markDocumentValidated(doc),
-                  )
-                else if (doc.status == 'recibido')
-                  _actionIconButton(
-                    icon: Icons.check_circle_outline,
-                    color: const Color(0xFF10B981),
-                    tooltip: 'Validar Documento',
-                    onPressed: () => _markDocumentValidated(doc),
-                  ),
-                // Overflow menu with remaining actions
-                SizedBox(
-                  width: 28,
-                  height: 28,
-                  child: PopupMenuButton<String>(
-                    icon: const Icon(Icons.more_horiz,
-                        size: 16, color: Color(0xFF94A3B8)),
-                    padding: EdgeInsets.zero,
-                    iconSize: 16,
-                    color: const Color(0xFF0F172A),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      side: const BorderSide(color: Color(0xFF1E293B)),
-                    ),
-                    onSelected: (action) {
-                      switch (action) {
-                        case 'recibir':
-                          _markDocumentReceived(doc);
-                          break;
-                        case 'validar':
-                          _markDocumentValidated(doc);
-                          break;
-                        case 'rechazar':
-                          _showRejectDialog(doc);
-                          break;
-                        case 'adjuntar':
-                          _showAttachDialog(doc);
-                          break;
-                      }
-                    },
-                    itemBuilder: (ctx) => [
+                      // Primary action: contextual to document status
                       if (doc.status == 'pendiente' ||
                           doc.status == 'rechazado')
-                        PopupMenuItem(
-                          value: 'recibir',
-                          height: 36,
-                          child: Row(
-                            children: [
-                              const Icon(Icons.mark_email_read_outlined,
-                                  size: 15, color: Color(0xFF38BDF8)),
-                              const SizedBox(width: 8),
-                              Text('Marcar Recibido',
-                                  style: GoogleFonts.inter(
-                                      fontSize: 12, color: Colors.white)),
-                            ],
-                          ),
+                        _actionIconButton(
+                          icon: Icons.check_circle_outline,
+                          color: const Color(0xFF10B981),
+                          tooltip: 'Validar Documento',
+                          onPressed: () => _markDocumentValidated(doc),
+                        )
+                      else if (doc.status == 'recibido')
+                        _actionIconButton(
+                          icon: Icons.check_circle_outline,
+                          color: const Color(0xFF10B981),
+                          tooltip: 'Validar Documento',
+                          onPressed: () => _markDocumentValidated(doc),
                         ),
-                      if (doc.status != 'validado')
-                        PopupMenuItem(
-                          value: 'validar',
-                          height: 36,
-                          child: Row(
-                            children: [
-                              const Icon(Icons.check_circle_outline,
-                                  size: 15, color: Color(0xFF10B981)),
-                              const SizedBox(width: 8),
-                              Text('Validar',
-                                  style: GoogleFonts.inter(
-                                      fontSize: 12, color: Colors.white)),
-                            ],
+                      // Overflow menu with remaining actions
+                      SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: PopupMenuButton<String>(
+                          icon: const Icon(
+                            Icons.more_horiz,
+                            size: 16,
+                            color: Color(0xFF94A3B8),
                           ),
-                        ),
-                      if (doc.status != 'rechazado')
-                        PopupMenuItem(
-                          value: 'rechazar',
-                          height: 36,
-                          child: Row(
-                            children: [
-                              const Icon(Icons.cancel_outlined,
-                                  size: 15, color: Color(0xFFEF4444)),
-                              const SizedBox(width: 8),
-                              Text('Rechazar',
-                                  style: GoogleFonts.inter(
-                                      fontSize: 12, color: Colors.white)),
-                            ],
+                          padding: EdgeInsets.zero,
+                          iconSize: 16,
+                          color: const Color(0xFF0F172A),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: const BorderSide(color: Color(0xFF1E293B)),
                           ),
-                        ),
-                      PopupMenuItem(
-                        value: 'adjuntar',
-                        height: 36,
-                        child: Row(
-                          children: [
-                            const Icon(Icons.attach_file,
-                                size: 15, color: Color(0xFFA855F7)),
-                            const SizedBox(width: 8),
-                            Text('Adjuntar Archivo',
-                                style: GoogleFonts.inter(
-                                    fontSize: 12, color: Colors.white)),
+                          onSelected: (action) {
+                            switch (action) {
+                              case 'recibir':
+                                _markDocumentReceived(doc);
+                                break;
+                              case 'validar':
+                                _markDocumentValidated(doc);
+                                break;
+                              case 'rechazar':
+                                _showRejectDialog(doc);
+                                break;
+                              case 'adjuntar':
+                                _showAttachDialog(doc);
+                                break;
+                            }
+                          },
+                          itemBuilder: (ctx) => [
+                            if (doc.status == 'pendiente' ||
+                                doc.status == 'rechazado')
+                              PopupMenuItem(
+                                value: 'recibir',
+                                height: 36,
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.mark_email_read_outlined,
+                                      size: 15,
+                                      color: Color(0xFF38BDF8),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Marcar Recibido',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            if (doc.status != 'validado')
+                              PopupMenuItem(
+                                value: 'validar',
+                                height: 36,
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.check_circle_outline,
+                                      size: 15,
+                                      color: Color(0xFF10B981),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Validar',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            if (doc.status != 'rechazado')
+                              PopupMenuItem(
+                                value: 'rechazar',
+                                height: 36,
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.cancel_outlined,
+                                      size: 15,
+                                      color: Color(0xFFEF4444),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Rechazar',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            PopupMenuItem(
+                              value: 'adjuntar',
+                              height: 36,
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.attach_file,
+                                    size: 15,
+                                    color: Color(0xFFA855F7),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Adjuntar Archivo',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
           ),
         ],
       ),
@@ -1690,12 +1868,15 @@ class _RrhhHiringDossierDetailViewState
   Widget _buildSectionStatusChip(String status) {
     Color color;
     String label;
-    switch (status) {
+    final normalized = status.toLowerCase();
+    switch (normalized) {
       case 'completa':
+      case 'completo':
         color = const Color(0xFF10B981);
         label = 'Completa';
         break;
       case 'en_proceso':
+      case 'en proceso':
         color = const Color(0xFF38BDF8);
         label = 'En proceso';
         break;
@@ -1788,8 +1969,7 @@ class _RrhhHiringDossierDetailViewState
             onTap: () => _toggleSection(2),
             borderRadius: BorderRadius.circular(10),
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
               child: Row(
                 children: [
                   Container(
@@ -1803,8 +1983,11 @@ class _RrhhHiringDossierDetailViewState
                     ),
                     alignment: Alignment.center,
                     child: isComplete
-                        ? const Icon(Icons.check,
-                            size: 15, color: Color(0xFF10B981))
+                        ? const Icon(
+                            Icons.check,
+                            size: 15,
+                            color: Color(0xFF10B981),
+                          )
                         : Text(
                             '2',
                             style: GoogleFonts.inter(
@@ -1867,18 +2050,25 @@ class _RrhhHiringDossierDetailViewState
                     value: _s2AfpId,
                     hint: 'Selecciona AFP',
                     items: _afpItems
-                        .map((a) => DropdownMenuItem(
-                              value: a.code,
-                              child: Text(a.name,
-                                  style: GoogleFonts.inter(
-                                      fontSize: 12.5, color: Colors.white)),
-                            ))
+                        .map(
+                          (a) => DropdownMenuItem(
+                            value: a.code,
+                            child: Text(
+                              a.name,
+                              style: GoogleFonts.inter(
+                                fontSize: 12.5,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        )
                         .toList(),
                     onChanged: isReadOnly
                         ? null
                         : (val) {
-                            final item =
-                                _afpItems.firstWhere((a) => a.code == val);
+                            final item = _afpItems.firstWhere(
+                              (a) => a.code == val,
+                            );
                             setState(() {
                               _s2AfpId = val;
                               _s2AfpName = item.name;
@@ -1902,7 +2092,9 @@ class _RrhhHiringDossierDetailViewState
                       child: Text(
                         'Mínimo 6 caracteres',
                         style: GoogleFonts.inter(
-                            fontSize: 10.5, color: const Color(0xFFFCA5A5)),
+                          fontSize: 10.5,
+                          color: const Color(0xFFFCA5A5),
+                        ),
                       ),
                     ),
                   const SizedBox(height: 14),
@@ -1914,18 +2106,25 @@ class _RrhhHiringDossierDetailViewState
                     value: _s2HealthInsuranceId,
                     hint: 'Selecciona caja o seguro',
                     items: _healthInsuranceItems
-                        .map((h) => DropdownMenuItem(
-                              value: h.code,
-                              child: Text(h.name,
-                                  style: GoogleFonts.inter(
-                                      fontSize: 12.5, color: Colors.white)),
-                            ))
+                        .map(
+                          (h) => DropdownMenuItem(
+                            value: h.code,
+                            child: Text(
+                              h.name,
+                              style: GoogleFonts.inter(
+                                fontSize: 12.5,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        )
                         .toList(),
                     onChanged: isReadOnly
                         ? null
                         : (val) {
-                            final item = _healthInsuranceItems
-                                .firstWhere((h) => h.code == val);
+                            final item = _healthInsuranceItems.firstWhere(
+                              (h) => h.code == val,
+                            );
                             setState(() {
                               _s2HealthInsuranceId = val;
                               _s2HealthInsuranceName = item.name;
@@ -1939,8 +2138,7 @@ class _RrhhHiringDossierDetailViewState
                   const SizedBox(height: 6),
                   _buildTextField(
                     controller: _s2NotesCtrl,
-                    hint:
-                        'Ej: Pendiente de actualización de datos...',
+                    hint: 'Ej: Pendiente de actualización de datos...',
                     maxLines: 2,
                     enabled: !isReadOnly,
                   ),
@@ -1954,13 +2152,17 @@ class _RrhhHiringDossierDetailViewState
                         OutlinedButton.icon(
                           onPressed: _isSaving ? null : _saveSection2Draft,
                           icon: const Icon(Icons.save_outlined, size: 14),
-                          label: Text('Guardar borrador',
-                              style: GoogleFonts.inter(fontSize: 12)),
+                          label: Text(
+                            'Guardar borrador',
+                            style: GoogleFonts.inter(fontSize: 12),
+                          ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF94A3B8),
                             side: const BorderSide(color: Color(0xFF334155)),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -1968,23 +2170,26 @@ class _RrhhHiringDossierDetailViewState
                         ),
                         const SizedBox(width: 10),
                         ElevatedButton.icon(
-                          onPressed:
-                              _isSection2Valid && !_isSaving
-                                  ? _markSection2Complete
-                                  : null,
-                          icon: const Icon(Icons.check_circle_outline,
-                              size: 14),
-                          label: Text('Marcar sección como completa',
-                              style: GoogleFonts.inter(fontSize: 12)),
+                          onPressed: _isSection2Valid && !_isSaving
+                              ? _markSection2Complete
+                              : null,
+                          icon: const Icon(
+                            Icons.check_circle_outline,
+                            size: 14,
+                          ),
+                          label: Text(
+                            'Marcar sección como completa',
+                            style: GoogleFonts.inter(fontSize: 12),
+                          ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF10B981),
                             foregroundColor: Colors.white,
-                            disabledBackgroundColor:
-                                const Color(0xFF334155),
-                            disabledForegroundColor:
-                                const Color(0xFF64748B),
+                            disabledBackgroundColor: const Color(0xFF334155),
+                            disabledForegroundColor: const Color(0xFF64748B),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -2106,8 +2311,7 @@ class _RrhhHiringDossierDetailViewState
             onTap: () => _toggleSection(3),
             borderRadius: BorderRadius.circular(10),
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
               child: Row(
                 children: [
                   Container(
@@ -2121,8 +2325,11 @@ class _RrhhHiringDossierDetailViewState
                     ),
                     alignment: Alignment.center,
                     child: isComplete
-                        ? const Icon(Icons.check,
-                            size: 15, color: Color(0xFF10B981))
+                        ? const Icon(
+                            Icons.check,
+                            size: 15,
+                            color: Color(0xFF10B981),
+                          )
                         : Text(
                             '3',
                             style: GoogleFonts.inter(
@@ -2193,9 +2400,11 @@ class _RrhhHiringDossierDetailViewState
                   // Address
                   _buildFormLabel(
                     'Dirección completa *',
-                    isPreloaded: _applicantAddress != null &&
+                    isPreloaded:
+                        _applicantAddress != null &&
                         _applicantAddress!.isNotEmpty,
-                    isEdited: _applicantAddress != null &&
+                    isEdited:
+                        _applicantAddress != null &&
                         _applicantAddress!.isNotEmpty &&
                         _s3AddressCtrl.text.trim() != _applicantAddress!.trim(),
                   ),
@@ -2222,18 +2431,23 @@ class _RrhhHiringDossierDetailViewState
                               value: _s3MaritalStatus,
                               hint: 'Seleccionar',
                               items: _maritalStatusOptions
-                                  .map((s) => DropdownMenuItem(
-                                        value: s,
-                                        child: Text(s,
-                                            style: GoogleFonts.inter(
-                                                fontSize: 12.5,
-                                                color: Colors.white)),
-                                      ))
+                                  .map(
+                                    (s) => DropdownMenuItem(
+                                      value: s,
+                                      child: Text(
+                                        s,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12.5,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  )
                                   .toList(),
                               onChanged: isReadOnly
                                   ? null
                                   : (val) =>
-                                      setState(() => _s3MaritalStatus = val),
+                                        setState(() => _s3MaritalStatus = val),
                             ),
                           ],
                         ),
@@ -2282,9 +2496,11 @@ class _RrhhHiringDossierDetailViewState
                           children: [
                             _buildFormLabel(
                               'Nombre del contacto *',
-                              isPreloaded: _applicantEmergName != null &&
+                              isPreloaded:
+                                  _applicantEmergName != null &&
                                   _applicantEmergName!.isNotEmpty,
-                              isEdited: _applicantEmergName != null &&
+                              isEdited:
+                                  _applicantEmergName != null &&
                                   _applicantEmergName!.isNotEmpty &&
                                   _s3EmergNameCtrl.text.trim() !=
                                       _applicantEmergName!.trim(),
@@ -2306,9 +2522,11 @@ class _RrhhHiringDossierDetailViewState
                           children: [
                             _buildFormLabel(
                               'Teléfono *',
-                              isPreloaded: _applicantEmergPhone != null &&
+                              isPreloaded:
+                                  _applicantEmergPhone != null &&
                                   _applicantEmergPhone!.isNotEmpty,
-                              isEdited: _applicantEmergPhone != null &&
+                              isEdited:
+                                  _applicantEmergPhone != null &&
                                   _applicantEmergPhone!.isNotEmpty &&
                                   _s3EmergPhoneCtrl.text.trim() !=
                                       _applicantEmergPhone!.trim(),
@@ -2327,8 +2545,9 @@ class _RrhhHiringDossierDetailViewState
                                 child: Text(
                                   '8 dígitos requeridos',
                                   style: GoogleFonts.inter(
-                                      fontSize: 10.5,
-                                      color: const Color(0xFFFCA5A5)),
+                                    fontSize: 10.5,
+                                    color: const Color(0xFFFCA5A5),
+                                  ),
                                 ),
                               ),
                           ],
@@ -2345,12 +2564,18 @@ class _RrhhHiringDossierDetailViewState
                     value: _s3EmergRelation,
                     hint: 'Seleccionar parentesco',
                     items: _relationOptions
-                        .map((r) => DropdownMenuItem(
-                              value: r,
-                              child: Text(r,
-                                  style: GoogleFonts.inter(
-                                      fontSize: 12.5, color: Colors.white)),
-                            ))
+                        .map(
+                          (r) => DropdownMenuItem(
+                            value: r,
+                            child: Text(
+                              r,
+                              style: GoogleFonts.inter(
+                                fontSize: 12.5,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        )
                         .toList(),
                     onChanged: isReadOnly
                         ? null
@@ -2366,13 +2591,17 @@ class _RrhhHiringDossierDetailViewState
                         OutlinedButton.icon(
                           onPressed: _isSaving ? null : _saveSection3Draft,
                           icon: const Icon(Icons.save_outlined, size: 14),
-                          label: Text('Guardar borrador',
-                              style: GoogleFonts.inter(fontSize: 12)),
+                          label: Text(
+                            'Guardar borrador',
+                            style: GoogleFonts.inter(fontSize: 12),
+                          ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF94A3B8),
                             side: const BorderSide(color: Color(0xFF334155)),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -2380,23 +2609,26 @@ class _RrhhHiringDossierDetailViewState
                         ),
                         const SizedBox(width: 10),
                         ElevatedButton.icon(
-                          onPressed:
-                              _isSection3Valid && !_isSaving
-                                  ? _markSection3Complete
-                                  : null,
-                          icon: const Icon(Icons.check_circle_outline,
-                              size: 14),
-                          label: Text('Marcar sección como completa',
-                              style: GoogleFonts.inter(fontSize: 12)),
+                          onPressed: _isSection3Valid && !_isSaving
+                              ? _markSection3Complete
+                              : null,
+                          icon: const Icon(
+                            Icons.check_circle_outline,
+                            size: 14,
+                          ),
+                          label: Text(
+                            'Marcar sección como completa',
+                            style: GoogleFonts.inter(fontSize: 12),
+                          ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF10B981),
                             foregroundColor: Colors.white,
-                            disabledBackgroundColor:
-                                const Color(0xFF334155),
-                            disabledForegroundColor:
-                                const Color(0xFF64748B),
+                            disabledBackgroundColor: const Color(0xFF334155),
+                            disabledForegroundColor: const Color(0xFF64748B),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -2624,15 +2856,21 @@ class _RrhhHiringDossierDetailViewState
                               _buildDropdownField<String>(
                                 value: type,
                                 hint: 'Tipo',
-                                items: ['Fija mensual', 'Por evento', 'Variable']
-                                    .map((t) => DropdownMenuItem(
-                                          value: t,
-                                          child: Text(t,
+                                items:
+                                    ['Fija mensual', 'Por evento', 'Variable']
+                                        .map(
+                                          (t) => DropdownMenuItem(
+                                            value: t,
+                                            child: Text(
+                                              t,
                                               style: GoogleFonts.inter(
-                                                  fontSize: 12,
-                                                  color: Colors.white)),
-                                        ))
-                                    .toList(),
+                                                fontSize: 12,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
                                 onChanged: (val) {
                                   if (val != null) {
                                     setDlgState(() => type = val);
@@ -2653,8 +2891,8 @@ class _RrhhHiringDossierDetailViewState
                           Checkbox(
                             value: isPercentage,
                             activeColor: const Color(0xFF2563EB),
-                            onChanged: (v) => setDlgState(
-                                () => isPercentage = v ?? false),
+                            onChanged: (v) =>
+                                setDlgState(() => isPercentage = v ?? false),
                           ),
                           Text(
                             'El valor representa un porcentaje (%)',
@@ -2672,9 +2910,13 @@ class _RrhhHiringDossierDetailViewState
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: Text('Cancelar',
-                      style: GoogleFonts.inter(
-                          color: const Color(0xFF94A3B8), fontSize: 12)),
+                  child: Text(
+                    'Cancelar',
+                    style: GoogleFonts.inter(
+                      color: const Color(0xFF94A3B8),
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
                 FilledButton(
                   onPressed: () {
@@ -2695,10 +2937,14 @@ class _RrhhHiringDossierDetailViewState
                   style: FilledButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
                   ),
-                  child: Text('Agregar',
-                      style: GoogleFonts.inter(fontSize: 12)),
+                  child: Text(
+                    'Agregar',
+                    style: GoogleFonts.inter(fontSize: 12),
+                  ),
                 ),
               ],
             );
@@ -2781,13 +3027,18 @@ class _RrhhHiringDossierDetailViewState
                                 value: type,
                                 hint: 'Tipo',
                                 items: ['Fijo', 'Porcentaje', 'Por evento']
-                                    .map((t) => DropdownMenuItem(
-                                          value: t,
-                                          child: Text(t,
-                                              style: GoogleFonts.inter(
-                                                  fontSize: 12,
-                                                  color: Colors.white)),
-                                        ))
+                                    .map(
+                                      (t) => DropdownMenuItem(
+                                        value: t,
+                                        child: Text(
+                                          t,
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    )
                                     .toList(),
                                 onChanged: (val) {
                                   if (val != null) {
@@ -2809,8 +3060,8 @@ class _RrhhHiringDossierDetailViewState
                           Checkbox(
                             value: isPercentage,
                             activeColor: const Color(0xFF2563EB),
-                            onChanged: (v) => setDlgState(
-                                () => isPercentage = v ?? false),
+                            onChanged: (v) =>
+                                setDlgState(() => isPercentage = v ?? false),
                           ),
                           Text(
                             'El valor representa un porcentaje (%)',
@@ -2828,9 +3079,13 @@ class _RrhhHiringDossierDetailViewState
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: Text('Cancelar',
-                      style: GoogleFonts.inter(
-                          color: const Color(0xFF94A3B8), fontSize: 12)),
+                  child: Text(
+                    'Cancelar',
+                    style: GoogleFonts.inter(
+                      color: const Color(0xFF94A3B8),
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
                 FilledButton(
                   onPressed: () {
@@ -2851,10 +3106,14 @@ class _RrhhHiringDossierDetailViewState
                   style: FilledButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
                   ),
-                  child: Text('Agregar',
-                      style: GoogleFonts.inter(fontSize: 12)),
+                  child: Text(
+                    'Agregar',
+                    style: GoogleFonts.inter(fontSize: 12),
+                  ),
                 ),
               ],
             );
@@ -2906,8 +3165,11 @@ class _RrhhHiringDossierDetailViewState
                     ),
                     alignment: Alignment.center,
                     child: isComplete
-                        ? const Icon(Icons.check,
-                            size: 15, color: Color(0xFF10B981))
+                        ? const Icon(
+                            Icons.check,
+                            size: 15,
+                            color: Color(0xFF10B981),
+                          )
                         : Text(
                             '4',
                             style: GoogleFonts.inter(
@@ -2989,13 +3251,18 @@ class _RrhhHiringDossierDetailViewState
                               value: _s4ContractTypeId,
                               hint: 'Seleccionar tipo de contrato',
                               items: _contractTypeItems
-                                  .map((c) => DropdownMenuItem(
-                                        value: c.code,
-                                        child: Text(c.name,
-                                            style: GoogleFonts.inter(
-                                                fontSize: 12.5,
-                                                color: Colors.white)),
-                                      ))
+                                  .map(
+                                    (c) => DropdownMenuItem(
+                                      value: c.code,
+                                      child: Text(
+                                        c.name,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12.5,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  )
                                   .toList(),
                               onChanged: isReadOnly
                                   ? null
@@ -3071,7 +3338,8 @@ class _RrhhHiringDossierDetailViewState
                             value: _s4EndDate,
                             enabled: !isReadOnly,
                             firstDate: _s4StartDate ?? DateTime(2020),
-                            errorText: (_s4EndDate != null &&
+                            errorText:
+                                (_s4EndDate != null &&
                                     _s4StartDate != null &&
                                     !_s4EndDate!.isAfter(_s4StartDate!))
                                 ? 'Debe ser posterior a la fecha de inicio'
@@ -3112,13 +3380,18 @@ class _RrhhHiringDossierDetailViewState
                               value: _s4PaymentModalityId,
                               hint: 'Seleccionar modalidad',
                               items: _paymentModalityItems
-                                  .map((p) => DropdownMenuItem(
-                                        value: p.code,
-                                        child: Text(p.name,
-                                            style: GoogleFonts.inter(
-                                                fontSize: 12.5,
-                                                color: Colors.white)),
-                                      ))
+                                  .map(
+                                    (p) => DropdownMenuItem(
+                                      value: p.code,
+                                      child: Text(
+                                        p.name,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12.5,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  )
                                   .toList(),
                               onChanged: isReadOnly
                                   ? null
@@ -3142,8 +3415,8 @@ class _RrhhHiringDossierDetailViewState
                           children: [
                             _buildFormLabel(
                               'Salario base acordado *',
-                              subtitleSuggestion: (_applicantExpectedSalary !=
-                                          null &&
+                              subtitleSuggestion:
+                                  (_applicantExpectedSalary != null &&
                                       _applicantExpectedSalary! > 0)
                                   ? 'Sugerencia basada en pretensión: Bs. ${_applicantExpectedSalary!.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}'
                                   : null,
@@ -3156,7 +3429,9 @@ class _RrhhHiringDossierDetailViewState
                               keyboardType: TextInputType.number,
                             ),
                             if (_s4BaseSalaryCtrl.text.isNotEmpty &&
-                                (double.tryParse(_s4BaseSalaryCtrl.text.trim()) ??
+                                (double.tryParse(
+                                          _s4BaseSalaryCtrl.text.trim(),
+                                        ) ??
                                         0) <=
                                     0)
                               Padding(
@@ -3164,8 +3439,9 @@ class _RrhhHiringDossierDetailViewState
                                 child: Text(
                                   'El salario debe ser mayor a 0',
                                   style: GoogleFonts.inter(
-                                      fontSize: 10.5,
-                                      color: const Color(0xFFFCA5A5)),
+                                    fontSize: 10.5,
+                                    color: const Color(0xFFFCA5A5),
+                                  ),
                                 ),
                               ),
                           ],
@@ -3183,13 +3459,18 @@ class _RrhhHiringDossierDetailViewState
                               value: _s4Currency,
                               hint: 'BOB',
                               items: ['BOB', 'USD']
-                                  .map((c) => DropdownMenuItem(
-                                        value: c,
-                                        child: Text(c,
-                                            style: GoogleFonts.inter(
-                                                fontSize: 12.5,
-                                                color: Colors.white)),
-                                      ))
+                                  .map(
+                                    (c) => DropdownMenuItem(
+                                      value: c,
+                                      child: Text(
+                                        c,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12.5,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  )
                                   .toList(),
                               onChanged: isReadOnly
                                   ? null
@@ -3236,12 +3517,16 @@ class _RrhhHiringDossierDetailViewState
                         TextButton.icon(
                           onPressed: _showAddCustomBonusDialog,
                           icon: const Icon(Icons.add, size: 14),
-                          label: Text('Bonificación personalizada',
-                              style: GoogleFonts.inter(fontSize: 11.5)),
+                          label: Text(
+                            'Bonificación personalizada',
+                            style: GoogleFonts.inter(fontSize: 11.5),
+                          ),
                           style: TextButton.styleFrom(
                             foregroundColor: const Color(0xFF38BDF8),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 6),
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
                           ),
                         ),
                     ],
@@ -3281,12 +3566,16 @@ class _RrhhHiringDossierDetailViewState
                         TextButton.icon(
                           onPressed: _showAddCustomDeductionDialog,
                           icon: const Icon(Icons.add, size: 14),
-                          label: Text('Descuento personalizado',
-                              style: GoogleFonts.inter(fontSize: 11.5)),
+                          label: Text(
+                            'Descuento personalizado',
+                            style: GoogleFonts.inter(fontSize: 11.5),
+                          ),
                           style: TextButton.styleFrom(
                             foregroundColor: const Color(0xFF38BDF8),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 6),
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
                           ),
                         ),
                     ],
@@ -3304,13 +3593,17 @@ class _RrhhHiringDossierDetailViewState
                         OutlinedButton.icon(
                           onPressed: _isSaving ? null : _saveSection4Draft,
                           icon: const Icon(Icons.save_outlined, size: 14),
-                          label: Text('Guardar borrador',
-                              style: GoogleFonts.inter(fontSize: 12)),
+                          label: Text(
+                            'Guardar borrador',
+                            style: GoogleFonts.inter(fontSize: 12),
+                          ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF94A3B8),
                             side: const BorderSide(color: Color(0xFF334155)),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -3321,7 +3614,10 @@ class _RrhhHiringDossierDetailViewState
                           onPressed: (_isSaving || !_isSection4Valid)
                               ? null
                               : _completeSection4,
-                          icon: const Icon(Icons.check_circle_outline, size: 15),
+                          icon: const Icon(
+                            Icons.check_circle_outline,
+                            size: 15,
+                          ),
                           label: Text(
                             'Marcar sección como completa',
                             style: GoogleFonts.inter(
@@ -3335,7 +3631,9 @@ class _RrhhHiringDossierDetailViewState
                             disabledBackgroundColor: const Color(0xFF1E293B),
                             disabledForegroundColor: const Color(0xFF475569),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 18, vertical: 10),
+                              horizontal: 18,
+                              vertical: 10,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -3364,8 +3662,10 @@ class _RrhhHiringDossierDetailViewState
                             });
                           },
                           icon: const Icon(Icons.edit_outlined, size: 13),
-                          label: Text('Modificar sección',
-                              style: GoogleFonts.inter(fontSize: 11.5)),
+                          label: Text(
+                            'Modificar sección',
+                            style: GoogleFonts.inter(fontSize: 11.5),
+                          ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF38BDF8),
                             side: const BorderSide(color: Color(0xFF1E293B)),
@@ -3391,7 +3691,9 @@ class _RrhhHiringDossierDetailViewState
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 3),
             child: InkWell(
-              onTap: enabled ? () => setState(() => _s4WorkdayType = opt) : null,
+              onTap: enabled
+                  ? () => setState(() => _s4WorkdayType = opt)
+                  : null,
               borderRadius: BorderRadius.circular(8),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
@@ -3438,12 +3740,16 @@ class _RrhhHiringDossierDetailViewState
         ),
         child: Text(
           'No hay bonificaciones disponibles en el catálogo.',
-          style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            color: const Color(0xFF64748B),
+          ),
         ),
       );
     }
 
-    final allItems = <({String code, String name, String type, double? defaultAmt})>[];
+    final allItems =
+        <({String code, String name, String type, double? defaultAmt})>[];
     for (final c in _bonusCatalogItems) {
       allItems.add((
         code: c.code,
@@ -3496,16 +3802,19 @@ class _RrhhHiringDossierDetailViewState
                         : (val) {
                             setState(() {
                               if (val == true) {
-                                _s4Bonuses.add(RrhhEmployeeBonus(
-                                  code: item.code,
-                                  name: item.name,
-                                  type: item.type,
-                                  amount: item.defaultAmt ?? 250.0,
-                                  isPercentage: false,
-                                ));
+                                _s4Bonuses.add(
+                                  RrhhEmployeeBonus(
+                                    code: item.code,
+                                    name: item.name,
+                                    type: item.type,
+                                    amount: item.defaultAmt ?? 250.0,
+                                    isPercentage: false,
+                                  ),
+                                );
                               } else {
                                 _s4Bonuses.removeWhere(
-                                    (b) => b.code == item.code);
+                                  (b) => b.code == item.code,
+                                );
                               }
                             });
                           },
@@ -3537,7 +3846,9 @@ class _RrhhHiringDossierDetailViewState
                   if (isSelected && selectedBonus != null)
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF10B981).withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4),
@@ -3567,30 +3878,45 @@ class _RrhhHiringDossierDetailViewState
                       height: 34,
                       child: TextField(
                         style: GoogleFonts.jetBrainsMono(
-                            fontSize: 12, color: Colors.white),
+                          fontSize: 12,
+                          color: Colors.white,
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Monto',
                           labelStyle: GoogleFonts.inter(
-                              fontSize: 10, color: const Color(0xFF94A3B8)),
-                          prefixText:
-                              selectedBonus.isPercentage ? '% ' : 'Bs. ',
+                            fontSize: 10,
+                            color: const Color(0xFF94A3B8),
+                          ),
+                          prefixText: selectedBonus.isPercentage
+                              ? '% '
+                              : 'Bs. ',
                           prefixStyle: GoogleFonts.inter(
-                              fontSize: 11, color: const Color(0xFF64748B)),
+                            fontSize: 11,
+                            color: const Color(0xFF64748B),
+                          ),
                           filled: true,
                           fillColor: const Color(0xFF0F172A),
                           contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
-                              borderSide:
-                                  const BorderSide(color: Color(0xFF1E293B))),
+                            borderRadius: BorderRadius.circular(6),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
                         ),
-                        controller: TextEditingController(
-                            text: (selectedBonus.amount ?? 0).toStringAsFixed(0))
-                          ..selection = TextSelection.collapsed(
-                              offset: (selectedBonus.amount ?? 0)
-                                  .toStringAsFixed(0)
-                                  .length),
+                        controller:
+                            TextEditingController(
+                                text: (selectedBonus.amount ?? 0)
+                                    .toStringAsFixed(0),
+                              )
+                              ..selection = TextSelection.collapsed(
+                                offset: (selectedBonus.amount ?? 0)
+                                    .toStringAsFixed(0)
+                                    .length,
+                              ),
                         keyboardType: TextInputType.number,
                         onChanged: (val) {
                           final n = double.tryParse(val) ?? 0;
@@ -3606,25 +3932,35 @@ class _RrhhHiringDossierDetailViewState
                           initialValue: selectedBonus.type,
                           dropdownColor: const Color(0xFF0F172A),
                           style: GoogleFonts.inter(
-                              fontSize: 11.5, color: Colors.white),
+                            fontSize: 11.5,
+                            color: Colors.white,
+                          ),
                           decoration: InputDecoration(
                             labelText: 'Frecuencia',
                             labelStyle: GoogleFonts.inter(
-                                fontSize: 10, color: const Color(0xFF94A3B8)),
+                              fontSize: 10,
+                              color: const Color(0xFF94A3B8),
+                            ),
                             filled: true,
                             fillColor: const Color(0xFF0F172A),
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(6),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFF1E293B))),
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF1E293B),
+                              ),
+                            ),
                           ),
                           items: ['Fija mensual', 'Por evento', 'Variable']
-                              .map((t) => DropdownMenuItem(
-                                    value: t,
-                                    child: Text(t),
-                                  ))
+                              .map(
+                                (t) => DropdownMenuItem(
+                                  value: t,
+                                  child: Text(t),
+                                ),
+                              )
                               .toList(),
                           onChanged: (val) {
                             if (val != null) {
@@ -3655,7 +3991,10 @@ class _RrhhHiringDossierDetailViewState
         ),
         child: Text(
           'No hay deducciones disponibles en el catálogo.',
-          style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF64748B)),
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            color: const Color(0xFF64748B),
+          ),
         ),
       );
     }
@@ -3680,8 +4019,9 @@ class _RrhhHiringDossierDetailViewState
 
     return Column(
       children: allItems.map((item) {
-        final existingIdx =
-            _s4Deductions.indexWhere((d) => d.code == item.code);
+        final existingIdx = _s4Deductions.indexWhere(
+          (d) => d.code == item.code,
+        );
         final isSelected = existingIdx != -1;
         final selectedDed = isSelected ? _s4Deductions[existingIdx] : null;
 
@@ -3711,16 +4051,21 @@ class _RrhhHiringDossierDetailViewState
                         : (val) {
                             setState(() {
                               if (val == true) {
-                                _s4Deductions.add(RrhhEmployeeDeduction(
-                                  code: item.code,
-                                  name: item.name,
-                                  type: item.type,
-                                  amount: 100.0,
-                                  isPercentage: item.type.toLowerCase().contains('porcent'),
-                                ));
+                                _s4Deductions.add(
+                                  RrhhEmployeeDeduction(
+                                    code: item.code,
+                                    name: item.name,
+                                    type: item.type,
+                                    amount: 100.0,
+                                    isPercentage: item.type
+                                        .toLowerCase()
+                                        .contains('porcent'),
+                                  ),
+                                );
                               } else {
                                 _s4Deductions.removeWhere(
-                                    (d) => d.code == item.code);
+                                  (d) => d.code == item.code,
+                                );
                               }
                             });
                           },
@@ -3752,7 +4097,9 @@ class _RrhhHiringDossierDetailViewState
                   if (isSelected && selectedDed != null)
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFEF4444).withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4),
@@ -3782,30 +4129,44 @@ class _RrhhHiringDossierDetailViewState
                       height: 34,
                       child: TextField(
                         style: GoogleFonts.jetBrainsMono(
-                            fontSize: 12, color: Colors.white),
+                          fontSize: 12,
+                          color: Colors.white,
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Monto',
                           labelStyle: GoogleFonts.inter(
-                              fontSize: 10, color: const Color(0xFF94A3B8)),
-                          prefixText:
-                              selectedDed.isPercentage ? '% ' : 'Bs. ',
+                            fontSize: 10,
+                            color: const Color(0xFF94A3B8),
+                          ),
+                          prefixText: selectedDed.isPercentage ? '% ' : 'Bs. ',
                           prefixStyle: GoogleFonts.inter(
-                              fontSize: 11, color: const Color(0xFF64748B)),
+                            fontSize: 11,
+                            color: const Color(0xFF64748B),
+                          ),
                           filled: true,
                           fillColor: const Color(0xFF0F172A),
                           contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
-                              borderSide:
-                                  const BorderSide(color: Color(0xFF1E293B))),
+                            borderRadius: BorderRadius.circular(6),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
                         ),
-                        controller: TextEditingController(
-                            text: (selectedDed.amount ?? 0).toStringAsFixed(0))
-                          ..selection = TextSelection.collapsed(
-                              offset: (selectedDed.amount ?? 0)
-                                  .toStringAsFixed(0)
-                                  .length),
+                        controller:
+                            TextEditingController(
+                                text: (selectedDed.amount ?? 0).toStringAsFixed(
+                                  0,
+                                ),
+                              )
+                              ..selection = TextSelection.collapsed(
+                                offset: (selectedDed.amount ?? 0)
+                                    .toStringAsFixed(0)
+                                    .length,
+                              ),
                         keyboardType: TextInputType.number,
                         onChanged: (val) {
                           final n = double.tryParse(val) ?? 0;
@@ -3821,25 +4182,35 @@ class _RrhhHiringDossierDetailViewState
                           initialValue: selectedDed.type,
                           dropdownColor: const Color(0xFF0F172A),
                           style: GoogleFonts.inter(
-                              fontSize: 11.5, color: Colors.white),
+                            fontSize: 11.5,
+                            color: Colors.white,
+                          ),
                           decoration: InputDecoration(
                             labelText: 'Tipo',
                             labelStyle: GoogleFonts.inter(
-                                fontSize: 10, color: const Color(0xFF94A3B8)),
+                              fontSize: 10,
+                              color: const Color(0xFF94A3B8),
+                            ),
                             filled: true,
                             fillColor: const Color(0xFF0F172A),
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(6),
-                                borderSide:
-                                    const BorderSide(color: Color(0xFF1E293B))),
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF1E293B),
+                              ),
+                            ),
                           ),
                           items: ['Fijo', 'Porcentaje', 'Por evento']
-                              .map((t) => DropdownMenuItem(
-                                    value: t,
-                                    child: Text(t),
-                                  ))
+                              .map(
+                                (t) => DropdownMenuItem(
+                                  value: t,
+                                  child: Text(t),
+                                ),
+                              )
                               .toList(),
                           onChanged: (val) {
                             if (val != null) {
@@ -3870,8 +4241,16 @@ class _RrhhHiringDossierDetailViewState
     if (_s5BaseLocationCtrl.text.trim().isEmpty) return false;
     if (_s5EffectiveStartDate == null) return false;
     if (_s4StartDate != null) {
-      final s4Ymd = DateTime(_s4StartDate!.year, _s4StartDate!.month, _s4StartDate!.day);
-      final s5Ymd = DateTime(_s5EffectiveStartDate!.year, _s5EffectiveStartDate!.month, _s5EffectiveStartDate!.day);
+      final s4Ymd = DateTime(
+        _s4StartDate!.year,
+        _s4StartDate!.month,
+        _s4StartDate!.day,
+      );
+      final s5Ymd = DateTime(
+        _s5EffectiveStartDate!.year,
+        _s5EffectiveStartDate!.month,
+        _s5EffectiveStartDate!.day,
+      );
       if (s5Ymd.isBefore(s4Ymd)) return false;
     }
     return true;
@@ -3979,8 +4358,11 @@ class _RrhhHiringDossierDetailViewState
                     ),
                     alignment: Alignment.center,
                     child: isComplete
-                        ? const Icon(Icons.check,
-                            size: 15, color: Color(0xFF10B981))
+                        ? const Icon(
+                            Icons.check,
+                            size: 15,
+                            color: Color(0xFF10B981),
+                          )
                         : Text(
                             '5',
                             style: GoogleFonts.inter(
@@ -4057,41 +4439,54 @@ class _RrhhHiringDossierDetailViewState
                           children: [
                             _buildFormLabel(
                               'Área de la empresa *',
-                              isPreloaded: _applicantTargetArea != null &&
+                              isPreloaded:
+                                  _applicantTargetArea != null &&
                                   _applicantTargetArea!.isNotEmpty,
-                              isEdited: _applicantTargetArea != null &&
+                              isEdited:
+                                  _applicantTargetArea != null &&
                                   _applicantTargetArea!.isNotEmpty &&
                                   (_s5AreaName != null &&
                                       !_s5AreaName!.toLowerCase().contains(
-                                          _applicantTargetArea!.toLowerCase())),
+                                        _applicantTargetArea!.toLowerCase(),
+                                      )),
                             ),
                             const SizedBox(height: 6),
                             _buildDropdownField<String>(
                               value: _s5AreaId,
                               hint: 'Seleccionar área',
                               items: _areas
-                                  .map((a) => DropdownMenuItem(
-                                        value: a.id?.toString(),
-                                        child: Text(a.name,
-                                            style: GoogleFonts.inter(
-                                                fontSize: 12.5,
-                                                color: Colors.white)),
-                                      ))
+                                  .map(
+                                    (a) => DropdownMenuItem(
+                                      value: a.id?.toString(),
+                                      child: Text(
+                                        a.name,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12.5,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  )
                                   .toList(),
                               onChanged: isReadOnly
                                   ? null
                                   : (val) {
-                                      final area =
-                                          _areas.firstWhere((a) => a.id?.toString() == val);
+                                      final area = _areas.firstWhere(
+                                        (a) => a.id?.toString() == val,
+                                      );
                                       setState(() {
                                         _s5AreaId = val;
                                         _s5AreaName = area.name;
                                         // Reset position if not matching new area
                                         final availablePositions = _positions
-                                            .where((p) => p.areaId.toString() == val)
+                                            .where(
+                                              (p) => p.areaId.toString() == val,
+                                            )
                                             .toList();
                                         if (!availablePositions.any(
-                                            (p) => p.id?.toString() == _s5PositionId)) {
+                                          (p) =>
+                                              p.id?.toString() == _s5PositionId,
+                                        )) {
                                           _s5PositionId = null;
                                           _s5PositionName = null;
                                         }
@@ -4108,13 +4503,16 @@ class _RrhhHiringDossierDetailViewState
                           children: [
                             _buildFormLabel(
                               'Cargo asignado *',
-                              isPreloaded: _applicantTargetPosition != null &&
+                              isPreloaded:
+                                  _applicantTargetPosition != null &&
                                   _applicantTargetPosition!.isNotEmpty,
-                              isEdited: _applicantTargetPosition != null &&
+                              isEdited:
+                                  _applicantTargetPosition != null &&
                                   _applicantTargetPosition!.isNotEmpty &&
                                   (_s5PositionName != null &&
                                       !_s5PositionName!.toLowerCase().contains(
-                                          _applicantTargetPosition!.toLowerCase())),
+                                        _applicantTargetPosition!.toLowerCase(),
+                                      )),
                             ),
                             const SizedBox(height: 6),
                             _buildDropdownField<String>(
@@ -4123,23 +4521,30 @@ class _RrhhHiringDossierDetailViewState
                                   ? 'Primero selecciona un área'
                                   : 'Seleccionar cargo',
                               items: _positions
-                                  .where((p) =>
-                                      _s5AreaId == null || p.areaId.toString() == _s5AreaId)
-                                  .map((p) => DropdownMenuItem(
-                                        value: p.id?.toString(),
-                                        child: Text(
-                                          '${p.name} (${p.workplaceType})',
-                                          style: GoogleFonts.inter(
-                                              fontSize: 12.5,
-                                              color: Colors.white),
+                                  .where(
+                                    (p) =>
+                                        _s5AreaId == null ||
+                                        p.areaId.toString() == _s5AreaId,
+                                  )
+                                  .map(
+                                    (p) => DropdownMenuItem(
+                                      value: p.id?.toString(),
+                                      child: Text(
+                                        '${p.name} (${p.workplaceType})',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12.5,
+                                          color: Colors.white,
                                         ),
-                                      ))
+                                      ),
+                                    ),
+                                  )
                                   .toList(),
                               onChanged: (isReadOnly || _s5AreaId == null)
                                   ? null
                                   : (val) {
-                                      final pos = _positions
-                                          .firstWhere((p) => p.id?.toString() == val);
+                                      final pos = _positions.firstWhere(
+                                        (p) => p.id?.toString() == val,
+                                      );
                                       setState(() {
                                         _s5PositionId = val;
                                         _s5PositionName = pos.name;
@@ -4178,21 +4583,25 @@ class _RrhhHiringDossierDetailViewState
                               value: _s5ShiftId,
                               hint: 'Seleccionar turno',
                               items: _shifts
-                                  .map((s) => DropdownMenuItem(
-                                        value: s.id.toString(),
-                                        child: Text(
-                                          '${s.name} (${s.formattedTimeRange}) · ${s.shiftType}',
-                                          style: GoogleFonts.inter(
-                                              fontSize: 12,
-                                              color: Colors.white),
+                                  .map(
+                                    (s) => DropdownMenuItem(
+                                      value: s.id.toString(),
+                                      child: Text(
+                                        '${s.name} (${s.formattedTimeRange}) · ${s.shiftType}',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12,
+                                          color: Colors.white,
                                         ),
-                                      ))
+                                      ),
+                                    ),
+                                  )
                                   .toList(),
                               onChanged: isReadOnly
                                   ? null
                                   : (val) {
                                       final shift = _shifts.firstWhere(
-                                          (s) => s.id.toString() == val);
+                                        (s) => s.id.toString() == val,
+                                      );
                                       setState(() {
                                         _s5ShiftId = val;
                                         _s5ShiftName =
@@ -4219,18 +4628,23 @@ class _RrhhHiringDossierDetailViewState
                                   child: Text(
                                     '(Opcional) Usar horario base del turno',
                                     style: TextStyle(
-                                        color: Color(0xFF94A3B8), fontSize: 12),
+                                      color: Color(0xFF94A3B8),
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
-                                ..._schedules.map((sc) => DropdownMenuItem<String?>(
-                                      value: sc.id.toString(),
-                                      child: Text(
-                                        '${sc.name} (${sc.totalWeeklyHours.toStringAsFixed(0)}h/sem)',
-                                        style: GoogleFonts.inter(
-                                            fontSize: 12,
-                                            color: Colors.white),
+                                ..._schedules.map(
+                                  (sc) => DropdownMenuItem<String?>(
+                                    value: sc.id.toString(),
+                                    child: Text(
+                                      '${sc.name} (${sc.totalWeeklyHours.toStringAsFixed(0)}h/sem)',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: Colors.white,
                                       ),
-                                    )),
+                                    ),
+                                  ),
+                                ),
                               ],
                               onChanged: isReadOnly
                                   ? null
@@ -4239,9 +4653,11 @@ class _RrhhHiringDossierDetailViewState
                                         _s5ScheduleId = val;
                                         _s5ScheduleName = val != null
                                             ? _schedules
-                                                .firstWhere(
-                                                    (sc) => sc.id.toString() == val)
-                                                .name
+                                                  .firstWhere(
+                                                    (sc) =>
+                                                        sc.id.toString() == val,
+                                                  )
+                                                  .name
                                             : null;
                                       });
                                     },
@@ -4269,7 +4685,8 @@ class _RrhhHiringDossierDetailViewState
                   const SizedBox(height: 6),
                   _buildTextField(
                     controller: _s5BaseLocationCtrl,
-                    hint: 'Ej: Oficina Central Santa Cruz, Sede Norte, Cliente X',
+                    hint:
+                        'Ej: Oficina Central Santa Cruz, Sede Norte, Cliente X',
                     enabled: !isReadOnly,
                   ),
                   const SizedBox(height: 6),
@@ -4278,33 +4695,39 @@ class _RrhhHiringDossierDetailViewState
                     Wrap(
                       spacing: 6,
                       runSpacing: 4,
-                      children: [
-                        'Oficina Central Santa Cruz',
-                        'Sede Norte',
-                        'Sucursal Montero',
-                        'Puesto Cliente - Campo',
-                      ].map((loc) {
-                        return InkWell(
-                          onTap: () => setState(
-                              () => _s5BaseLocationCtrl.text = loc),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1E293B),
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: const Color(0xFF334155)),
-                            ),
-                            child: Text(
-                              loc,
-                              style: GoogleFonts.inter(
-                                fontSize: 10.5,
-                                color: const Color(0xFF94A3B8),
+                      children:
+                          [
+                            'Oficina Central Santa Cruz',
+                            'Sede Norte',
+                            'Sucursal Montero',
+                            'Puesto Cliente - Campo',
+                          ].map((loc) {
+                            return InkWell(
+                              onTap: () => setState(
+                                () => _s5BaseLocationCtrl.text = loc,
                               ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF1E293B),
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                    color: const Color(0xFF334155),
+                                  ),
+                                ),
+                                child: Text(
+                                  loc,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 10.5,
+                                    color: const Color(0xFF94A3B8),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
                     ),
                   const SizedBox(height: 14),
 
@@ -4326,19 +4749,23 @@ class _RrhhHiringDossierDetailViewState
                                   child: Text(
                                     '(Sin supervisor directo)',
                                     style: TextStyle(
-                                        color: Color(0xFF94A3B8), fontSize: 12),
+                                      color: Color(0xFF94A3B8),
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
-                                ..._supervisors.map((e) =>
-                                    DropdownMenuItem<String?>(
-                                      value: e.id.toString(),
-                                      child: Text(
-                                        '${e.fullName} (${e.position})',
-                                        style: GoogleFonts.inter(
-                                            fontSize: 12,
-                                            color: Colors.white),
+                                ..._supervisors.map(
+                                  (e) => DropdownMenuItem<String?>(
+                                    value: e.id.toString(),
+                                    child: Text(
+                                      '${e.fullName} (${e.position})',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: Colors.white,
                                       ),
-                                    )),
+                                    ),
+                                  ),
+                                ),
                               ],
                               onChanged: isReadOnly
                                   ? null
@@ -4347,8 +4774,11 @@ class _RrhhHiringDossierDetailViewState
                                         _s5SupervisorId = val;
                                         _s5SupervisorName = val != null
                                             ? _supervisors
-                                                .firstWhere((e) => e.id.toString() == val)
-                                                .fullName
+                                                  .firstWhere(
+                                                    (e) =>
+                                                        e.id.toString() == val,
+                                                  )
+                                                  .fullName
                                             : null;
                                       });
                                     },
@@ -4364,17 +4794,20 @@ class _RrhhHiringDossierDetailViewState
                           value: _s5EffectiveStartDate,
                           enabled: !isReadOnly,
                           firstDate: _s4StartDate ?? DateTime(2020),
-                          errorText: (_s5EffectiveStartDate != null &&
+                          errorText:
+                              (_s5EffectiveStartDate != null &&
                                   _s4StartDate != null &&
                                   DateTime(
                                     _s5EffectiveStartDate!.year,
                                     _s5EffectiveStartDate!.month,
                                     _s5EffectiveStartDate!.day,
-                                  ).isBefore(DateTime(
-                                    _s4StartDate!.year,
-                                    _s4StartDate!.month,
-                                    _s4StartDate!.day,
-                                  )))
+                                  ).isBefore(
+                                    DateTime(
+                                      _s4StartDate!.year,
+                                      _s4StartDate!.month,
+                                      _s4StartDate!.day,
+                                    ),
+                                  ))
                               ? 'Debe ser posterior o igual a la fecha de contrato'
                               : null,
                           onDateSelected: (picked) {
@@ -4394,13 +4827,17 @@ class _RrhhHiringDossierDetailViewState
                         OutlinedButton.icon(
                           onPressed: _isSaving ? null : _saveSection5Draft,
                           icon: const Icon(Icons.save_outlined, size: 14),
-                          label: Text('Guardar borrador',
-                              style: GoogleFonts.inter(fontSize: 12)),
+                          label: Text(
+                            'Guardar borrador',
+                            style: GoogleFonts.inter(fontSize: 12),
+                          ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF94A3B8),
                             side: const BorderSide(color: Color(0xFF334155)),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -4411,7 +4848,10 @@ class _RrhhHiringDossierDetailViewState
                           onPressed: (_isSaving || !_isSection5Valid)
                               ? null
                               : _completeSection5,
-                          icon: const Icon(Icons.check_circle_outline, size: 15),
+                          icon: const Icon(
+                            Icons.check_circle_outline,
+                            size: 15,
+                          ),
                           label: Text(
                             'Marcar sección como completa',
                             style: GoogleFonts.inter(
@@ -4425,7 +4865,9 @@ class _RrhhHiringDossierDetailViewState
                             disabledBackgroundColor: const Color(0xFF1E293B),
                             disabledForegroundColor: const Color(0xFF475569),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 18, vertical: 10),
+                              horizontal: 18,
+                              vertical: 10,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -4454,8 +4896,10 @@ class _RrhhHiringDossierDetailViewState
                             });
                           },
                           icon: const Icon(Icons.edit_outlined, size: 13),
-                          label: Text('Modificar sección',
-                              style: GoogleFonts.inter(fontSize: 11.5)),
+                          label: Text(
+                            'Modificar sección',
+                            style: GoogleFonts.inter(fontSize: 11.5),
+                          ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF38BDF8),
                             side: const BorderSide(color: Color(0xFF1E293B)),
@@ -4528,7 +4972,9 @@ class _RrhhHiringDossierDetailViewState
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
             decoration: BoxDecoration(
-              color: enabled ? const Color(0xFF111827) : const Color(0xFF0A0F1A),
+              color: enabled
+                  ? const Color(0xFF111827)
+                  : const Color(0xFF0A0F1A),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: errorText != null
@@ -4690,12 +5136,16 @@ class _RrhhHiringDossierDetailViewState
       style: GoogleFonts.inter(fontSize: 12.5, color: const Color(0xFFF8FAFC)),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle:
-            GoogleFonts.inter(fontSize: 12, color: const Color(0xFF475569)),
+        hintStyle: GoogleFonts.inter(
+          fontSize: 12,
+          color: const Color(0xFF475569),
+        ),
         filled: true,
         fillColor: const Color(0xFF111827),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Color(0xFF1E293B)),
@@ -4732,9 +5182,13 @@ class _RrhhHiringDossierDetailViewState
       child: DropdownButtonHideUnderline(
         child: DropdownButton<T>(
           value: value,
-          hint: Text(hint,
-              style: GoogleFonts.inter(
-                  fontSize: 12, color: const Color(0xFF475569))),
+          hint: Text(
+            hint,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: const Color(0xFF475569),
+            ),
+          ),
           isExpanded: true,
           dropdownColor: const Color(0xFF0F172A),
           icon: const Icon(Icons.expand_more, color: Color(0xFF64748B)),
@@ -4794,7 +5248,9 @@ class _RrhhHiringDossierDetailViewState
                     const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF10B981),
                         borderRadius: BorderRadius.circular(4),
@@ -4838,8 +5294,10 @@ class _RrhhHiringDossierDetailViewState
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
               ),
             ),
           ],
@@ -4852,7 +5310,8 @@ class _RrhhHiringDossierDetailViewState
     final isExpanded = _expandedSections.contains(6);
     final isClosed = d.status == 'cerrado';
     final all5Complete = d.isReadyForEmployeeCreation;
-    final canConvert = all5Complete && _s6IsConfirmed && !isClosed && !_isSaving;
+    final canConvert =
+        all5Complete && _s6IsConfirmed && !isClosed && !_isSaving;
 
     return Container(
       decoration: BoxDecoration(
@@ -4881,8 +5340,12 @@ class _RrhhHiringDossierDetailViewState
                       color: isClosed
                           ? const Color(0xFF10B981).withValues(alpha: 0.2)
                           : (all5Complete
-                              ? const Color(0xFF10B981).withValues(alpha: 0.15)
-                              : const Color(0xFF334155).withValues(alpha: 0.3)),
+                                ? const Color(
+                                    0xFF10B981,
+                                  ).withValues(alpha: 0.15)
+                                : const Color(
+                                    0xFF334155,
+                                  ).withValues(alpha: 0.3)),
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
@@ -4916,8 +5379,8 @@ class _RrhhHiringDossierDetailViewState
                           isClosed
                               ? 'Expediente formalizado y cerrado'
                               : (all5Complete
-                                  ? 'Todas las secciones listas para conversión'
-                                  : 'Resumen de requisitos y validación para formalizar'),
+                                    ? 'Todas las secciones listas para conversión'
+                                    : 'Resumen de requisitos y validación para formalizar'),
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             color: isClosed || all5Complete
@@ -4932,8 +5395,8 @@ class _RrhhHiringDossierDetailViewState
                     isClosed
                         ? 'completa'
                         : (d.section6Status.isNotEmpty
-                            ? d.section6Status
-                            : (all5Complete ? 'en_proceso' : 'pendiente')),
+                              ? d.section6Status
+                              : (all5Complete ? 'en_proceso' : 'pendiente')),
                   ),
                   const SizedBox(width: 12),
                   Icon(
@@ -4976,8 +5439,10 @@ class _RrhhHiringDossierDetailViewState
                           status: d.section1Status,
                           detail:
                               '${d.validatedRequiredDocsCount}/${d.totalRequiredDocsCount} validados',
-                          originBadge: d.documents.values
-                                  .any((doc) => doc.validatedInRecruitment)
+                          originBadge:
+                              d.documents.values.any(
+                                (doc) => doc.validatedInRecruitment,
+                              )
                               ? '🌱 del postulante'
                               : null,
                         ),
@@ -4989,27 +5454,29 @@ class _RrhhHiringDossierDetailViewState
                           detail: d.afpName != null && d.afpName!.isNotEmpty
                               ? '${d.afpName} - ${d.healthInsuranceName ?? "Sin caja"}'
                               : 'No completado',
-                          originBadge:
-                              d.section2Status == 'completa' ? '🆕 nuevo' : null,
+                          originBadge: d.section2Status == 'completa'
+                              ? '🆕 nuevo'
+                              : null,
                         ),
                         const Divider(height: 1, color: Color(0xFF1E293B)),
                         _buildSectionSummaryRow(
                           secNum: 3,
                           title: '3. Datos Personales',
                           status: d.section3Status,
-                          detail: d.fullAddress != null &&
-                                  d.fullAddress!.isNotEmpty
+                          detail:
+                              d.fullAddress != null && d.fullAddress!.isNotEmpty
                               ? '${d.maritalStatus ?? "Estado civil"}, ${d.childrenCount ?? 0} hijos'
                               : 'No completado',
-                          originBadge: (_applicantEmergName != null &&
+                          originBadge:
+                              (_applicantEmergName != null &&
                                   _applicantEmergName!.isNotEmpty)
                               ? ((_s3EmergNameCtrl.text.trim() !=
-                                          _applicantEmergName!.trim() ||
-                                      (_applicantAddress != null &&
-                                          _s3AddressCtrl.text.trim() !=
-                                              _applicantAddress!.trim()))
-                                  ? '✏️ modificado'
-                                  : '🌱 del postulante')
+                                            _applicantEmergName!.trim() ||
+                                        (_applicantAddress != null &&
+                                            _s3AddressCtrl.text.trim() !=
+                                                _applicantAddress!.trim()))
+                                    ? '✏️ modificado'
+                                    : '🌱 del postulante')
                               : null,
                         ),
                         const Divider(height: 1, color: Color(0xFF1E293B)),
@@ -5017,29 +5484,34 @@ class _RrhhHiringDossierDetailViewState
                           secNum: 4,
                           title: '4. Condiciones Contractuales',
                           status: d.section4Status,
-                          detail: d.contractTypeName != null &&
+                          detail:
+                              d.contractTypeName != null &&
                                   d.contractTypeName!.isNotEmpty
                               ? '${d.contractTypeName} (${d.currency} ${d.baseSalary?.toStringAsFixed(2) ?? "0.00"})'
                               : 'No completado',
-                          originBadge:
-                              d.section4Status == 'completa' ? '🆕 nuevo' : null,
+                          originBadge: d.section4Status == 'completa'
+                              ? '🆕 nuevo'
+                              : null,
                         ),
                         const Divider(height: 1, color: Color(0xFF1E293B)),
                         _buildSectionSummaryRow(
                           secNum: 5,
                           title: '5. Asignación Organizacional',
                           status: d.section5Status,
-                          detail: d.positionName != null &&
+                          detail:
+                              d.positionName != null &&
                                   d.positionName!.isNotEmpty
                               ? '${d.positionName} - ${d.areaName ?? "Sin área"}'
                               : 'No completado',
-                          originBadge: (_applicantTargetArea != null &&
+                          originBadge:
+                              (_applicantTargetArea != null &&
                                   _applicantTargetArea!.isNotEmpty)
                               ? ((_s5AreaName != null &&
-                                      !_s5AreaName!.toLowerCase().contains(
-                                          _applicantTargetArea!.toLowerCase()))
-                                  ? '✏️ modificado'
-                                  : '🌱 del postulante')
+                                        !_s5AreaName!.toLowerCase().contains(
+                                          _applicantTargetArea!.toLowerCase(),
+                                        ))
+                                    ? '✏️ modificado'
+                                    : '🌱 del postulante')
                               : null,
                         ),
                       ],
@@ -5056,8 +5528,9 @@ class _RrhhHiringDossierDetailViewState
                         color: const Color(0xFFF59E0B).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color:
-                              const Color(0xFFF59E0B).withValues(alpha: 0.35),
+                          color: const Color(
+                            0xFFF59E0B,
+                          ).withValues(alpha: 0.35),
                         ),
                       ),
                       child: Column(
@@ -5065,8 +5538,11 @@ class _RrhhHiringDossierDetailViewState
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.warning_amber_rounded,
-                                  size: 18, color: Color(0xFFF59E0B)),
+                              const Icon(
+                                Icons.warning_amber_rounded,
+                                size: 18,
+                                color: Color(0xFFF59E0B),
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -5081,23 +5557,28 @@ class _RrhhHiringDossierDetailViewState
                             ],
                           ),
                           const SizedBox(height: 8),
-                          if (d.section1Status != 'completa')
+                          if (d.section1Status != 'completa' &&
+                              d.section1Status != 'completo')
                             _buildPendingItem(
                               'Sección 1 (Documentos): Faltan documentos obligatorios por validar (${d.validatedRequiredDocsCount}/${d.totalRequiredDocsCount} validados).',
                             ),
-                          if (d.section2Status != 'completa')
+                          if (d.section2Status != 'completa' &&
+                              d.section2Status != 'completo')
                             _buildPendingItem(
                               'Sección 2 (Seguridad Social): AFP y Caja de Salud requeridos.',
                             ),
-                          if (d.section3Status != 'completa')
+                          if (d.section3Status != 'completa' &&
+                              d.section3Status != 'completo')
                             _buildPendingItem(
                               'Sección 3 (Datos Personales): Domicilio o contactos de emergencia incompletos.',
                             ),
-                          if (d.section4Status != 'completa')
+                          if (d.section4Status != 'completa' &&
+                              d.section4Status != 'completo')
                             _buildPendingItem(
                               'Sección 4 (Contractual): Modalidad contractual o salario base incompletos.',
                             ),
-                          if (d.section5Status != 'completa')
+                          if (d.section5Status != 'completa' &&
+                              d.section5Status != 'completo')
                             _buildPendingItem(
                               'Sección 5 (Asignación): Cargo, área o centro de costos sin asignar.',
                             ),
@@ -5117,16 +5598,19 @@ class _RrhhHiringDossierDetailViewState
                         color: const Color(0xFF10B981).withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                            color: const Color(0xFF10B981)
-                                .withValues(alpha: 0.3)),
+                          color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.check_circle,
-                                  color: Color(0xFF10B981), size: 18),
+                              const Icon(
+                                Icons.check_circle,
+                                color: Color(0xFF10B981),
+                                size: 18,
+                              ),
                               const SizedBox(width: 8),
                               Text(
                                 'Expediente Convertido y Cerrado Exitosamente',
@@ -5182,7 +5666,9 @@ class _RrhhHiringDossierDetailViewState
                                 activeColor: const Color(0xFF10B981),
                                 checkColor: const Color(0xFF0F172A),
                                 side: const BorderSide(
-                                    color: Color(0xFF64748B), width: 1.5),
+                                  color: Color(0xFF64748B),
+                                  width: 1.5,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(4),
                                 ),
@@ -5228,8 +5714,8 @@ class _RrhhHiringDossierDetailViewState
                           message: !all5Complete
                               ? 'Completa las 5 secciones primero'
                               : (!_s6IsConfirmed
-                                  ? 'Confirma la información primero'
-                                  : 'Crear empleado formal'),
+                                    ? 'Confirma la información primero'
+                                    : 'Crear empleado formal'),
                           child: FilledButton.icon(
                             onPressed: canConvert
                                 ? () => _showConfirmConversionDialog(context, d)
@@ -5243,8 +5729,10 @@ class _RrhhHiringDossierDetailViewState
                                       color: Colors.white,
                                     ),
                                   )
-                                : const Icon(Icons.person_add_alt_1_rounded,
-                                    size: 16),
+                                : const Icon(
+                                    Icons.person_add_alt_1_rounded,
+                                    size: 16,
+                                  ),
                             label: Text(
                               _isSaving
                                   ? 'Convirtiendo...'
@@ -5261,7 +5749,9 @@ class _RrhhHiringDossierDetailViewState
                               disabledBackgroundColor: const Color(0xFF1E293B),
                               disabledForegroundColor: const Color(0xFF475569),
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 14),
+                                horizontal: 24,
+                                vertical: 14,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -5362,15 +5852,15 @@ class _RrhhHiringDossierDetailViewState
                 color: originBadge.contains('del postulante')
                     ? const Color(0xFF0284C7).withValues(alpha: 0.15)
                     : (originBadge.contains('modificado')
-                        ? const Color(0xFFD97706).withValues(alpha: 0.15)
-                        : const Color(0xFF334155).withValues(alpha: 0.2)),
+                          ? const Color(0xFFD97706).withValues(alpha: 0.15)
+                          : const Color(0xFF334155).withValues(alpha: 0.2)),
                 borderRadius: BorderRadius.circular(4),
                 border: Border.all(
                   color: originBadge.contains('del postulante')
                       ? const Color(0xFF38BDF8).withValues(alpha: 0.3)
                       : (originBadge.contains('modificado')
-                          ? const Color(0xFFF59E0B).withValues(alpha: 0.3)
-                          : const Color(0xFF64748B).withValues(alpha: 0.3)),
+                            ? const Color(0xFFF59E0B).withValues(alpha: 0.3)
+                            : const Color(0xFF64748B).withValues(alpha: 0.3)),
                 ),
               ),
               child: Text(
@@ -5381,8 +5871,8 @@ class _RrhhHiringDossierDetailViewState
                   color: originBadge.contains('del postulante')
                       ? const Color(0xFF38BDF8)
                       : (originBadge.contains('modificado')
-                          ? const Color(0xFFFBBF24)
-                          : const Color(0xFF94A3B8)),
+                            ? const Color(0xFFFBBF24)
+                            : const Color(0xFF94A3B8)),
                 ),
               ),
             ),
@@ -5440,7 +5930,9 @@ class _RrhhHiringDossierDetailViewState
   }
 
   Future<void> _showConfirmConversionDialog(
-      BuildContext context, RrhhHiringDossier d) async {
+    BuildContext context,
+    RrhhHiringDossier d,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -5499,8 +5991,11 @@ class _RrhhHiringDossierDetailViewState
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.person_outline,
-                          size: 16, color: Color(0xFF38BDF8)),
+                      const Icon(
+                        Icons.person_outline,
+                        size: 16,
+                        color: Color(0xFF38BDF8),
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -5580,8 +6075,9 @@ class _RrhhHiringDossierDetailViewState
     try {
       final employee = await RrhhRepository.current.convertDossierToEmployee(
         d.id ?? widget.dossierId,
-        notes:
-            _s6NotesCtrl.text.trim().isEmpty ? null : _s6NotesCtrl.text.trim(),
+        notes: _s6NotesCtrl.text.trim().isEmpty
+            ? null
+            : _s6NotesCtrl.text.trim(),
       );
 
       await _loadDossier();
@@ -5596,4 +6092,3 @@ class _RrhhHiringDossierDetailViewState
     }
   }
 }
-

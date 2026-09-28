@@ -62,7 +62,9 @@ abstract class RrhhRepository {
   Future<RrhhEmployee> createEmployee(RrhhEmployee employee);
   Future<bool> deleteEmployee(int id);
   Future<List<RrhhEmployeeDocument>> listDocuments(int employeeId);
-  Future<RrhhEmployeeDocument> uploadEmployeeDocument(RrhhEmployeeDocument document);
+  Future<RrhhEmployeeDocument> uploadEmployeeDocument(
+    RrhhEmployeeDocument document,
+  );
   Future<bool> deleteEmployeeDocument(int documentId);
   Future<List<RrhhTimelineEvent>> listTimelineEvents({
     int? employeeId,
@@ -72,6 +74,7 @@ abstract class RrhhRepository {
     DateTime? endDate,
     String? user,
   });
+
   /// Asignación activa reportada por Operaciones (Solo Lectura desde Operaciones)
   Future<RrhhAssignment?> getCurrentAssignment(int employeeId);
   Future<RrhhEmployee> updateEmployee(RrhhEmployee employee);
@@ -147,7 +150,10 @@ abstract class RrhhRepository {
   });
   Future<RrhhApplicant> getApplicantById(int id);
   Future<RrhhApplicantCompanion> getApplicantCompanion(int applicantId);
-  Future<void> saveApplicantCompanion(int applicantId, RrhhApplicantCompanion companion);
+  Future<void> saveApplicantCompanion(
+    int applicantId,
+    RrhhApplicantCompanion companion,
+  );
   Future<List<RrhhApplicant>> findApplicantsByCi(String identityCard);
   Future<RrhhApplicant> createApplicant(
     RrhhApplicant applicant, {
@@ -176,8 +182,9 @@ abstract class RrhhRepository {
   Future<RrhhHiringDossier> createDossierForApplicant(int applicantId);
   Future<RrhhHiringDossier> updateDossierSection1(
     int id,
-    Map<String, RrhhDossierDocument> documents,
-  );
+    Map<String, RrhhDossierDocument> documents, {
+    String? sectionStatus,
+  });
   Future<RrhhHiringDossier> updateDossierSection2(
     int id, {
     String? afpId,
@@ -432,12 +439,28 @@ abstract class RrhhRepository {
   Future<List<RrhhPayrollPeriod>> listPayrollPeriods();
   Future<RrhhPayrollPeriod?> getPayrollPeriodById(int id);
   Future<RrhhPayrollPeriod?> getPayrollPeriodByMonth(int year, int month);
-  Future<RrhhPayrollPeriod> createPayrollPeriod(int year, int month, {String? notes});
-  Future<RrhhPayrollPeriod> closePayrollPeriod(int id, {String? closedBy, String? notes});
+  Future<RrhhPayrollPeriod> createPayrollPeriod(
+    int year,
+    int month, {
+    String? notes,
+  });
+  Future<RrhhPayrollPeriod> closePayrollPeriod(
+    int id, {
+    String? closedBy,
+    String? notes,
+  });
+
   /// Este método será reemplazado por un endpoint HTTP cuando se conecte el backend real.
   /// Contabilidad consumirá los datos consolidados a través de este endpoint.
-  Future<RrhhPayrollPeriod> sendPayrollPeriodToAccounting(int id, {String? sentBy});
-  Future<List<RrhhPayrollItem>> listPayrollItems(int periodId, {String? sourceType, String? impactType});
+  Future<RrhhPayrollPeriod> sendPayrollPeriodToAccounting(
+    int id, {
+    String? sentBy,
+  });
+  Future<List<RrhhPayrollItem>> listPayrollItems(
+    int periodId, {
+    String? sourceType,
+    String? impactType,
+  });
   Future<List<RrhhPayrollItem>> generatePayrollItems(int periodId);
   Future<String> exportPayrollPeriod(int periodId, String format);
   Future<List<RrhhPayrollExportDto>> getPayrollInputs(int month, int year);
