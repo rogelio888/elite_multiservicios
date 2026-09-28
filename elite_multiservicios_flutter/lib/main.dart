@@ -44,50 +44,17 @@ class EliteMultiserviciosApp extends StatefulWidget {
 class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
   ThemeMode _themeMode = ThemeMode.system;
   late final AuthService _authService;
-  Future<_UserAuthState>? _authStateFuture;
-  bool _lastSignedIn = false;
 
   @override
   void initState() {
     super.initState();
     _authService = AuthService();
-    _authService.addListener(_onAuthChanged);
-    _lastSignedIn = client.auth.isAuthenticated;
-    if (_lastSignedIn) {
-      _authStateFuture = _resolveAuthState();
-    }
   }
 
   @override
   void dispose() {
-    _authService.removeListener(_onAuthChanged);
     _authService.dispose();
     super.dispose();
-  }
-
-  void _onAuthChanged() {
-    final currentSignedIn = client.auth.isAuthenticated;
-    _lastSignedIn = currentSignedIn;
-
-    // Recalcular SIEMPRE que haya cambio de estado de auth o notificación.
-    // Incluso si sigue autenticado (porque el estado de MFA puede haber cambiado).
-    setState(() {
-      if (currentSignedIn) {
-        _authStateFuture = _resolveAuthState();
-      } else {
-        _authStateFuture = null;
-      }
-    });
-  }
-
-  void _refreshAuthState() {
-    setState(() {
-      if (client.auth.isAuthenticated) {
-        _authStateFuture = _resolveAuthState();
-      } else {
-        _authStateFuture = null;
-      }
-    });
   }
 
   void _toggleTheme() {
@@ -106,8 +73,6 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
         _themeMode == ThemeMode.dark ||
         (_themeMode == ThemeMode.system &&
             MediaQuery.platformBrightnessOf(context) == Brightness.dark);
-
-    final isSignedIn = client.auth.isAuthenticated;
 
     return MaterialApp(
       title: 'Elite Multiservicios — Sistema Empresarial',
@@ -134,14 +99,81 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: _buildRootWidget(context, isDark, isSignedIn),
-      onGenerateRoute: (settings) {
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (context) => _buildRootWidget(context, isDark, isSignedIn),
-        );
-      },
+      home: AppAuthGate(
+        authService: _authService,
+        isDarkMode: isDark,
+        onToggleTheme: _toggleTheme,
+      ),
     );
+  }
+}
+
+/// Compuerta reactiva de autenticación montada en la ruta raíz de MaterialApp.
+/// Controla la transición en caliente entre Login, MFA, Cambio de Contraseña y Dashboard
+/// sin requerir recarga manual del navegador (F5).
+class AppAuthGate extends StatefulWidget {
+  final AuthService authService;
+  final bool isDarkMode;
+  final VoidCallback onToggleTheme;
+
+  const AppAuthGate({
+    super.key,
+    required this.authService,
+    required this.isDarkMode,
+    required this.onToggleTheme,
+  });
+
+  @override
+  State<AppAuthGate> createState() => _AppAuthGateState();
+}
+
+class _AppAuthGateState extends State<AppAuthGate> {
+  Future<_UserAuthState>? _authStateFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.authService.addListener(_onAuthChanged);
+    if (client.auth.isAuthenticated) {
+      _authStateFuture = _resolveAuthState();
+    }
+  }
+
+  @override
+  void didUpdateWidget(AppAuthGate oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.authService != widget.authService) {
+      oldWidget.authService.removeListener(_onAuthChanged);
+      widget.authService.addListener(_onAuthChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.authService.removeListener(_onAuthChanged);
+    super.dispose();
+  }
+
+  void _onAuthChanged() {
+    if (!mounted) return;
+    setState(() {
+      if (client.auth.isAuthenticated) {
+        _authStateFuture = _resolveAuthState();
+      } else {
+        _authStateFuture = null;
+      }
+    });
+  }
+
+  void _refreshAuthState() {
+    if (!mounted) return;
+    setState(() {
+      if (client.auth.isAuthenticated) {
+        _authStateFuture = _resolveAuthState();
+      } else {
+        _authStateFuture = null;
+      }
+    });
   }
 
   Future<_UserAuthState> _resolveAuthState() async {
@@ -151,22 +183,22 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
         return _UserAuthState(user: user, isMfaVerified: true);
       }
 
-      final isVerified = await _authService.isCurrentSessionMfaVerified();
+      final isVerified = await widget.authService.isCurrentSessionMfaVerified();
       if (isVerified) {
         return _UserAuthState(user: user, isMfaVerified: true);
       }
 
       // La sesión activa NO tiene MFA verificado. Recuperar o emitir challenge.
-      MfaChallengeResponse? challenge = _authService.currentMfaChallenge;
+      MfaChallengeResponse? challenge = widget.authService.currentMfaChallenge;
       if (challenge == null) {
         try {
-          challenge = await _authService.checkMfaRequired(
-            rememberMe: _authService.currentRememberMe,
+          challenge = await widget.authService.checkMfaRequired(
+            rememberMe: widget.authService.currentRememberMe,
             notify: false,
           );
         } catch (e) {
           if (kDebugMode) {
-            print('[main.dart] Error obteniendo challenge MFA: $e');
+            print('[AppAuthGate] Error obteniendo challenge MFA: $e');
           }
         }
       }
@@ -180,22 +212,26 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
       // Si la sesión guardada en el cliente ya no es válida o expiró en el backend,
       // purgar la sesión local para evitar bucles de 500 y volver limpiamente al Login
       try {
-        await _authService.logout();
+        await widget.authService.logout();
       } catch (_) {}
       rethrow;
     }
   }
 
-  Widget _buildRootWidget(BuildContext context, bool isDark, bool isSignedIn) {
+  @override
+  Widget build(BuildContext context) {
+    final isSignedIn = client.auth.isAuthenticated;
     if (!isSignedIn) {
       return LoginScreen(
-        authService: _authService,
-        isDarkMode: isDark,
-        onToggleTheme: _toggleTheme,
+        authService: widget.authService,
+        isDarkMode: widget.isDarkMode,
+        onToggleTheme: widget.onToggleTheme,
         onLoginSuccess: _refreshAuthState,
       );
     }
+
     _authStateFuture ??= _resolveAuthState();
+
     return FutureBuilder<_UserAuthState>(
       future: _authStateFuture,
       builder: (context, snapshot) {
@@ -207,14 +243,13 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
         if (snapshot.hasError || !snapshot.hasData) {
           if (kDebugMode) {
             print(
-              '[main.dart] Error en FutureBuilder de authState: ${snapshot.error}',
+              '[AppAuthGate] Error en FutureBuilder de authState: ${snapshot.error}',
             );
           }
-          // Si no se puede validar la sesión, jamás dar acceso: retornar a LoginScreen
           return LoginScreen(
-            authService: _authService,
-            isDarkMode: isDark,
-            onToggleTheme: _toggleTheme,
+            authService: widget.authService,
+            isDarkMode: widget.isDarkMode,
+            onToggleTheme: widget.onToggleTheme,
             onLoginSuccess: _refreshAuthState,
           );
         }
@@ -224,21 +259,20 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
         // 1. PRIMERO: Si el usuario requiere MFA y la sesión NO está verificada
         if (user.mfaEnabled && !authState.isMfaVerified) {
           final challenge =
-              authState.mfaChallenge ?? _authService.currentMfaChallenge;
+              authState.mfaChallenge ?? widget.authService.currentMfaChallenge;
           if (challenge != null) {
             return MfaVerificationScreen(
-              authService: _authService,
+              authService: widget.authService,
               challengeId: challenge.challengeId,
               emailHint: challenge.emailHint,
-              rememberMe: _authService.currentRememberMe,
+              rememberMe: widget.authService.currentRememberMe,
               onMfaSuccess: () {
-                _authService.markSessionMfaVerified();
+                widget.authService.markSessionMfaVerified();
                 _refreshAuthState();
               },
             );
           } else {
-            // El usuario requiere MFA pero el challenge aún se está obteniendo:
-            // NUNCA pasar al Dashboard ni recaer en Login.
+            // El usuario requiere MFA pero el challenge aún se está obteniendo
             return Scaffold(
               body: Center(
                 child: Column(
@@ -263,16 +297,16 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
         // 2. DESPUÉS: ¿Cambio obligatorio de contraseña?
         if (user.mustChangePassword) {
           return ForcePasswordChangeScreen(
-            authService: _authService,
+            authService: widget.authService,
             onPasswordChanged: _refreshAuthState,
           );
         }
 
         // 3. Dashboard
         return SecurityShellScreen(
-          authService: _authService,
-          isDarkMode: isDark,
-          onToggleTheme: _toggleTheme,
+          authService: widget.authService,
+          isDarkMode: widget.isDarkMode,
+          onToggleTheme: widget.onToggleTheme,
         );
       },
     );
