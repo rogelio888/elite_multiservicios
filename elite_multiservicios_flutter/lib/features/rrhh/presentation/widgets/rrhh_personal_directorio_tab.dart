@@ -13,6 +13,7 @@ import 'rrhh_personal_table_row.dart';
 import 'rrhh_primary_action_button.dart';
 import 'rrhh_snack_bar.dart';
 import 'rrhh_state_widgets.dart';
+import 'rrhh_termination_edit_dialog.dart';
 
 /// Tab 1: Directorio / Nómina de Personal.
 /// Consulta, filtrado y apertura de expediente 360° con RrhhEmployeeDetailDialog.
@@ -227,10 +228,20 @@ class RrhhPersonalDirectorioTabState extends State<RrhhPersonalDirectorioTab> {
                                   }
                                 }
                               },
-                              onTerminate: () => RrhhEmployeeDetailDialog.show(
-                                context,
-                                emp.id,
-                              ),
+                              onTerminate: () async {
+                                final success =
+                                    await RrhhTerminationEditDialog.show(
+                                      context,
+                                      employeeId: emp.id,
+                                    );
+                                if (success == true && context.mounted) {
+                                  loadEmployees();
+                                  RrhhSnackBar.showSuccess(
+                                    context,
+                                    'Desvinculación registrada correctamente',
+                                  );
+                                }
+                              },
                             ),
                           ),
                       ],

@@ -37,6 +37,10 @@ Widget buildHireDropdownField<T>({
   String? hint,
   bool enabled = true,
 }) {
+  final hasMatch = items.any((item) => item.value == value);
+  final safeValue = hasMatch ? value : null;
+  final isSelectable = enabled && items.isNotEmpty;
+
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -50,9 +54,10 @@ Widget buildHireDropdownField<T>({
       ),
       const SizedBox(height: 6),
       DropdownButtonFormField<T>(
-        initialValue: value,
+        key: ValueKey(safeValue),
+        initialValue: safeValue,
         items: items,
-        onChanged: enabled ? onChanged : null,
+        onChanged: isSelectable ? onChanged : null,
         isExpanded: true,
         hint: hint != null
             ? Text(
@@ -119,11 +124,19 @@ Widget buildHireDatePickerField({
       const SizedBox(height: 6),
       InkWell(
         onTap: () async {
+          final effectiveFirst = firstDate ?? DateTime(1950);
+          final effectiveLast = lastDate ?? DateTime(2035);
+          DateTime effectiveInitial = currentDate;
+          if (effectiveInitial.isBefore(effectiveFirst)) {
+            effectiveInitial = effectiveFirst;
+          } else if (effectiveInitial.isAfter(effectiveLast)) {
+            effectiveInitial = effectiveLast;
+          }
           final picked = await showDatePicker(
             context: context,
-            initialDate: currentDate,
-            firstDate: firstDate ?? DateTime(1950),
-            lastDate: lastDate ?? DateTime(2035),
+            initialDate: effectiveInitial,
+            firstDate: effectiveFirst,
+            lastDate: effectiveLast,
           );
           if (picked != null) onDateSelected(picked);
         },

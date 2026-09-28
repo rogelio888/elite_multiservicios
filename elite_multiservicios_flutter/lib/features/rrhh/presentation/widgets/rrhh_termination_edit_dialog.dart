@@ -9,17 +9,26 @@ import 'rrhh_snack_bar.dart';
 /// Modal para registrar o editar una desvinculación laboral (Pantalla 11 — Bloque 3).
 class RrhhTerminationEditDialog extends StatefulWidget {
   final RrhhTerminationRecord? initialRecord;
+  final int? initialEmployeeId;
 
-  const RrhhTerminationEditDialog({super.key, this.initialRecord});
+  const RrhhTerminationEditDialog({
+    super.key,
+    this.initialRecord,
+    this.initialEmployeeId,
+  });
 
   static Future<bool?> show(
     BuildContext context, {
     RrhhTerminationRecord? record,
+    int? employeeId,
   }) {
     return showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => RrhhTerminationEditDialog(initialRecord: record),
+      builder: (ctx) => RrhhTerminationEditDialog(
+        initialRecord: record,
+        initialEmployeeId: employeeId,
+      ),
     );
   }
 
@@ -119,9 +128,11 @@ class _RrhhTerminationEditDialogState extends State<RrhhTerminationEditDialog> {
         setState(() {
           _employees = list;
           _isLoadingEmployees = false;
-          if (widget.initialRecord != null) {
+          final targetEmpId =
+              widget.initialRecord?.employeeId ?? widget.initialEmployeeId;
+          if (targetEmpId != null) {
             _selectedEmployee = list.cast<RrhhEmployeeSummaryDto?>().firstWhere(
-              (e) => e?.id == widget.initialRecord!.employeeId,
+              (e) => e?.id == targetEmpId,
               orElse: () => null,
             );
             if (_selectedEmployee != null) {

@@ -145,36 +145,45 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
   }
 
   Future<_UserAuthState> _resolveAuthState() async {
-    final user = await client.user.getCurrentUser();
-    if (!user.mfaEnabled) {
-      return _UserAuthState(user: user, isMfaVerified: true);
-    }
+    try {
+      final user = await client.user.getCurrentUser();
+      if (!user.mfaEnabled) {
+        return _UserAuthState(user: user, isMfaVerified: true);
+      }
 
-    final isVerified = await _authService.isCurrentSessionMfaVerified();
-    if (isVerified) {
-      return _UserAuthState(user: user, isMfaVerified: true);
-    }
+      final isVerified = await _authService.isCurrentSessionMfaVerified();
+      if (isVerified) {
+        return _UserAuthState(user: user, isMfaVerified: true);
+      }
 
-    // La sesión activa NO tiene MFA verificado. Recuperar o emitir challenge.
-    MfaChallengeResponse? challenge = _authService.currentMfaChallenge;
-    if (challenge == null) {
-      try {
-        challenge = await _authService.checkMfaRequired(
-          rememberMe: _authService.currentRememberMe,
-          notify: false,
-        );
-      } catch (e) {
-        if (kDebugMode) {
-          print('[main.dart] Error obteniendo challenge MFA: $e');
+      // La sesión activa NO tiene MFA verificado. Recuperar o emitir challenge.
+      MfaChallengeResponse? challenge = _authService.currentMfaChallenge;
+      if (challenge == null) {
+        try {
+          challenge = await _authService.checkMfaRequired(
+            rememberMe: _authService.currentRememberMe,
+            notify: false,
+          );
+        } catch (e) {
+          if (kDebugMode) {
+            print('[main.dart] Error obteniendo challenge MFA: $e');
+          }
         }
       }
-    }
 
-    return _UserAuthState(
-      user: user,
-      isMfaVerified: false,
-      mfaChallenge: challenge,
-    );
+      return _UserAuthState(
+        user: user,
+        isMfaVerified: false,
+        mfaChallenge: challenge,
+      );
+    } catch (e) {
+      // Si la sesión guardada en el cliente ya no es válida o expiró en el backend,
+      // purgar la sesión local para evitar bucles de 500 y volver limpiamente al Login
+      try {
+        await _authService.logout();
+      } catch (_) {}
+      rethrow;
+    }
   }
 
   Widget _buildRootWidget(BuildContext context, bool isDark, bool isSignedIn) {

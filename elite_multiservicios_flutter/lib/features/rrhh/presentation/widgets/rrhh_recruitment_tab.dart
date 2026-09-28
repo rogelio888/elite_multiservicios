@@ -43,23 +43,24 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
   }
 
   Future<void> loadApplicants() async {
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
     try {
       final list = await RrhhRepository.current.listApplicants();
-      if (mounted)
-        setState(() {
-          _allApplicants = list;
-          _isLoading = false;
-        });
+      if (!mounted) return;
+      setState(() {
+        _allApplicants = list;
+        _isLoading = false;
+      });
     } catch (e) {
-      if (mounted)
-        setState(() {
-          _errorMessage = 'Error al cargar postulantes: $e';
-          _isLoading = false;
-        });
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = 'Error al cargar postulantes: $e';
+        _isLoading = false;
+      });
     }
   }
 
@@ -72,16 +73,18 @@ class _RrhhRecruitmentTabState extends State<RrhhRecruitmentTab> {
 
   Future<void> _openCreateDialog() async {
     final created = await RrhhApplicantEditDialog.show(context);
-    if (created == true) await loadApplicants();
+    if (created == true && mounted) await loadApplicants();
   }
 
   Future<void> _openDrawer(int applicantId) async {
     await RrhhRecruitmentApplicantDrawer.show(
       context,
       applicantId,
-      onStatusChanged: loadApplicants,
+      onStatusChanged: () {
+        if (mounted) loadApplicants();
+      },
     );
-    await loadApplicants();
+    if (mounted) await loadApplicants();
   }
 
   Future<void> _onApplicantDropped(

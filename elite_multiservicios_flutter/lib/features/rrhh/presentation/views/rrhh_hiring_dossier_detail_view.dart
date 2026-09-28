@@ -34,6 +34,15 @@ class _RrhhHiringDossierDetailViewState
   bool _isLoading = true;
   bool _isSaving = false;
   final Set<int> _expandedSections = {1}; // Sección 1 abierta por defecto
+  final ScrollController _scrollController = ScrollController();
+  final Map<int, GlobalKey> _sectionKeys = {
+    1: GlobalKey(),
+    2: GlobalKey(),
+    3: GlobalKey(),
+    4: GlobalKey(),
+    5: GlobalKey(),
+    6: GlobalKey(),
+  };
 
   // Estado Sección 6
   bool _s6IsConfirmed = false;
@@ -122,6 +131,7 @@ class _RrhhHiringDossierDetailViewState
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _s2AfpNumberCtrl.dispose();
     _s2NotesCtrl.dispose();
     _s3AddressCtrl.dispose();
@@ -185,6 +195,55 @@ class _RrhhHiringDossierDetailViewState
         _supervisors = (results[10] as List<RrhhEmployeeSummaryDto>)
             .where((e) => e.status == 'ACTIVO')
             .toList();
+
+        // Normalizar selecciones previas si coinciden con los catálogos recién cargados
+        if (_s4ContractTypeId != null && _contractTypeItems.isNotEmpty) {
+          final m = _contractTypeItems.where(
+            (c) =>
+                c.code == _s4ContractTypeId ||
+                c.name.trim().toLowerCase() ==
+                    _s4ContractTypeId!.trim().toLowerCase(),
+          );
+          if (m.isNotEmpty) {
+            _s4ContractTypeId = m.first.code;
+            _s4ContractTypeName = m.first.name;
+          }
+        }
+        if (_s4PaymentModalityId != null && _paymentModalityItems.isNotEmpty) {
+          final m = _paymentModalityItems.where(
+            (p) =>
+                p.code == _s4PaymentModalityId ||
+                p.name.trim().toLowerCase() ==
+                    _s4PaymentModalityId!.trim().toLowerCase(),
+          );
+          if (m.isNotEmpty) {
+            _s4PaymentModalityId = m.first.code;
+            _s4PaymentModalityName = m.first.name;
+          }
+        }
+        if (_s2AfpId != null && _afpItems.isNotEmpty) {
+          final m = _afpItems.where(
+            (a) =>
+                a.code == _s2AfpId ||
+                a.name.trim().toLowerCase() == _s2AfpId!.trim().toLowerCase(),
+          );
+          if (m.isNotEmpty) {
+            _s2AfpId = m.first.code;
+            _s2AfpName = m.first.name;
+          }
+        }
+        if (_s2HealthInsuranceId != null && _healthInsuranceItems.isNotEmpty) {
+          final m = _healthInsuranceItems.where(
+            (h) =>
+                h.code == _s2HealthInsuranceId ||
+                h.name.trim().toLowerCase() ==
+                    _s2HealthInsuranceId!.trim().toLowerCase(),
+          );
+          if (m.isNotEmpty) {
+            _s2HealthInsuranceId = m.first.code;
+            _s2HealthInsuranceName = m.first.name;
+          }
+        }
       });
     }
   }
@@ -192,9 +251,32 @@ class _RrhhHiringDossierDetailViewState
   void _populateSection2From(RrhhHiringDossier d) {
     _s2AfpId = d.afpId;
     _s2AfpName = d.afpName;
+    if (_s2AfpId != null && _afpItems.isNotEmpty) {
+      final m = _afpItems.where(
+        (a) =>
+            a.code == _s2AfpId ||
+            a.name.trim().toLowerCase() == _s2AfpId!.trim().toLowerCase(),
+      );
+      if (m.isNotEmpty) {
+        _s2AfpId = m.first.code;
+        _s2AfpName = m.first.name;
+      }
+    }
     _s2AfpNumberCtrl.text = d.afpNumber ?? '';
     _s2HealthInsuranceId = d.healthInsuranceId;
     _s2HealthInsuranceName = d.healthInsuranceName;
+    if (_s2HealthInsuranceId != null && _healthInsuranceItems.isNotEmpty) {
+      final m = _healthInsuranceItems.where(
+        (h) =>
+            h.code == _s2HealthInsuranceId ||
+            h.name.trim().toLowerCase() ==
+                _s2HealthInsuranceId!.trim().toLowerCase(),
+      );
+      if (m.isNotEmpty) {
+        _s2HealthInsuranceId = m.first.code;
+        _s2HealthInsuranceName = m.first.name;
+      }
+    }
     _s2NotesCtrl.text = d.section2Notes ?? '';
   }
 
@@ -210,9 +292,33 @@ class _RrhhHiringDossierDetailViewState
   void _populateSection4From(RrhhHiringDossier d) {
     _s4ContractTypeId = d.contractTypeId;
     _s4ContractTypeName = d.contractTypeName;
+    if (_s4ContractTypeId != null && _contractTypeItems.isNotEmpty) {
+      final m = _contractTypeItems.where(
+        (c) =>
+            c.code == _s4ContractTypeId ||
+            c.name.trim().toLowerCase() ==
+                _s4ContractTypeId!.trim().toLowerCase(),
+      );
+      if (m.isNotEmpty) {
+        _s4ContractTypeId = m.first.code;
+        _s4ContractTypeName = m.first.name;
+      }
+    }
     _s4WorkdayType = d.workdayType ?? 'Completa';
     _s4PaymentModalityId = d.paymentModalityId;
     _s4PaymentModalityName = d.paymentModalityName;
+    if (_s4PaymentModalityId != null && _paymentModalityItems.isNotEmpty) {
+      final m = _paymentModalityItems.where(
+        (p) =>
+            p.code == _s4PaymentModalityId ||
+            p.name.trim().toLowerCase() ==
+                _s4PaymentModalityId!.trim().toLowerCase(),
+      );
+      if (m.isNotEmpty) {
+        _s4PaymentModalityId = m.first.code;
+        _s4PaymentModalityName = m.first.name;
+      }
+    }
     _s4BaseSalaryCtrl.text = d.baseSalary != null
         ? d.baseSalary!.toStringAsFixed(0)
         : '';
@@ -361,6 +467,23 @@ class _RrhhHiringDossierDetailViewState
         _expandedSections.remove(section);
       } else {
         _expandedSections.add(section);
+      }
+    });
+  }
+
+  void _navigateToSection(int secNum) {
+    setState(() {
+      _expandedSections.add(secNum);
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final keyContext = _sectionKeys[secNum]?.currentContext;
+      if (keyContext != null) {
+        Scrollable.ensureVisible(
+          keyContext,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOutCubic,
+          alignment: 0.05,
+        );
       }
     });
   }
@@ -730,6 +853,7 @@ class _RrhhHiringDossierDetailViewState
           _buildHeader(d, isDark),
           Expanded(
             child: SingleChildScrollView(
+              controller: _scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -740,17 +864,35 @@ class _RrhhHiringDossierDetailViewState
                     _buildClosedDossierBanner(d, isDark),
                   ],
                   const SizedBox(height: 20),
-                  _buildSection1Accordion(d, isDark),
+                  KeyedSubtree(
+                    key: _sectionKeys[1],
+                    child: _buildSection1Accordion(d, isDark),
+                  ),
                   const SizedBox(height: 12),
-                  _buildSection2Accordion(d, isDark),
+                  KeyedSubtree(
+                    key: _sectionKeys[2],
+                    child: _buildSection2Accordion(d, isDark),
+                  ),
                   const SizedBox(height: 12),
-                  _buildSection3Accordion(d, isDark),
+                  KeyedSubtree(
+                    key: _sectionKeys[3],
+                    child: _buildSection3Accordion(d, isDark),
+                  ),
                   const SizedBox(height: 12),
-                  _buildSection4Accordion(d, isDark),
+                  KeyedSubtree(
+                    key: _sectionKeys[4],
+                    child: _buildSection4Accordion(d, isDark),
+                  ),
                   const SizedBox(height: 12),
-                  _buildSection5Accordion(d, isDark),
+                  KeyedSubtree(
+                    key: _sectionKeys[5],
+                    child: _buildSection5Accordion(d, isDark),
+                  ),
                   const SizedBox(height: 12),
-                  _buildSection6Accordion(d, isDark),
+                  KeyedSubtree(
+                    key: _sectionKeys[6],
+                    child: _buildSection6Accordion(d, isDark),
+                  ),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -4943,11 +5085,20 @@ class _RrhhHiringDossierDetailViewState
         InkWell(
           onTap: enabled
               ? () async {
+                  final effectiveFirst = firstDate ?? DateTime(2020);
+                  final effectiveLast = lastDate ?? DateTime(2035);
+                  DateTime effectiveInitial = value ?? DateTime.now();
+                  if (effectiveInitial.isBefore(effectiveFirst)) {
+                    effectiveInitial = effectiveFirst;
+                  } else if (effectiveInitial.isAfter(effectiveLast)) {
+                    effectiveInitial = effectiveLast;
+                  }
+
                   final picked = await showDatePicker(
                     context: context,
-                    initialDate: value ?? DateTime.now(),
-                    firstDate: firstDate ?? DateTime(2020),
-                    lastDate: lastDate ?? DateTime(2035),
+                    initialDate: effectiveInitial,
+                    firstDate: effectiveFirst,
+                    lastDate: effectiveLast,
                     builder: (context, child) {
                       return Theme(
                         data: ThemeData.dark().copyWith(
@@ -5172,6 +5323,35 @@ class _RrhhHiringDossierDetailViewState
     required List<DropdownMenuItem<T>> items,
     required ValueChanged<T?>? onChanged,
   }) {
+    final seen = <T?>{};
+    final uniqueItems = <DropdownMenuItem<T>>[];
+    for (final item in items) {
+      if (seen.add(item.value)) {
+        uniqueItems.add(item);
+      }
+    }
+
+    T? effectiveValue = value;
+    if (effectiveValue != null &&
+        !uniqueItems.any((item) => item.value == effectiveValue)) {
+      final matchByText = uniqueItems.where((item) {
+        final child = item.child;
+        if (child is Text) {
+          final text = child.data;
+          return text != null &&
+              text.trim().toLowerCase() ==
+                  effectiveValue.toString().trim().toLowerCase();
+        }
+        return false;
+      });
+
+      if (matchByText.length == 1) {
+        effectiveValue = matchByText.first.value;
+      } else {
+        effectiveValue = null;
+      }
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
@@ -5181,7 +5361,7 @@ class _RrhhHiringDossierDetailViewState
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<T>(
-          value: value,
+          value: effectiveValue,
           hint: Text(
             hint,
             style: GoogleFonts.inter(
@@ -5192,7 +5372,7 @@ class _RrhhHiringDossierDetailViewState
           isExpanded: true,
           dropdownColor: const Color(0xFF0F172A),
           icon: const Icon(Icons.expand_more, color: Color(0xFF64748B)),
-          items: items,
+          items: uniqueItems,
           onChanged: onChanged,
         ),
       ),
@@ -5879,13 +6059,7 @@ class _RrhhHiringDossierDetailViewState
           ],
           const SizedBox(width: 14),
           InkWell(
-            onTap: () {
-              setState(() {
-                if (!_expandedSections.contains(secNum)) {
-                  _expandedSections.add(secNum);
-                }
-              });
-            },
+            onTap: () => _navigateToSection(secNum),
             borderRadius: BorderRadius.circular(4),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),

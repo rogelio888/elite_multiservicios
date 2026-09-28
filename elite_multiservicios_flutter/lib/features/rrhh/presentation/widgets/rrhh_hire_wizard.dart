@@ -120,8 +120,9 @@ class _RrhhEmployeeHireWizardState extends State<RrhhEmployeeHireWizard> {
   }
 
   void _autoSelectDefaults() {
+    final empTypeUpper = _formState.employeeType.trim().toUpperCase();
     final validAreaIds = _positions
-        .where((p) => p.workplaceType == _formState.employeeType)
+        .where((p) => p.workplaceType.trim().toUpperCase() == empTypeUpper)
         .map((p) => p.areaId)
         .toSet();
     final availAreas = _areas
@@ -132,26 +133,27 @@ class _RrhhEmployeeHireWizardState extends State<RrhhEmployeeHireWizard> {
     final availPositions = _positions
         .where(
           (p) =>
-              p.workplaceType == _formState.employeeType &&
+              p.workplaceType.trim().toUpperCase() == empTypeUpper &&
               (p.areaId == _formState.selectedArea?.id),
         )
         .toList();
     if (availPositions.isNotEmpty) {
       _formState.selectedPosition = availPositions.first;
-      if (_formState.selectedPosition?.suggestedSalary != null)
+      if (_formState.selectedPosition?.suggestedSalary != null) {
         _formState.agreedSalary = _formState.selectedPosition!.suggestedSalary!;
+      }
     }
-    if (_specialties.isNotEmpty)
+    if (_specialties.isNotEmpty) {
       _formState.selectedSpecialty = _specialties.first;
-    final schedMatch = _schedules
-        .where(
-          (s) =>
-              s.targetType == 'AMBOS' ||
-              s.targetType == _formState.employeeType,
-        )
-        .toList();
+    }
+    final schedMatch = _schedules.where(
+      (s) {
+        final sType = s.targetType.trim().toUpperCase();
+        return sType == 'AMBOS' || sType == empTypeUpper;
+      },
+    ).toList();
     if (schedMatch.isNotEmpty) _formState.selectedSchedule = schedMatch.first;
-    final sups = _formState.employeeType == 'CAMPO'
+    final sups = empTypeUpper == 'CAMPO'
         ? _campoSupervisors
         : _oficinaSupervisors;
     if (sups.isNotEmpty) _formState.supervisor = sups.first;
