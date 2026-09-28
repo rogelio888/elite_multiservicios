@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
@@ -51,7 +52,6 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
     super.initState();
     _authService = AuthService();
     _authService.addListener(_onAuthChanged);
-    client.auth.authInfoListenable.addListener(_onAuthChanged);
     _lastSignedIn = client.auth.isAuthenticated;
     if (_lastSignedIn) {
       _authStateFuture = _resolveAuthState();
@@ -62,7 +62,6 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
   void dispose() {
     _authService.removeListener(_onAuthChanged);
     _authService.dispose();
-    client.auth.authInfoListenable.removeListener(_onAuthChanged);
     super.dispose();
   }
 
@@ -158,13 +157,17 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
 
     // La sesión activa NO tiene MFA verificado. Recuperar o emitir challenge.
     MfaChallengeResponse? challenge = _authService.currentMfaChallenge;
-    try {
-      challenge ??= await _authService.checkMfaRequired(
-        rememberMe: _authService.currentRememberMe,
-        notify: false,
-      );
-    } catch (_) {
-      // Tolerar errores de red durante la comprobación de MFA
+    if (challenge == null) {
+      try {
+        challenge = await _authService.checkMfaRequired(
+          rememberMe: _authService.currentRememberMe,
+          notify: false,
+        );
+      } catch (e) {
+        if (kDebugMode) {
+          print('[main.dart] Error obteniendo challenge MFA: $e');
+        }
+      }
     }
 
     return _UserAuthState(
@@ -193,6 +196,11 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
           );
         }
         if (snapshot.hasError || !snapshot.hasData) {
+          if (kDebugMode) {
+            print(
+              '[main.dart] Error en FutureBuilder de authState: ${snapshot.error}',
+            );
+          }
           // Si no se puede validar la sesión, jamás dar acceso: retornar a LoginScreen
           return LoginScreen(
             authService: _authService,
@@ -218,6 +226,27 @@ class _EliteMultiserviciosAppState extends State<EliteMultiserviciosApp> {
                 _authService.markSessionMfaVerified();
                 _refreshAuthState();
               },
+            );
+          } else {
+            // El usuario requiere MFA pero el challenge aún se está obteniendo:
+            // NUNCA pasar al Dashboard ni recaer en Login.
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    const Text('Generando código de seguridad...'),
+                    const SizedBox(height: 12),
+                    TextButton.icon(
+                      onPressed: _refreshAuthState,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Reintentar'),
+                    ),
+                  ],
+                ),
+              ),
             );
           }
         }
