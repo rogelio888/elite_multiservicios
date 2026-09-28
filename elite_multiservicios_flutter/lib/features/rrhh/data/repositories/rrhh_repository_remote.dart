@@ -1176,88 +1176,502 @@ class RrhhRepositoryRemote implements RrhhRepository {
     }
   }
 
+  final List<RrhhShift> _inMemoryShifts = [
+    RrhhShift(
+      id: 1,
+      code: 'TUR-MAÑANA',
+      name: 'Turno Mañana (Limpieza)',
+      startTime: '07:00',
+      endTime: '15:00',
+      workDays: [1, 2, 3, 4, 5, 6],
+      shiftType: 'Completa',
+      description: 'Jornada matutina para limpieza y mantenimiento',
+      isActive: true,
+      assignedEmployeesCount: 12,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhShift(
+      id: 2,
+      code: 'TUR-TARDE',
+      name: 'Turno Tarde (Oficinas)',
+      startTime: '13:00',
+      endTime: '21:00',
+      workDays: [1, 2, 3, 4, 5],
+      shiftType: 'Completa',
+      description: 'Jornada vespertina en clientes corporativos',
+      isActive: true,
+      assignedEmployeesCount: 8,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhShift(
+      id: 3,
+      code: 'TUR-NOCHE',
+      name: 'Turno Nocturno (Seguridad / Limpieza Profunda)',
+      startTime: '22:00',
+      endTime: '06:00',
+      workDays: [1, 2, 3, 4, 5],
+      shiftType: 'Nocturna',
+      description: 'Jornada nocturna con recargo de ley',
+      isActive: true,
+      assignedEmployeesCount: 4,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+  ];
+
+  final List<RrhhBaseSchedule> _inMemoryBaseSchedules = [];
+  final List<RrhhSchedule> _inMemorySchedules = [
+    RrhhSchedule(
+      id: 1,
+      code: 'SCH-ADM',
+      name: 'Administrativo Central',
+      targetType: 'OFICINA',
+      startTime: '08:30',
+      endTime: '17:30',
+      workDays: [1, 2, 3, 4, 5],
+      toleranceMinutes: 15,
+      isNightShift: false,
+      isActive: true,
+      isDeleted: false,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhSchedule(
+      id: 2,
+      code: 'SCH-OP-MAN',
+      name: 'Operativo Mañana (Campo)',
+      targetType: 'CAMPO',
+      startTime: '07:00',
+      endTime: '15:00',
+      workDays: [1, 2, 3, 4, 5, 6],
+      toleranceMinutes: 10,
+      isNightShift: false,
+      isActive: true,
+      isDeleted: false,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhSchedule(
+      id: 3,
+      code: 'SCH-OP-TAR',
+      name: 'Operativo Tarde (Retail)',
+      targetType: 'CAMPO',
+      startTime: '14:00',
+      endTime: '22:00',
+      workDays: [1, 2, 3, 4, 5, 6],
+      toleranceMinutes: 10,
+      isNightShift: false,
+      isActive: true,
+      isDeleted: false,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhSchedule(
+      id: 4,
+      code: 'SCH-SEG-NOC',
+      name: 'Seguridad Nocturna',
+      targetType: 'CAMPO',
+      startTime: '22:00',
+      endTime: '06:00',
+      workDays: [1, 2, 3, 4, 5, 6],
+      toleranceMinutes: 5,
+      isNightShift: true,
+      isActive: true,
+      isDeleted: false,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+  ];
+
+  final List<RrhhCatalogItem> _inMemoryCatalogItems = [
+    // AFPs
+    RrhhCatalogItem(
+      id: 1,
+      catalogType: RrhhCatalogType.afps,
+      code: 'AFP-001',
+      name: 'Gestora Pública de la Seguridad Social de Largo Plazo',
+      description: 'Entidad pública única administradora de pensiones',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 2,
+      catalogType: RrhhCatalogType.afps,
+      code: 'AFP-002',
+      name: 'BBVA Previsión AFP (Histórico)',
+      description: 'Fondo de pensiones histórico migrado a Gestora',
+      isActive: false,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 3,
+      catalogType: RrhhCatalogType.afps,
+      code: 'AFP-003',
+      name: 'Futuro de Bolivia AFP (Histórico)',
+      description: 'Fondo de pensiones histórico migrado a Gestora',
+      isActive: false,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    // Seguros de Salud
+    RrhhCatalogItem(
+      id: 4,
+      catalogType: RrhhCatalogType.healthInsurances,
+      code: 'SEG-001',
+      name: 'Caja Nacional de Salud (CNS)',
+      description: 'Ente gestor de salud principal',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 5,
+      catalogType: RrhhCatalogType.healthInsurances,
+      code: 'SEG-002',
+      name: 'Caja Petrolera de Salud (CPS)',
+      description: 'Seguridad social a corto plazo',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 6,
+      catalogType: RrhhCatalogType.healthInsurances,
+      code: 'SEG-003',
+      name: 'Caja de Salud CORDES',
+      description: 'Seguridad social a corto plazo',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 7,
+      catalogType: RrhhCatalogType.healthInsurances,
+      code: 'SEG-004',
+      name: 'Caja de Salud de la Banca Privada (CSBP)',
+      description: 'Seguridad social a corto plazo',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    // Bancos
+    RrhhCatalogItem(
+      id: 8,
+      catalogType: RrhhCatalogType.banks,
+      code: 'BCO-001',
+      name: 'Banco Unión S.A.',
+      description: 'Entidad financiera fiscal y abono estatal',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 9,
+      catalogType: RrhhCatalogType.banks,
+      code: 'BCO-002',
+      name: 'Banco Mercantil Santa Cruz S.A.',
+      description: 'Cuenta empresarial corporativa',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 10,
+      catalogType: RrhhCatalogType.banks,
+      code: 'BCO-003',
+      name: 'Banco Nacional de Bolivia (BNB)',
+      description: 'Cuenta empresarial',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 11,
+      catalogType: RrhhCatalogType.banks,
+      code: 'BCO-004',
+      name: 'Banco de Crédito de Bolivia (BCP)',
+      description: 'Cuenta empresarial',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 12,
+      catalogType: RrhhCatalogType.banks,
+      code: 'BCO-005',
+      name: 'Banco FIE S.A.',
+      description: 'Cuenta para personal de campo',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    // Tipos de Contrato
+    RrhhCatalogItem(
+      id: 13,
+      catalogType: RrhhCatalogType.contractTypes,
+      code: 'CON-001',
+      name: 'Indefinido',
+      description:
+          'Contrato por tiempo indefinido con período de prueba vencido',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 14,
+      catalogType: RrhhCatalogType.contractTypes,
+      code: 'CON-002',
+      name: 'Plazo Fijo',
+      description: 'Contrato temporal por duración específica',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 15,
+      catalogType: RrhhCatalogType.contractTypes,
+      code: 'CON-003',
+      name: 'Por Obra o Servicio',
+      description: 'Contrato vinculado a proyecto o servicio cliente',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 16,
+      catalogType: RrhhCatalogType.contractTypes,
+      code: 'CON-004',
+      name: 'Período de Prueba',
+      description: 'Fase inicial de 90 días conforme a Ley Laboral',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    // Modalidades de Pago
+    RrhhCatalogItem(
+      id: 17,
+      catalogType: RrhhCatalogType.paymentModalities,
+      code: 'PAG-001',
+      name: 'Transferencia Bancaria',
+      description: 'Abono directo en cuenta bancaria del trabajador',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 18,
+      catalogType: RrhhCatalogType.paymentModalities,
+      code: 'PAG-002',
+      name: 'Cheque',
+      description: 'Emisión de cheque de gerencia contra entrega de recibo',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 19,
+      catalogType: RrhhCatalogType.paymentModalities,
+      code: 'PAG-003',
+      name: 'Efectivo',
+      description: 'Pago en caja central contra firma de recibo oficial',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    // Bonificaciones
+    RrhhCatalogItem(
+      id: 20,
+      catalogType: RrhhCatalogType.bonuses,
+      code: 'BON-001',
+      name: 'Bono de Antigüedad',
+      description:
+          'Escala porcentual según D.S. 21060 sobre 3 salarios mínimos',
+      subType: 'Fija mensual',
+      defaultAmount: 0.0,
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 21,
+      catalogType: RrhhCatalogType.bonuses,
+      code: 'BON-002',
+      name: 'Bono de Producción',
+      description: 'Incentivo por metas y rendimiento alcanzado',
+      subType: 'Variable',
+      defaultAmount: 300.0,
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 22,
+      catalogType: RrhhCatalogType.bonuses,
+      code: 'BON-003',
+      name: 'Bono de Puntualidad y Asistencia',
+      description: 'Reconocimiento a cero atrasos en el período',
+      subType: 'Fija mensual',
+      defaultAmount: 200.0,
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    // Descuentos
+    RrhhCatalogItem(
+      id: 23,
+      catalogType: RrhhCatalogType.deductions,
+      code: 'DSC-001',
+      name: 'Anticipo Salarial',
+      description: 'Adelanto de sueldo otorgado durante la quincena',
+      subType: 'Fijo',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    RrhhCatalogItem(
+      id: 24,
+      catalogType: RrhhCatalogType.deductions,
+      code: 'DSC-002',
+      name: 'Sanción Disciplinaria por Atrasos',
+      description: 'Deducción calculada conforme al Reglamento Interno',
+      subType: 'Por evento',
+      isActive: true,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+  ];
+
   @override
   Future<List<RrhhShift>> listShifts() async {
-    return const [];
+    return List.unmodifiable(_inMemoryShifts);
   }
 
   @override
   Future<RrhhShift> createShift(RrhhShift shift) async {
-    throw const RrhhRemoteException(
-      code: 'MODULE_NOT_MIGRATED',
-      message: _notMigratedMsg,
+    final nextId = _inMemoryShifts.isEmpty
+        ? 1
+        : _inMemoryShifts.map((e) => e.id).reduce((a, b) => a > b ? a : b) + 1;
+    final created = RrhhShift(
+      id: shift.id <= 0 ? nextId : shift.id,
+      code: shift.code,
+      name: shift.name,
+      startTime: shift.startTime,
+      endTime: shift.endTime,
+      workDays: shift.workDays,
+      shiftType: shift.shiftType,
+      description: shift.description,
+      isActive: shift.isActive,
+      assignedEmployeesCount: shift.assignedEmployeesCount,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     );
+    _inMemoryShifts.add(created);
+    return created;
   }
 
   @override
   Future<RrhhShift> updateShift(RrhhShift shift) async {
-    throw const RrhhRemoteException(
-      code: 'MODULE_NOT_MIGRATED',
-      message: _notMigratedMsg,
-    );
+    final idx = _inMemoryShifts.indexWhere((e) => e.id == shift.id);
+    if (idx != -1) {
+      _inMemoryShifts[idx] = shift;
+    } else {
+      _inMemoryShifts.add(shift);
+    }
+    return shift;
   }
 
   @override
   Future<List<RrhhBaseSchedule>> listBaseSchedules() async {
-    return const [];
+    return List.unmodifiable(_inMemoryBaseSchedules);
   }
 
   @override
   Future<RrhhBaseSchedule> createBaseSchedule(RrhhBaseSchedule schedule) async {
-    throw const RrhhRemoteException(
-      code: 'MODULE_NOT_MIGRATED',
-      message: _notMigratedMsg,
-    );
+    _inMemoryBaseSchedules.add(schedule);
+    return schedule;
   }
 
   @override
   Future<RrhhBaseSchedule> updateBaseSchedule(RrhhBaseSchedule schedule) async {
-    throw const RrhhRemoteException(
-      code: 'MODULE_NOT_MIGRATED',
-      message: _notMigratedMsg,
-    );
+    final idx = _inMemoryBaseSchedules.indexWhere((e) => e.id == schedule.id);
+    if (idx != -1) {
+      _inMemoryBaseSchedules[idx] = schedule;
+    } else {
+      _inMemoryBaseSchedules.add(schedule);
+    }
+    return schedule;
   }
 
   @override
   Future<List<RrhhSchedule>> listSchedules() async {
-    return const [];
+    try {
+      final serverSchedules = await app.client.rrhhAssignment.listSchedules(
+        limit: 100,
+        offset: 0,
+        includeDeleted: false,
+        isActive: true,
+      );
+      if (serverSchedules.isNotEmpty) {
+        return serverSchedules;
+      }
+    } catch (_) {
+      // Usar turnos de memoria o fallback precargados
+    }
+    return List.unmodifiable(_inMemorySchedules);
   }
 
   @override
   Future<RrhhSchedule> createSchedule(RrhhSchedule schedule) async {
-    throw const RrhhRemoteException(
-      code: 'MODULE_NOT_MIGRATED',
-      message: _notMigratedMsg,
-    );
+    _inMemorySchedules.add(schedule);
+    return schedule;
   }
 
   @override
   Future<RrhhSchedule> updateSchedule(RrhhSchedule schedule) async {
-    throw const RrhhRemoteException(
-      code: 'MODULE_NOT_MIGRATED',
-      message: _notMigratedMsg,
-    );
+    final idx = _inMemorySchedules.indexWhere((e) => e.id == schedule.id);
+    if (idx != -1) {
+      _inMemorySchedules[idx] = schedule;
+    } else {
+      _inMemorySchedules.add(schedule);
+    }
+    return schedule;
   }
 
   @override
   Future<List<RrhhCatalogItem>> listCatalogItems(RrhhCatalogType type) async {
-    return const [];
+    return _inMemoryCatalogItems.where((i) => i.catalogType == type).toList();
   }
 
   @override
   Future<RrhhCatalogItem> createCatalogItem(RrhhCatalogItem item) async {
-    throw const RrhhRemoteException(
-      code: 'MODULE_NOT_MIGRATED',
-      message: _notMigratedMsg,
+    final nextId = _inMemoryCatalogItems.isEmpty
+        ? 1
+        : _inMemoryCatalogItems
+                  .map((e) => e.id)
+                  .reduce((a, b) => a > b ? a : b) +
+              1;
+    final created = item.copyWith(
+      id: item.id <= 0 ? nextId : item.id,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     );
+    _inMemoryCatalogItems.add(created);
+    return created;
   }
 
   @override
   Future<RrhhCatalogItem> updateCatalogItem(RrhhCatalogItem item) async {
-    throw const RrhhRemoteException(
-      code: 'MODULE_NOT_MIGRATED',
-      message: _notMigratedMsg,
-    );
+    final idx = _inMemoryCatalogItems.indexWhere((i) => i.id == item.id);
+    if (idx != -1) {
+      _inMemoryCatalogItems[idx] = item.copyWith(updatedAt: DateTime.now());
+      return _inMemoryCatalogItems[idx];
+    }
+    _inMemoryCatalogItems.add(item);
+    return item;
   }
 
   @override

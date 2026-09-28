@@ -40,11 +40,12 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
   @override
   Widget build(BuildContext context) {
     final form = widget.formState;
-    final isCampo = form.employeeType == 'CAMPO';
+    final empTypeUpper = form.employeeType.trim().toUpperCase();
+    final isCampo = empTypeUpper == 'CAMPO';
 
     // 1. Áreas que tienen posiciones del tipo elegido
     final validAreaIds = widget.positions
-        .where((p) => p.workplaceType == form.employeeType)
+        .where((p) => p.workplaceType.trim().toUpperCase() == empTypeUpper)
         .map((p) => p.areaId)
         .toSet();
     final filteredAreas = widget.areas
@@ -53,16 +54,29 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
 
     // 2. Cargos filtrados por tipo + área seleccionada
     final filteredPositions = widget.positions.where((p) {
-      if (p.workplaceType != form.employeeType) return false;
-      if (form.selectedArea != null && p.areaId != form.selectedArea!.id)
+      if (p.workplaceType.trim().toUpperCase() != empTypeUpper) return false;
+      if (form.selectedArea != null && p.areaId != form.selectedArea!.id) {
         return false;
+      }
       return true;
     }).toList();
 
     // 3. Turnos filtrados por targetType (CAMPO / OFICINA / AMBOS)
     final filteredSchedules = widget.schedules.where((s) {
-      return s.targetType == 'AMBOS' || s.targetType == form.employeeType;
+      final sType = s.targetType.trim().toUpperCase();
+      return sType == 'AMBOS' || sType == empTypeUpper;
     }).toList();
+
+    // 4. Instancias seguras coincidentes por ID para evitar fallos de referencia
+    final safeArea = filteredAreas
+        .where((a) => a.id == form.selectedArea?.id)
+        .firstOrNull;
+    final safePosition = filteredPositions
+        .where((p) => p.id == form.selectedPosition?.id)
+        .firstOrNull;
+    final safeSchedule = filteredSchedules
+        .where((s) => s.id == form.selectedSchedule?.id)
+        .firstOrNull;
 
     // 4. Supervisores filtrados o sugeridos
     final supervisorOptions = widget.availableSupervisors.isNotEmpty
@@ -157,7 +171,7 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
                     width: colWidth,
                     child: buildHireDropdownField<RrhhArea>(
                       label: 'Departamento / Área *',
-                      value: form.selectedArea,
+                      value: safeArea,
                       items: filteredAreas
                           .map(
                             (a) => DropdownMenuItem(
@@ -187,7 +201,7 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
                     width: colWidth,
                     child: buildHireDropdownField<RrhhPosition>(
                       label: 'Cargo Contractual *',
-                      value: form.selectedPosition,
+                      value: safePosition,
                       items: filteredPositions
                           .map(
                             (p) => DropdownMenuItem(
@@ -249,7 +263,7 @@ class _RrhhHireStepLaborState extends State<RrhhHireStepLabor> {
                       label: isCampo
                           ? 'Turno Base Operativo *'
                           : 'Horario Administrativo *',
-                      value: form.selectedSchedule,
+                      value: safeSchedule,
                       items: filteredSchedules
                           .map(
                             (s) => DropdownMenuItem(

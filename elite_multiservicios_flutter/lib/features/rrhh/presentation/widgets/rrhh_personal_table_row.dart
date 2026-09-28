@@ -273,32 +273,47 @@ class _RrhhPersonalTableRowState extends State<RrhhPersonalTableRow> {
                       color: const Color(0xFF0F172A),
                       itemBuilder: (context) => [
                         const PopupMenuItem(
-                          value: 'view',
-                          child: Text(
-                            'Ver Expediente 360°',
-                            style: TextStyle(color: Colors.white, fontSize: 12),
-                          ),
-                        ),
-                        const PopupMenuItem(
                           value: 'edit',
-                          child: Text(
-                            'Editar Ficha',
-                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.edit_outlined,
+                                size: 14,
+                                color: Color(0xFF94A3B8),
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Editar Ficha',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         const PopupMenuItem(
                           value: 'terminate',
-                          child: Text(
-                            'Registrar Desvinculación',
-                            style: TextStyle(
-                              color: Color(0xFFEF4444),
-                              fontSize: 12,
-                            ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.person_off_outlined,
+                                size: 14,
+                                color: Color(0xFFEF4444),
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Registrar Desvinculación',
+                                style: TextStyle(
+                                  color: Color(0xFFEF4444),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                       onSelected: (val) {
-                        if (val == 'view') widget.onViewDetails();
                         if (val == 'edit') widget.onEdit();
                         if (val == 'terminate') widget.onTerminate();
                       },

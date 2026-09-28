@@ -177,36 +177,45 @@ class _AppAuthGateState extends State<AppAuthGate> {
   }
 
   Future<_UserAuthState> _resolveAuthState() async {
-    final user = await client.user.getCurrentUser();
-    if (!user.mfaEnabled) {
-      return _UserAuthState(user: user, isMfaVerified: true);
-    }
+    try {
+      final user = await client.user.getCurrentUser();
+      if (!user.mfaEnabled) {
+        return _UserAuthState(user: user, isMfaVerified: true);
+      }
 
-    final isVerified = await widget.authService.isCurrentSessionMfaVerified();
-    if (isVerified) {
-      return _UserAuthState(user: user, isMfaVerified: true);
-    }
+      final isVerified = await widget.authService.isCurrentSessionMfaVerified();
+      if (isVerified) {
+        return _UserAuthState(user: user, isMfaVerified: true);
+      }
 
-    // La sesión activa NO tiene MFA verificado. Recuperar o emitir challenge.
-    MfaChallengeResponse? challenge = widget.authService.currentMfaChallenge;
-    if (challenge == null) {
-      try {
-        challenge = await widget.authService.checkMfaRequired(
-          rememberMe: widget.authService.currentRememberMe,
-          notify: false,
-        );
-      } catch (e) {
-        if (kDebugMode) {
-          print('[AppAuthGate] Error obteniendo challenge MFA: $e');
+      // La sesión activa NO tiene MFA verificado. Recuperar o emitir challenge.
+      MfaChallengeResponse? challenge = widget.authService.currentMfaChallenge;
+      if (challenge == null) {
+        try {
+          challenge = await widget.authService.checkMfaRequired(
+            rememberMe: widget.authService.currentRememberMe,
+            notify: false,
+          );
+        } catch (e) {
+          if (kDebugMode) {
+            print('[AppAuthGate] Error obteniendo challenge MFA: $e');
+          }
         }
       }
-    }
 
-    return _UserAuthState(
-      user: user,
-      isMfaVerified: false,
-      mfaChallenge: challenge,
-    );
+      return _UserAuthState(
+        user: user,
+        isMfaVerified: false,
+        mfaChallenge: challenge,
+      );
+    } catch (e) {
+      // Si la sesión guardada en el cliente ya no es válida o expiró en el backend,
+      // purgar la sesión local para evitar bucles de 500 y volver limpiamente al Login
+      try {
+        await widget.authService.logout();
+      } catch (_) {}
+      rethrow;
+    }
   }
 
   @override
