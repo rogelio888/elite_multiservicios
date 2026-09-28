@@ -1,0 +1,10 @@
+class: OpsWorkOrder
+table: ops_work_order
+fields:
+  contractId: int
+  date: DateTime
+  assignedEmployeeId: int?
+  status: String, default='Pending'
+  notes: String?
+  createdAt: DateTime
+  updatedAt: DateTime

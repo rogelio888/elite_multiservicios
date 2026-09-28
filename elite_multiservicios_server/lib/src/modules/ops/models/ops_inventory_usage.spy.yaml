@@ -1,0 +1,8 @@
+class: OpsInventoryUsage
+table: ops_inventory_usage
+fields:
+  workOrderId: int
+  itemId: int
+  quantityUsed: double
+  totalCost: double
+  createdAt: DateTime

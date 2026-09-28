@@ -21,56 +21,102 @@ import '../modules/crm/endpoints/crm_catalog_endpoint.dart' as _i7;
 import '../modules/crm/endpoints/crm_customers_endpoint.dart' as _i8;
 import '../modules/crm/endpoints/crm_leads_endpoint.dart' as _i9;
 import '../modules/crm/endpoints/crm_pipeline_endpoint.dart' as _i10;
-import '../modules/rrhh/endpoints/rrhh_dashboard_endpoint.dart' as _i11;
-import '../modules/security/endpoints/audit_endpoint.dart' as _i12;
-import '../modules/security/endpoints/mfa_endpoint.dart' as _i13;
-import '../modules/security/endpoints/rbac_endpoint.dart' as _i14;
-import '../modules/security/endpoints/session_management_endpoint.dart' as _i15;
-import '../modules/security/endpoints/user_endpoint.dart' as _i16;
+import '../modules/hr/endpoints/hr_endpoint.dart' as _i11;
+import '../modules/ops/endpoints/ops_endpoint.dart' as _i12;
+import '../modules/rrhh/endpoints/rrhh_applicant_endpoint.dart' as _i13;
+import '../modules/rrhh/endpoints/rrhh_assignment_endpoint.dart' as _i14;
+import '../modules/rrhh/endpoints/rrhh_dashboard_endpoint.dart' as _i15;
+import '../modules/rrhh/endpoints/rrhh_hiring_endpoint.dart' as _i16;
+import '../modules/rrhh/endpoints/rrhh_labor_endpoint.dart' as _i17;
+import '../modules/rrhh/endpoints/rrhh_organization_endpoint.dart' as _i18;
+import '../modules/rrhh/endpoints/rrhh_personnel_endpoint.dart' as _i19;
+import '../modules/security/endpoints/audit_endpoint.dart' as _i20;
+import '../modules/security/endpoints/mfa_endpoint.dart' as _i21;
+import '../modules/security/endpoints/rbac_endpoint.dart' as _i22;
+import '../modules/security/endpoints/session_management_endpoint.dart' as _i23;
+import '../modules/security/endpoints/user_endpoint.dart' as _i24;
 import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_cost_center.dart'
-    as _i17;
-import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_invoice.dart'
-    as _i18;
-import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_expense.dart'
-    as _i19;
-import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_petty_cash.dart'
-    as _i20;
-import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_petty_cash_txn.dart'
-    as _i21;
-import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_payroll_estimation.dart'
-    as _i22;
-import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_budget.dart'
-    as _i23;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_task.dart'
-    as _i24;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
     as _i25;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_invoice.dart'
     as _i26;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_expense.dart'
     as _i27;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_petty_cash.dart'
     as _i28;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_petty_cash_txn.dart'
     as _i29;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_branch.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_payroll_estimation.dart'
     as _i30;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_contract.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_budget.dart'
     as _i31;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_task.dart'
     as _i32;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
     as _i33;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
     as _i34;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
     as _i35;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
     as _i36;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
     as _i37;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_branch.dart'
     as _i38;
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_contract.dart'
+    as _i39;
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
+    as _i40;
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
+    as _i41;
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
+    as _i42;
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
+    as _i43;
+import 'package:elite_multiservicios_server/src/generated/modules/hr/models/hr_employee.dart'
+    as _i44;
+import 'package:elite_multiservicios_server/src/generated/modules/hr/models/hr_attendance.dart'
+    as _i45;
+import 'package:elite_multiservicios_server/src/generated/modules/hr/models/hr_payroll.dart'
+    as _i46;
+import 'package:elite_multiservicios_server/src/generated/modules/ops/models/ops_inventory_item.dart'
+    as _i47;
+import 'package:elite_multiservicios_server/src/generated/modules/ops/models/ops_service_contract.dart'
+    as _i48;
+import 'package:elite_multiservicios_server/src/generated/modules/ops/models/ops_work_order.dart'
+    as _i49;
+import 'package:elite_multiservicios_server/src/generated/modules/ops/models/ops_inventory_usage.dart'
+    as _i50;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_applicant.dart'
+    as _i51;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_schedule.dart'
+    as _i52;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_assignment.dart'
+    as _i53;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_dossier_document.dart'
+    as _i54;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_bonus.dart'
+    as _i55;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_deduction.dart'
+    as _i56;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_area.dart'
+    as _i57;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_position.dart'
+    as _i58;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_specialty.dart'
+    as _i59;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee.dart'
+    as _i60;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_document.dart'
+    as _i61;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_timeline_event.dart'
+    as _i62;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
+    as _i63;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i64;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i65;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -130,37 +176,85 @@ class Endpoints extends _i1.EndpointDispatch {
           'crmPipeline',
           null,
         ),
-      'rrhhDashboard': _i11.RrhhDashboardEndpoint()
+      'hr': _i11.HrEndpoint()
+        ..initialize(
+          server,
+          'hr',
+          null,
+        ),
+      'ops': _i12.OpsEndpoint()
+        ..initialize(
+          server,
+          'ops',
+          null,
+        ),
+      'rrhhApplicant': _i13.RrhhApplicantEndpoint()
+        ..initialize(
+          server,
+          'rrhhApplicant',
+          null,
+        ),
+      'rrhhAssignment': _i14.RrhhAssignmentEndpoint()
+        ..initialize(
+          server,
+          'rrhhAssignment',
+          null,
+        ),
+      'rrhhDashboard': _i15.RrhhDashboardEndpoint()
         ..initialize(
           server,
           'rrhhDashboard',
           null,
         ),
-      'audit': _i12.AuditEndpoint()
+      'rrhhHiring': _i16.RrhhHiringEndpoint()
+        ..initialize(
+          server,
+          'rrhhHiring',
+          null,
+        ),
+      'rrhhLabor': _i17.RrhhLaborEndpoint()
+        ..initialize(
+          server,
+          'rrhhLabor',
+          null,
+        ),
+      'rrhhOrganization': _i18.RrhhOrganizationEndpoint()
+        ..initialize(
+          server,
+          'rrhhOrganization',
+          null,
+        ),
+      'rrhhPersonnel': _i19.RrhhPersonnelEndpoint()
+        ..initialize(
+          server,
+          'rrhhPersonnel',
+          null,
+        ),
+      'audit': _i20.AuditEndpoint()
         ..initialize(
           server,
           'audit',
           null,
         ),
-      'mfa': _i13.MfaEndpoint()
+      'mfa': _i21.MfaEndpoint()
         ..initialize(
           server,
           'mfa',
           null,
         ),
-      'rbac': _i14.RbacEndpoint()
+      'rbac': _i22.RbacEndpoint()
         ..initialize(
           server,
           'rbac',
           null,
         ),
-      'sessionManagement': _i15.SessionManagementEndpoint()
+      'sessionManagement': _i23.SessionManagementEndpoint()
         ..initialize(
           server,
           'sessionManagement',
           null,
         ),
-      'user': _i16.UserEndpoint()
+      'user': _i24.UserEndpoint()
         ..initialize(
           server,
           'user',
@@ -414,7 +508,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'costCenter': _i1.ParameterDescription(
               name: 'costCenter',
-              type: _i1.getType<_i17.AccountingCostCenter>(),
+              type: _i1.getType<_i25.AccountingCostCenter>(),
               nullable: false,
             ),
           },
@@ -443,7 +537,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'invoice': _i1.ParameterDescription(
               name: 'invoice',
-              type: _i1.getType<_i18.AccountingInvoice>(),
+              type: _i1.getType<_i26.AccountingInvoice>(),
               nullable: false,
             ),
           },
@@ -497,7 +591,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'expense': _i1.ParameterDescription(
               name: 'expense',
-              type: _i1.getType<_i19.AccountingExpense>(),
+              type: _i1.getType<_i27.AccountingExpense>(),
               nullable: false,
             ),
           },
@@ -536,7 +630,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'pettyCash': _i1.ParameterDescription(
               name: 'pettyCash',
-              type: _i1.getType<_i20.AccountingPettyCash>(),
+              type: _i1.getType<_i28.AccountingPettyCash>(),
               nullable: false,
             ),
           },
@@ -565,7 +659,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'transaction': _i1.ParameterDescription(
               name: 'transaction',
-              type: _i1.getType<_i21.AccountingPettyCashTransaction>(),
+              type: _i1.getType<_i29.AccountingPettyCashTransaction>(),
               nullable: false,
             ),
           },
@@ -594,7 +688,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'estimation': _i1.ParameterDescription(
               name: 'estimation',
-              type: _i1.getType<_i22.AccountingPayrollEstimation>(),
+              type: _i1.getType<_i30.AccountingPayrollEstimation>(),
               nullable: false,
             ),
           },
@@ -623,7 +717,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'budget': _i1.ParameterDescription(
               name: 'budget',
-              type: _i1.getType<_i23.AccountingBudget>(),
+              type: _i1.getType<_i31.AccountingBudget>(),
               nullable: false,
             ),
           },
@@ -642,7 +736,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'transaction': _i1.ParameterDescription(
               name: 'transaction',
-              type: _i1.getType<_i21.AccountingPettyCashTransaction>(),
+              type: _i1.getType<_i29.AccountingPettyCashTransaction>(),
               nullable: false,
             ),
           },
@@ -811,7 +905,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'task': _i1.ParameterDescription(
               name: 'task',
-              type: _i1.getType<_i24.CrmTask>(),
+              type: _i1.getType<_i32.CrmTask>(),
               nullable: false,
             ),
           },
@@ -830,7 +924,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'task': _i1.ParameterDescription(
               name: 'task',
-              type: _i1.getType<_i24.CrmTask>(),
+              type: _i1.getType<_i32.CrmTask>(),
               nullable: false,
             ),
           },
@@ -1069,7 +1163,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'sector': _i1.ParameterDescription(
               name: 'sector',
-              type: _i1.getType<_i25.CrmSector>(),
+              type: _i1.getType<_i33.CrmSector>(),
               nullable: false,
             ),
           },
@@ -1088,7 +1182,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'sector': _i1.ParameterDescription(
               name: 'sector',
-              type: _i1.getType<_i25.CrmSector>(),
+              type: _i1.getType<_i33.CrmSector>(),
               nullable: false,
             ),
           },
@@ -1151,7 +1245,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'line': _i1.ParameterDescription(
               name: 'line',
-              type: _i1.getType<_i26.CrmServiceLine>(),
+              type: _i1.getType<_i34.CrmServiceLine>(),
               nullable: false,
             ),
           },
@@ -1170,7 +1264,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'line': _i1.ParameterDescription(
               name: 'line',
-              type: _i1.getType<_i26.CrmServiceLine>(),
+              type: _i1.getType<_i34.CrmServiceLine>(),
               nullable: false,
             ),
           },
@@ -1264,7 +1358,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'item': _i1.ParameterDescription(
               name: 'item',
-              type: _i1.getType<_i27.CrmCatalogItem>(),
+              type: _i1.getType<_i35.CrmCatalogItem>(),
               nullable: false,
             ),
           },
@@ -1283,7 +1377,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'item': _i1.ParameterDescription(
               name: 'item',
-              type: _i1.getType<_i27.CrmCatalogItem>(),
+              type: _i1.getType<_i35.CrmCatalogItem>(),
               nullable: false,
             ),
           },
@@ -1340,7 +1434,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'scope': _i1.ParameterDescription(
               name: 'scope',
-              type: _i1.getType<_i28.CrmCatalogItemScope>(),
+              type: _i1.getType<_i36.CrmCatalogItemScope>(),
               nullable: false,
             ),
           },
@@ -1446,17 +1540,17 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'customer': _i1.ParameterDescription(
               name: 'customer',
-              type: _i1.getType<_i29.CrmCustomer>(),
+              type: _i1.getType<_i37.CrmCustomer>(),
               nullable: false,
             ),
             'initialBranch': _i1.ParameterDescription(
               name: 'initialBranch',
-              type: _i1.getType<_i30.CrmCustomerBranch?>(),
+              type: _i1.getType<_i38.CrmCustomerBranch?>(),
               nullable: true,
             ),
             'initialContract': _i1.ParameterDescription(
               name: 'initialContract',
-              type: _i1.getType<_i31.CrmCustomerContract?>(),
+              type: _i1.getType<_i39.CrmCustomerContract?>(),
               nullable: true,
             ),
           },
@@ -1477,7 +1571,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'customer': _i1.ParameterDescription(
               name: 'customer',
-              type: _i1.getType<_i29.CrmCustomer>(),
+              type: _i1.getType<_i37.CrmCustomer>(),
               nullable: false,
             ),
           },
@@ -1515,7 +1609,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'branch': _i1.ParameterDescription(
               name: 'branch',
-              type: _i1.getType<_i30.CrmCustomerBranch>(),
+              type: _i1.getType<_i38.CrmCustomerBranch>(),
               nullable: false,
             ),
           },
@@ -1534,7 +1628,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'branch': _i1.ParameterDescription(
               name: 'branch',
-              type: _i1.getType<_i30.CrmCustomerBranch>(),
+              type: _i1.getType<_i38.CrmCustomerBranch>(),
               nullable: false,
             ),
           },
@@ -1572,12 +1666,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'contract': _i1.ParameterDescription(
               name: 'contract',
-              type: _i1.getType<_i31.CrmCustomerContract>(),
+              type: _i1.getType<_i39.CrmCustomerContract>(),
               nullable: false,
             ),
             'budgetItems': _i1.ParameterDescription(
               name: 'budgetItems',
-              type: _i1.getType<List<_i32.CrmContractBudgetItem>?>(),
+              type: _i1.getType<List<_i40.CrmContractBudgetItem>?>(),
               nullable: true,
             ),
           },
@@ -1597,7 +1691,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'contract': _i1.ParameterDescription(
               name: 'contract',
-              type: _i1.getType<_i31.CrmCustomerContract>(),
+              type: _i1.getType<_i39.CrmCustomerContract>(),
               nullable: false,
             ),
           },
@@ -1823,7 +1917,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'lead': _i1.ParameterDescription(
               name: 'lead',
-              type: _i1.getType<_i33.CrmLead>(),
+              type: _i1.getType<_i41.CrmLead>(),
               nullable: false,
             ),
           },
@@ -1842,7 +1936,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'lead': _i1.ParameterDescription(
               name: 'lead',
-              type: _i1.getType<_i33.CrmLead>(),
+              type: _i1.getType<_i41.CrmLead>(),
               nullable: false,
             ),
           },
@@ -2058,12 +2152,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'opp': _i1.ParameterDescription(
               name: 'opp',
-              type: _i1.getType<_i34.CrmOpportunity>(),
+              type: _i1.getType<_i42.CrmOpportunity>(),
               nullable: false,
             ),
             'quoteItems': _i1.ParameterDescription(
               name: 'quoteItems',
-              type: _i1.getType<List<_i35.CrmQuoteItem>?>(),
+              type: _i1.getType<List<_i43.CrmQuoteItem>?>(),
               nullable: true,
             ),
           },
@@ -2083,12 +2177,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'opp': _i1.ParameterDescription(
               name: 'opp',
-              type: _i1.getType<_i34.CrmOpportunity>(),
+              type: _i1.getType<_i42.CrmOpportunity>(),
               nullable: false,
             ),
             'quoteItems': _i1.ParameterDescription(
               name: 'quoteItems',
-              type: _i1.getType<List<_i35.CrmQuoteItem>?>(),
+              type: _i1.getType<List<_i43.CrmQuoteItem>?>(),
               nullable: true,
             ),
           },
@@ -2178,6 +2272,256 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['hr'] = _i1.EndpointConnector(
+      name: 'hr',
+      endpoint: endpoints['hr']!,
+      methodConnectors: {
+        'getEmployees': _i1.MethodConnector(
+          name: 'getEmployees',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['hr'] as _i11.HrEndpoint).getEmployees(session),
+        ),
+        'createOrUpdateEmployee': _i1.MethodConnector(
+          name: 'createOrUpdateEmployee',
+          params: {
+            'employee': _i1.ParameterDescription(
+              name: 'employee',
+              type: _i1.getType<_i44.HrEmployee>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['hr'] as _i11.HrEndpoint).createOrUpdateEmployee(
+                    session,
+                    params['employee'],
+                  ),
+        ),
+        'getAttendance': _i1.MethodConnector(
+          name: 'getAttendance',
+          params: {
+            'date': _i1.ParameterDescription(
+              name: 'date',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['hr'] as _i11.HrEndpoint).getAttendance(
+                session,
+                params['date'],
+              ),
+        ),
+        'markAttendance': _i1.MethodConnector(
+          name: 'markAttendance',
+          params: {
+            'attendance': _i1.ParameterDescription(
+              name: 'attendance',
+              type: _i1.getType<_i45.HrAttendance>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['hr'] as _i11.HrEndpoint).markAttendance(
+                session,
+                params['attendance'],
+              ),
+        ),
+        'getPayroll': _i1.MethodConnector(
+          name: 'getPayroll',
+          params: {
+            'year': _i1.ParameterDescription(
+              name: 'year',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'month': _i1.ParameterDescription(
+              name: 'month',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['hr'] as _i11.HrEndpoint).getPayroll(
+                session,
+                params['year'],
+                params['month'],
+              ),
+        ),
+        'processPayroll': _i1.MethodConnector(
+          name: 'processPayroll',
+          params: {
+            'payroll': _i1.ParameterDescription(
+              name: 'payroll',
+              type: _i1.getType<_i46.HrPayroll>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['hr'] as _i11.HrEndpoint).processPayroll(
+                session,
+                params['payroll'],
+              ),
+        ),
+        'payPayroll': _i1.MethodConnector(
+          name: 'payPayroll',
+          params: {
+            'payrollId': _i1.ParameterDescription(
+              name: 'payrollId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['hr'] as _i11.HrEndpoint).payPayroll(
+                session,
+                params['payrollId'],
+              ),
+        ),
+      },
+    );
+    connectors['ops'] = _i1.EndpointConnector(
+      name: 'ops',
+      endpoint: endpoints['ops']!,
+      methodConnectors: {
+        'getInventory': _i1.MethodConnector(
+          name: 'getInventory',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['ops'] as _i12.OpsEndpoint).getInventory(session),
+        ),
+        'createOrUpdateItem': _i1.MethodConnector(
+          name: 'createOrUpdateItem',
+          params: {
+            'item': _i1.ParameterDescription(
+              name: 'item',
+              type: _i1.getType<_i47.OpsInventoryItem>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['ops'] as _i12.OpsEndpoint).createOrUpdateItem(
+                    session,
+                    params['item'],
+                  ),
+        ),
+        'getContracts': _i1.MethodConnector(
+          name: 'getContracts',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['ops'] as _i12.OpsEndpoint).getContracts(session),
+        ),
+        'createOrUpdateContract': _i1.MethodConnector(
+          name: 'createOrUpdateContract',
+          params: {
+            'contract': _i1.ParameterDescription(
+              name: 'contract',
+              type: _i1.getType<_i48.OpsServiceContract>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['ops'] as _i12.OpsEndpoint).createOrUpdateContract(
+                    session,
+                    params['contract'],
+                  ),
+        ),
+        'getWorkOrders': _i1.MethodConnector(
+          name: 'getWorkOrders',
+          params: {
+            'date': _i1.ParameterDescription(
+              name: 'date',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ops'] as _i12.OpsEndpoint).getWorkOrders(
+                session,
+                params['date'],
+              ),
+        ),
+        'createOrUpdateWorkOrder': _i1.MethodConnector(
+          name: 'createOrUpdateWorkOrder',
+          params: {
+            'order': _i1.ParameterDescription(
+              name: 'order',
+              type: _i1.getType<_i49.OpsWorkOrder>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ops'] as _i12.OpsEndpoint)
+                  .createOrUpdateWorkOrder(
+                    session,
+                    params['order'],
+                  ),
+        ),
+        'registerUsage': _i1.MethodConnector(
+          name: 'registerUsage',
+          params: {
+            'usage': _i1.ParameterDescription(
+              name: 'usage',
+              type: _i1.getType<_i50.OpsInventoryUsage>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ops'] as _i12.OpsEndpoint).registerUsage(
+                session,
+                params['usage'],
+              ),
+        ),
+      },
+    );
     connectors['rrhhApplicant'] = _i1.EndpointConnector(
       name: 'rrhhApplicant',
       endpoint: endpoints['rrhhApplicant']!,
@@ -2226,7 +2570,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhApplicant'] as _i10.RrhhApplicantEndpoint)
+                  (endpoints['rrhhApplicant'] as _i13.RrhhApplicantEndpoint)
                       .listApplicants(
                         session,
                         status: params['status'],
@@ -2257,7 +2601,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhApplicant'] as _i10.RrhhApplicantEndpoint)
+                  (endpoints['rrhhApplicant'] as _i13.RrhhApplicantEndpoint)
                       .getApplicantById(
                         session,
                         params['id'],
@@ -2269,7 +2613,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'applicant': _i1.ParameterDescription(
               name: 'applicant',
-              type: _i1.getType<_i34.RrhhApplicant>(),
+              type: _i1.getType<_i51.RrhhApplicant>(),
               nullable: false,
             ),
           },
@@ -2278,7 +2622,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhApplicant'] as _i10.RrhhApplicantEndpoint)
+                  (endpoints['rrhhApplicant'] as _i13.RrhhApplicantEndpoint)
                       .createApplicant(
                         session,
                         params['applicant'],
@@ -2289,7 +2633,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'applicant': _i1.ParameterDescription(
               name: 'applicant',
-              type: _i1.getType<_i34.RrhhApplicant>(),
+              type: _i1.getType<_i51.RrhhApplicant>(),
               nullable: false,
             ),
           },
@@ -2298,7 +2642,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhApplicant'] as _i10.RrhhApplicantEndpoint)
+                  (endpoints['rrhhApplicant'] as _i13.RrhhApplicantEndpoint)
                       .updateApplicant(
                         session,
                         params['applicant'],
@@ -2333,7 +2677,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhApplicant'] as _i10.RrhhApplicantEndpoint)
+                  (endpoints['rrhhApplicant'] as _i13.RrhhApplicantEndpoint)
                       .updateApplicantStatus(
                         session,
                         id: params['id'],
@@ -2356,7 +2700,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhApplicant'] as _i10.RrhhApplicantEndpoint)
+                  (endpoints['rrhhApplicant'] as _i13.RrhhApplicantEndpoint)
                       .deleteApplicant(
                         session,
                         params['id'],
@@ -2370,7 +2714,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhApplicant'] as _i10.RrhhApplicantEndpoint)
+                  (endpoints['rrhhApplicant'] as _i13.RrhhApplicantEndpoint)
                       .seedInitialData(session),
         ),
       },
@@ -2418,7 +2762,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhAssignment'] as _i11.RrhhAssignmentEndpoint)
+                  (endpoints['rrhhAssignment'] as _i14.RrhhAssignmentEndpoint)
                       .listSchedules(
                         session,
                         targetType: params['targetType'],
@@ -2443,7 +2787,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhAssignment'] as _i11.RrhhAssignmentEndpoint)
+                  (endpoints['rrhhAssignment'] as _i14.RrhhAssignmentEndpoint)
                       .getScheduleById(
                         session,
                         params['id'],
@@ -2454,7 +2798,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'schedule': _i1.ParameterDescription(
               name: 'schedule',
-              type: _i1.getType<_i35.RrhhSchedule>(),
+              type: _i1.getType<_i52.RrhhSchedule>(),
               nullable: false,
             ),
           },
@@ -2463,7 +2807,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhAssignment'] as _i11.RrhhAssignmentEndpoint)
+                  (endpoints['rrhhAssignment'] as _i14.RrhhAssignmentEndpoint)
                       .createSchedule(
                         session,
                         params['schedule'],
@@ -2474,7 +2818,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'schedule': _i1.ParameterDescription(
               name: 'schedule',
-              type: _i1.getType<_i35.RrhhSchedule>(),
+              type: _i1.getType<_i52.RrhhSchedule>(),
               nullable: false,
             ),
           },
@@ -2483,7 +2827,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhAssignment'] as _i11.RrhhAssignmentEndpoint)
+                  (endpoints['rrhhAssignment'] as _i14.RrhhAssignmentEndpoint)
                       .updateSchedule(
                         session,
                         params['schedule'],
@@ -2503,7 +2847,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhAssignment'] as _i11.RrhhAssignmentEndpoint)
+                  (endpoints['rrhhAssignment'] as _i14.RrhhAssignmentEndpoint)
                       .deleteSchedule(
                         session,
                         params['id'],
@@ -2558,7 +2902,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhAssignment'] as _i11.RrhhAssignmentEndpoint)
+                  (endpoints['rrhhAssignment'] as _i14.RrhhAssignmentEndpoint)
                       .listAssignments(
                         session,
                         status: params['status'],
@@ -2585,7 +2929,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhAssignment'] as _i11.RrhhAssignmentEndpoint)
+                  (endpoints['rrhhAssignment'] as _i14.RrhhAssignmentEndpoint)
                       .getAssignmentById(
                         session,
                         params['id'],
@@ -2605,7 +2949,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhAssignment'] as _i11.RrhhAssignmentEndpoint)
+                  (endpoints['rrhhAssignment'] as _i14.RrhhAssignmentEndpoint)
                       .getActiveAssignmentByEmployee(
                         session,
                         params['employeeId'],
@@ -2625,7 +2969,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhAssignment'] as _i11.RrhhAssignmentEndpoint)
+                  (endpoints['rrhhAssignment'] as _i14.RrhhAssignmentEndpoint)
                       .getRotationHistory(
                         session,
                         params['employeeId'],
@@ -2636,7 +2980,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'assignment': _i1.ParameterDescription(
               name: 'assignment',
-              type: _i1.getType<_i36.RrhhAssignment>(),
+              type: _i1.getType<_i53.RrhhAssignment>(),
               nullable: false,
             ),
           },
@@ -2645,7 +2989,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhAssignment'] as _i11.RrhhAssignmentEndpoint)
+                  (endpoints['rrhhAssignment'] as _i14.RrhhAssignmentEndpoint)
                       .createAssignment(
                         session,
                         params['assignment'],
@@ -2730,7 +3074,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhAssignment'] as _i11.RrhhAssignmentEndpoint)
+                  (endpoints['rrhhAssignment'] as _i14.RrhhAssignmentEndpoint)
                       .rotateAssignment(
                         session,
                         currentAssignmentId: params['currentAssignmentId'],
@@ -2771,7 +3115,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhAssignment'] as _i11.RrhhAssignmentEndpoint)
+                  (endpoints['rrhhAssignment'] as _i14.RrhhAssignmentEndpoint)
                       .cancelAssignment(
                         session,
                         params['id'],
@@ -2792,7 +3136,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhDashboard'] as _i11.RrhhDashboardEndpoint)
+                  (endpoints['rrhhDashboard'] as _i15.RrhhDashboardEndpoint)
                       .getMetrics(session),
         ),
         'getRecentMovements': _i1.MethodConnector(
@@ -2809,7 +3153,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhDashboard'] as _i11.RrhhDashboardEndpoint)
+                  (endpoints['rrhhDashboard'] as _i15.RrhhDashboardEndpoint)
                       .getRecentMovements(
                         session,
                         limit: params['limit'],
@@ -2834,7 +3178,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhHiring'] as _i13.RrhhHiringEndpoint)
+              ) async => (endpoints['rrhhHiring'] as _i16.RrhhHiringEndpoint)
                   .createDossier(
                     session,
                     params['applicantId'],
@@ -2853,7 +3197,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhHiring'] as _i13.RrhhHiringEndpoint)
+              ) async => (endpoints['rrhhHiring'] as _i16.RrhhHiringEndpoint)
                   .getDossierById(
                     session,
                     params['id'],
@@ -2872,7 +3216,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhHiring'] as _i13.RrhhHiringEndpoint)
+              ) async => (endpoints['rrhhHiring'] as _i16.RrhhHiringEndpoint)
                   .getDossierByApplicantId(
                     session,
                     params['applicantId'],
@@ -2906,7 +3250,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhHiring'] as _i13.RrhhHiringEndpoint)
+              ) async => (endpoints['rrhhHiring'] as _i16.RrhhHiringEndpoint)
                   .listActiveDossiers(
                     session,
                     search: params['search'],
@@ -2925,7 +3269,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'documentChecklist': _i1.ParameterDescription(
               name: 'documentChecklist',
-              type: _i1.getType<List<_i37.RrhhDossierDocument>>(),
+              type: _i1.getType<List<_i54.RrhhDossierDocument>>(),
               nullable: false,
             ),
             'sectionStatus': _i1.ParameterDescription(
@@ -2938,7 +3282,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhHiring'] as _i13.RrhhHiringEndpoint)
+              ) async => (endpoints['rrhhHiring'] as _i16.RrhhHiringEndpoint)
                   .updateDossierSection1(
                     session,
                     id: params['id'],
@@ -2984,7 +3328,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhHiring'] as _i13.RrhhHiringEndpoint)
+              ) async => (endpoints['rrhhHiring'] as _i16.RrhhHiringEndpoint)
                   .updateDossierSection2(
                     session,
                     id: params['id'],
@@ -3043,7 +3387,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhHiring'] as _i13.RrhhHiringEndpoint)
+              ) async => (endpoints['rrhhHiring'] as _i16.RrhhHiringEndpoint)
                   .updateDossierSection3(
                     session,
                     id: params['id'],
@@ -3097,12 +3441,12 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'bonuses': _i1.ParameterDescription(
               name: 'bonuses',
-              type: _i1.getType<List<_i38.RrhhEmployeeBonus>?>(),
+              type: _i1.getType<List<_i55.RrhhEmployeeBonus>?>(),
               nullable: true,
             ),
             'deductions': _i1.ParameterDescription(
               name: 'deductions',
-              type: _i1.getType<List<_i39.RrhhEmployeeDeduction>?>(),
+              type: _i1.getType<List<_i56.RrhhEmployeeDeduction>?>(),
               nullable: true,
             ),
             'notes': _i1.ParameterDescription(
@@ -3120,7 +3464,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhHiring'] as _i13.RrhhHiringEndpoint)
+              ) async => (endpoints['rrhhHiring'] as _i16.RrhhHiringEndpoint)
                   .updateDossierSection4(
                     session,
                     id: params['id'],
@@ -3194,7 +3538,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhHiring'] as _i13.RrhhHiringEndpoint)
+              ) async => (endpoints['rrhhHiring'] as _i16.RrhhHiringEndpoint)
                   .updateDossierSection5(
                     session,
                     id: params['id'],
@@ -3237,7 +3581,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhHiring'] as _i13.RrhhHiringEndpoint)
+              ) async => (endpoints['rrhhHiring'] as _i16.RrhhHiringEndpoint)
                   .updateDossierSection6(
                     session,
                     id: params['id'],
@@ -3264,7 +3608,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhHiring'] as _i13.RrhhHiringEndpoint)
+              ) async => (endpoints['rrhhHiring'] as _i16.RrhhHiringEndpoint)
                   .updateDossierStatus(
                     session,
                     id: params['id'],
@@ -3284,7 +3628,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhHiring'] as _i13.RrhhHiringEndpoint)
+              ) async => (endpoints['rrhhHiring'] as _i16.RrhhHiringEndpoint)
                   .convertDossierToEmployee(
                     session,
                     params['id'],
@@ -3303,7 +3647,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhHiring'] as _i13.RrhhHiringEndpoint)
+              ) async => (endpoints['rrhhHiring'] as _i16.RrhhHiringEndpoint)
                   .deleteDossier(
                     session,
                     params['id'],
@@ -3353,7 +3697,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhLabor'] as _i14.RrhhLaborEndpoint)
+              ) async => (endpoints['rrhhLabor'] as _i17.RrhhLaborEndpoint)
                   .listLeaveRequests(
                     session,
                     employeeId: params['employeeId'],
@@ -3377,7 +3721,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhLabor'] as _i14.RrhhLaborEndpoint)
+              ) async => (endpoints['rrhhLabor'] as _i17.RrhhLaborEndpoint)
                   .getLeaveRequestById(
                     session,
                     params['id'],
@@ -3436,7 +3780,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhLabor'] as _i14.RrhhLaborEndpoint)
+              ) async => (endpoints['rrhhLabor'] as _i17.RrhhLaborEndpoint)
                   .createLeaveRequest(
                     session,
                     employeeId: params['employeeId'],
@@ -3479,7 +3823,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhLabor'] as _i14.RrhhLaborEndpoint)
+              ) async => (endpoints['rrhhLabor'] as _i17.RrhhLaborEndpoint)
                   .resolveLeaveRequest(
                     session,
                     params['id'],
@@ -3506,7 +3850,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhLabor'] as _i14.RrhhLaborEndpoint)
+              ) async => (endpoints['rrhhLabor'] as _i17.RrhhLaborEndpoint)
                   .calculateVacationEntitlement(
                     session,
                     params['entryDate'],
@@ -3551,7 +3895,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhLabor'] as _i14.RrhhLaborEndpoint)
+              ) async => (endpoints['rrhhLabor'] as _i17.RrhhLaborEndpoint)
                   .listVacations(
                     session,
                     employeeId: params['employeeId'],
@@ -3600,7 +3944,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhLabor'] as _i14.RrhhLaborEndpoint)
+              ) async => (endpoints['rrhhLabor'] as _i17.RrhhLaborEndpoint)
                   .requestVacation(
                     session,
                     employeeId: params['employeeId'],
@@ -3634,7 +3978,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhLabor'] as _i14.RrhhLaborEndpoint)
+              ) async => (endpoints['rrhhLabor'] as _i17.RrhhLaborEndpoint)
                   .approveVacation(
                     session,
                     params['id'],
@@ -3680,7 +4024,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhLabor'] as _i14.RrhhLaborEndpoint)
+              ) async => (endpoints['rrhhLabor'] as _i17.RrhhLaborEndpoint)
                   .listIncidents(
                     session,
                     employeeId: params['employeeId'],
@@ -3749,7 +4093,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhLabor'] as _i14.RrhhLaborEndpoint)
+              ) async => (endpoints['rrhhLabor'] as _i17.RrhhLaborEndpoint)
                   .recordIncident(
                     session,
                     employeeId: params['employeeId'],
@@ -3822,7 +4166,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhLabor'] as _i14.RrhhLaborEndpoint)
+              ) async => (endpoints['rrhhLabor'] as _i17.RrhhLaborEndpoint)
                   .terminateEmployee(
                     session,
                     employeeId: params['employeeId'],
@@ -3865,7 +4209,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhLabor'] as _i14.RrhhLaborEndpoint)
+              ) async => (endpoints['rrhhLabor'] as _i17.RrhhLaborEndpoint)
                   .listMovements(
                     session,
                     employeeId: params['employeeId'],
@@ -3917,7 +4261,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rrhhLabor'] as _i14.RrhhLaborEndpoint)
+              ) async => (endpoints['rrhhLabor'] as _i17.RrhhLaborEndpoint)
                   .recordMovement(
                     session,
                     employeeId: params['employeeId'],
@@ -3955,7 +4299,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .listAreas(
                         session,
                         includeInactive: params['includeInactive'],
@@ -3977,7 +4321,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .getAreaById(
                         session,
                         params['id'],
@@ -3988,7 +4332,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'area': _i1.ParameterDescription(
               name: 'area',
-              type: _i1.getType<_i40.RrhhArea>(),
+              type: _i1.getType<_i57.RrhhArea>(),
               nullable: false,
             ),
           },
@@ -3998,7 +4342,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .createArea(
                         session,
                         params['area'],
@@ -4009,7 +4353,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'area': _i1.ParameterDescription(
               name: 'area',
-              type: _i1.getType<_i40.RrhhArea>(),
+              type: _i1.getType<_i57.RrhhArea>(),
               nullable: false,
             ),
           },
@@ -4019,7 +4363,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .updateArea(
                         session,
                         params['area'],
@@ -4040,7 +4384,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .deleteArea(
                         session,
                         params['id'],
@@ -4076,7 +4420,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .listPositions(
                         session,
                         areaId: params['areaId'],
@@ -4100,7 +4444,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .getPositionById(
                         session,
                         params['id'],
@@ -4111,7 +4455,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'position': _i1.ParameterDescription(
               name: 'position',
-              type: _i1.getType<_i41.RrhhPosition>(),
+              type: _i1.getType<_i58.RrhhPosition>(),
               nullable: false,
             ),
           },
@@ -4121,7 +4465,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .createPosition(
                         session,
                         params['position'],
@@ -4132,7 +4476,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'position': _i1.ParameterDescription(
               name: 'position',
-              type: _i1.getType<_i41.RrhhPosition>(),
+              type: _i1.getType<_i58.RrhhPosition>(),
               nullable: false,
             ),
           },
@@ -4142,7 +4486,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .updatePosition(
                         session,
                         params['position'],
@@ -4163,7 +4507,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .deletePosition(
                         session,
                         params['id'],
@@ -4189,7 +4533,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .listSpecialties(
                         session,
                         includeInactive: params['includeInactive'],
@@ -4211,7 +4555,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .getSpecialtyById(
                         session,
                         params['id'],
@@ -4222,7 +4566,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'specialty': _i1.ParameterDescription(
               name: 'specialty',
-              type: _i1.getType<_i42.RrhhSpecialty>(),
+              type: _i1.getType<_i59.RrhhSpecialty>(),
               nullable: false,
             ),
           },
@@ -4232,7 +4576,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .createSpecialty(
                         session,
                         params['specialty'],
@@ -4243,7 +4587,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'specialty': _i1.ParameterDescription(
               name: 'specialty',
-              type: _i1.getType<_i42.RrhhSpecialty>(),
+              type: _i1.getType<_i59.RrhhSpecialty>(),
               nullable: false,
             ),
           },
@@ -4253,7 +4597,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .updateSpecialty(
                         session,
                         params['specialty'],
@@ -4274,7 +4618,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .deleteSpecialty(
                         session,
                         params['id'],
@@ -4289,7 +4633,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['rrhhOrganization']
-                          as _i15.RrhhOrganizationEndpoint)
+                          as _i18.RrhhOrganizationEndpoint)
                       .seedInitialData(session),
         ),
       },
@@ -4347,7 +4691,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .listEmployees(
                         session,
                         status: params['status'],
@@ -4409,7 +4753,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .listEmployeeSummaries(
                         session,
                         status: params['status'],
@@ -4461,7 +4805,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .countEmployees(
                         session,
                         status: params['status'],
@@ -4491,7 +4835,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .getEmployeeById(
                         session,
                         params['id'],
@@ -4517,7 +4861,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .getEmployeeByCode(
                         session,
                         params['code'],
@@ -4529,7 +4873,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'employee': _i1.ParameterDescription(
               name: 'employee',
-              type: _i1.getType<_i43.RrhhEmployee>(),
+              type: _i1.getType<_i60.RrhhEmployee>(),
               nullable: false,
             ),
           },
@@ -4538,7 +4882,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .createEmployee(
                         session,
                         params['employee'],
@@ -4549,7 +4893,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'employee': _i1.ParameterDescription(
               name: 'employee',
-              type: _i1.getType<_i43.RrhhEmployee>(),
+              type: _i1.getType<_i60.RrhhEmployee>(),
               nullable: false,
             ),
           },
@@ -4558,7 +4902,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .updateEmployee(
                         session,
                         params['employee'],
@@ -4618,7 +4962,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .hireApplicant(
                         session,
                         applicantId: params['applicantId'],
@@ -4651,7 +4995,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .updateAvailabilityStatus(
                         session,
                         id: params['id'],
@@ -4687,7 +5031,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .terminateEmployee(
                         session,
                         id: params['id'],
@@ -4710,7 +5054,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .deleteEmployee(
                         session,
                         params['id'],
@@ -4730,7 +5074,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .getEmployeeContractData(
                         session,
                         params['id'],
@@ -4765,7 +5109,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .updateEmployeeBankInfo(
                         session,
                         id: params['id'],
@@ -4803,7 +5147,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .updateEmployeeSocialSecurity(
                         session,
                         id: params['id'],
@@ -4856,7 +5200,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .updateEmployeePersonalInfo(
                         session,
                         id: params['id'],
@@ -4919,12 +5263,12 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'bonuses': _i1.ParameterDescription(
               name: 'bonuses',
-              type: _i1.getType<List<_i38.RrhhEmployeeBonus>?>(),
+              type: _i1.getType<List<_i55.RrhhEmployeeBonus>?>(),
               nullable: true,
             ),
             'deductions': _i1.ParameterDescription(
               name: 'deductions',
-              type: _i1.getType<List<_i39.RrhhEmployeeDeduction>?>(),
+              type: _i1.getType<List<_i56.RrhhEmployeeDeduction>?>(),
               nullable: true,
             ),
           },
@@ -4933,7 +5277,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .updateEmployeeContract(
                         session,
                         id: params['id'],
@@ -4959,7 +5303,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'bonuses': _i1.ParameterDescription(
               name: 'bonuses',
-              type: _i1.getType<List<_i38.RrhhEmployeeBonus>>(),
+              type: _i1.getType<List<_i55.RrhhEmployeeBonus>>(),
               nullable: false,
             ),
           },
@@ -4968,7 +5312,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .updateEmployeeBonuses(
                         session,
                         id: params['id'],
@@ -4985,7 +5329,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'deductions': _i1.ParameterDescription(
               name: 'deductions',
-              type: _i1.getType<List<_i39.RrhhEmployeeDeduction>>(),
+              type: _i1.getType<List<_i56.RrhhEmployeeDeduction>>(),
               nullable: false,
             ),
           },
@@ -4994,7 +5338,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .updateEmployeeDeductions(
                         session,
                         id: params['id'],
@@ -5030,7 +5374,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .updateEmployeeAssignment(
                         session,
                         id: params['id'],
@@ -5049,7 +5393,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'documentChecklist': _i1.ParameterDescription(
               name: 'documentChecklist',
-              type: _i1.getType<List<_i37.RrhhDossierDocument>>(),
+              type: _i1.getType<List<_i54.RrhhDossierDocument>>(),
               nullable: false,
             ),
           },
@@ -5058,7 +5402,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .updateEmployeeDocuments(
                         session,
                         id: params['id'],
@@ -5079,7 +5423,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .listDocuments(
                         session,
                         params['employeeId'],
@@ -5090,7 +5434,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'document': _i1.ParameterDescription(
               name: 'document',
-              type: _i1.getType<_i44.RrhhEmployeeDocument>(),
+              type: _i1.getType<_i61.RrhhEmployeeDocument>(),
               nullable: false,
             ),
           },
@@ -5099,7 +5443,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .addDocument(
                         session,
                         params['document'],
@@ -5119,7 +5463,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .deleteDocument(
                         session,
                         params['documentId'],
@@ -5139,7 +5483,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .listTimelineEvents(
                         session,
                         params['employeeId'],
@@ -5150,7 +5494,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'event': _i1.ParameterDescription(
               name: 'event',
-              type: _i1.getType<_i45.RrhhTimelineEvent>(),
+              type: _i1.getType<_i62.RrhhTimelineEvent>(),
               nullable: false,
             ),
           },
@@ -5159,7 +5503,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .addTimelineEvent(
                         session,
                         params['event'],
@@ -5173,7 +5517,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rrhhPersonnel'] as _i16.RrhhPersonnelEndpoint)
+                  (endpoints['rrhhPersonnel'] as _i19.RrhhPersonnelEndpoint)
                       .seedInitialData(session),
         ),
       },
@@ -5210,7 +5554,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['audit'] as _i12.AuditEndpoint).listLogs(
+              ) async => (endpoints['audit'] as _i20.AuditEndpoint).listLogs(
                 session,
                 limit: params['limit'],
                 offset: params['offset'],
@@ -5267,7 +5611,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['audit'] as _i12.AuditEndpoint).listLogsPaged(
+                  (endpoints['audit'] as _i20.AuditEndpoint).listLogsPaged(
                     session,
                     page: params['page'],
                     pageSize: params['pageSize'],
@@ -5303,7 +5647,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['mfa'] as _i13.MfaEndpoint).checkRequired(
+              ) async => (endpoints['mfa'] as _i21.MfaEndpoint).checkRequired(
                 session,
                 rememberMe: params['rememberMe'],
                 trustedDeviceToken: params['trustedDeviceToken'],
@@ -5332,7 +5676,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['mfa'] as _i13.MfaEndpoint).verifyMfa(
+              ) async => (endpoints['mfa'] as _i21.MfaEndpoint).verifyMfa(
                 session,
                 challengeId: params['challengeId'],
                 code: params['code'],
@@ -5352,7 +5696,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['mfa'] as _i13.MfaEndpoint).resendMfaCode(
+              ) async => (endpoints['mfa'] as _i21.MfaEndpoint).resendMfaCode(
                 session,
                 challengeId: params['challengeId'],
               ),
@@ -5364,7 +5708,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['mfa'] as _i13.MfaEndpoint)
+              ) async => (endpoints['mfa'] as _i21.MfaEndpoint)
                   .isSessionVerified(session),
         ),
       },
@@ -5381,7 +5725,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rbac'] as _i14.RbacEndpoint).listRoles(session),
+                  (endpoints['rbac'] as _i22.RbacEndpoint).listRoles(session),
         ),
         'listPermissions': _i1.MethodConnector(
           name: 'listPermissions',
@@ -5390,7 +5734,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i14.RbacEndpoint)
+              ) async => (endpoints['rbac'] as _i22.RbacEndpoint)
                   .listPermissions(session),
         ),
         'assignRoleToUser': _i1.MethodConnector(
@@ -5412,7 +5756,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rbac'] as _i14.RbacEndpoint).assignRoleToUser(
+                  (endpoints['rbac'] as _i22.RbacEndpoint).assignRoleToUser(
                     session,
                     userId: params['userId'],
                     roleId: params['roleId'],
@@ -5437,7 +5781,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rbac'] as _i14.RbacEndpoint).removeRoleFromUser(
+                  (endpoints['rbac'] as _i22.RbacEndpoint).removeRoleFromUser(
                     session,
                     userId: params['userId'],
                     roleId: params['roleId'],
@@ -5461,7 +5805,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i14.RbacEndpoint)
+              ) async => (endpoints['rbac'] as _i22.RbacEndpoint)
                   .assignPermissionToRole(
                     session,
                     roleId: params['roleId'],
@@ -5481,7 +5825,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i14.RbacEndpoint)
+              ) async => (endpoints['rbac'] as _i22.RbacEndpoint)
                   .getUserEffectivePermissions(
                     session,
                     params['userId'],
@@ -5492,7 +5836,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'role': _i1.ParameterDescription(
               name: 'role',
-              type: _i1.getType<_i36.AppRole>(),
+              type: _i1.getType<_i63.AppRole>(),
               nullable: false,
             ),
           },
@@ -5500,7 +5844,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i14.RbacEndpoint).createRole(
+              ) async => (endpoints['rbac'] as _i22.RbacEndpoint).createRole(
                 session,
                 params['role'],
               ),
@@ -5510,7 +5854,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'role': _i1.ParameterDescription(
               name: 'role',
-              type: _i1.getType<_i36.AppRole>(),
+              type: _i1.getType<_i63.AppRole>(),
               nullable: false,
             ),
           },
@@ -5518,7 +5862,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i14.RbacEndpoint).updateRole(
+              ) async => (endpoints['rbac'] as _i22.RbacEndpoint).updateRole(
                 session,
                 params['role'],
               ),
@@ -5536,7 +5880,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['rbac'] as _i14.RbacEndpoint).deleteRole(
+              ) async => (endpoints['rbac'] as _i22.RbacEndpoint).deleteRole(
                 session,
                 params['roleId'],
               ),
@@ -5555,7 +5899,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rbac'] as _i14.RbacEndpoint).getRolePermissions(
+                  (endpoints['rbac'] as _i22.RbacEndpoint).getRolePermissions(
                     session,
                     params['roleId'],
                   ),
@@ -5579,7 +5923,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['rbac'] as _i14.RbacEndpoint).syncRolePermissions(
+                  (endpoints['rbac'] as _i22.RbacEndpoint).syncRolePermissions(
                     session,
                     roleId: params['roleId'],
                     permissionIds: params['permissionIds'],
@@ -5606,7 +5950,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i15.SessionManagementEndpoint)
+                          as _i23.SessionManagementEndpoint)
                       .registerSession(
                         session,
                         mfaVerified: params['mfaVerified'],
@@ -5627,7 +5971,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i15.SessionManagementEndpoint)
+                          as _i23.SessionManagementEndpoint)
                       .listUserSessions(
                         session,
                         params['userId'],
@@ -5648,7 +5992,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i15.SessionManagementEndpoint)
+                          as _i23.SessionManagementEndpoint)
                       .revokeSession(
                         session,
                         params['sessionId'],
@@ -5663,7 +6007,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i15.SessionManagementEndpoint)
+                          as _i23.SessionManagementEndpoint)
                       .logout(session),
         ),
         'markMfaVerified': _i1.MethodConnector(
@@ -5675,7 +6019,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionManagement']
-                          as _i15.SessionManagementEndpoint)
+                          as _i23.SessionManagementEndpoint)
                       .markMfaVerified(session),
         ),
       },
@@ -5707,7 +6051,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i16.UserEndpoint).listUsers(
+              ) async => (endpoints['user'] as _i24.UserEndpoint).listUsers(
                 session,
                 limit: params['limit'],
                 offset: params['offset'],
@@ -5727,7 +6071,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i16.UserEndpoint).getUser(
+              ) async => (endpoints['user'] as _i24.UserEndpoint).getUser(
                 session,
                 params['id'],
               ),
@@ -5755,7 +6099,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i16.UserEndpoint).createUser(
+              ) async => (endpoints['user'] as _i24.UserEndpoint).createUser(
                 session,
                 email: params['email'],
                 fullName: params['fullName'],
@@ -5780,7 +6124,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i16.UserEndpoint).updateUser(
+              ) async => (endpoints['user'] as _i24.UserEndpoint).updateUser(
                 session,
                 id: params['id'],
                 fullName: params['fullName'],
@@ -5804,7 +6148,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i16.UserEndpoint).setUserActive(
+              ) async => (endpoints['user'] as _i24.UserEndpoint).setUserActive(
                 session,
                 id: params['id'],
                 isActive: params['isActive'],
@@ -5823,7 +6167,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i16.UserEndpoint).deleteUser(
+              ) async => (endpoints['user'] as _i24.UserEndpoint).deleteUser(
                 session,
                 params['id'],
               ),
@@ -5835,7 +6179,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i16.UserEndpoint)
+              ) async => (endpoints['user'] as _i24.UserEndpoint)
                   .getCurrentUser(session),
         ),
         'changePassword': _i1.MethodConnector(
@@ -5857,7 +6201,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['user'] as _i16.UserEndpoint).changePassword(
+                  (endpoints['user'] as _i24.UserEndpoint).changePassword(
                     session,
                     currentPassword: params['currentPassword'],
                     newPassword: params['newPassword'],
@@ -5865,9 +6209,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i37.Endpoints()
+    modules['serverpod_auth_idp'] = _i64.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i38.Endpoints()
+    modules['serverpod_auth_core'] = _i65.Endpoints()
       ..initializeEndpoints(server);
   }
 }

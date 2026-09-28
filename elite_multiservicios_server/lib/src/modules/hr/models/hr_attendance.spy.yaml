@@ -1,0 +1,14 @@
+class: HrAttendance
+table: hr_attendance
+fields:
+  employeeId: int
+  date: DateTime
+  checkIn: DateTime?
+  checkOut: DateTime?
+  status: String
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  hr_attendance_emp_date_idx:
+    fields: employeeId, date
+    unique: true

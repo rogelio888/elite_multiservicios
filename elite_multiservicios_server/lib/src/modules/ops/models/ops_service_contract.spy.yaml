@@ -1,0 +1,11 @@
+class: OpsServiceContract
+table: ops_service_contract
+fields:
+  customerId: int
+  serviceType: String
+  startDate: DateTime
+  endDate: DateTime?
+  status: String, default='Pending'
+  totalAmount: double
+  createdAt: DateTime
+  updatedAt: DateTime

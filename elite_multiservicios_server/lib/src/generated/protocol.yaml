@@ -96,6 +96,22 @@ crmPipeline:
   - promoteToCustomer:
   - deleteOpportunity:
   - getMetrics:
+hr:
+  - getEmployees:
+  - createOrUpdateEmployee:
+  - getAttendance:
+  - markAttendance:
+  - getPayroll:
+  - processPayroll:
+  - payPayroll:
+ops:
+  - getInventory:
+  - createOrUpdateItem:
+  - getContracts:
+  - createOrUpdateContract:
+  - getWorkOrders:
+  - createOrUpdateWorkOrder:
+  - registerUsage:
 rrhhApplicant:
   - listApplicants:
   - getApplicantById:
