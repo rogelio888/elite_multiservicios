@@ -30,6 +30,8 @@ class AuthService extends ChangeNotifier {
   MfaChallengeResponse? _currentMfaChallenge;
   MfaChallengeResponse? get currentMfaChallenge => _currentMfaChallenge;
 
+  Future<MfaChallengeResponse?>? _inFlightCheckMfa;
+
   void markSessionMfaVerified() {
     _isSessionMfaVerified = true;
     _isMfaPending = false;
@@ -40,11 +42,12 @@ class AuthService extends ChangeNotifier {
   void setMfaPending(
     MfaChallengeResponse? challenge, {
     bool rememberMe = false,
+    bool notify = true,
   }) {
     _currentMfaChallenge = challenge;
     _isMfaPending = challenge != null;
     _currentRememberMe = rememberMe;
-    notifyListeners();
+    if (notify) notifyListeners();
   }
 
   void clearMfaPending() {
@@ -174,9 +177,12 @@ class AuthService extends ChangeNotifier {
       }
 
       // Verificar inmediatamente si MFA es requerido para este usuario con política Fail-Closed
-      final mfaChallenge = await checkMfaRequired(rememberMe: rememberMe);
+      final mfaChallenge = await checkMfaRequired(
+        rememberMe: rememberMe,
+        notify: false,
+      );
       if (mfaChallenge != null) {
-        setMfaPending(mfaChallenge, rememberMe: rememberMe);
+        setMfaPending(mfaChallenge, rememberMe: rememberMe, notify: false);
       } else {
         clearMfaPending();
       }
@@ -336,7 +342,24 @@ class AuthService extends ChangeNotifier {
   /// Verifica si el usuario autenticado requiere MFA aplicando política Fail-Closed.
   /// Si sí, retorna el challenge. Si no, retorna null.
   /// Ante cualquier fallo no recuperable, purga la sesión local y lanza [AuthException].
+  /// Deduplica llamadas concurrentes para evitar colisiones en red o desafíos duplicados.
   Future<MfaChallengeResponse?> checkMfaRequired({
+    required bool rememberMe,
+    bool notify = true,
+  }) async {
+    if (_inFlightCheckMfa != null) {
+      return await _inFlightCheckMfa!;
+    }
+    final future = _executeCheckMfa(rememberMe: rememberMe, notify: notify);
+    _inFlightCheckMfa = future;
+    try {
+      return await future;
+    } finally {
+      _inFlightCheckMfa = null;
+    }
+  }
+
+  Future<MfaChallengeResponse?> _executeCheckMfa({
     required bool rememberMe,
     bool notify = true,
   }) async {

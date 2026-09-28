@@ -42,3 +42,8 @@ prompt*.md
 
 # Antigravity IDE
 .gemini/
+
+# Python
+__pycache__/
+*.py[cod]
+
