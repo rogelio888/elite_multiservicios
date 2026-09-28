@@ -276,7 +276,20 @@ class MfaEndpoint extends Endpoint {
     );
 
     // 6. Marcar la sesión activa del usuario como verificada con MFA
-    final activeSession = await UserSession.db.findFirstRow(
+    final authSessionId = session.authenticated?.authId;
+    UserSession? activeSession;
+    if (authSessionId != null) {
+      activeSession = await UserSession.db.findFirstRow(
+        session,
+        where: (t) =>
+            t.userId.equals(appUser.id!) &
+            t.authSessionId.equals(authSessionId) &
+            t.isRevoked.equals(false),
+      );
+    }
+
+    // Fallback: si no se encontró por authSessionId, buscar la más reciente
+    activeSession ??= await UserSession.db.findFirstRow(
       session,
       where: (t) => t.userId.equals(appUser.id!) & t.isRevoked.equals(false),
       orderBy: (t) => t.createdAt,
@@ -288,9 +301,10 @@ class MfaEndpoint extends Endpoint {
         session,
         activeSession.copyWith(
           mfaVerified: true,
+          authSessionId: authSessionId ?? activeSession.authSessionId,
           lastActivityAt: now,
         ),
-        columns: (t) => [t.mfaVerified, t.lastActivityAt],
+        columns: (t) => [t.mfaVerified, t.authSessionId, t.lastActivityAt],
       );
     } else {
       final ipAddress = session.request?.remoteInfo;
@@ -299,6 +313,7 @@ class MfaEndpoint extends Endpoint {
         session,
         UserSession(
           userId: appUser.id!,
+          authSessionId: authSessionId,
           sessionTokenHash: 'mfa-${now.millisecondsSinceEpoch}-${appUser.id}',
           ipAddress: ipAddress,
           deviceInfo: deviceInfo,
@@ -480,11 +495,17 @@ class MfaEndpoint extends Endpoint {
       );
       if (!appUser.mfaEnabled) return true;
 
+      final authSessionId = session.authenticated?.authId;
+      if (authSessionId == null) {
+        return false;
+      }
+
       final activeSession = await UserSession.db.findFirstRow(
         session,
-        where: (t) => t.userId.equals(appUser.id!) & t.isRevoked.equals(false),
-        orderBy: (t) => t.createdAt,
-        orderDescending: true,
+        where: (t) =>
+            t.userId.equals(appUser.id!) &
+            t.authSessionId.equals(authSessionId) &
+            t.isRevoked.equals(false),
       );
       return activeSession?.mfaVerified ?? false;
     } catch (_) {

@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+
+import 'src/exceptions/app_exception.dart';
 
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
@@ -23,6 +26,9 @@ void run(List<String> args) async {
 
   // Initialize Serverpod and connect it with your generated code.
   final pod = Serverpod(serverpodArgs, Protocol(), Endpoints());
+
+  // Registrar middleware para capturar AppException y mapear a códigos HTTP 401/403/etc.
+  pod.server.addMiddleware(_appExceptionMiddleware());
 
   // Registrar FutureCalls
   pod.registerFutureCall(
@@ -150,4 +156,35 @@ Future<void> _sendPasswordResetCode(
     email: email,
     verificationCode: verificationCode,
   );
+}
+
+/// Middleware HTTP que intercepta AppException de dominio y responde con códigos HTTP estándar (401, 403, 404, etc.)
+Middleware _appExceptionMiddleware() {
+  return (Handler next) {
+    return (Request req) async {
+      try {
+        return await next(req);
+      } on AppException catch (e) {
+        final statusCode = switch (e.code) {
+          'MFA_REQUIRED' || 'AUTH_REQUIRED' => HttpStatus.unauthorized,
+          'FORBIDDEN' => HttpStatus.forbidden,
+          'NOT_FOUND' => HttpStatus.notFound,
+          'VALIDATION_FAILED' => HttpStatus.badRequest,
+          'CONFLICT' => HttpStatus.conflict,
+          _ => HttpStatus.badRequest,
+        };
+        return Response(
+          statusCode,
+          body: Body.fromString(
+            jsonEncode({
+              'error': e.message,
+              'code': e.code,
+              'details': e.details,
+            }),
+            mimeType: MimeType.json,
+          ),
+        );
+      }
+    };
+  };
 }
