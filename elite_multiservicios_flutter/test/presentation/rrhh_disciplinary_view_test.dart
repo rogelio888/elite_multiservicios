@@ -1,12 +1,80 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:elite_multiservicios_flutter/features/rrhh/data/repositories/rrhh_repository.dart';
+import 'package:elite_multiservicios_flutter/features/rrhh/data/repositories/rrhh_repository_remote.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_disciplinary_view.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_disciplinary_record_row.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_disciplinary_edit_dialog.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_disciplinary_detail_drawer.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_primary_action_button.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+class _FakeDisciplinaryRepository extends RrhhRepositoryRemote {
+  final _records = [
+    RrhhDisciplinaryRecord(
+      id: 1,
+      code: 'INC-001',
+      employeeId: 3,
+      employeeCode: 'EMP-003',
+      employeeName: 'Carlos E. Mamani Choque',
+      incidentDate: DateTime(2026, 9, 20, 8, 45),
+      incidentDescription: 'Retraso injustificado reiterado',
+      faultType: 'leve',
+      sanctionType: 'verbal',
+      sanctionDescription: 'Amonestación verbal formal',
+      notifiedEmployee: true,
+      status: 'sancionada',
+      createdAt: DateTime(2026, 9, 20),
+      updatedAt: DateTime(2026, 9, 20),
+      createdBy: 'Supervisor',
+    ),
+    RrhhDisciplinaryRecord(
+      id: 2,
+      code: 'INC-002',
+      employeeId: 4,
+      employeeCode: 'EMP-004',
+      employeeName: 'Roberto Carlos Soto',
+      incidentDate: DateTime(2026, 9, 15, 14, 30),
+      incidentDescription: 'Inasistencia injustificada',
+      faultType: 'grave',
+      sanctionType: 'escrita',
+      notifiedEmployee: true,
+      status: 'registrada',
+      createdAt: DateTime(2026, 9, 15),
+      updatedAt: DateTime(2026, 9, 15),
+      createdBy: 'Supervisor',
+    ),
+  ];
+
+  @override
+  Future<List<RrhhDisciplinaryRecord>> listDisciplinaryRecords({
+    String? status,
+    String? faultType,
+    String? sanctionType,
+    String? search,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    return _records;
+  }
+
+  @override
+  Future<RrhhDisciplinaryRecord?> getDisciplinaryRecordById(int id) async {
+    return _records.firstWhere((r) => r.id == id, orElse: () => _records.first);
+  }
+}
 
 void main() {
+  late RrhhRepository originalRepo;
+
+  setUp(() {
+    originalRepo = RrhhRepository.current;
+    RrhhRepository.current = _FakeDisciplinaryRepository();
+  });
+
+  tearDown(() {
+    RrhhRepository.current = originalRepo;
+  });
+
   Widget buildTestWidget() {
     return MaterialApp(
       theme: ThemeData.dark(),

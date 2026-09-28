@@ -601,7 +601,10 @@ class _RrhhAuditLogViewState extends State<RrhhAuditLogView> {
                 child: _buildFilterDropdown<String>(
                   label: 'Usuario',
                   value: _selectedUser,
-                  items: ['Todos', ..._activeUsers],
+                  items: [
+                    'Todos',
+                    ..._activeUsers.where((u) => u != 'Todos').toSet(),
+                  ],
                   itemLabel: (user) => user,
                   onChanged: (val) {
                     if (val != null) {

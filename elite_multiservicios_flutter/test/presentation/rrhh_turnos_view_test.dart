@@ -1,10 +1,62 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:elite_multiservicios_flutter/features/rrhh/data/models/rrhh_shift.dart';
+import 'package:elite_multiservicios_flutter/features/rrhh/data/repositories/rrhh_repository.dart';
+import 'package:elite_multiservicios_flutter/features/rrhh/data/repositories/rrhh_repository_remote.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/views/rrhh_turnos_view.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_turnos_tab_shifts.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_turnos_tab_schedules.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+class _FakeTurnosRepository extends RrhhRepositoryRemote {
+  @override
+  Future<List<RrhhShift>> listShifts() async {
+    return [
+      RrhhShift(
+        id: 1,
+        code: 'TURNO-001',
+        name: 'Turno Mañana',
+        startTime: '08:00',
+        endTime: '16:00',
+        workDays: [1, 2, 3, 4, 5],
+        shiftType: 'Completa',
+        isActive: true,
+        assignedEmployeesCount: 12,
+        createdAt: DateTime(2026, 1, 1),
+        updatedAt: DateTime(2026, 1, 1),
+      ),
+    ];
+  }
+
+  @override
+  Future<List<RrhhBaseSchedule>> listBaseSchedules() async {
+    return [
+      RrhhBaseSchedule(
+        id: 1,
+        code: 'HORARIO-001',
+        name: 'Horario Administrativo Central',
+        includedShiftCodes: const ['TURNO-001'],
+        workerType: 'OFICINA',
+        totalWeeklyHours: 40.0,
+        isActive: true,
+        createdAt: DateTime(2026, 1, 1),
+        updatedAt: DateTime(2026, 1, 1),
+      ),
+    ];
+  }
+}
 
 void main() {
+  late RrhhRepository originalRepo;
+
+  setUp(() {
+    originalRepo = RrhhRepository.current;
+    RrhhRepository.current = _FakeTurnosRepository();
+  });
+
+  tearDown(() {
+    RrhhRepository.current = originalRepo;
+  });
+
   Widget buildTestWidget({String? initialTab}) {
     return MaterialApp(
       theme: ThemeData.dark(),

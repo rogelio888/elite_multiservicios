@@ -1,12 +1,118 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:elite_multiservicios_flutter/features/rrhh/data/repositories/rrhh_repository.dart';
+import 'package:elite_multiservicios_flutter/features/rrhh/data/repositories/rrhh_repository_remote.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_vacations_view.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_vacation_balance_tab.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_vacation_records_tab.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_vacation_edit_dialog.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_primary_action_button.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+class _FakeVacationsRepository extends RrhhRepositoryRemote {
+  @override
+  Future<List<RrhhVacationBalance>> listVacationBalances({
+    String? search,
+    String? balanceStatus,
+    int? areaId,
+  }) async {
+    return [
+      RrhhVacationBalance(
+        employeeId: 1,
+        employeeCode: 'EMP-001',
+        employeeName: 'Juan Carlos Pérez Mendoza',
+        position: 'Operario',
+        area: 'Operaciones',
+        hireDate: DateTime(2023, 1, 1),
+        antiquity: const Duration(days: 1000),
+        assignedDays: 15,
+        usedDays: 5,
+        pendingDays: 10,
+        balanceStatus: 'disponible',
+      ),
+      RrhhVacationBalance(
+        employeeId: 2,
+        employeeCode: 'EMP-002',
+        employeeName: 'María Elena Gómez',
+        position: 'Supervisora',
+        area: 'Operaciones',
+        hireDate: DateTime(2020, 1, 1),
+        antiquity: const Duration(days: 2000),
+        assignedDays: 20,
+        usedDays: 10,
+        pendingDays: 10,
+        balanceStatus: 'disponible',
+      ),
+      RrhhVacationBalance(
+        employeeId: 3,
+        employeeCode: 'EMP-003',
+        employeeName: 'Carlos E. Mamani Choque',
+        position: 'Líder',
+        area: 'Operaciones',
+        hireDate: DateTime(2022, 1, 1),
+        antiquity: const Duration(days: 1500),
+        assignedDays: 15,
+        usedDays: 0,
+        pendingDays: 15,
+        balanceStatus: 'disponible',
+      ),
+    ];
+  }
+
+  @override
+  Future<List<RrhhVacationRecord>> listVacationRecords({
+    String? search,
+    String? status,
+    int? employeeId,
+    DateTime? fromDate,
+    DateTime? toDate,
+  }) async {
+    return [
+      RrhhVacationRecord(
+        id: 1,
+        code: 'VAC-001',
+        employeeId: 1,
+        employeeCode: 'EMP-001',
+        employeeName: 'Juan Carlos Pérez Mendoza',
+        startDate: DateTime(2026, 8, 1),
+        endDate: DateTime(2026, 8, 6),
+        daysCounted: 5,
+        countingMode: 'habiles',
+        status: 'gozado',
+        createdAt: DateTime(2026, 7, 20),
+        updatedAt: DateTime(2026, 7, 20),
+        createdBy: 'RRHH',
+      ),
+      RrhhVacationRecord(
+        id: 2,
+        code: 'VAC-002',
+        employeeId: 2,
+        employeeCode: 'EMP-002',
+        employeeName: 'María Elena Gómez',
+        startDate: DateTime(2026, 9, 1),
+        endDate: DateTime(2026, 9, 10),
+        daysCounted: 8,
+        countingMode: 'habiles',
+        status: 'programado',
+        createdAt: DateTime(2026, 8, 20),
+        updatedAt: DateTime(2026, 8, 20),
+        createdBy: 'RRHH',
+      ),
+    ];
+  }
+}
 
 void main() {
+  late RrhhRepository originalRepo;
+
+  setUp(() {
+    originalRepo = RrhhRepository.current;
+    RrhhRepository.current = _FakeVacationsRepository();
+  });
+
+  tearDown(() {
+    RrhhRepository.current = originalRepo;
+  });
+
   Widget buildTestWidget() {
     return MaterialApp(
       theme: ThemeData.dark(),

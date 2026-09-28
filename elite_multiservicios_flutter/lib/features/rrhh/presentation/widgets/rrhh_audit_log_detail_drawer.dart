@@ -293,13 +293,15 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
       children: [
         Icon(icon, size: 14, color: const Color(0xFF60A5FA)),
         const SizedBox(width: 6),
-        Text(
-          title,
-          style: GoogleFonts.inter(
-            fontSize: 11.5,
-            fontWeight: FontWeight.w700,
-            color: const Color(0xFF94A3B8),
-            letterSpacing: 0.5,
+        Expanded(
+          child: Text(
+            title,
+            style: GoogleFonts.inter(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF94A3B8),
+              letterSpacing: 0.5,
+            ),
           ),
         ),
       ],
@@ -733,12 +735,14 @@ class RrhhAuditLogDetailDrawer extends StatelessWidget {
               color: Color(0xFF64748B),
             ),
             const SizedBox(width: 8),
-            Text(
-              'Sin documentos digitales adjuntos a este registro.',
-              style: GoogleFonts.inter(
-                fontSize: 11.5,
-                color: const Color(0xFF94A3B8),
-                fontStyle: FontStyle.italic,
+            Expanded(
+              child: Text(
+                'Sin documentos digitales adjuntos a este registro.',
+                style: GoogleFonts.inter(
+                  fontSize: 11.5,
+                  color: const Color(0xFF94A3B8),
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ),
           ],

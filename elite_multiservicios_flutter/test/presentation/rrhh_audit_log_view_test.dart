@@ -1,11 +1,97 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
+import 'package:elite_multiservicios_flutter/features/rrhh/data/repositories/rrhh_repository.dart';
+import 'package:elite_multiservicios_flutter/features/rrhh/data/repositories/rrhh_repository_remote.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_audit_kpis.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_audit_log_detail_drawer.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_audit_log_event_row.dart';
 import 'package:elite_multiservicios_flutter/features/rrhh/presentation/widgets/rrhh_audit_log_view.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+class _FakeAuditLogRepository extends RrhhRepositoryRemote {
+  final _events = [
+    RrhhTimelineEvent(
+      id: 1,
+      employeeId: 1,
+      date: DateTime(2026, 9, 20, 10, 0),
+      title: 'Cambio de Cargo',
+      description: 'Promovido a Líder de Turno',
+      category: 'ASIGNACION',
+      registeredBy: 'admin_test',
+      createdAt: DateTime(2026, 9, 20, 10, 0),
+    ),
+    RrhhTimelineEvent(
+      id: 2,
+      employeeId: 2,
+      date: DateTime(2026, 9, 21, 11, 0),
+      title: 'Aprobación de Vacaciones',
+      description: 'Aprobado período de 5 días',
+      category: 'VACACIONES',
+      registeredBy: 'supervisor_test',
+      createdAt: DateTime(2026, 9, 21, 11, 0),
+    ),
+  ];
+
+  @override
+  Future<List<RrhhTimelineEvent>> listTimelineEvents({
+    int? employeeId,
+    String? category,
+    String? search,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? user,
+  }) async {
+    return _events;
+  }
+
+  @override
+  Future<List<RrhhEmployeeSummaryDto>> listEmployees({
+    String? status,
+    String? employeeType,
+    int? areaId,
+    String? search,
+    int? limit,
+    int? offset,
+    String? availabilityStatus,
+  }) async => [];
+
+  @override
+  Future<RrhhTimelineEvent?> getTimelineEventById(int id) async {
+    return _events.firstWhere((e) => e.id == id, orElse: () => _events.first);
+  }
+
+  @override
+  List<String> listTimelineCategories() => [
+    'Todas',
+    'CONTRATACION',
+    'ASIGNACION',
+    'CONTRATUAL',
+    'HORARIO',
+    'PERMISO',
+    'VACACIONES',
+    'INCIDENCIA',
+    'DESVINCULACION',
+    'SALARIOS',
+    'SISTEMA',
+    'CATALOGOS',
+  ];
+
+  @override
+  List<String> listActiveUsers() => ['admin_test', 'supervisor_test'];
+}
 
 void main() {
+  late RrhhRepository originalRepo;
+
+  setUp(() {
+    originalRepo = RrhhRepository.current;
+    RrhhRepository.current = _FakeAuditLogRepository();
+  });
+
+  tearDown(() {
+    RrhhRepository.current = originalRepo;
+  });
+
   Widget buildTestWidget() {
     return MaterialApp(
       theme: ThemeData.dark(),
