@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../main.dart';
@@ -60,7 +60,7 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: status,
+                  initialValue: status,
                   decoration: const InputDecoration(labelText: 'Estado'),
                   items: const [
                     DropdownMenuItem(

@@ -1,0 +1,8 @@
+class: AccountingTax
+table: accounting_tax
+fields:
+  name: String # e.g. IVA, Retencion ISR
+  rate: double # e.g. 0.16 for 16%
+  type: String # e.g. Impuesto Venta, Impuesto Compra, Carga Social
+  ledgerAccountId: int?
+  isActive: bool

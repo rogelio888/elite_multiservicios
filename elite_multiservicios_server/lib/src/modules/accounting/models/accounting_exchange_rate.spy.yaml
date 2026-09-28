@@ -1,0 +1,7 @@
+class: AccountingExchangeRate
+table: accounting_exchange_rate
+fields:
+  date: DateTime
+  currency: String
+  rateToBob: double
+  createdAt: DateTime

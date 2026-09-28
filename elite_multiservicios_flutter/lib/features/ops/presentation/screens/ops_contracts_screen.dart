@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../main.dart';
@@ -58,7 +58,7 @@ class _OpsContractsScreenState extends State<OpsContractsScreen> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: serviceType,
+                  initialValue: serviceType,
                   decoration: const InputDecoration(labelText: 'Tipo de Servicio'),
                   items: const [
                     DropdownMenuItem(value: 'Limpieza', child: Text('Limpieza')),

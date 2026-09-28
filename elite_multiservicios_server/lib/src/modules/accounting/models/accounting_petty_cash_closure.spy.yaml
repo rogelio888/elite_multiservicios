@@ -1,0 +1,9 @@
+class: AccountingPettyCashClosure
+table: accounting_petty_cash_closure
+fields:
+  pettyCashId: int
+  date: DateTime
+  openingBalance: double
+  closingBalance: double
+  comments: String?
+  createdAt: DateTime
