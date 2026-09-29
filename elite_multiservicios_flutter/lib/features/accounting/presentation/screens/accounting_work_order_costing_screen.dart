@@ -245,7 +245,7 @@ class _AccountingWorkOrderCostingScreenState
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+          : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,148 +293,154 @@ class _AccountingWorkOrderCostingScreenState
                   const SizedBox(height: 24),
 
                   // Tabla de Costeo
-                  AccountingExcelGrid(
-                    title:
-                        'Desglose de Costos y Rentabilidad por Servicio / OT',
-                    columns: [
-                      ExcelGridColumn(title: 'N° OT'),
-                      ExcelGridColumn(title: 'Fecha'),
-                      ExcelGridColumn(title: 'Estado Servicio'),
-                      ExcelGridColumn(
-                        title: 'Materiales Kárdex (\$)',
-                        isNumeric: true,
-                      ),
-                      ExcelGridColumn(
-                        title: 'Mano de Obra (\$)',
-                        isNumeric: true,
-                      ),
-                      ExcelGridColumn(
-                        title: 'Otros Gastos (\$)',
-                        isNumeric: true,
-                      ),
-                      ExcelGridColumn(
-                        title: 'Costo Total Directo (\$)',
-                        isNumeric: true,
-                      ),
-                      ExcelGridColumn(
-                        title: 'Facturación (\$)',
-                        isNumeric: true,
-                      ),
-                      ExcelGridColumn(
-                        title: 'Margen Bruto (\$)',
-                        isNumeric: true,
-                      ),
-                      ExcelGridColumn(title: 'Margen (%)', isNumeric: true),
-                      ExcelGridColumn(title: 'Acción Facturación'),
-                    ],
-                    rows: _costSummaries.map((s) {
-                      final hasProfit = s.grossMargin >= 0;
-                      return ExcelGridRow(
-                        cells: [
-                          Text(
-                            'OT #${s.workOrderId}',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            '${s.workOrderDate.day.toString().padLeft(2, '0')}/${s.workOrderDate.month.toString().padLeft(2, '0')}/${s.workOrderDate.year}',
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: s.workOrderStatus == 'Completado'
-                                  ? Colors.green.shade50
-                                  : Colors.blue.shade50,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              s.workOrderStatus,
-                              style: TextStyle(
-                                fontSize: 11,
+                  Expanded(
+                    child: AccountingExcelGrid(
+                      title:
+                          'Desglose de Costos y Rentabilidad por Servicio / OT',
+                      columns: [
+                        ExcelGridColumn(title: 'N° OT'),
+                        ExcelGridColumn(title: 'Fecha'),
+                        ExcelGridColumn(title: 'Estado Servicio'),
+                        ExcelGridColumn(
+                          title: 'Materiales Kárdex (\$)',
+                          isNumeric: true,
+                        ),
+                        ExcelGridColumn(
+                          title: 'Mano de Obra (\$)',
+                          isNumeric: true,
+                        ),
+                        ExcelGridColumn(
+                          title: 'Otros Gastos (\$)',
+                          isNumeric: true,
+                        ),
+                        ExcelGridColumn(
+                          title: 'Costo Total Directo (\$)',
+                          isNumeric: true,
+                        ),
+                        ExcelGridColumn(
+                          title: 'Facturación (\$)',
+                          isNumeric: true,
+                        ),
+                        ExcelGridColumn(
+                          title: 'Margen Bruto (\$)',
+                          isNumeric: true,
+                        ),
+                        ExcelGridColumn(title: 'Margen (%)', isNumeric: true),
+                        ExcelGridColumn(title: 'Acción Facturación'),
+                      ],
+                      rows: _costSummaries.map((s) {
+                        final hasProfit = s.grossMargin >= 0;
+                        return ExcelGridRow(
+                          cells: [
+                            Text(
+                              'OT #${s.workOrderId}',
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: s.workOrderStatus == 'Completado'
-                                    ? Colors.green
-                                    : Colors.blue,
                               ),
                             ),
-                          ),
-                          Text('\$${s.materialsCost.toStringAsFixed(2)}'),
-                          Text('\$${s.laborCost.toStringAsFixed(2)}'),
-                          Text('\$${s.otherExpenses.toStringAsFixed(2)}'),
-                          Text(
-                            '\$${s.totalCost.toStringAsFixed(2)}',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            '\$${s.invoicedAmount.toStringAsFixed(2)}',
-                            style: TextStyle(
-                              color: s.isBilled ? Colors.green : Colors.grey,
-                              fontWeight: FontWeight.w600,
+                            Text(
+                              '${s.workOrderDate.day.toString().padLeft(2, '0')}/${s.workOrderDate.month.toString().padLeft(2, '0')}/${s.workOrderDate.year}',
                             ),
-                          ),
-                          Text(
-                            '\$${s.grossMargin.toStringAsFixed(2)}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: hasProfit ? Colors.teal : Colors.red,
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: s.workOrderStatus == 'Completado'
+                                    ? Colors.green.shade50
+                                    : Colors.blue.shade50,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                s.workOrderStatus,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: s.workOrderStatus == 'Completado'
+                                      ? Colors.green
+                                      : Colors.blue,
+                                ),
+                              ),
                             ),
-                          ),
-                          Text(
-                            '${s.grossMarginPercentage.toStringAsFixed(1)}%',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: s.grossMarginPercentage >= 20
-                                  ? Colors.green
-                                  : (s.grossMarginPercentage > 0
-                                        ? Colors.orange
-                                        : Colors.red),
+                            Text('\$${s.materialsCost.toStringAsFixed(2)}'),
+                            Text('\$${s.laborCost.toStringAsFixed(2)}'),
+                            Text('\$${s.otherExpenses.toStringAsFixed(2)}'),
+                            Text(
+                              '\$${s.totalCost.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          s.isBilled
-                              ? const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.check_circle,
-                                      size: 16,
-                                      color: Colors.green,
-                                    ),
-                                    SizedBox(width: 4),
-                                    Text(
-                                      'Facturado',
-                                      style: TextStyle(
+                            Text(
+                              '\$${s.invoicedAmount.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                color: s.isBilled ? Colors.green : Colors.grey,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              '\$${s.grossMargin.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: hasProfit ? Colors.teal : Colors.red,
+                              ),
+                            ),
+                            Text(
+                              '${s.grossMarginPercentage.toStringAsFixed(1)}%',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: s.grossMarginPercentage >= 20
+                                    ? Colors.green
+                                    : (s.grossMarginPercentage > 0
+                                          ? Colors.orange
+                                          : Colors.red),
+                              ),
+                            ),
+                            s.isBilled
+                                ? const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle,
+                                        size: 16,
                                         color: Colors.green,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        'Facturado',
+                                        style: TextStyle(
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : ElevatedButton.icon(
+                                    icon: const Icon(
+                                      Icons.receipt_long,
+                                      size: 14,
+                                    ),
+                                    label: const Text(
+                                      'Facturar 1-Clic',
+                                      style: TextStyle(fontSize: 11),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.green,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
                                       ),
                                     ),
-                                  ],
-                                )
-                              : ElevatedButton.icon(
-                                  icon: const Icon(
-                                    Icons.receipt_long,
-                                    size: 14,
+                                    onPressed: () => _showQuickInvoiceDialog(s),
                                   ),
-                                  label: const Text(
-                                    'Facturar 1-Clic',
-                                    style: TextStyle(fontSize: 11),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.green,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                  ),
-                                  onPressed: () => _showQuickInvoiceDialog(s),
-                                ),
-                        ],
-                      );
-                    }).toList(),
-                  ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ), // Cierre de Expanded
                 ],
               ),
             ),

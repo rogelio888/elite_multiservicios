@@ -307,7 +307,7 @@ class AccountingPeriodClosureScreen extends ConsumerWidget {
           );
           final double netResultSum = totalIncomeSum - totalExpenseSum;
 
-          return SingleChildScrollView(
+          return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,97 +383,101 @@ class AccountingPeriodClosureScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
 
                 // Tabla de Cierres
-                AccountingExcelGrid(
-                  title: 'Historial de Cierres Contables y Bloqueos',
-                  columns: [
-                    ExcelGridColumn(title: 'Estado / Candado'),
-                    ExcelGridColumn(title: 'Periodo'),
-                    ExcelGridColumn(title: 'Tipo'),
-                    ExcelGridColumn(title: 'Fecha Inicio'),
-                    ExcelGridColumn(title: 'Fecha Fin'),
-                    ExcelGridColumn(title: 'Ingresos (\$)', isNumeric: true),
-                    ExcelGridColumn(title: 'Gastos (\$)', isNumeric: true),
-                    ExcelGridColumn(
-                      title: 'Resultado Neto (\$)',
-                      isNumeric: true,
-                    ),
-                    ExcelGridColumn(title: 'Cerrado Por'),
-                    ExcelGridColumn(title: 'Acciones'),
-                  ],
-                  rows: closures.map((c) {
-                    final isPos = c.netResult >= 0;
-                    return ExcelGridRow(
-                      cells: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              c.isLocked ? Icons.lock : Icons.lock_open,
-                              size: 16,
-                              color: c.isLocked ? Colors.red : Colors.orange,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              c.isLocked ? 'BLOQUEADO' : 'REABIERTO',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 11,
+                Expanded(
+                  child: AccountingExcelGrid(
+                    title: 'Historial de Cierres Contables y Bloqueos',
+                    columns: [
+                      ExcelGridColumn(title: 'Estado / Candado'),
+                      ExcelGridColumn(title: 'Periodo'),
+                      ExcelGridColumn(title: 'Tipo'),
+                      ExcelGridColumn(title: 'Fecha Inicio'),
+                      ExcelGridColumn(title: 'Fecha Fin'),
+                      ExcelGridColumn(title: 'Ingresos (\$)', isNumeric: true),
+                      ExcelGridColumn(title: 'Gastos (\$)', isNumeric: true),
+                      ExcelGridColumn(
+                        title: 'Resultado Neto (\$)',
+                        isNumeric: true,
+                      ),
+                      ExcelGridColumn(title: 'Cerrado Por'),
+                      ExcelGridColumn(title: 'Acciones'),
+                    ],
+                    rows: closures.map((c) {
+                      final isPos = c.netResult >= 0;
+                      return ExcelGridRow(
+                        cells: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                c.isLocked ? Icons.lock : Icons.lock_open,
+                                size: 16,
                                 color: c.isLocked ? Colors.red : Colors.orange,
                               ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          c.periodName,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        Text(c.periodType == 'MONTHLY' ? 'Mensual' : 'Anual'),
-                        Text(
-                          '${c.startDate.day.toString().padLeft(2, '0')}/${c.startDate.month.toString().padLeft(2, '0')}/${c.startDate.year}',
-                        ),
-                        Text(
-                          '${c.endDate.day.toString().padLeft(2, '0')}/${c.endDate.month.toString().padLeft(2, '0')}/${c.endDate.year}',
-                        ),
-                        Text(
-                          '\$${c.totalIncome.toStringAsFixed(2)}',
-                          style: const TextStyle(color: Colors.green),
-                        ),
-                        Text(
-                          '\$${c.totalExpense.toStringAsFixed(2)}',
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                        Text(
-                          '\$${c.netResult.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: isPos ? Colors.teal : Colors.red,
-                          ),
-                        ),
-                        Text(c.closedBy ?? 'Admin'),
-                        c.isLocked
-                            ? TextButton.icon(
-                                icon: const Icon(Icons.lock_open, size: 14),
-                                label: const Text(
-                                  'Reabrir',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                                style: TextButton.styleFrom(
-                                  foregroundColor: Colors.orange,
-                                ),
-                                onPressed: () =>
-                                    _showReopenDialog(context, ref, c),
-                              )
-                            : const Text(
-                                'Reabierto',
+                              const SizedBox(width: 4),
+                              Text(
+                                c.isLocked ? 'BLOQUEADO' : 'REABIERTO',
                                 style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                  color: c.isLocked
+                                      ? Colors.red
+                                      : Colors.orange,
                                 ),
                               ),
-                      ],
-                    );
-                  }).toList(),
-                ),
+                            ],
+                          ),
+                          Text(
+                            c.periodName,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          Text(c.periodType == 'MONTHLY' ? 'Mensual' : 'Anual'),
+                          Text(
+                            '${c.startDate.day.toString().padLeft(2, '0')}/${c.startDate.month.toString().padLeft(2, '0')}/${c.startDate.year}',
+                          ),
+                          Text(
+                            '${c.endDate.day.toString().padLeft(2, '0')}/${c.endDate.month.toString().padLeft(2, '0')}/${c.endDate.year}',
+                          ),
+                          Text(
+                            '\$${c.totalIncome.toStringAsFixed(2)}',
+                            style: const TextStyle(color: Colors.green),
+                          ),
+                          Text(
+                            '\$${c.totalExpense.toStringAsFixed(2)}',
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                          Text(
+                            '\$${c.netResult.toStringAsFixed(2)}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isPos ? Colors.teal : Colors.red,
+                            ),
+                          ),
+                          Text(c.closedBy ?? 'Admin'),
+                          c.isLocked
+                              ? TextButton.icon(
+                                  icon: const Icon(Icons.lock_open, size: 14),
+                                  label: const Text(
+                                    'Reabrir',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.orange,
+                                  ),
+                                  onPressed: () =>
+                                      _showReopenDialog(context, ref, c),
+                                )
+                              : const Text(
+                                  'Reabierto',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ), // Cierre de Expanded
               ],
             ),
           );

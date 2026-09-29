@@ -337,7 +337,7 @@ class _AccountingKardexScreenState
       ),
       body: _isLoadingInventory
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+          : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,114 +435,120 @@ class _AccountingKardexScreenState
                   const SizedBox(height: 16),
 
                   // Tabla Kárdex
-                  kardexAsync.when(
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
-                    error: (err, stack) => Center(
-                      child: Text(
-                        'Error cargando movimientos: $err',
-                        style: const TextStyle(color: Colors.red),
+                  Expanded(
+                    child: kardexAsync.when(
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (err, stack) => Center(
+                        child: Text(
+                          'Error cargando movimientos: $err',
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      data: (movements) => AccountingExcelGrid(
+                        title:
+                            'Libro de Kárdex Contable (Costo Promedio Ponderado)',
+                        columns: [
+                          ExcelGridColumn(title: 'Fecha'),
+                          ExcelGridColumn(title: 'Artículo'),
+                          ExcelGridColumn(title: 'Tipo'),
+                          ExcelGridColumn(title: 'Doc. Referencia'),
+                          ExcelGridColumn(title: 'O.T.'),
+                          ExcelGridColumn(title: 'Cantidad', isNumeric: true),
+                          ExcelGridColumn(
+                            title: 'Costo Unit. Ponderado (\$)',
+                            isNumeric: true,
+                          ),
+                          ExcelGridColumn(
+                            title: 'Total Movimiento (\$)',
+                            isNumeric: true,
+                          ),
+                          ExcelGridColumn(
+                            title: 'Saldo Unidades',
+                            isNumeric: true,
+                          ),
+                          ExcelGridColumn(
+                            title: 'Valoración Total (\$)',
+                            isNumeric: true,
+                          ),
+                        ],
+                        rows: movements.map((m) {
+                          final isEntry =
+                              m.movementType == 'IN_PURCHASE' ||
+                              m.movementType == 'IN_ADJUSTMENT';
+                          return ExcelGridRow(
+                            cells: [
+                              Text(
+                                '${m.date.day.toString().padLeft(2, '0')}/${m.date.month.toString().padLeft(2, '0')}/${m.date.year}',
+                              ),
+                              Text(
+                                m.itemName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    isEntry
+                                        ? Icons.arrow_downward
+                                        : Icons.arrow_upward,
+                                    size: 14,
+                                    color: isEntry ? Colors.green : Colors.red,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    isEntry ? 'ENTRADA' : 'SALIDA',
+                                    style: TextStyle(
+                                      color: isEntry
+                                          ? Colors.green
+                                          : Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Text(m.referenceDoc),
+                              Text(
+                                m.workOrderId != null
+                                    ? '#${m.workOrderId}'
+                                    : '-',
+                              ),
+                              Text(
+                                m.quantity.toStringAsFixed(2),
+                                style: TextStyle(
+                                  color: isEntry ? Colors.green : Colors.red,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text('\$${m.unitCost.toStringAsFixed(2)}'),
+                              Text(
+                                '\$${m.totalCost.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                m.balanceQuantity.toStringAsFixed(2),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                '\$${m.balanceTotalCost.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
                       ),
                     ),
-                    data: (movements) => AccountingExcelGrid(
-                      title:
-                          'Libro de Kárdex Contable (Costo Promedio Ponderado)',
-                      columns: [
-                        ExcelGridColumn(title: 'Fecha'),
-                        ExcelGridColumn(title: 'Artículo'),
-                        ExcelGridColumn(title: 'Tipo'),
-                        ExcelGridColumn(title: 'Doc. Referencia'),
-                        ExcelGridColumn(title: 'O.T.'),
-                        ExcelGridColumn(title: 'Cantidad', isNumeric: true),
-                        ExcelGridColumn(
-                          title: 'Costo Unit. Ponderado (\$)',
-                          isNumeric: true,
-                        ),
-                        ExcelGridColumn(
-                          title: 'Total Movimiento (\$)',
-                          isNumeric: true,
-                        ),
-                        ExcelGridColumn(
-                          title: 'Saldo Unidades',
-                          isNumeric: true,
-                        ),
-                        ExcelGridColumn(
-                          title: 'Valoración Total (\$)',
-                          isNumeric: true,
-                        ),
-                      ],
-                      rows: movements.map((m) {
-                        final isEntry =
-                            m.movementType == 'IN_PURCHASE' ||
-                            m.movementType == 'IN_ADJUSTMENT';
-                        return ExcelGridRow(
-                          cells: [
-                            Text(
-                              '${m.date.day.toString().padLeft(2, '0')}/${m.date.month.toString().padLeft(2, '0')}/${m.date.year}',
-                            ),
-                            Text(
-                              m.itemName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  isEntry
-                                      ? Icons.arrow_downward
-                                      : Icons.arrow_upward,
-                                  size: 14,
-                                  color: isEntry ? Colors.green : Colors.red,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  isEntry ? 'ENTRADA' : 'SALIDA',
-                                  style: TextStyle(
-                                    color: isEntry ? Colors.green : Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(m.referenceDoc),
-                            Text(
-                              m.workOrderId != null ? '#${m.workOrderId}' : '-',
-                            ),
-                            Text(
-                              m.quantity.toStringAsFixed(2),
-                              style: TextStyle(
-                                color: isEntry ? Colors.green : Colors.red,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text('\$${m.unitCost.toStringAsFixed(2)}'),
-                            Text(
-                              '\$${m.totalCost.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              m.balanceQuantity.toStringAsFixed(2),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              '\$${m.balanceTotalCost.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ],
-                        );
-                      }).toList(),
-                    ),
-                  ),
+                  ), // Cierre de Expanded
                 ],
               ),
             ),
