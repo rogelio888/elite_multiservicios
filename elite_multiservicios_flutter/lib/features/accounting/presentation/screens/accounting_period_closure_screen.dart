@@ -7,7 +7,10 @@ import '../providers/accounting_providers.dart';
 class AccountingPeriodClosureScreen extends ConsumerWidget {
   const AccountingPeriodClosureScreen({super.key});
 
-  Future<void> _showNewClosureDialog(BuildContext context, WidgetRef ref) async {
+  Future<void> _showNewClosureDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final now = DateTime.now();
     final firstDayOfMonth = DateTime(now.year, now.month, 1);
     final lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
@@ -131,19 +134,21 @@ class AccountingPeriodClosureScreen extends ConsumerWidget {
                   if (nameCtrl.text.trim().isEmpty) return;
                   Navigator.pop(ctx);
                   try {
-                    await ref.read(accountingRepositoryProvider).closeAccountingPeriod(
-                      nameCtrl.text.trim(),
-                      periodType,
-                      startDate,
-                      endDate,
-                      notesCtrl.text.trim().isEmpty
-                          ? null
-                          : notesCtrl.text.trim(),
-                      'Administrador',
-                    );
-                    
+                    await ref
+                        .read(accountingRepositoryProvider)
+                        .closeAccountingPeriod(
+                          nameCtrl.text.trim(),
+                          periodType,
+                          startDate,
+                          endDate,
+                          notesCtrl.text.trim().isEmpty
+                              ? null
+                              : notesCtrl.text.trim(),
+                          'Administrador',
+                        );
+
                     ref.invalidate(periodClosuresProvider);
-                    
+
                     messenger.showSnackBar(
                       const SnackBar(
                         content: Text(
@@ -169,7 +174,11 @@ class AccountingPeriodClosureScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _showReopenDialog(BuildContext context, WidgetRef ref, AccountingPeriodClosure closure) async {
+  Future<void> _showReopenDialog(
+    BuildContext context,
+    WidgetRef ref,
+    AccountingPeriodClosure closure,
+  ) async {
     final reasonCtrl = TextEditingController();
     final messenger = ScaffoldMessenger.of(context);
 
@@ -228,13 +237,15 @@ class AccountingPeriodClosureScreen extends ConsumerWidget {
               }
               Navigator.pop(ctx);
               try {
-                await ref.read(accountingRepositoryProvider).reopenPeriodClosure(
-                  closure.id!,
-                  reasonCtrl.text.trim(),
-                );
-                
+                await ref
+                    .read(accountingRepositoryProvider)
+                    .reopenPeriodClosure(
+                      closure.id!,
+                      reasonCtrl.text.trim(),
+                    );
+
                 ref.invalidate(periodClosuresProvider);
-                
+
                 messenger.showSnackBar(
                   const SnackBar(
                     content: Text('Periodo reabierto correctamente.'),
@@ -282,7 +293,9 @@ class AccountingPeriodClosureScreen extends ConsumerWidget {
       ),
       body: closuresAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err', style: const TextStyle(color: Colors.red))),
+        error: (err, stack) => Center(
+          child: Text('Error: $err', style: const TextStyle(color: Colors.red)),
+        ),
         data: (closures) {
           final double totalIncomeSum = closures.fold(
             0.0,
@@ -293,7 +306,7 @@ class AccountingPeriodClosureScreen extends ConsumerWidget {
             (sum, c) => sum + c.totalExpense,
           );
           final double netResultSum = totalIncomeSum - totalExpenseSum;
-          
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -405,8 +418,7 @@ class AccountingPeriodClosureScreen extends ConsumerWidget {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 11,
-                                color:
-                                    c.isLocked ? Colors.red : Colors.orange,
+                                color: c.isLocked ? Colors.red : Colors.orange,
                               ),
                             ),
                           ],
@@ -448,7 +460,8 @@ class AccountingPeriodClosureScreen extends ConsumerWidget {
                                 style: TextButton.styleFrom(
                                   foregroundColor: Colors.orange,
                                 ),
-                                onPressed: () => _showReopenDialog(context, ref, c),
+                                onPressed: () =>
+                                    _showReopenDialog(context, ref, c),
                               )
                             : const Text(
                                 'Reabierto',

@@ -79,28 +79,34 @@ class AccountingBudgetsScreen extends ConsumerWidget {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  final projInc = double.tryParse(projectedIncomeCtrl.text) ?? 0;
-                  final projExp = double.tryParse(projectedExpensesCtrl.text) ?? 0;
+                  final projInc =
+                      double.tryParse(projectedIncomeCtrl.text) ?? 0;
+                  final projExp =
+                      double.tryParse(projectedExpensesCtrl.text) ?? 0;
                   if (projInc > 0 || projExp > 0) {
                     try {
-                      await ref.read(accountingRepositoryProvider).createBudget(
-                        AccountingBudget(
-                          month: now.month,
-                          year: now.year,
-                          projectedIncome: projInc,
-                          executedIncome: 0,
-                          projectedExpenses: projExp,
-                          executedExpenses: 0,
-                          estimatedBalance: projInc - projExp,
-                        ),
-                      );
+                      await ref
+                          .read(accountingRepositoryProvider)
+                          .createBudget(
+                            AccountingBudget(
+                              month: now.month,
+                              year: now.year,
+                              projectedIncome: projInc,
+                              executedIncome: 0,
+                              projectedExpenses: projExp,
+                              executedExpenses: 0,
+                              estimatedBalance: projInc - projExp,
+                            ),
+                          );
                       if (!context.mounted) return;
                       Navigator.pop(context);
                       ref.invalidate(budgetsProvider);
                     } catch (e) {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error al guardar presupuesto: $e')),
+                        SnackBar(
+                          content: Text('Error al guardar presupuesto: $e'),
+                        ),
                       );
                     }
                   }
@@ -132,8 +138,10 @@ class AccountingBudgetsScreen extends ConsumerWidget {
       body: budgetsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
-          child: Text('Error cargando presupuestos: $error',
-              style: const TextStyle(color: Colors.red)),
+          child: Text(
+            'Error cargando presupuestos: $error',
+            style: const TextStyle(color: Colors.red),
+          ),
         ),
         data: (allBudgets) {
           // Filtramos solo el mes actual como en el código original
@@ -212,7 +220,8 @@ class AccountingBudgetsScreen extends ConsumerWidget {
                           ],
                           rows: currentBudgets.map((b) {
                             final devInc = b.executedIncome - b.projectedIncome;
-                            final devExp = b.executedExpenses - b.projectedExpenses;
+                            final devExp =
+                                b.executedExpenses - b.projectedExpenses;
                             final isOnTrack = devExp <= 0 && devInc >= 0;
                             return ExcelGridRow(
                               cells: [
@@ -226,14 +235,18 @@ class AccountingBudgetsScreen extends ConsumerWidget {
                                 Text(
                                   b.executedIncome.toStringAsFixed(2),
                                   style: TextStyle(
-                                    color: devInc < 0 ? Colors.orange : Colors.green,
+                                    color: devInc < 0
+                                        ? Colors.orange
+                                        : Colors.green,
                                   ),
                                 ),
                                 Text(b.projectedExpenses.toStringAsFixed(2)),
                                 Text(
                                   b.executedExpenses.toStringAsFixed(2),
                                   style: TextStyle(
-                                    color: devExp > 0 ? Colors.red : Colors.green,
+                                    color: devExp > 0
+                                        ? Colors.red
+                                        : Colors.green,
                                   ),
                                 ),
                                 Text(
@@ -249,14 +262,18 @@ class AccountingBudgetsScreen extends ConsumerWidget {
                                   children: [
                                     Icon(
                                       Icons.circle,
-                                      color: isOnTrack ? Colors.green : Colors.orange,
+                                      color: isOnTrack
+                                          ? Colors.green
+                                          : Colors.orange,
                                       size: 12,
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
                                       isOnTrack ? 'Normal' : 'Desviación',
                                       style: TextStyle(
-                                        color: isOnTrack ? Colors.green : Colors.orange,
+                                        color: isOnTrack
+                                            ? Colors.green
+                                            : Colors.orange,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),

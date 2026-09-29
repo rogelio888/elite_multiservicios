@@ -66,9 +66,11 @@ class AccountingBanksScreen extends ConsumerWidget {
                     createdAt: DateTime.now(),
                     updatedAt: DateTime.now(),
                   );
-                  
+
                   try {
-                    await ref.read(accountingRepositoryProvider).createTransaction(txn);
+                    await ref
+                        .read(accountingRepositoryProvider)
+                        .createTransaction(txn);
                     if (!context.mounted) return;
                     Navigator.pop(context);
                     ref.invalidate(transactionsProvider);
@@ -109,12 +111,16 @@ class AccountingBanksScreen extends ConsumerWidget {
       body: transactionsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
-          child: Text('Error cargando transacciones: $error',
-              style: const TextStyle(color: Colors.red)),
+          child: Text(
+            'Error cargando transacciones: $error',
+            style: const TextStyle(color: Colors.red),
+          ),
         ),
         data: (transactions) {
           if (transactions.isEmpty) {
-            return const Center(child: Text('No hay transacciones registradas.'));
+            return const Center(
+              child: Text('No hay transacciones registradas.'),
+            );
           }
           return ListView.builder(
             padding: const EdgeInsets.all(16),

@@ -4,33 +4,45 @@ abstract class AccountingRemoteDataSource {
   Future<AccountingFinancialSummary> getFinancialSummary();
   Future<List<AccountingBudget>> getBudgets();
   Future<AccountingBudget> createBudget(AccountingBudget budget);
-  
+
   Future<List<AccountingInvoice>> getInvoices();
   Future<AccountingInvoice> createInvoice(AccountingInvoice invoice);
   Future<AccountingInvoice?> updateInvoiceStatus(int invoiceId, String status);
   Future<List<AccountingInvoice>> getOverdueInvoices();
-  
+
   Future<List<AccountingExpense>> getExpenses();
   Future<AccountingExpense> createExpense(AccountingExpense expense);
   Future<List<AccountingExpense>> getOverdueExpenses();
 
   Future<List<AccountingCostCenter>> getCostCenters();
-  Future<AccountingCostCenter> createCostCenter(AccountingCostCenter costCenter);
+  Future<AccountingCostCenter> createCostCenter(
+    AccountingCostCenter costCenter,
+  );
 
   Future<List<AccountingPettyCash>> getPettyCash();
   Future<AccountingPettyCash> createPettyCash(AccountingPettyCash pettyCash);
   Future<List<AccountingPettyCashTransaction>> getPettyCashTransactions();
-  Future<AccountingPettyCashTransaction> addPettyCashTransaction(AccountingPettyCashTransaction transaction);
-  Future<AccountingPettyCashTransaction> updatePettyCashTransaction(AccountingPettyCashTransaction transaction);
+  Future<AccountingPettyCashTransaction> addPettyCashTransaction(
+    AccountingPettyCashTransaction transaction,
+  );
+  Future<AccountingPettyCashTransaction> updatePettyCashTransaction(
+    AccountingPettyCashTransaction transaction,
+  );
   Future<void> deletePettyCashTransaction(int transactionId);
 
   Future<List<AccountingPayrollEstimation>> getPayrollEstimations();
-  Future<AccountingPayrollEstimation> createPayrollEstimation(AccountingPayrollEstimation estimation);
+  Future<AccountingPayrollEstimation> createPayrollEstimation(
+    AccountingPayrollEstimation estimation,
+  );
 
   Future<List<AccountingTransaction>> getTransactions();
-  Future<AccountingTransaction> createTransaction(AccountingTransaction transaction);
+  Future<AccountingTransaction> createTransaction(
+    AccountingTransaction transaction,
+  );
   Future<List<AccountingLedgerAccount>> getLedgerAccounts();
-  Future<AccountingLedgerAccount> createLedgerAccount(AccountingLedgerAccount account);
+  Future<AccountingLedgerAccount> createLedgerAccount(
+    AccountingLedgerAccount account,
+  );
 
   Future<List<AccountingFixedAsset>> getFixedAssets();
   Future<AccountingFixedAsset> createFixedAsset(AccountingFixedAsset asset);
@@ -48,7 +60,10 @@ abstract class AccountingRemoteDataSource {
     String? notes,
     String? closedBy,
   );
-  Future<AccountingPeriodClosure> reopenPeriodClosure(int closureId, String reason);
+  Future<AccountingPeriodClosure> reopenPeriodClosure(
+    int closureId,
+    String reason,
+  );
 
   Future<List<AccountingKardexMovement>> getKardexMovements({int? itemId});
   Future<AccountingKardexMovement> recordKardexMovement({
@@ -61,7 +76,9 @@ abstract class AccountingRemoteDataSource {
     String? notes,
   });
 
-  Future<List<AccountingWorkOrderCostSummary>> getWorkOrderCosting({int? workOrderId});
+  Future<List<AccountingWorkOrderCostSummary>> getWorkOrderCosting({
+    int? workOrderId,
+  });
   Future<AccountingInvoice> createInvoiceFromWorkOrder({
     required int workOrderId,
     required double billedAmount,
@@ -77,94 +94,130 @@ class AccountingRemoteDataSourceImpl implements AccountingRemoteDataSource {
   AccountingRemoteDataSourceImpl({required this.client});
 
   @override
-  Future<AccountingFinancialSummary> getFinancialSummary() => client.accounting.getFinancialSummary();
+  Future<AccountingFinancialSummary> getFinancialSummary() =>
+      client.accounting.getFinancialSummary();
 
   @override
   Future<List<AccountingBudget>> getBudgets() => client.accounting.getBudgets();
 
   @override
-  Future<AccountingBudget> createBudget(AccountingBudget budget) => client.accounting.createBudget(budget);
+  Future<AccountingBudget> createBudget(AccountingBudget budget) =>
+      client.accounting.createBudget(budget);
 
   @override
-  Future<List<AccountingInvoice>> getInvoices() => client.accounting.getInvoices();
+  Future<List<AccountingInvoice>> getInvoices() =>
+      client.accounting.getInvoices();
 
   @override
-  Future<AccountingInvoice> createInvoice(AccountingInvoice invoice) => client.accounting.createInvoice(invoice);
+  Future<AccountingInvoice> createInvoice(AccountingInvoice invoice) =>
+      client.accounting.createInvoice(invoice);
 
   @override
-  Future<AccountingInvoice?> updateInvoiceStatus(int invoiceId, String status) => client.accounting.updateInvoiceStatus(invoiceId, status);
+  Future<AccountingInvoice?> updateInvoiceStatus(
+    int invoiceId,
+    String status,
+  ) => client.accounting.updateInvoiceStatus(invoiceId, status);
 
   @override
-  Future<List<AccountingInvoice>> getOverdueInvoices() => client.accounting.getOverdueInvoices();
+  Future<List<AccountingInvoice>> getOverdueInvoices() =>
+      client.accounting.getOverdueInvoices();
 
   @override
-  Future<List<AccountingExpense>> getExpenses() => client.accounting.getExpenses();
+  Future<List<AccountingExpense>> getExpenses() =>
+      client.accounting.getExpenses();
 
   @override
-  Future<AccountingExpense> createExpense(AccountingExpense expense) => client.accounting.createExpense(expense);
+  Future<AccountingExpense> createExpense(AccountingExpense expense) =>
+      client.accounting.createExpense(expense);
 
   @override
-  Future<List<AccountingExpense>> getOverdueExpenses() => client.accounting.getOverdueExpenses();
+  Future<List<AccountingExpense>> getOverdueExpenses() =>
+      client.accounting.getOverdueExpenses();
 
   @override
-  Future<List<AccountingCostCenter>> getCostCenters() => client.accounting.getCostCenters();
+  Future<List<AccountingCostCenter>> getCostCenters() =>
+      client.accounting.getCostCenters();
 
   @override
-  Future<AccountingCostCenter> createCostCenter(AccountingCostCenter costCenter) => client.accounting.createCostCenter(costCenter);
+  Future<AccountingCostCenter> createCostCenter(
+    AccountingCostCenter costCenter,
+  ) => client.accounting.createCostCenter(costCenter);
 
   @override
-  Future<List<AccountingPettyCash>> getPettyCash() => client.accounting.getPettyCash();
+  Future<List<AccountingPettyCash>> getPettyCash() =>
+      client.accounting.getPettyCash();
 
   @override
-  Future<AccountingPettyCash> createPettyCash(AccountingPettyCash pettyCash) => client.accounting.createPettyCash(pettyCash);
+  Future<AccountingPettyCash> createPettyCash(AccountingPettyCash pettyCash) =>
+      client.accounting.createPettyCash(pettyCash);
 
   @override
-  Future<List<AccountingPettyCashTransaction>> getPettyCashTransactions() => client.accounting.getPettyCashTransactions();
+  Future<List<AccountingPettyCashTransaction>> getPettyCashTransactions() =>
+      client.accounting.getPettyCashTransactions();
 
   @override
-  Future<AccountingPettyCashTransaction> addPettyCashTransaction(AccountingPettyCashTransaction transaction) => client.accounting.addPettyCashTransaction(transaction);
+  Future<AccountingPettyCashTransaction> addPettyCashTransaction(
+    AccountingPettyCashTransaction transaction,
+  ) => client.accounting.addPettyCashTransaction(transaction);
 
   @override
-  Future<AccountingPettyCashTransaction> updatePettyCashTransaction(AccountingPettyCashTransaction transaction) => client.accounting.updatePettyCashTransaction(transaction);
+  Future<AccountingPettyCashTransaction> updatePettyCashTransaction(
+    AccountingPettyCashTransaction transaction,
+  ) => client.accounting.updatePettyCashTransaction(transaction);
 
   @override
-  Future<void> deletePettyCashTransaction(int transactionId) => client.accounting.deletePettyCashTransaction(transactionId);
+  Future<void> deletePettyCashTransaction(int transactionId) =>
+      client.accounting.deletePettyCashTransaction(transactionId);
 
   @override
-  Future<List<AccountingPayrollEstimation>> getPayrollEstimations() => client.accounting.getPayrollEstimations();
+  Future<List<AccountingPayrollEstimation>> getPayrollEstimations() =>
+      client.accounting.getPayrollEstimations();
 
   @override
-  Future<AccountingPayrollEstimation> createPayrollEstimation(AccountingPayrollEstimation estimation) => client.accounting.createPayrollEstimation(estimation);
+  Future<AccountingPayrollEstimation> createPayrollEstimation(
+    AccountingPayrollEstimation estimation,
+  ) => client.accounting.createPayrollEstimation(estimation);
 
   @override
-  Future<List<AccountingTransaction>> getTransactions() => client.accounting.getTransactions();
+  Future<List<AccountingTransaction>> getTransactions() =>
+      client.accounting.getTransactions();
 
   @override
-  Future<AccountingTransaction> createTransaction(AccountingTransaction transaction) => client.accounting.createTransaction(transaction);
+  Future<AccountingTransaction> createTransaction(
+    AccountingTransaction transaction,
+  ) => client.accounting.createTransaction(transaction);
 
   @override
-  Future<List<AccountingLedgerAccount>> getLedgerAccounts() => client.accounting.getLedgerAccounts();
+  Future<List<AccountingLedgerAccount>> getLedgerAccounts() =>
+      client.accounting.getLedgerAccounts();
 
   @override
-  Future<AccountingLedgerAccount> createLedgerAccount(AccountingLedgerAccount account) => client.accounting.createLedgerAccount(account);
+  Future<AccountingLedgerAccount> createLedgerAccount(
+    AccountingLedgerAccount account,
+  ) => client.accounting.createLedgerAccount(account);
 
   @override
-  Future<List<AccountingFixedAsset>> getFixedAssets() => client.accounting.getFixedAssets();
+  Future<List<AccountingFixedAsset>> getFixedAssets() =>
+      client.accounting.getFixedAssets();
 
   @override
-  Future<AccountingFixedAsset> createFixedAsset(AccountingFixedAsset asset) => client.accounting.createFixedAsset(asset);
+  Future<AccountingFixedAsset> createFixedAsset(AccountingFixedAsset asset) =>
+      client.accounting.createFixedAsset(asset);
 
   @override
-  Future<int> runMonthlyDepreciation() => client.accounting.runMonthlyDepreciation();
+  Future<int> runMonthlyDepreciation() =>
+      client.accounting.runMonthlyDepreciation();
 
   @override
   Future<List<AccountingTax>> getTaxes() => client.accounting.getTaxes();
 
   @override
-  Future<AccountingTax> createTax(AccountingTax tax) => client.accounting.createTax(tax);
+  Future<AccountingTax> createTax(AccountingTax tax) =>
+      client.accounting.createTax(tax);
 
   @override
-  Future<List<AccountingPeriodClosure>> getPeriodClosures() => client.accounting.getPeriodClosures();
+  Future<List<AccountingPeriodClosure>> getPeriodClosures() =>
+      client.accounting.getPeriodClosures();
 
   @override
   Future<AccountingPeriodClosure> closeAccountingPeriod(
@@ -174,13 +227,24 @@ class AccountingRemoteDataSourceImpl implements AccountingRemoteDataSource {
     DateTime endDate,
     String? notes,
     String? closedBy,
-  ) => client.accounting.closeAccountingPeriod(periodName, periodType, startDate, endDate, notes, closedBy);
+  ) => client.accounting.closeAccountingPeriod(
+    periodName,
+    periodType,
+    startDate,
+    endDate,
+    notes,
+    closedBy,
+  );
 
   @override
-  Future<AccountingPeriodClosure> reopenPeriodClosure(int closureId, String reason) => client.accounting.reopenPeriodClosure(closureId, reason);
+  Future<AccountingPeriodClosure> reopenPeriodClosure(
+    int closureId,
+    String reason,
+  ) => client.accounting.reopenPeriodClosure(closureId, reason);
 
   @override
-  Future<List<AccountingKardexMovement>> getKardexMovements({int? itemId}) => client.accounting.getKardexMovements(itemId: itemId);
+  Future<List<AccountingKardexMovement>> getKardexMovements({int? itemId}) =>
+      client.accounting.getKardexMovements(itemId: itemId);
 
   @override
   Future<AccountingKardexMovement> recordKardexMovement({
@@ -202,7 +266,9 @@ class AccountingRemoteDataSourceImpl implements AccountingRemoteDataSource {
   );
 
   @override
-  Future<List<AccountingWorkOrderCostSummary>> getWorkOrderCosting({int? workOrderId}) => client.accounting.getWorkOrderCosting(workOrderId: workOrderId);
+  Future<List<AccountingWorkOrderCostSummary>> getWorkOrderCosting({
+    int? workOrderId,
+  }) => client.accounting.getWorkOrderCosting(workOrderId: workOrderId);
 
   @override
   Future<AccountingInvoice> createInvoiceFromWorkOrder({

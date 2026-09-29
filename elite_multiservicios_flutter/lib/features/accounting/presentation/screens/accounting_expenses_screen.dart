@@ -23,12 +23,16 @@ class AccountingExpensesScreen extends ConsumerWidget {
               children: [
                 TextField(
                   controller: supplierCtrl,
-                  decoration: const InputDecoration(labelText: 'Proveedor / Destinatario'),
+                  decoration: const InputDecoration(
+                    labelText: 'Proveedor / Destinatario',
+                  ),
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: categoryCtrl,
-                  decoration: const InputDecoration(labelText: 'Categoría (ej. Nómina, Insumos)'),
+                  decoration: const InputDecoration(
+                    labelText: 'Categoría (ej. Nómina, Insumos)',
+                  ),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -39,7 +43,9 @@ class AccountingExpensesScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 TextField(
                   controller: descCtrl,
-                  decoration: const InputDecoration(labelText: 'Descripción / Notas'),
+                  decoration: const InputDecoration(
+                    labelText: 'Descripción / Notas',
+                  ),
                 ),
               ],
             ),
@@ -52,7 +58,9 @@ class AccountingExpensesScreen extends ConsumerWidget {
             ElevatedButton(
               onPressed: () async {
                 final amount = double.tryParse(amountCtrl.text);
-                if (amount != null && supplierCtrl.text.isNotEmpty && categoryCtrl.text.isNotEmpty) {
+                if (amount != null &&
+                    supplierCtrl.text.isNotEmpty &&
+                    categoryCtrl.text.isNotEmpty) {
                   try {
                     final expense = AccountingExpense(
                       supplierName: supplierCtrl.text,
@@ -65,9 +73,11 @@ class AccountingExpensesScreen extends ConsumerWidget {
                       createdAt: DateTime.now(),
                       updatedAt: DateTime.now(),
                     );
-                    
-                    await ref.read(accountingRepositoryProvider).createExpense(expense);
-                    
+
+                    await ref
+                        .read(accountingRepositoryProvider)
+                        .createExpense(expense);
+
                     if (!context.mounted) return;
                     Navigator.pop(context);
                     ref.invalidate(expensesProvider);
@@ -104,8 +114,10 @@ class AccountingExpensesScreen extends ConsumerWidget {
       body: expensesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
-          child: Text('Error cargando gastos: $error',
-              style: const TextStyle(color: Colors.red)),
+          child: Text(
+            'Error cargando gastos: $error',
+            style: const TextStyle(color: Colors.red),
+          ),
         ),
         data: (expenses) {
           if (expenses.isEmpty) {

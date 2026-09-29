@@ -78,17 +78,19 @@ class AccountingFixedAssetsScreen extends ConsumerWidget {
                 final life = int.tryParse(lifeController.text) ?? 0;
                 if (val > 0 && life > 0 && nameController.text.isNotEmpty) {
                   try {
-                    await ref.read(accountingRepositoryProvider).createFixedAsset(
-                      AccountingFixedAsset(
-                        name: nameController.text,
-                        category: category,
-                        purchaseValue: val,
-                        purchaseDate: DateTime.now(),
-                        usefulLifeMonths: life,
-                        accumulatedDepreciation: 0,
-                        isFullyDepreciated: false,
-                      ),
-                    );
+                    await ref
+                        .read(accountingRepositoryProvider)
+                        .createFixedAsset(
+                          AccountingFixedAsset(
+                            name: nameController.text,
+                            category: category,
+                            purchaseValue: val,
+                            purchaseDate: DateTime.now(),
+                            usefulLifeMonths: life,
+                            accumulatedDepreciation: 0,
+                            isFullyDepreciated: false,
+                          ),
+                        );
                     if (!context.mounted) return;
                     Navigator.pop(context);
                     ref.invalidate(fixedAssetsProvider);
@@ -187,12 +189,16 @@ class AccountingFixedAssetsScreen extends ConsumerWidget {
             child: assetsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Center(
-                child: Text('Error cargando activos: $error',
-                    style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  'Error cargando activos: $error',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
               data: (assets) {
                 if (assets.isEmpty) {
-                  return const Center(child: Text('No hay activos fijos registrados.'));
+                  return const Center(
+                    child: Text('No hay activos fijos registrados.'),
+                  );
                 }
                 return AccountingExcelGrid(
                   title: 'Lista de Activos Fijos',

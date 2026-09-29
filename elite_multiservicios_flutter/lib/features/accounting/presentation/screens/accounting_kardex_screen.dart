@@ -9,10 +9,12 @@ class AccountingKardexScreen extends ConsumerStatefulWidget {
   const AccountingKardexScreen({super.key});
 
   @override
-  ConsumerState<AccountingKardexScreen> createState() => _AccountingKardexScreenState();
+  ConsumerState<AccountingKardexScreen> createState() =>
+      _AccountingKardexScreenState();
 }
 
-class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen> {
+class _AccountingKardexScreenState
+    extends ConsumerState<AccountingKardexScreen> {
   bool _isLoadingInventory = true;
   List<OpsInventoryItem> _inventoryItems = [];
   int? _selectedItemId;
@@ -53,12 +55,12 @@ class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen>
 
     int selectedItem = _selectedItemId ?? _inventoryItems.first.id!;
     String movementType = 'IN_PURCHASE';
-    
+
     final currentItem = _inventoryItems.firstWhere(
       (i) => i.id == selectedItem,
       orElse: () => _inventoryItems.first,
     );
-    
+
     final qtyCtrl = TextEditingController(text: '1.0');
     final costCtrl = TextEditingController(
       text: currentItem.averageCost.toStringAsFixed(2),
@@ -113,7 +115,9 @@ class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen>
                       if (val != null) {
                         setDlgState(() {
                           selectedItem = val;
-                          final itm = _inventoryItems.firstWhere((i) => i.id == val);
+                          final itm = _inventoryItems.firstWhere(
+                            (i) => i.id == val,
+                          );
                           costCtrl.text = itm.averageCost.toStringAsFixed(2);
                         });
                       }
@@ -248,24 +252,26 @@ class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen>
 
                   Navigator.pop(ctx);
                   try {
-                    await ref.read(accountingRepositoryProvider).recordKardexMovement(
-                      itemId: selectedItem,
-                      movementType: movementType,
-                      quantity: qty,
-                      unitCost: cost,
-                      referenceDoc: refCtrl.text.trim().isEmpty
-                          ? 'S/R'
-                          : refCtrl.text.trim(),
-                      workOrderId: otId,
-                      notes: notesCtrl.text.trim().isEmpty
-                          ? null
-                          : notesCtrl.text.trim(),
-                    );
-                    
+                    await ref
+                        .read(accountingRepositoryProvider)
+                        .recordKardexMovement(
+                          itemId: selectedItem,
+                          movementType: movementType,
+                          quantity: qty,
+                          unitCost: cost,
+                          referenceDoc: refCtrl.text.trim().isEmpty
+                              ? 'S/R'
+                              : refCtrl.text.trim(),
+                          workOrderId: otId,
+                          notes: notesCtrl.text.trim().isEmpty
+                              ? null
+                              : notesCtrl.text.trim(),
+                        );
+
                     // Refrescar inventario local y kardex
                     _loadInventory();
                     ref.invalidate(kardexMovementsProvider);
-                    
+
                     messenger.showSnackBar(
                       const SnackBar(
                         content: Text(
@@ -374,8 +380,18 @@ class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen>
                             Icons.history,
                             Colors.orange,
                           ),
-                          loading: () => _buildMetricCard('Movimientos Kárdex', '...', Icons.history, Colors.orange),
-                          error: (err, stack) => _buildMetricCard('Movimientos Kárdex', 'Error', Icons.history, Colors.orange),
+                          loading: () => _buildMetricCard(
+                            'Movimientos Kárdex',
+                            '...',
+                            Icons.history,
+                            Colors.orange,
+                          ),
+                          error: (err, stack) => _buildMetricCard(
+                            'Movimientos Kárdex',
+                            'Error',
+                            Icons.history,
+                            Colors.orange,
+                          ),
                         ),
                       ),
                     ],
@@ -420,10 +436,17 @@ class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen>
 
                   // Tabla Kárdex
                   kardexAsync.when(
-                    loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (err, stack) => Center(child: Text('Error cargando movimientos: $err', style: const TextStyle(color: Colors.red))),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (err, stack) => Center(
+                      child: Text(
+                        'Error cargando movimientos: $err',
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
                     data: (movements) => AccountingExcelGrid(
-                      title: 'Libro de Kárdex Contable (Costo Promedio Ponderado)',
+                      title:
+                          'Libro de Kárdex Contable (Costo Promedio Ponderado)',
                       columns: [
                         ExcelGridColumn(title: 'Fecha'),
                         ExcelGridColumn(title: 'Artículo'),
@@ -459,7 +482,9 @@ class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen>
                             ),
                             Text(
                               m.itemName,
-                              style: const TextStyle(fontWeight: FontWeight.w600),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             Row(
                               mainAxisSize: MainAxisSize.min,
@@ -483,7 +508,9 @@ class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen>
                               ],
                             ),
                             Text(m.referenceDoc),
-                            Text(m.workOrderId != null ? '#${m.workOrderId}' : '-'),
+                            Text(
+                              m.workOrderId != null ? '#${m.workOrderId}' : '-',
+                            ),
                             Text(
                               m.quantity.toStringAsFixed(2),
                               style: TextStyle(
@@ -494,11 +521,15 @@ class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen>
                             Text('\$${m.unitCost.toStringAsFixed(2)}'),
                             Text(
                               '\$${m.totalCost.toStringAsFixed(2)}',
-                              style: const TextStyle(fontWeight: FontWeight.w600),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             Text(
                               m.balanceQuantity.toStringAsFixed(2),
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             Text(
                               '\$${m.balanceTotalCost.toStringAsFixed(2)}',

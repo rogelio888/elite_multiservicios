@@ -229,8 +229,9 @@ class _AccountingWorkOrderCostingScreenState
       (sum, s) => sum + s.totalCost,
     );
     final double totalProfit = totalBilled - totalCosts;
-    final double avgMargin =
-        totalBilled > 0 ? (totalProfit / totalBilled) * 100 : 0.0;
+    final double avgMargin = totalBilled > 0
+        ? (totalProfit / totalBilled) * 100
+        : 0.0;
 
     return Scaffold(
       appBar: AppBar(
@@ -293,7 +294,8 @@ class _AccountingWorkOrderCostingScreenState
 
                   // Tabla de Costeo
                   AccountingExcelGrid(
-                    title: 'Desglose de Costos y Rentabilidad por Servicio / OT',
+                    title:
+                        'Desglose de Costos y Rentabilidad por Servicio / OT',
                     columns: [
                       ExcelGridColumn(title: 'N° OT'),
                       ExcelGridColumn(title: 'Fecha'),
@@ -386,8 +388,8 @@ class _AccountingWorkOrderCostingScreenState
                               color: s.grossMarginPercentage >= 20
                                   ? Colors.green
                                   : (s.grossMarginPercentage > 0
-                                      ? Colors.orange
-                                      : Colors.red),
+                                        ? Colors.orange
+                                        : Colors.red),
                             ),
                           ),
                           s.isBilled

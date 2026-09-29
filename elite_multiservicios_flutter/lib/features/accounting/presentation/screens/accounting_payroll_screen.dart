@@ -56,9 +56,11 @@ class AccountingPayrollScreen extends ConsumerWidget {
                       month: DateTime.now().month,
                       year: DateTime.now().year,
                     );
-                    
-                    await ref.read(accountingRepositoryProvider).createPayrollEstimation(est);
-                    
+
+                    await ref
+                        .read(accountingRepositoryProvider)
+                        .createPayrollEstimation(est);
+
                     if (!context.mounted) return;
                     Navigator.pop(context);
                     ref.invalidate(payrollEstimationsProvider);
@@ -99,12 +101,16 @@ class AccountingPayrollScreen extends ConsumerWidget {
       body: estimationsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
-          child: Text('Error cargando nómina: $error',
-              style: const TextStyle(color: Colors.red)),
+          child: Text(
+            'Error cargando nómina: $error',
+            style: const TextStyle(color: Colors.red),
+          ),
         ),
         data: (estimations) {
           if (estimations.isEmpty) {
-            return const Center(child: Text('No hay estimaciones registradas.'));
+            return const Center(
+              child: Text('No hay estimaciones registradas.'),
+            );
           }
           return ListView.builder(
             padding: const EdgeInsets.all(16),

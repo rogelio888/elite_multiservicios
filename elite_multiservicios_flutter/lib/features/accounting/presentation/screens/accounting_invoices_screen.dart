@@ -22,7 +22,9 @@ class AccountingInvoicesScreen extends ConsumerWidget {
               children: [
                 TextField(
                   controller: numberCtrl,
-                  decoration: const InputDecoration(labelText: 'Nº Factura (ej. INV-001)'),
+                  decoration: const InputDecoration(
+                    labelText: 'Nº Factura (ej. INV-001)',
+                  ),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -46,7 +48,9 @@ class AccountingInvoicesScreen extends ConsumerWidget {
             ElevatedButton(
               onPressed: () async {
                 final amount = double.tryParse(amountCtrl.text);
-                if (amount != null && clientCtrl.text.isNotEmpty && numberCtrl.text.isNotEmpty) {
+                if (amount != null &&
+                    clientCtrl.text.isNotEmpty &&
+                    numberCtrl.text.isNotEmpty) {
                   try {
                     final invoice = AccountingInvoice(
                       invoiceNumber: numberCtrl.text,
@@ -59,9 +63,11 @@ class AccountingInvoicesScreen extends ConsumerWidget {
                       createdAt: DateTime.now(),
                       updatedAt: DateTime.now(),
                     );
-                    
-                    await ref.read(accountingRepositoryProvider).createInvoice(invoice);
-                    
+
+                    await ref
+                        .read(accountingRepositoryProvider)
+                        .createInvoice(invoice);
+
                     if (!context.mounted) return;
                     Navigator.pop(context);
                     ref.invalidate(invoicesProvider);
@@ -98,8 +104,10 @@ class AccountingInvoicesScreen extends ConsumerWidget {
       body: invoicesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
-          child: Text('Error cargando facturas: $error',
-              style: const TextStyle(color: Colors.red)),
+          child: Text(
+            'Error cargando facturas: $error',
+            style: const TextStyle(color: Colors.red),
+          ),
         ),
         data: (invoices) {
           if (invoices.isEmpty) {

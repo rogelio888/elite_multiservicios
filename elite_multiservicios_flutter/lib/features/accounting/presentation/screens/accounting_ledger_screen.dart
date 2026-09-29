@@ -60,9 +60,11 @@ class AccountingLedgerScreen extends ConsumerWidget {
                       type: typeCtrl.text,
                       isActive: true,
                     );
-                    
-                    await ref.read(accountingRepositoryProvider).createLedgerAccount(acc);
-                    
+
+                    await ref
+                        .read(accountingRepositoryProvider)
+                        .createLedgerAccount(acc);
+
                     if (!context.mounted) return;
                     Navigator.pop(context);
                     ref.invalidate(ledgerAccountsProvider);
@@ -103,8 +105,10 @@ class AccountingLedgerScreen extends ConsumerWidget {
       body: accountsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
-          child: Text('Error cargando catálogo: $error',
-              style: const TextStyle(color: Colors.red)),
+          child: Text(
+            'Error cargando catálogo: $error',
+            style: const TextStyle(color: Colors.red),
+          ),
         ),
         data: (accounts) {
           if (accounts.isEmpty) {
@@ -118,7 +122,9 @@ class AccountingLedgerScreen extends ConsumerWidget {
               return Card(
                 child: ListTile(
                   leading: CircleAvatar(
-                    child: Text(acc.code.isNotEmpty ? acc.code.substring(0, 1) : '?'),
+                    child: Text(
+                      acc.code.isNotEmpty ? acc.code.substring(0, 1) : '?',
+                    ),
                   ),
                   title: Text('${acc.code} - ${acc.name}'),
                   subtitle: Text(

@@ -99,11 +99,14 @@ class AccountingDashboardScreen extends ConsumerWidget {
                 SizedBox(
                   height: 300,
                   child: budgetsAsync.when(
-                    loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (error, _) => Center(child: Text('Error cargando presupuestos: $error')),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (error, _) => Center(
+                      child: Text('Error cargando presupuestos: $error'),
+                    ),
                     data: (budgets) {
                       List<AccountingBudget> displayBudgets = budgets;
-                      
+
                       // Si no hay presupuestos, generamos uno temporal basado en el summary actual para la vista
                       if (displayBudgets.isEmpty) {
                         displayBudgets = [
@@ -114,7 +117,9 @@ class AccountingDashboardScreen extends ConsumerWidget {
                             executedIncome: summary.totalIncome,
                             projectedExpenses: summary.projectedExpenses,
                             executedExpenses: summary.totalExpenses,
-                            estimatedBalance: summary.projectedIncome - summary.projectedExpenses,
+                            estimatedBalance:
+                                summary.projectedIncome -
+                                summary.projectedExpenses,
                           ),
                         ];
                       }
@@ -123,11 +128,26 @@ class AccountingDashboardScreen extends ConsumerWidget {
                         title: 'Hoja de Control Mensual',
                         columns: [
                           ExcelGridColumn(title: 'Mes/Año'),
-                          ExcelGridColumn(title: 'Proy. Ingresos', isNumeric: true),
-                          ExcelGridColumn(title: 'Ejec. Ingresos', isNumeric: true),
-                          ExcelGridColumn(title: 'Proy. Gastos', isNumeric: true),
-                          ExcelGridColumn(title: 'Ejec. Gastos', isNumeric: true),
-                          ExcelGridColumn(title: 'Estimación Saldo', isNumeric: true),
+                          ExcelGridColumn(
+                            title: 'Proy. Ingresos',
+                            isNumeric: true,
+                          ),
+                          ExcelGridColumn(
+                            title: 'Ejec. Ingresos',
+                            isNumeric: true,
+                          ),
+                          ExcelGridColumn(
+                            title: 'Proy. Gastos',
+                            isNumeric: true,
+                          ),
+                          ExcelGridColumn(
+                            title: 'Ejec. Gastos',
+                            isNumeric: true,
+                          ),
+                          ExcelGridColumn(
+                            title: 'Estimación Saldo',
+                            isNumeric: true,
+                          ),
                           ExcelGridColumn(title: 'Saldo Real', isNumeric: true),
                         ],
                         rows: displayBudgets.map((b) {
@@ -152,10 +172,13 @@ class AccountingDashboardScreen extends ConsumerWidget {
                               ),
                               Text(
                                 b.estimatedBalance.toStringAsFixed(2),
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               Text(
-                                (b.executedIncome - b.executedExpenses).toStringAsFixed(2),
+                                (b.executedIncome - b.executedExpenses)
+                                    .toStringAsFixed(2),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blue,
