@@ -1,43 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
-import '../../../../main.dart'; // Importa el client
+import '../providers/accounting_providers.dart';
 
-class AccountingTaxesScreen extends StatefulWidget {
+class AccountingTaxesScreen extends ConsumerWidget {
   const AccountingTaxesScreen({super.key});
 
-  @override
-  State<AccountingTaxesScreen> createState() => _AccountingTaxesScreenState();
-}
-
-class _AccountingTaxesScreenState extends State<AccountingTaxesScreen> {
-  bool _isLoading = true;
-  List<AccountingTax> _taxes = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    setState(() => _isLoading = true);
-    try {
-      final data = await client.accounting.getTaxes();
-      if (!mounted) return;
-      setState(() {
-        _taxes = data;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error cargando impuestos: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  void _showAddDialog() {
+  void _showAddDialog(BuildContext context, WidgetRef ref) {
     final nameCtrl = TextEditingController();
     final rateCtrl = TextEditingController();
     final typeCtrl = TextEditingController();
@@ -92,10 +61,18 @@ class _AccountingTaxesScreenState extends State<AccountingTaxesScreen> {
                     type: typeCtrl.text,
                     isActive: true,
                   );
-                  await client.accounting.createTax(tax);
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-                  _loadData();
+
+                  try {
+                    await ref.read(accountingRepositoryProvider).createTax(tax);
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                    ref.invalidate(taxesProvider);
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error guardando impuesto: $e')),
+                    );
+                  }
                 }
               },
               child: const Text('Guardar'),
@@ -107,42 +84,57 @@ class _AccountingTaxesScreenState extends State<AccountingTaxesScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final taxesAsync = ref.watch(taxesProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gestión de Impuestos'),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadData),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.invalidate(taxesProvider),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showAddDialog,
+        onPressed: () => _showAddDialog(context, ref),
         child: const Icon(Icons.add),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _taxes.isEmpty
-          ? const Center(child: Text('No hay impuestos registrados.'))
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _taxes.length,
-              itemBuilder: (context, index) {
-                final tax = _taxes[index];
-                return Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.percent),
-                    title: Text(tax.name),
-                    subtitle: Text(
-                      'Tipo: ${tax.type} | Tasa: ${(tax.rate * 100).toStringAsFixed(2)}%',
-                    ),
-                    trailing: Icon(
-                      tax.isActive ? Icons.check_circle : Icons.cancel,
-                      color: tax.isActive ? Colors.green : Colors.red,
-                    ),
+      body: taxesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Text(
+            'Error: $error',
+            style: const TextStyle(color: Colors.red),
+          ),
+        ),
+        data: (taxes) {
+          if (taxes.isEmpty) {
+            return const Center(child: Text('No hay impuestos registrados.'));
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: taxes.length,
+            itemBuilder: (context, index) {
+              final tax = taxes[index];
+              return Card(
+                child: ListTile(
+                  leading: const Icon(Icons.percent),
+                  title: Text(tax.name),
+                  subtitle: Text(
+                    'Tipo: ${tax.type} | Tasa: ${(tax.rate * 100).toStringAsFixed(2)}%',
                   ),
-                );
-              },
-            ),
+                  trailing: Icon(
+                    tax.isActive ? Icons.check_circle : Icons.cancel,
+                    color: tax.isActive ? Colors.green : Colors.red,
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
