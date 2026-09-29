@@ -7,9 +7,7 @@ class AccountingEndpoint extends Endpoint {
     final closures = await AccountingPeriodClosure.db.find(
       session,
       where: (t) =>
-          t.isLocked.equals(true) &
-          (t.startDate <= date) &
-          (t.endDate >= date),
+          t.isLocked.equals(true) & (t.startDate <= date) & (t.endDate >= date),
     );
     if (closures.isNotEmpty) {
       final period = closures.first;
@@ -492,7 +490,10 @@ class AccountingEndpoint extends Endpoint {
     int closureId,
     String reason,
   ) async {
-    final closure = await AccountingPeriodClosure.db.findById(session, closureId);
+    final closure = await AccountingPeriodClosure.db.findById(
+      session,
+      closureId,
+    );
     if (closure == null) {
       throw Exception('Cierre contable #$closureId no encontrado');
     }
@@ -558,9 +559,12 @@ class AccountingEndpoint extends Endpoint {
       final currentTotalVal = item.quantityInStock * item.averageCost;
       final addedVal = quantity * unitCost;
       newStock = item.quantityInStock + quantity;
-      newAvgCost = newStock > 0 ? (currentTotalVal + addedVal) / newStock : unitCost;
+      newAvgCost = newStock > 0
+          ? (currentTotalVal + addedVal) / newStock
+          : unitCost;
       appliedUnitCost = unitCost;
-    } else if (movementType == 'OUT_WORK_ORDER' || movementType == 'OUT_ADJUSTMENT') {
+    } else if (movementType == 'OUT_WORK_ORDER' ||
+        movementType == 'OUT_ADJUSTMENT') {
       // Salida: Valuar al costo promedio actual
       if (item.quantityInStock < quantity) {
         throw Exception(
