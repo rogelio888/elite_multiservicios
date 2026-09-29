@@ -1,43 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
-import '../../../../main.dart'; // Importa el client
+import '../providers/accounting_providers.dart';
 
-class AccountingLedgerScreen extends StatefulWidget {
+class AccountingLedgerScreen extends ConsumerWidget {
   const AccountingLedgerScreen({super.key});
 
-  @override
-  State<AccountingLedgerScreen> createState() => _AccountingLedgerScreenState();
-}
-
-class _AccountingLedgerScreenState extends State<AccountingLedgerScreen> {
-  bool _isLoading = true;
-  List<AccountingLedgerAccount> _accounts = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    setState(() => _isLoading = true);
-    try {
-      final data = await client.accounting.getLedgerAccounts();
-      if (!mounted) return;
-      setState(() {
-        _accounts = data;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error cargando catálogo: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  void _showAddDialog() {
+  void _showAddDialog(BuildContext context, WidgetRef ref) {
     final codeCtrl = TextEditingController();
     final nameCtrl = TextEditingController();
     final typeCtrl = TextEditingController();
@@ -84,16 +53,25 @@ class _AccountingLedgerScreenState extends State<AccountingLedgerScreen> {
                 if (codeCtrl.text.isNotEmpty &&
                     nameCtrl.text.isNotEmpty &&
                     typeCtrl.text.isNotEmpty) {
-                  final acc = AccountingLedgerAccount(
-                    code: codeCtrl.text,
-                    name: nameCtrl.text,
-                    type: typeCtrl.text,
-                    isActive: true,
-                  );
-                  await client.accounting.createLedgerAccount(acc);
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-                  _loadData();
+                  try {
+                    final acc = AccountingLedgerAccount(
+                      code: codeCtrl.text,
+                      name: nameCtrl.text,
+                      type: typeCtrl.text,
+                      isActive: true,
+                    );
+                    
+                    await ref.read(accountingRepositoryProvider).createLedgerAccount(acc);
+                    
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                    ref.invalidate(ledgerAccountsProvider);
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error al crear cuenta: $e')),
+                    );
+                  }
                 }
               },
               child: const Text('Guardar'),
@@ -105,40 +83,53 @@ class _AccountingLedgerScreenState extends State<AccountingLedgerScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accountsAsync = ref.watch(ledgerAccountsProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Catálogo de Cuentas'),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadData),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.invalidate(ledgerAccountsProvider),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showAddDialog,
+        onPressed: () => _showAddDialog(context, ref),
         child: const Icon(Icons.add),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _accounts.isEmpty
-          ? const Center(child: Text('No hay cuentas registradas.'))
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _accounts.length,
-              itemBuilder: (context, index) {
-                final acc = _accounts[index];
-                return Card(
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      child: Text(acc.code.substring(0, 1)),
-                    ),
-                    title: Text('${acc.code} - ${acc.name}'),
-                    subtitle: Text(
-                      'Tipo: ${acc.type} | Estado: ${acc.isActive ? 'Activo' : 'Inactivo'}',
-                    ),
+      body: accountsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Text('Error cargando catálogo: $error',
+              style: const TextStyle(color: Colors.red)),
+        ),
+        data: (accounts) {
+          if (accounts.isEmpty) {
+            return const Center(child: Text('No hay cuentas registradas.'));
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: accounts.length,
+            itemBuilder: (context, index) {
+              final acc = accounts[index];
+              return Card(
+                child: ListTile(
+                  leading: CircleAvatar(
+                    child: Text(acc.code.isNotEmpty ? acc.code.substring(0, 1) : '?'),
                   ),
-                );
-              },
-            ),
+                  title: Text('${acc.code} - ${acc.name}'),
+                  subtitle: Text(
+                    'Tipo: ${acc.type} | Estado: ${acc.isActive ? 'Activo' : 'Inactivo'}',
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

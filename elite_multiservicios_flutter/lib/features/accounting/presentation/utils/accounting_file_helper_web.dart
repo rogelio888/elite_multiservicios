@@ -13,8 +13,7 @@ void downloadFileWeb(String content, String fileName, String mimeType) {
 }
 
 void uploadCsvWeb(void Function(String content) onLoaded) {
-  final html.FileUploadInputElement uploadInput =
-      html.FileUploadInputElement();
+  final html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
   uploadInput.accept = '.csv';
   uploadInput.click();
 

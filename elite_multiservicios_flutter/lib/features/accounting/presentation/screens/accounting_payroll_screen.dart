@@ -1,51 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
-import '../../../../main.dart'; // Importa el client
+import '../providers/accounting_providers.dart';
 
-class AccountingPayrollScreen extends StatefulWidget {
+class AccountingPayrollScreen extends ConsumerWidget {
   const AccountingPayrollScreen({super.key});
 
-  @override
-  State<AccountingPayrollScreen> createState() =>
-      _AccountingPayrollScreenState();
-}
-
-class _AccountingPayrollScreenState extends State<AccountingPayrollScreen> {
-  bool _isLoading = true;
-  List<AccountingPayrollEstimation> _estimations = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final data = await client.accounting.getPayrollEstimations();
-      if (!mounted) return;
-      setState(() {
-        _estimations = data;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error cargando nómina: $e')),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  void _showAddDialog() {
+  void _showAddDialog(BuildContext context, WidgetRef ref) {
     final salaryController = TextEditingController();
     final bonusController = TextEditingController();
 
@@ -86,18 +47,27 @@ class _AccountingPayrollScreenState extends State<AccountingPayrollScreen> {
                 final base = double.tryParse(salaryController.text) ?? 0;
                 final bonus = double.tryParse(bonusController.text) ?? 0;
                 if (base > 0) {
-                  final est = AccountingPayrollEstimation(
-                    userId: 1, // Usuario Genérico
-                    baseSalary: base,
-                    bonuses: bonus,
-                    estimatedTotal: base + bonus,
-                    month: DateTime.now().month,
-                    year: DateTime.now().year,
-                  );
-                  await client.accounting.createPayrollEstimation(est);
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-                  _loadData();
+                  try {
+                    final est = AccountingPayrollEstimation(
+                      userId: 1, // Usuario Genérico
+                      baseSalary: base,
+                      bonuses: bonus,
+                      estimatedTotal: base + bonus,
+                      month: DateTime.now().month,
+                      year: DateTime.now().year,
+                    );
+                    
+                    await ref.read(accountingRepositoryProvider).createPayrollEstimation(est);
+                    
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                    ref.invalidate(payrollEstimationsProvider);
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error al crear estimación: $e')),
+                    );
+                  }
                 }
               },
               child: const Text('Guardar'),
@@ -109,50 +79,60 @@ class _AccountingPayrollScreenState extends State<AccountingPayrollScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final estimationsAsync = ref.watch(payrollEstimationsProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Estimación de Nómina (RRHH)'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _loadData,
+            onPressed: () => ref.invalidate(payrollEstimationsProvider),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showAddDialog,
+        onPressed: () => _showAddDialog(context, ref),
         child: const Icon(Icons.add),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _estimations.isEmpty
-          ? const Center(child: Text('No hay estimaciones registradas.'))
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _estimations.length,
-              itemBuilder: (context, index) {
-                final est = _estimations[index];
-                return Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.person),
-                    title: Text(
-                      'Usuario ID: ${est.userId} - ${est.month}/${est.year}',
-                    ),
-                    subtitle: Text(
-                      'Base: Bs ${est.baseSalary} | Bonos: Bs ${est.bonuses}',
-                    ),
-                    trailing: Text(
-                      'Total: Bs ${est.estimatedTotal}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+      body: estimationsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Text('Error cargando nómina: $error',
+              style: const TextStyle(color: Colors.red)),
+        ),
+        data: (estimations) {
+          if (estimations.isEmpty) {
+            return const Center(child: Text('No hay estimaciones registradas.'));
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: estimations.length,
+            itemBuilder: (context, index) {
+              final est = estimations[index];
+              return Card(
+                child: ListTile(
+                  leading: const Icon(Icons.person),
+                  title: Text(
+                    'Usuario ID: ${est.userId} - ${est.month}/${est.year}',
+                  ),
+                  subtitle: Text(
+                    'Base: Bs ${est.baseSalary} | Bonos: Bs ${est.bonuses}',
+                  ),
+                  trailing: Text(
+                    'Total: Bs ${est.estimatedTotal}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

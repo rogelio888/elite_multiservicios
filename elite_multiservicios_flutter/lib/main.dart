@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'features/security/presentation/login_screen.dart';
 import 'features/security/presentation/recovery/force_password_change_screen.dart';
@@ -31,7 +32,7 @@ void main() async {
   // Inicialización obligatoria de credenciales y tokens JWT antes de resolver la vista
   await client.auth.initialize();
 
-  runApp(const EliteMultiserviciosApp());
+  runApp(const ProviderScope(child: EliteMultiserviciosApp()));
 }
 
 class EliteMultiserviciosApp extends StatefulWidget {

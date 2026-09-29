@@ -41,6 +41,13 @@ accounting:
   - createTax:
   - getOverdueInvoices:
   - getOverdueExpenses:
+  - getPeriodClosures:
+  - closeAccountingPeriod:
+  - reopenPeriodClosure:
+  - getKardexMovements:
+  - recordKardexMovement:
+  - getWorkOrderCosting:
+  - createInvoiceFromWorkOrder:
 crmAgenda:
   - listTasks:
   - getTask:

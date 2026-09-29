@@ -923,6 +923,226 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
                   .getOverdueExpenses(session),
         ),
+        'getPeriodClosures': _i1.MethodConnector(
+          name: 'getPeriodClosures',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .getPeriodClosures(session),
+        ),
+        'closeAccountingPeriod': _i1.MethodConnector(
+          name: 'closeAccountingPeriod',
+          params: {
+            'periodName': _i1.ParameterDescription(
+              name: 'periodName',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'periodType': _i1.ParameterDescription(
+              name: 'periodType',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'startDate': _i1.ParameterDescription(
+              name: 'startDate',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+            'endDate': _i1.ParameterDescription(
+              name: 'endDate',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+            'notes': _i1.ParameterDescription(
+              name: 'notes',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'closedBy': _i1.ParameterDescription(
+              name: 'closedBy',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .closeAccountingPeriod(
+                    session,
+                    params['periodName'],
+                    params['periodType'],
+                    params['startDate'],
+                    params['endDate'],
+                    params['notes'],
+                    params['closedBy'],
+                  ),
+        ),
+        'reopenPeriodClosure': _i1.MethodConnector(
+          name: 'reopenPeriodClosure',
+          params: {
+            'closureId': _i1.ParameterDescription(
+              name: 'closureId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'reason': _i1.ParameterDescription(
+              name: 'reason',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .reopenPeriodClosure(
+                    session,
+                    params['closureId'],
+                    params['reason'],
+                  ),
+        ),
+        'getKardexMovements': _i1.MethodConnector(
+          name: 'getKardexMovements',
+          params: {
+            'itemId': _i1.ParameterDescription(
+              name: 'itemId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .getKardexMovements(
+                    session,
+                    itemId: params['itemId'],
+                  ),
+        ),
+        'recordKardexMovement': _i1.MethodConnector(
+          name: 'recordKardexMovement',
+          params: {
+            'itemId': _i1.ParameterDescription(
+              name: 'itemId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'movementType': _i1.ParameterDescription(
+              name: 'movementType',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'quantity': _i1.ParameterDescription(
+              name: 'quantity',
+              type: _i1.getType<double>(),
+              nullable: false,
+            ),
+            'unitCost': _i1.ParameterDescription(
+              name: 'unitCost',
+              type: _i1.getType<double>(),
+              nullable: false,
+            ),
+            'referenceDoc': _i1.ParameterDescription(
+              name: 'referenceDoc',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'workOrderId': _i1.ParameterDescription(
+              name: 'workOrderId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+            'notes': _i1.ParameterDescription(
+              name: 'notes',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .recordKardexMovement(
+                    session,
+                    itemId: params['itemId'],
+                    movementType: params['movementType'],
+                    quantity: params['quantity'],
+                    unitCost: params['unitCost'],
+                    referenceDoc: params['referenceDoc'],
+                    workOrderId: params['workOrderId'],
+                    notes: params['notes'],
+                  ),
+        ),
+        'getWorkOrderCosting': _i1.MethodConnector(
+          name: 'getWorkOrderCosting',
+          params: {
+            'workOrderId': _i1.ParameterDescription(
+              name: 'workOrderId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .getWorkOrderCosting(
+                    session,
+                    workOrderId: params['workOrderId'],
+                  ),
+        ),
+        'createInvoiceFromWorkOrder': _i1.MethodConnector(
+          name: 'createInvoiceFromWorkOrder',
+          params: {
+            'workOrderId': _i1.ParameterDescription(
+              name: 'workOrderId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'billedAmount': _i1.ParameterDescription(
+              name: 'billedAmount',
+              type: _i1.getType<double>(),
+              nullable: false,
+            ),
+            'clientName': _i1.ParameterDescription(
+              name: 'clientName',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'dueDate': _i1.ParameterDescription(
+              name: 'dueDate',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+            'notes': _i1.ParameterDescription(
+              name: 'notes',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .createInvoiceFromWorkOrder(
+                    session,
+                    workOrderId: params['workOrderId'],
+                    billedAmount: params['billedAmount'],
+                    clientName: params['clientName'],
+                    dueDate: params['dueDate'],
+                    notes: params['notes'],
+                  ),
+        ),
       },
     );
     connectors['crmAgenda'] = _i1.EndpointConnector(

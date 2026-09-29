@@ -1,0 +1,37 @@
+### Movimiento de Kárdex Valuado para integración contable de inventario.
+class: AccountingKardexMovement
+table: accounting_kardex_movement
+fields:
+  ### ID del item de inventario relacionado (OpsInventoryItem).
+  itemId: int
+  ### Nombre o código del item para trazabilidad rápida.
+  itemName: String
+  ### Fecha del movimiento contable de inventario.
+  date: DateTime
+  ### Tipo: IN_PURCHASE (Compra), OUT_WORK_ORDER (Uso en OT), IN_ADJUSTMENT (Ajuste +), OUT_ADJUSTMENT (Ajuste -).
+  movementType: String
+  ### Documento de referencia (ej. Factura Compra #123, OT #45, Acta de Inventario).
+  referenceDoc: String
+  ### ID de Orden de Trabajo vinculada si aplica.
+  workOrderId: int?
+  ### Cantidad física que ingresa o egresa.
+  quantity: double
+  ### Costo unitario ponderado del movimiento.
+  unitCost: double
+  ### Costo total del movimiento monetario.
+  totalCost: double
+  ### Saldo de cantidad en inventario tras el movimiento.
+  balanceQuantity: double
+  ### Valoración monetaria total del inventario tras el movimiento.
+  balanceTotalCost: double
+  ### Notas adicionales o justificación.
+  notes: String?
+  ### Fechas de auditoría.
+  createdAt: DateTime
+indexes:
+  acc_kardex_item_idx:
+    fields: itemId
+  acc_kardex_date_idx:
+    fields: date
+  acc_kardex_work_order_idx:
+    fields: workOrderId

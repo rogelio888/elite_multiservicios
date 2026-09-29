@@ -1,60 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
-import '../../../../main.dart'; // Importa el client
+import '../providers/accounting_providers.dart';
 import '../widgets/accounting_excel_grid.dart';
 
-class AccountingPettyCashScreen extends StatefulWidget {
+class AccountingPettyCashScreen extends ConsumerStatefulWidget {
   const AccountingPettyCashScreen({super.key});
 
   @override
-  State<AccountingPettyCashScreen> createState() =>
+  ConsumerState<AccountingPettyCashScreen> createState() =>
       _AccountingPettyCashScreenState();
 }
 
-class _AccountingPettyCashScreenState extends State<AccountingPettyCashScreen> {
-  bool _isLoading = true;
-  List<AccountingPettyCash> _pettyCashFunds = [];
-  List<AccountingPettyCashTransaction> _transactions = [];
+class _AccountingPettyCashScreenState extends ConsumerState<AccountingPettyCashScreen> {
   String _searchQuery = '';
   String _filterType = 'ALL'; // ALL, EXPENSE, REPLENISHMENT, INVOICE, FIXED
 
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
+  void _loadData() {
+    ref.invalidate(pettyCashProvider);
+    ref.invalidate(pettyCashTransactionsProvider);
   }
 
-  Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final funds = await client.accounting.getPettyCash();
-      final txns = await client.accounting.getPettyCashTransactions();
-      if (!mounted) return;
-      setState(() {
-        _pettyCashFunds = funds;
-        _transactions = txns;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error cargando caja chica: $e'),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
 
   // Abre diálogo para crear / aperturar nueva caja chica
   void _showCreatePettyCashDialog() {
@@ -251,7 +219,7 @@ class _AccountingPettyCashScreenState extends State<AccountingPettyCashScreen> {
                       maxLimit;
 
                   if (name.isNotEmpty) {
-                    await client.accounting.createPettyCash(
+                    await ref.read(accountingRepositoryProvider).createPettyCash(
                       AccountingPettyCash(
                         name: name,
                         balance: balance,
@@ -557,7 +525,7 @@ class _AccountingPettyCashScreenState extends State<AccountingPettyCashScreen> {
                         fiscalCredit: hasInvoice ? credit : null,
                         fiscalDebit: hasInvoice ? debit : null,
                       );
-                      await client.accounting.addPettyCashTransaction(txn);
+                      await ref.read(accountingRepositoryProvider).addPettyCashTransaction(txn);
                       if (!context.mounted) return;
                       Navigator.pop(context);
                       _loadData();
@@ -763,7 +731,7 @@ class _AccountingPettyCashScreenState extends State<AccountingPettyCashScreen> {
                         fiscalCredit: hasInvoice ? credit : null,
                         fiscalDebit: hasInvoice ? debit : null,
                       );
-                      await client.accounting.updatePettyCashTransaction(
+                      await ref.read(accountingRepositoryProvider).updatePettyCashTransaction(
                         updated,
                       );
                       if (!context.mounted) return;
@@ -807,7 +775,7 @@ class _AccountingPettyCashScreenState extends State<AccountingPettyCashScreen> {
       ),
     );
     if (confirm == true) {
-      await client.accounting.deletePettyCashTransaction(txn.id!);
+      await ref.read(accountingRepositoryProvider).deletePettyCashTransaction(txn.id!);
       _loadData();
     }
   }
@@ -817,15 +785,39 @@ class _AccountingPettyCashScreenState extends State<AccountingPettyCashScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final pettyCashAsync = ref.watch(pettyCashProvider);
+    final txnsAsync = ref.watch(pettyCashTransactionsProvider);
+
+    if (pettyCashAsync.isLoading || txnsAsync.isLoading) {
+      return Scaffold(
+        backgroundColor: isDark ? const Color(0xFF0B0F19) : const Color(0xFFF8FAFC),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (pettyCashAsync.hasError || txnsAsync.hasError) {
+      return Scaffold(
+        body: Center(
+          child: Text(
+            'Error: ${pettyCashAsync.error ?? txnsAsync.error}',
+            style: const TextStyle(color: Colors.red),
+          ),
+        ),
+      );
+    }
+
+    final pettyCashFunds = pettyCashAsync.value ?? [];
+    final transactions = txnsAsync.value ?? [];
+
     // Caja chica activa
-    final activeFund = _pettyCashFunds.isNotEmpty
-        ? _pettyCashFunds.first
+    final activeFund = pettyCashFunds.isNotEmpty
+        ? pettyCashFunds.first
         : null;
 
     // Totales calculados
     double totalExpenses = 0.0;
     double totalReplenishments = 0.0;
-    for (final t in _transactions) {
+    for (final t in transactions) {
       if (t.type == 'EXPENSE') {
         totalExpenses += t.amount;
       } else {
@@ -834,7 +826,7 @@ class _AccountingPettyCashScreenState extends State<AccountingPettyCashScreen> {
     }
 
     // Filtrar transacciones
-    final filteredTxns = _transactions.where((t) {
+    final filteredTxns = transactions.where((t) {
       final matchesQuery =
           _searchQuery.isEmpty ||
           t.description.toLowerCase().contains(_searchQuery.toLowerCase());
@@ -858,9 +850,7 @@ class _AccountingPettyCashScreenState extends State<AccountingPettyCashScreen> {
       backgroundColor: isDark
           ? const Color(0xFF0B0F19)
           : const Color(0xFFF8FAFC),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
+      body: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1060,10 +1050,10 @@ class _AccountingPettyCashScreenState extends State<AccountingPettyCashScreen> {
                                     ),
                                   ),
                                   Text(
-                                    _transactions.isNotEmpty
+                                    transactions.isNotEmpty
                                         ? DateFormat(
                                             'dd/MM/yyyy HH:mm',
-                                          ).format(_transactions.first.date)
+                                          ).format(transactions.first.date)
                                         : DateFormat(
                                             'dd/MM/yyyy HH:mm',
                                           ).format(DateTime.now()),
@@ -1188,7 +1178,7 @@ class _AccountingPettyCashScreenState extends State<AccountingPettyCashScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${_transactions.where((t) => t.type == "EXPENSE").length} movimientos',
+                                '${transactions.where((t) => t.type == "EXPENSE").length} movimientos',
                                 style: GoogleFonts.inter(
                                   fontSize: 11,
                                   color: const Color(0xFF94A3B8),
@@ -1234,7 +1224,7 @@ class _AccountingPettyCashScreenState extends State<AccountingPettyCashScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${_transactions.where((t) => t.type == "REPLENISHMENT").length} ingresos',
+                                '${transactions.where((t) => t.type == "REPLENISHMENT").length} ingresos',
                                 style: GoogleFonts.inter(
                                   fontSize: 11,
                                   color: const Color(0xFF94A3B8),

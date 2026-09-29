@@ -28,6 +28,9 @@ import '../../accounting/presentation/screens/accounting_ledger_screen.dart';
 import '../../accounting/presentation/screens/accounting_taxes_screen.dart';
 import '../../accounting/presentation/screens/accounting_profitability_screen.dart';
 import '../../accounting/presentation/screens/accounting_reports_screen.dart';
+import '../../accounting/presentation/screens/accounting_period_closure_screen.dart';
+import '../../accounting/presentation/screens/accounting_kardex_screen.dart';
+import '../../accounting/presentation/screens/accounting_work_order_costing_screen.dart';
 import '../../ops/presentation/screens/ops_inventory_screen.dart';
 import '../../ops/presentation/screens/ops_contracts_screen.dart';
 import '../../ops/presentation/screens/ops_work_orders_screen.dart';
@@ -83,6 +86,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
     'accounting-reports',
     'accounting-budgets',
     'accounting-reconciliation',
+    'accounting-closures',
+    'accounting-kardex',
+    'accounting-costing',
     // Módulo Operaciones
     'ops-inventory',
     'ops-contracts',
@@ -260,6 +266,21 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 'conciliacion':
       case 'conciliacion-bancaria':
         return 28;
+
+      case 'accounting-closures':
+      case 'cierres':
+      case 'cierres-contables':
+      case 'cierres-periodo':
+        return 32;
+      case 'accounting-kardex':
+      case 'kardex':
+      case 'kardex-valuado':
+        return 33;
+      case 'accounting-costing':
+      case 'costeo-ordenes':
+      case 'costeo-ots':
+      case 'costeo':
+        return 34;
 
       case 'ops-inventory':
       case 'inventario':
@@ -840,7 +861,9 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       ),
     ];
 
-    final isAnyAccountingActive = _selectedIndex >= 16 && _selectedIndex <= 28;
+    final isAnyAccountingActive =
+        (_selectedIndex >= 16 && _selectedIndex <= 28) ||
+        (_selectedIndex >= 32 && _selectedIndex <= 34);
     final accountingItems = [
       (
         icon: Icons.space_dashboard_outlined,
@@ -932,6 +955,27 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         label: 'Conciliación Bancaria',
         badge: null,
         index: 28,
+      ),
+      (
+        icon: Icons.lock_clock_outlined,
+        selectedIcon: Icons.lock_clock,
+        label: 'Cierres y Bloqueos',
+        badge: null,
+        index: 32,
+      ),
+      (
+        icon: Icons.inventory_outlined,
+        selectedIcon: Icons.inventory,
+        label: 'Kárdex Valuado',
+        badge: null,
+        index: 33,
+      ),
+      (
+        icon: Icons.price_check_outlined,
+        selectedIcon: Icons.price_check,
+        label: 'Costeo de Órdenes (OT)',
+        badge: null,
+        index: 34,
       ),
     ];
 
@@ -1079,6 +1123,15 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         break;
       case 31:
         currentView = const OpsWorkOrdersScreen();
+        break;
+      case 32:
+        currentView = const AccountingPeriodClosureScreen();
+        break;
+      case 33:
+        currentView = const AccountingKardexScreen();
+        break;
+      case 34:
+        currentView = const AccountingWorkOrderCostingScreen();
         break;
       default:
         currentView = const Center(child: Text('Vista no encontrada'));

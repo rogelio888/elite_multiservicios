@@ -1,0 +1,18 @@
+### Resumen y costeo de rentabilidad por Orden de Trabajo / Servicio.
+class: AccountingWorkOrderCostSummary
+fields:
+  workOrderId: int
+  workOrderDate: DateTime
+  workOrderStatus: String
+  contractId: int
+  clientName: String?
+  serviceDescription: String?
+  materialsCost: double
+  laborCost: double
+  otherExpenses: double
+  totalCost: double
+  invoicedAmount: double
+  grossMargin: double
+  grossMarginPercentage: double
+  isBilled: bool
+  invoiceId: int?

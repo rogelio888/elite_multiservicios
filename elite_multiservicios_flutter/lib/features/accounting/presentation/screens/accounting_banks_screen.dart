@@ -1,43 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
-import '../../../../main.dart'; // Importa el client
+import '../providers/accounting_providers.dart';
 
-class AccountingBanksScreen extends StatefulWidget {
+class AccountingBanksScreen extends ConsumerWidget {
   const AccountingBanksScreen({super.key});
 
-  @override
-  State<AccountingBanksScreen> createState() => _AccountingBanksScreenState();
-}
-
-class _AccountingBanksScreenState extends State<AccountingBanksScreen> {
-  bool _isLoading = true;
-  List<AccountingTransaction> _transactions = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    setState(() => _isLoading = true);
-    try {
-      final data = await client.accounting.getTransactions();
-      if (!mounted) return;
-      setState(() {
-        _transactions = data;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error cargando transacciones: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  void _showAddDialog() {
+  void _showAddDialog(BuildContext context, WidgetRef ref) {
     final amountCtrl = TextEditingController();
     final typeCtrl = TextEditingController(text: 'Income');
     final accountCtrl = TextEditingController();
@@ -97,10 +66,18 @@ class _AccountingBanksScreenState extends State<AccountingBanksScreen> {
                     createdAt: DateTime.now(),
                     updatedAt: DateTime.now(),
                   );
-                  await client.accounting.createTransaction(txn);
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-                  _loadData();
+                  
+                  try {
+                    await ref.read(accountingRepositoryProvider).createTransaction(txn);
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                    ref.invalidate(transactionsProvider);
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error al crear transacción: $e')),
+                    );
+                  }
                 }
               },
               child: const Text('Guardar'),
@@ -112,54 +89,67 @@ class _AccountingBanksScreenState extends State<AccountingBanksScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final transactionsAsync = ref.watch(transactionsProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Bancos y Conciliación'),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadData),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.invalidate(transactionsProvider),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showAddDialog,
+        onPressed: () => _showAddDialog(context, ref),
         child: const Icon(Icons.add),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _transactions.isEmpty
-          ? const Center(child: Text('No hay transacciones registradas.'))
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _transactions.length,
-              itemBuilder: (context, index) {
-                final txn = _transactions[index];
-                final isIncome = txn.type == 'Income';
-                return Card(
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: isIncome
-                          ? Colors.green.withValues(alpha: 0.2)
-                          : Colors.red.withValues(alpha: 0.2),
-                      child: Icon(
-                        isIncome ? Icons.arrow_downward : Icons.arrow_upward,
-                        color: isIncome ? Colors.green : Colors.red,
-                      ),
-                    ),
-                    title: Text('Monto: \$${txn.amount.toStringAsFixed(2)}'),
-                    subtitle: Text(
-                      'Cuenta: ${txn.account ?? "N/A"} | ${txn.date.toLocal().toString().split('.')[0]}',
-                    ),
-                    trailing: Text(
-                      txn.type,
-                      style: TextStyle(
-                        color: isIncome ? Colors.green : Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
+      body: transactionsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Text('Error cargando transacciones: $error',
+              style: const TextStyle(color: Colors.red)),
+        ),
+        data: (transactions) {
+          if (transactions.isEmpty) {
+            return const Center(child: Text('No hay transacciones registradas.'));
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: transactions.length,
+            itemBuilder: (context, index) {
+              final txn = transactions[index];
+              final isIncome = txn.type == 'Income';
+              return Card(
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: isIncome
+                        ? Colors.green.withValues(alpha: 0.2)
+                        : Colors.red.withValues(alpha: 0.2),
+                    child: Icon(
+                      isIncome ? Icons.arrow_downward : Icons.arrow_upward,
+                      color: isIncome ? Colors.green : Colors.red,
                     ),
                   ),
-                );
-              },
-            ),
+                  title: Text('Monto: \$${txn.amount.toStringAsFixed(2)}'),
+                  subtitle: Text(
+                    'Cuenta: ${txn.account ?? "N/A"} | ${txn.date.toLocal().toString().split('.')[0]}',
+                  ),
+                  trailing: Text(
+                    txn.type,
+                    style: TextStyle(
+                      color: isIncome ? Colors.green : Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
