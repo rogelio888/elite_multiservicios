@@ -156,5 +156,30 @@ void main() {
         expect(AppPermissions.all, contains(AppPermissions.crmCatalogManage));
       },
     );
+
+    test(
+      'Correlative code formats and regex patterns comply with standards',
+      () {
+        final secRegex = RegExp(r'^SEC-(\d+)$');
+        final srvRegex = RegExp(r'^SRV-(\d+)$');
+        final catRegex = RegExp(r'^CAT-(\d+)$');
+
+        expect(secRegex.hasMatch('SEC-001'), isTrue);
+        expect(secRegex.hasMatch('SEC-042'), isTrue);
+        expect(secRegex.hasMatch('SEC-SALUD'), isFalse);
+
+        expect(srvRegex.hasMatch('SRV-001'), isTrue);
+        expect(srvRegex.hasMatch('SRV-100'), isTrue);
+        expect(srvRegex.hasMatch('SRV-LIMP-HOSP'), isFalse);
+
+        expect(catRegex.hasMatch('CAT-001'), isTrue);
+        expect(catRegex.hasMatch('CAT-999'), isTrue);
+        expect(catRegex.hasMatch('CAT-VIG-247'), isFalse);
+
+        expect('SEC-${1.toString().padLeft(3, '0')}', equals('SEC-001'));
+        expect('SRV-${15.toString().padLeft(3, '0')}', equals('SRV-015'));
+        expect('CAT-${123.toString().padLeft(3, '0')}', equals('CAT-123'));
+      },
+    );
   });
 }

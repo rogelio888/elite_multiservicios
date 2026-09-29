@@ -931,6 +931,13 @@ class EndpointCrmCatalog extends _i2.EndpointRef {
     {'includeInactive': includeInactive},
   );
 
+  /// Obtiene el próximo código correlativo para sectores (solo preview).
+  _i3.Future<String> getNextSectorCode() => caller.callServerEndpoint<String>(
+    'crmCatalog',
+    'getNextSectorCode',
+    {},
+  );
+
   /// Crea un nuevo sector con validación de código y nombre únicos.
   _i3.Future<_i23.CrmSector> createSector(_i23.CrmSector sector) =>
       caller.callServerEndpoint<_i23.CrmSector>(
@@ -966,6 +973,14 @@ class EndpointCrmCatalog extends _i2.EndpointRef {
       'includeInactive': includeInactive,
     },
   );
+
+  /// Obtiene el próximo código correlativo para líneas de servicio (solo preview).
+  _i3.Future<String> getNextServiceLineCode() =>
+      caller.callServerEndpoint<String>(
+        'crmCatalog',
+        'getNextServiceLineCode',
+        {},
+      );
 
   /// Crea una nueva línea de servicio.
   _i3.Future<_i24.CrmServiceLine> createServiceLine(_i24.CrmServiceLine line) =>
@@ -1013,6 +1028,14 @@ class EndpointCrmCatalog extends _i2.EndpointRef {
         'crmCatalog',
         'getCatalogItem',
         {'id': id},
+      );
+
+  /// Obtiene el próximo código correlativo para partidas de catálogo (solo preview).
+  _i3.Future<String> getNextCatalogItemCode() =>
+      caller.callServerEndpoint<String>(
+        'crmCatalog',
+        'getNextCatalogItemCode',
+        {},
       );
 
   /// Crea una nueva partida con validación de unicidad y metadata de cálculo.

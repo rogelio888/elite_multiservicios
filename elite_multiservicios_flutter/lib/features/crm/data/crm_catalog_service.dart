@@ -86,6 +86,14 @@ class CrmCatalogService extends ChangeNotifier {
     }
   }
 
+  Future<String> getNextSectorCode() async {
+    try {
+      return await _activeClient.crmCatalog.getNextSectorCode();
+    } catch (e) {
+      return 'SEC-001';
+    }
+  }
+
   Future<CrmSector> createSector(CrmSector sector) async {
     try {
       final created = await _activeClient.crmCatalog.createSector(sector);
@@ -150,6 +158,14 @@ class CrmCatalogService extends ChangeNotifier {
       _error = 'Error cargando líneas: $e';
       notifyListeners();
       return _serviceLines;
+    }
+  }
+
+  Future<String> getNextServiceLineCode() async {
+    try {
+      return await _activeClient.crmCatalog.getNextServiceLineCode();
+    } catch (e) {
+      return 'SRV-001';
     }
   }
 
@@ -221,6 +237,14 @@ class CrmCatalogService extends ChangeNotifier {
       _error = 'Error cargando partidas: $e';
       notifyListeners();
       return _catalogItems;
+    }
+  }
+
+  Future<String> getNextCatalogItemCode() async {
+    try {
+      return await _activeClient.crmCatalog.getNextCatalogItemCode();
+    } catch (e) {
+      return 'CAT-001';
     }
   }
 

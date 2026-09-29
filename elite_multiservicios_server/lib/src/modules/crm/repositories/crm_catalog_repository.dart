@@ -32,41 +32,60 @@ class CrmCatalogRepository {
     );
   }
 
-  /// Crea un nuevo sector industrial con validación de unicidad.
+  /// Genera el siguiente código correlativo para sectores/rubros industriales (SEC-001, SEC-002, ...).
+  Future<String> generateNextSectorCode({Transaction? transaction}) async {
+    final sectors = await CrmSector.db.find(
+      session,
+      transaction: transaction,
+    );
+    int maxNum = 0;
+    final existingCodes = <String>{};
+    for (final s in sectors) {
+      final code = s.code.trim().toUpperCase();
+      existingCodes.add(code);
+      final match = RegExp(r'^SEC-(\d+)$').firstMatch(code);
+      if (match != null) {
+        final num = int.tryParse(match.group(1)!) ?? 0;
+        if (num > maxNum) maxNum = num;
+      }
+    }
+    int nextNum = maxNum + 1;
+    String candidate = 'SEC-${nextNum.toString().padLeft(3, '0')}';
+    while (existingCodes.contains(candidate)) {
+      nextNum++;
+      candidate = 'SEC-${nextNum.toString().padLeft(3, '0')}';
+    }
+    return candidate;
+  }
+
+  /// Crea un nuevo sector industrial con código correlativo generado en el servidor.
   Future<CrmSector> createSector(CrmSector sector) async {
-    final cleanCode = sector.code.trim().toUpperCase();
     final cleanName = sector.name.trim();
 
-    final existingCode = await CrmSector.db.findFirstRow(
-      session,
-      where: (t) => t.code.equals(cleanCode),
-    );
-    if (existingCode != null) {
-      throw FormatException(
-        'El código de sector "$cleanCode" ya se encuentra registrado.',
+    return await session.db.transaction((tx) async {
+      final existingName = await CrmSector.db.findFirstRow(
+        session,
+        where: (t) => t.name.ilike(cleanName) & t.isDeleted.equals(false),
+        transaction: tx,
       );
-    }
+      if (existingName != null) {
+        throw FormatException(
+          'Ya existe un rubro registrado con el nombre "$cleanName".',
+        );
+      }
 
-    final existingName = await CrmSector.db.findFirstRow(
-      session,
-      where: (t) => t.name.ilike(cleanName),
-    );
-    if (existingName != null) {
-      throw FormatException(
-        'Ya existe un rubro registrado con el nombre "$cleanName".',
+      final generatedCode = await generateNextSectorCode(transaction: tx);
+      final now = DateTime.now().toUtc();
+      final toInsert = sector.copyWith(
+        code: generatedCode,
+        name: cleanName,
+        createdAt: now,
+        updatedAt: now,
+        isDeleted: false,
       );
-    }
 
-    final now = DateTime.now().toUtc();
-    final toInsert = sector.copyWith(
-      code: cleanCode,
-      name: cleanName,
-      createdAt: now,
-      updatedAt: now,
-      isDeleted: false,
-    );
-
-    return await CrmSector.db.insertRow(session, toInsert);
+      return await CrmSector.db.insertRow(session, toInsert, transaction: tx);
+    });
   }
 
   /// Actualiza un sector existente.
@@ -145,31 +164,64 @@ class CrmCatalogRepository {
     );
   }
 
-  /// Crea una nueva línea de servicio.
+  /// Genera el siguiente código correlativo para líneas de servicio (SRV-001, SRV-002, ...).
+  Future<String> generateNextServiceLineCode({Transaction? transaction}) async {
+    final lines = await CrmServiceLine.db.find(
+      session,
+      transaction: transaction,
+    );
+    int maxNum = 0;
+    final existingCodes = <String>{};
+    for (final l in lines) {
+      final code = l.code.trim().toUpperCase();
+      existingCodes.add(code);
+      final match = RegExp(r'^SRV-(\d+)$').firstMatch(code);
+      if (match != null) {
+        final num = int.tryParse(match.group(1)!) ?? 0;
+        if (num > maxNum) maxNum = num;
+      }
+    }
+    int nextNum = maxNum + 1;
+    String candidate = 'SRV-${nextNum.toString().padLeft(3, '0')}';
+    while (existingCodes.contains(candidate)) {
+      nextNum++;
+      candidate = 'SRV-${nextNum.toString().padLeft(3, '0')}';
+    }
+    return candidate;
+  }
+
+  /// Crea una nueva línea de servicio con código correlativo generado en el servidor.
   Future<CrmServiceLine> createServiceLine(CrmServiceLine line) async {
-    final cleanCode = line.code.trim().toUpperCase();
     final cleanName = line.name.trim();
 
-    final existingCode = await CrmServiceLine.db.findFirstRow(
-      session,
-      where: (t) => t.code.equals(cleanCode),
-    );
-    if (existingCode != null) {
-      throw FormatException(
-        'El código de línea "$cleanCode" ya está registrado.',
+    return await session.db.transaction((tx) async {
+      final existingName = await CrmServiceLine.db.findFirstRow(
+        session,
+        where: (t) => t.name.ilike(cleanName) & t.isDeleted.equals(false),
+        transaction: tx,
       );
-    }
+      if (existingName != null) {
+        throw FormatException(
+          'Ya existe una línea de servicio con el nombre "$cleanName".',
+        );
+      }
 
-    final now = DateTime.now().toUtc();
-    final toInsert = line.copyWith(
-      code: cleanCode,
-      name: cleanName,
-      createdAt: now,
-      updatedAt: now,
-      isDeleted: false,
-    );
+      final generatedCode = await generateNextServiceLineCode(transaction: tx);
+      final now = DateTime.now().toUtc();
+      final toInsert = line.copyWith(
+        code: generatedCode,
+        name: cleanName,
+        createdAt: now,
+        updatedAt: now,
+        isDeleted: false,
+      );
 
-    return await CrmServiceLine.db.insertRow(session, toInsert);
+      return await CrmServiceLine.db.insertRow(
+        session,
+        toInsert,
+        transaction: tx,
+      );
+    });
   }
 
   /// Actualiza una línea de servicio.
@@ -298,50 +350,72 @@ class CrmCatalogRepository {
     }
   }
 
-  /// Crea una nueva partida en el catálogo con validación de unicidad y metadata.
+  /// Genera el siguiente código correlativo para partidas de catálogo (CAT-001, CAT-002, ...).
+  Future<String> generateNextCatalogItemCode({Transaction? transaction}) async {
+    final items = await CrmCatalogItem.db.find(
+      session,
+      transaction: transaction,
+    );
+    int maxNum = 0;
+    final existingCodes = <String>{};
+    for (final item in items) {
+      final code = item.code.trim().toUpperCase();
+      existingCodes.add(code);
+      final match = RegExp(r'^CAT-(\d+)$').firstMatch(code);
+      if (match != null) {
+        final num = int.tryParse(match.group(1)!) ?? 0;
+        if (num > maxNum) maxNum = num;
+      }
+    }
+    int nextNum = maxNum + 1;
+    String candidate = 'CAT-${nextNum.toString().padLeft(3, '0')}';
+    while (existingCodes.contains(candidate)) {
+      nextNum++;
+      candidate = 'CAT-${nextNum.toString().padLeft(3, '0')}';
+    }
+    return candidate;
+  }
+
+  /// Crea una nueva partida en el catálogo con código correlativo generado en el servidor.
   Future<CrmCatalogItem> createCatalogItem(CrmCatalogItem item) async {
-    final cleanCode = item.code.trim().toUpperCase();
     final cleanConcept = item.concept.trim();
 
-    // 1. Unicidad de código
-    final existingCode = await CrmCatalogItem.db.findFirstRow(
-      session,
-      where: (t) => t.code.equals(cleanCode),
-    );
-    if (existingCode != null) {
-      throw FormatException(
-        'El código de partida "$cleanCode" ya está registrado en el catálogo.',
-      );
-    }
-
-    // 2. Unicidad de concepto dentro de la misma línea de servicio
-    final existingConcept = await CrmCatalogItem.db.findFirstRow(
-      session,
-      where: (t) =>
-          t.serviceLineId.equals(item.serviceLineId) &
-          t.concept.ilike(cleanConcept) &
-          t.isDeleted.equals(false),
-    );
-    if (existingConcept != null) {
-      throw FormatException(
-        'Ya existe una partida con el concepto "$cleanConcept" en la misma línea de servicio.',
-      );
-    }
-
-    // 3. Validar JSON de metadata
+    // 1. Validar JSON de metadata
     _validateMetadata(item.calculationType, item.metadata);
 
-    final now = DateTime.now().toUtc();
-    final toInsert = item.copyWith(
-      code: cleanCode,
-      concept: cleanConcept,
-      version: 1,
-      createdAt: now,
-      updatedAt: now,
-      isDeleted: false,
-    );
+    return await session.db.transaction((tx) async {
+      // 2. Unicidad de concepto dentro de la misma línea de servicio
+      final existingConcept = await CrmCatalogItem.db.findFirstRow(
+        session,
+        where: (t) =>
+            t.serviceLineId.equals(item.serviceLineId) &
+            t.concept.ilike(cleanConcept) &
+            t.isDeleted.equals(false),
+        transaction: tx,
+      );
+      if (existingConcept != null) {
+        throw FormatException(
+          'Ya existe una partida con el concepto "$cleanConcept" en la misma línea de servicio.',
+        );
+      }
 
-    return await CrmCatalogItem.db.insertRow(session, toInsert);
+      final generatedCode = await generateNextCatalogItemCode(transaction: tx);
+      final now = DateTime.now().toUtc();
+      final toInsert = item.copyWith(
+        code: generatedCode,
+        concept: cleanConcept,
+        version: 1,
+        createdAt: now,
+        updatedAt: now,
+        isDeleted: false,
+      );
+
+      return await CrmCatalogItem.db.insertRow(
+        session,
+        toInsert,
+        transaction: tx,
+      );
+    });
   }
 
   /// Actualiza una partida con versionado automático si cambia el cálculo o precio.

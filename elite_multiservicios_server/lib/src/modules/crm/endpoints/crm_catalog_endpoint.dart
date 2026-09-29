@@ -21,6 +21,13 @@ class CrmCatalogEndpoint extends Endpoint {
     return await repo.listSectors(includeInactive: includeInactive);
   }
 
+  /// Obtiene el próximo código correlativo para sectores (solo preview).
+  Future<String> getNextSectorCode(Session session) async {
+    await RbacGuard.requirePermission(session, AppPermissions.crmCatalogView);
+    final repo = CrmCatalogRepository(session);
+    return await repo.generateNextSectorCode();
+  }
+
   /// Crea un nuevo sector con validación de código y nombre únicos.
   Future<CrmSector> createSector(Session session, CrmSector sector) async {
     await RbacGuard.requirePermission(session, AppPermissions.crmCatalogManage);
@@ -58,6 +65,13 @@ class CrmCatalogEndpoint extends Endpoint {
       category: category,
       includeInactive: includeInactive,
     );
+  }
+
+  /// Obtiene el próximo código correlativo para líneas de servicio (solo preview).
+  Future<String> getNextServiceLineCode(Session session) async {
+    await RbacGuard.requirePermission(session, AppPermissions.crmCatalogView);
+    final repo = CrmCatalogRepository(session);
+    return await repo.generateNextServiceLineCode();
   }
 
   /// Crea una nueva línea de servicio.
@@ -114,6 +128,13 @@ class CrmCatalogEndpoint extends Endpoint {
     await RbacGuard.requirePermission(session, AppPermissions.crmCatalogView);
     final repo = CrmCatalogRepository(session);
     return await repo.getCatalogItemById(id);
+  }
+
+  /// Obtiene el próximo código correlativo para partidas de catálogo (solo preview).
+  Future<String> getNextCatalogItemCode(Session session) async {
+    await RbacGuard.requirePermission(session, AppPermissions.crmCatalogView);
+    final repo = CrmCatalogRepository(session);
+    return await repo.generateNextCatalogItemCode();
   }
 
   /// Crea una nueva partida con validación de unicidad y metadata de cálculo.
