@@ -1,0 +1,9 @@
+class: AccountingPayrollEstimation
+table: accounting_payroll_est
+fields:
+  userId: int
+  baseSalary: double
+  bonuses: double
+  estimatedTotal: double
+  month: int
+  year: int

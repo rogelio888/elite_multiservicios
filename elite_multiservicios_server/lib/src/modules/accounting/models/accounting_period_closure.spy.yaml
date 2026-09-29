@@ -1,0 +1,36 @@
+### Registro y control de Cierres de Periodo Contable (Mes / Año) y Bloqueo de Modificaciones.
+class: AccountingPeriodClosure
+table: accounting_period_closure
+fields:
+  ### Nombre del periodo (ej. "Septiembre 2026", "Cierre Anual 2025").
+  periodName: String
+  ### Tipo de periodo: MONTHLY, ANNUAL.
+  periodType: String
+  ### Fecha de inicio del periodo contable.
+  startDate: DateTime
+  ### Fecha de fin del periodo contable.
+  endDate: DateTime
+  ### Estado: CLOSED, AUDITED, REOPENED.
+  status: String, default='CLOSED'
+  ### Total de ingresos reconocidos en el periodo.
+  totalIncome: double
+  ### Total de egresos/gastos en el periodo.
+  totalExpense: double
+  ### Resultado neto del ejercicio (Utilidad o Pérdida).
+  netResult: double
+  ### Usuario que ejecutó el cierre.
+  closedBy: String?
+  ### Fecha y hora exacta de ejecución del cierre.
+  closedAt: DateTime
+  ### Notas u observaciones del cierre.
+  closureNotes: String?
+  ### Bloqueo activo para impedir crear/editar transacciones en el rango de fechas.
+  isLocked: bool, default=true
+  ### Fechas de auditoría.
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  acc_closure_dates_idx:
+    fields: startDate, endDate
+  acc_closure_status_idx:
+    fields: status

@@ -1,0 +1,10 @@
+class: HrEmployee
+table: hr_employee
+fields:
+  name: String
+  position: String
+  baseSalary: double
+  joinDate: DateTime
+  isActive: bool, default=true
+  createdAt: DateTime
+  updatedAt: DateTime

@@ -1,4 +1,4 @@
-// TODO(DTO): reemplazar por cliente Serverpod cuando el backend lo exponga.
+// NOTE(DTO): pendiente de reemplazar por modelo Serverpod cuando el backend lo exponga.
 
 /// DTO ligero para listados y embudo Kanban de postulantes y reclutamiento.
 /// Protege datos sensibles (pretensión salarial, CI, contacto de emergencia).

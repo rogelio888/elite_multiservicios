@@ -1,0 +1,8 @@
+class: AccountingLedgerAccount
+table: accounting_ledger_account
+fields:
+  code: String
+  name: String
+  type: String # e.g. Activo, Pasivo, Patrimonio, Ingreso, Egreso
+  description: String?
+  isActive: bool

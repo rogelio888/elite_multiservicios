@@ -11,6 +11,43 @@ jwtRefresh:
   - refreshAccessToken:
 greeting:
   - hello:
+accounting:
+  - getCostCenters:
+  - createCostCenter:
+  - getInvoices:
+  - createInvoice:
+  - updateInvoiceStatus:
+  - getExpenses:
+  - createExpense:
+  - getFinancialSummary:
+  - getPettyCash:
+  - createPettyCash:
+  - getPettyCashTransactions:
+  - addPettyCashTransaction:
+  - getPayrollEstimations:
+  - createPayrollEstimation:
+  - getBudgets:
+  - createBudget:
+  - updatePettyCashTransaction:
+  - deletePettyCashTransaction:
+  - getTransactions:
+  - createTransaction:
+  - getFixedAssets:
+  - createFixedAsset:
+  - runMonthlyDepreciation:
+  - getLedgerAccounts:
+  - createLedgerAccount:
+  - getTaxes:
+  - createTax:
+  - getOverdueInvoices:
+  - getOverdueExpenses:
+  - getPeriodClosures:
+  - closeAccountingPeriod:
+  - reopenPeriodClosure:
+  - getKardexMovements:
+  - recordKardexMovement:
+  - getWorkOrderCosting:
+  - createInvoiceFromWorkOrder:
 crmAgenda:
   - listTasks:
   - getTask:
@@ -77,6 +114,25 @@ crmPipeline:
   - promoteToCustomer:
   - deleteOpportunity:
   - getMetrics:
+hr:
+  - getEmployees:
+  - createOrUpdateEmployee:
+  - getAttendance:
+  - markAttendance:
+  - getPayroll:
+  - processPayroll:
+  - payPayroll:
+ops:
+  - getInventory:
+  - createOrUpdateItem:
+  - getContracts:
+  - createOrUpdateContract:
+  - completeContract:
+  - cancelContract:
+  - getWorkOrders:
+  - createOrUpdateWorkOrder:
+  - completeWorkOrder:
+  - registerUsage:
 rrhhApplicant:
   - listApplicants:
   - getApplicantById:

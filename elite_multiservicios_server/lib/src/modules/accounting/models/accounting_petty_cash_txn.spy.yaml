@@ -1,0 +1,12 @@
+class: AccountingPettyCashTransaction
+table: accounting_petty_cash_txn
+fields:
+  pettyCashId: int
+  amount: double
+  type: String
+  description: String
+  date: DateTime
+  hasInvoice: bool
+  isFixedPayment: bool
+  fiscalCredit: double?
+  fiscalDebit: double?

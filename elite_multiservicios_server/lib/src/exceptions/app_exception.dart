@@ -57,8 +57,8 @@ class ConflictException extends AppException {
   const ConflictException(
     super.message, {
     String code = 'CONFLICT',
-    dynamic details,
-  }) : super(code: code, details: details);
+    super.details,
+  }) : super(code: code);
 }
 
 /// Excepción para cuentas temporalmente bloqueadas por exceso de intentos fallidos.

@@ -1,0 +1,10 @@
+class: OpsInventoryItem
+table: ops_inventory_item
+fields:
+  name: String
+  description: String?
+  unit: String
+  quantityInStock: double, default=0.0
+  averageCost: double, default=0.0
+  createdAt: DateTime
+  updatedAt: DateTime

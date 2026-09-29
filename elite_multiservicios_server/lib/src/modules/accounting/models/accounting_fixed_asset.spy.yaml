@@ -1,0 +1,11 @@
+class: AccountingFixedAsset
+table: accounting_fixed_asset
+fields:
+  name: String
+  category: String
+  purchaseValue: double
+  purchaseDate: DateTime
+  usefulLifeMonths: int
+  accumulatedDepreciation: double
+  isFullyDepreciated: bool
+  lastDepreciationDate: DateTime?

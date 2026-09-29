@@ -1,0 +1,18 @@
+class: HrPayroll
+table: hr_payroll
+fields:
+  employeeId: int
+  month: int
+  year: int
+  baseSalary: double
+  bonuses: double, default=0.0
+  deductions: double, default=0.0
+  netPay: double
+  isPaid: bool, default=false
+  paymentDate: DateTime?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  hr_payroll_emp_month_year_idx:
+    fields: employeeId, month, year
+    unique: true

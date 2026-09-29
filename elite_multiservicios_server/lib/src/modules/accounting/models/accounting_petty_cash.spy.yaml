@@ -1,0 +1,7 @@
+class: AccountingPettyCash
+table: accounting_petty_cash
+fields:
+  name: String
+  balance: double
+  maxLimit: double
+  custodianId: int
