@@ -64,15 +64,18 @@ crmAgenda:
   - getMetrics:
 crmCatalog:
   - listSectors:
+  - getNextSectorCode:
   - createSector:
   - updateSector:
   - deleteSector:
   - listServiceLines:
+  - getNextServiceLineCode:
   - createServiceLine:
   - updateServiceLine:
   - deleteServiceLine:
   - listCatalogItems:
   - getCatalogItem:
+  - getNextCatalogItemCode:
   - createCatalogItem:
   - updateCatalogItem:
   - deleteCatalogItem:

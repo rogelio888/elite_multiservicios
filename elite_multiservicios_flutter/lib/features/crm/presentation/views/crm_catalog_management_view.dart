@@ -1392,10 +1392,15 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
   // DIÁLOGOS DE CREACIÓN Y EDICIÓN
   // ===========================================================================
 
-  void _showCatalogItemDialog({CrmCatalogItem? item, bool? isDark}) {
+  void _showCatalogItemDialog({CrmCatalogItem? item, bool? isDark}) async {
     final dark = isDark ?? Theme.of(context).brightness == Brightness.dark;
     final isEditing = item != null;
-    final codeCtrl = TextEditingController(text: item?.code ?? '');
+    String initialCode = item?.code ?? '';
+    if (!isEditing) {
+      initialCode = await _catalogService.getNextCatalogItemCode();
+      if (!mounted) return;
+    }
+    final codeCtrl = TextEditingController(text: initialCode);
     final conceptCtrl = TextEditingController(text: item?.concept ?? '');
     final categoryCtrl = TextEditingController(
       text: item?.category ?? 'Limpieza y Mantenimiento',
@@ -1466,15 +1471,22 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                       if (isMobileDialog) ...[
                         TextField(
                           controller: codeCtrl,
-                          enabled: !isEditing,
+                          readOnly: true,
+                          enableInteractiveSelection: true,
                           style: GoogleFonts.inter(
                             color: dark
-                                ? Colors.white
-                                : const Color(0xFF0F172A),
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFF64748B),
+                            fontWeight: FontWeight.w600,
                           ),
-                          decoration: _inputDeco(
-                            'Código Único (ej. LIMP-01)',
+                          decoration: _readonlyCodeInputDeco(
+                            isEditing
+                                ? 'Código Único'
+                                : 'Código Único (Próximo correlativo)',
                             dark,
+                            tooltip: isEditing
+                                ? 'Código único registrado (no modificable)'
+                                : 'Este código se genera automáticamente en el servidor',
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -1508,15 +1520,22 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                             Expanded(
                               child: TextField(
                                 controller: codeCtrl,
-                                enabled: !isEditing,
+                                readOnly: true,
+                                enableInteractiveSelection: true,
                                 style: GoogleFonts.inter(
                                   color: dark
-                                      ? Colors.white
-                                      : const Color(0xFF0F172A),
+                                      ? const Color(0xFF94A3B8)
+                                      : const Color(0xFF64748B),
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                decoration: _inputDeco(
-                                  'Código Único (ej. LIMP-01)',
+                                decoration: _readonlyCodeInputDeco(
+                                  isEditing
+                                      ? 'Código Único'
+                                      : 'Código Único (Próximo correlativo)',
                                   dark,
+                                  tooltip: isEditing
+                                      ? 'Código único registrado (no modificable)'
+                                      : 'Este código se genera automáticamente en el servidor',
                                 ),
                               ),
                             ),
@@ -1921,14 +1940,11 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    final cleanCode = codeCtrl.text.trim();
                     final cleanConcept = conceptCtrl.text.trim();
                     final price = double.tryParse(priceCtrl.text) ?? 0.0;
                     final minQty = double.tryParse(minQtyCtrl.text) ?? 1.0;
 
-                    if (cleanCode.isEmpty ||
-                        cleanConcept.isEmpty ||
-                        price <= 0) {
+                    if (cleanConcept.isEmpty || price <= 0) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text(
@@ -1965,7 +1981,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                         await _catalogService.updateCatalogItem(toUpdate);
                       } else {
                         final toCreate = CrmCatalogItem(
-                          code: cleanCode,
+                          code:
+                              '', // Ignorado por el backend, se genera correlativo CAT-XXX
                           serviceLineId: selectedLineId ?? 1,
                           concept: cleanConcept,
                           category: categoryCtrl.text.trim(),
@@ -2246,10 +2263,15 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
     );
   }
 
-  void _showSectorDialog({CrmSector? sector, bool? isDark}) {
+  void _showSectorDialog({CrmSector? sector, bool? isDark}) async {
     final dark = isDark ?? Theme.of(context).brightness == Brightness.dark;
     final isEditing = sector != null;
-    final codeCtrl = TextEditingController(text: sector?.code ?? '');
+    String initialCode = sector?.code ?? '';
+    if (!isEditing) {
+      initialCode = await _catalogService.getNextSectorCode();
+      if (!mounted) return;
+    }
+    final codeCtrl = TextEditingController(text: initialCode);
     final nameCtrl = TextEditingController(text: sector?.name ?? '');
     final descCtrl = TextEditingController(text: sector?.description ?? '');
 
@@ -2279,11 +2301,21 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
               children: [
                 TextField(
                   controller: codeCtrl,
-                  enabled: !isEditing,
+                  readOnly: true,
+                  enableInteractiveSelection: true,
                   style: GoogleFonts.inter(
-                    color: dark ? Colors.white : const Color(0xFF0F172A),
+                    color: dark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
+                    fontWeight: FontWeight.w600,
                   ),
-                  decoration: _inputDeco('Código (ej. SALUD, BANCA)', dark),
+                  decoration: _readonlyCodeInputDeco(
+                    isEditing ? 'Código Único' : 'Código (Próximo correlativo)',
+                    dark,
+                    tooltip: isEditing
+                        ? 'Código único registrado (no modificable)'
+                        : 'Este código se genera automáticamente en el servidor',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -2319,9 +2351,16 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
             ),
             ElevatedButton(
               onPressed: () async {
-                final cleanCode = codeCtrl.text.trim();
                 final cleanName = nameCtrl.text.trim();
-                if (cleanCode.isEmpty || cleanName.isEmpty) return;
+                if (cleanName.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Ingrese el nombre del rubro industrial.'),
+                      backgroundColor: Color(0xFFEF4444),
+                    ),
+                  );
+                  return;
+                }
 
                 try {
                   if (isEditing) {
@@ -2334,7 +2373,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                   } else {
                     await _catalogService.createSector(
                       CrmSector(
-                        code: cleanCode,
+                        code:
+                            '', // Ignorado por el backend, se genera correlativo SEC-XXX
                         name: cleanName,
                         description: descCtrl.text.trim(),
                         isActive: true,
@@ -2372,10 +2412,15 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
     );
   }
 
-  void _showServiceLineDialog({CrmServiceLine? line, bool? isDark}) {
+  void _showServiceLineDialog({CrmServiceLine? line, bool? isDark}) async {
     final dark = isDark ?? Theme.of(context).brightness == Brightness.dark;
     final isEditing = line != null;
-    final codeCtrl = TextEditingController(text: line?.code ?? '');
+    String initialCode = line?.code ?? '';
+    if (!isEditing) {
+      initialCode = await _catalogService.getNextServiceLineCode();
+      if (!mounted) return;
+    }
+    final codeCtrl = TextEditingController(text: initialCode);
     final nameCtrl = TextEditingController(text: line?.name ?? '');
     final catCtrl = TextEditingController(text: line?.category ?? 'General');
     final descCtrl = TextEditingController(text: line?.description ?? '');
@@ -2406,13 +2451,20 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
               children: [
                 TextField(
                   controller: codeCtrl,
-                  enabled: !isEditing,
+                  readOnly: true,
+                  enableInteractiveSelection: true,
                   style: GoogleFonts.inter(
-                    color: dark ? Colors.white : const Color(0xFF0F172A),
+                    color: dark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
+                    fontWeight: FontWeight.w600,
                   ),
-                  decoration: _inputDeco(
-                    'Código (ej. LIMPIEZA, SEGURIDAD)',
+                  decoration: _readonlyCodeInputDeco(
+                    isEditing ? 'Código Único' : 'Código (Próximo correlativo)',
                     dark,
+                    tooltip: isEditing
+                        ? 'Código único registrado (no modificable)'
+                        : 'Este código se genera automáticamente en el servidor',
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -2457,9 +2509,18 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
             ),
             ElevatedButton(
               onPressed: () async {
-                final cleanCode = codeCtrl.text.trim();
                 final cleanName = nameCtrl.text.trim();
-                if (cleanCode.isEmpty || cleanName.isEmpty) return;
+                if (cleanName.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Ingrese el nombre de la línea de servicio.',
+                      ),
+                      backgroundColor: Color(0xFFEF4444),
+                    ),
+                  );
+                  return;
+                }
 
                 try {
                   if (isEditing) {
@@ -2473,7 +2534,8 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
                   } else {
                     await _catalogService.createServiceLine(
                       CrmServiceLine(
-                        code: cleanCode,
+                        code:
+                            '', // Ignorado por el backend, se genera correlativo SRV-XXX
                         name: cleanName,
                         category: catCtrl.text.trim(),
                         description: descCtrl.text.trim(),
@@ -2697,6 +2759,55 @@ class _CrmCatalogManagementViewState extends State<CrmCatalogManagementView> {
         borderSide: const BorderSide(color: Color(0xFF10B981)),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    );
+  }
+
+  InputDecoration _readonlyCodeInputDeco(
+    String label,
+    bool isDark, {
+    String tooltip = 'Este código se genera automáticamente',
+  }) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: GoogleFonts.inter(
+        color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+        fontSize: 12.5,
+      ),
+      filled: true,
+      fillColor: isDark ? const Color(0xFF0D1424) : const Color(0xFFF1F5F9),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(
+          color: isDark ? const Color(0x661E293B) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(
+          color: isDark ? const Color(0x661E293B) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(
+          color: isDark ? const Color(0x661E293B) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      suffixIcon: Tooltip(
+        message: tooltip,
+        child: const Icon(
+          Icons.auto_awesome,
+          size: 16,
+          color: Color(0xCC10B981),
+        ),
+      ),
+      helperText: 'Auto-generado por el sistema',
+      helperStyle: GoogleFonts.inter(
+        fontSize: 10.5,
+        color: isDark ? const Color(0xCC10B981) : const Color(0xFF059669),
+        fontWeight: FontWeight.w500,
+      ),
     );
   }
 }
