@@ -312,13 +312,17 @@ class UserEndpoint extends Endpoint {
     required String currentPassword,
     required String newPassword,
   }) async {
-    await RbacGuard.requireMfaVerified(session);
     // 1. Resolver el AppUser
     final authUserIdStr = session.authenticated?.userIdentifier;
     if (authUserIdStr == null) {
       throw const UnauthorizedException('Usuario no autenticado');
     }
     final appUser = await RbacGuard.resolveAppUser(session, authUserIdStr);
+
+    // Si el usuario no está en flujo forzado de cambio de contraseña, exigir MFA
+    if (!appUser.mustChangePassword) {
+      await RbacGuard.requireMfaVerified(session);
+    }
 
     // 2. Validar la contraseña actual usando Serverpod Auth IDP
     final authUuid = UuidValue.fromString(authUserIdStr);
@@ -327,7 +331,7 @@ class UserEndpoint extends Endpoint {
       where: (t) => t.authUserId.equals(authUuid),
     );
     if (emailAccount == null) {
-      throw Exception('Cuenta de autenticación no encontrada');
+      throw const FormatException('Cuenta de autenticación no encontrada');
     }
 
     final isCurrentValid = await AuthServices.instance.emailIdp.utils.hashUtil
@@ -336,15 +340,19 @@ class UserEndpoint extends Endpoint {
           hashString: emailAccount.passwordHash,
         );
     if (!isCurrentValid) {
-      throw Exception('La contraseña actual es incorrecta');
+      throw const FormatException('La contraseña actual es incorrecta');
     }
 
     // 3. Validar la nueva contraseña contra políticas corporativas
-    PasswordPolicyValidator.validate(
-      password: newPassword,
-      email: emailAccount.email,
-      fullName: appUser.fullName,
-    );
+    try {
+      PasswordPolicyValidator.validate(
+        password: newPassword,
+        email: emailAccount.email,
+        fullName: appUser.fullName,
+      );
+    } on PasswordPolicyException catch (e) {
+      throw FormatException(e.errors.join('. '));
+    }
 
     // 4. Actualizar la contraseña en Serverpod Auth IDP
     await AuthServices.instance.emailIdp.admin.setPassword(

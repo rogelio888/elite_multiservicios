@@ -1532,6 +1532,16 @@ class Endpoints extends _i1.EndpointDispatch {
                     includeInactive: params['includeInactive'],
                   ),
         ),
+        'getNextSectorCode': _i1.MethodConnector(
+          name: 'getNextSectorCode',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
+                  .getNextSectorCode(session),
+        ),
         'createSector': _i1.MethodConnector(
           name: 'createSector',
           params: {
@@ -1613,6 +1623,16 @@ class Endpoints extends _i1.EndpointDispatch {
                     category: params['category'],
                     includeInactive: params['includeInactive'],
                   ),
+        ),
+        'getNextServiceLineCode': _i1.MethodConnector(
+          name: 'getNextServiceLineCode',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
+                  .getNextServiceLineCode(session),
         ),
         'createServiceLine': _i1.MethodConnector(
           name: 'createServiceLine',
@@ -1726,6 +1746,16 @@ class Endpoints extends _i1.EndpointDispatch {
                     session,
                     params['id'],
                   ),
+        ),
+        'getNextCatalogItemCode': _i1.MethodConnector(
+          name: 'getNextCatalogItemCode',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['crmCatalog'] as _i7.CrmCatalogEndpoint)
+                  .getNextCatalogItemCode(session),
         ),
         'createCatalogItem': _i1.MethodConnector(
           name: 'createCatalogItem',

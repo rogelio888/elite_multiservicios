@@ -105,9 +105,23 @@ class _ForcePasswordChangeScreenState extends State<ForcePasswordChangeScreen> {
       if (mounted) {
         String msg = 'No pudimos actualizar la contraseña. Intentá de nuevo.';
         final errorStr = e.toString();
-        if (errorStr.contains('contraseña actual es incorrecta') ||
-            errorStr.contains('incorrecta')) {
+        final lower = errorStr.toLowerCase();
+
+        if (lower.contains('contraseña actual es incorrecta') ||
+            lower.contains('clave actual') ||
+            lower.contains('incorrecta') ||
+            lower.contains('actual')) {
           msg = 'La contraseña actual es incorrecta.';
+        } else if (lower.contains('debe tener al menos') ||
+            lower.contains('caracteres') ||
+            lower.contains('mayúscula') ||
+            lower.contains('minúscula') ||
+            lower.contains('número') ||
+            lower.contains('símbolo') ||
+            lower.contains('común') ||
+            lower.contains('correo') ||
+            lower.contains('nombre')) {
+          msg = errorStr.replaceAll(RegExp(r'^.*Exception:\s*'), '').trim();
         } else if (errorStr.contains('al menos 8 caracteres')) {
           msg = 'La nueva contraseña debe tener al menos 8 caracteres.';
         }
