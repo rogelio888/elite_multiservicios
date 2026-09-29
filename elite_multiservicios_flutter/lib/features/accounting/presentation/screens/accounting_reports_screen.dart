@@ -1,16 +1,16 @@
-// ignore_for_file: avoid_web_libraries_in_flutter, deprecated_member_use
 import 'dart:convert';
-import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import '../../../../main.dart';
+import '../utils/accounting_file_helper.dart';
 import '../widgets/accounting_excel_grid.dart';
 
 class AccountingReportsScreen extends StatefulWidget {
   const AccountingReportsScreen({super.key});
 
   @override
-  State<AccountingReportsScreen> createState() => _AccountingReportsScreenState();
+  State<AccountingReportsScreen> createState() =>
+      _AccountingReportsScreenState();
 }
 
 class _AccountingReportsScreenState extends State<AccountingReportsScreen> {
@@ -42,7 +42,9 @@ class _AccountingReportsScreenState extends State<AccountingReportsScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -53,36 +55,40 @@ class _AccountingReportsScreenState extends State<AccountingReportsScreen> {
     final StringBuffer csv = StringBuffer();
     csv.writeln('ESTADO DE RESULTADOS (P&L)');
     csv.writeln('Concepto,Monto (Bs)');
-    
+
     double totalIncome = 0;
     for (var i in _allInvoices) {
       totalIncome += i.totalAmount;
     }
-    csv.writeln('Ingresos Totales (Facturación),${totalIncome.toStringAsFixed(2)}');
-    
+    csv.writeln(
+      'Ingresos Totales (Facturación),${totalIncome.toStringAsFixed(2)}',
+    );
+
     double totalExpense = 0;
     for (var e in _allExpenses) {
       totalExpense += e.amount;
     }
-    csv.writeln('Egresos Totales (Costos y Gastos),${totalExpense.toStringAsFixed(2)}');
-    
+    csv.writeln(
+      'Egresos Totales (Costos y Gastos),${totalExpense.toStringAsFixed(2)}',
+    );
+
     final margin = totalIncome - totalExpense;
     csv.writeln('Utilidad Neta,${margin.toStringAsFixed(2)}');
-    
+
     csv.writeln('');
     csv.writeln('REPORTE DE MOROSIDAD (Cuentas por Cobrar)');
     csv.writeln('Cliente,Fecha Venc.,Monto,Estado');
     for (var inv in _overdueInvoices) {
-      csv.writeln('Cliente ${inv.customerId},${inv.dueDate.toString().substring(0, 10)},${inv.totalAmount},VENCIDO');
+      csv.writeln(
+        'Cliente ${inv.customerId},${inv.dueDate.toString().substring(0, 10)},${inv.totalAmount},VENCIDO',
+      );
     }
 
-    final bytes = utf8.encode(csv.toString());
-    final blob = html.Blob([bytes]);
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    html.AnchorElement(href: url)
-      ..setAttribute('download', 'Reporte_Contable_${DateTime.now().toIso8601String().substring(0, 10)}.csv')
-      ..click();
-    html.Url.revokeObjectUrl(url);
+    downloadFileWeb(
+      csv.toString(),
+      'Reporte_Contable_${DateTime.now().toIso8601String().substring(0, 10)}.csv',
+      'text/csv;charset=utf-8',
+    );
   }
 
   @override
@@ -113,7 +119,10 @@ class _AccountingReportsScreenState extends State<AccountingReportsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Estado de Resultados (P&L) Resumido', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const Text(
+                    'Estado de Resultados (P&L) Resumido',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 10),
                   Card(
                     elevation: 3,
@@ -122,9 +131,21 @@ class _AccountingReportsScreenState extends State<AccountingReportsScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _StatInfo(title: 'Ingresos Totales', value: totalIncome, color: Colors.green),
-                          _StatInfo(title: 'Egresos Totales', value: totalExpense, color: Colors.red),
-                          _StatInfo(title: 'Utilidad Neta', value: margin, color: margin >= 0 ? Colors.blue : Colors.red),
+                          _StatInfo(
+                            title: 'Ingresos Totales',
+                            value: totalIncome,
+                            color: Colors.green,
+                          ),
+                          _StatInfo(
+                            title: 'Egresos Totales',
+                            value: totalExpense,
+                            color: Colors.red,
+                          ),
+                          _StatInfo(
+                            title: 'Utilidad Neta',
+                            value: margin,
+                            color: margin >= 0 ? Colors.blue : Colors.red,
+                          ),
                         ],
                       ),
                     ),
@@ -133,13 +154,17 @@ class _AccountingReportsScreenState extends State<AccountingReportsScreen> {
                   ElevatedButton.icon(
                     icon: const Icon(Icons.file_download),
                     label: const Text('Exportar Reportes a Excel (CSV)'),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
                     onPressed: _exportCSV,
                   ),
                   const SizedBox(height: 20),
                   Expanded(
                     child: AccountingExcelGrid(
-                      title: 'Reporte de Morosidad (Cuentas por Cobrar Vencidas)',
+                      title:
+                          'Reporte de Morosidad (Cuentas por Cobrar Vencidas)',
                       columns: [
                         ExcelGridColumn(title: 'Factura #'),
                         ExcelGridColumn(title: 'Cliente'),
@@ -152,18 +177,36 @@ class _AccountingReportsScreenState extends State<AccountingReportsScreen> {
                         return ExcelGridRow(
                           cells: [
                             Text(inv.invoiceNumber),
-                            Text('Cliente ${inv.customerId}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            Text(
+                              'Cliente ${inv.customerId}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             Text(inv.issueDate.toString().substring(0, 10)),
                             Text(
                               inv.dueDate.toString().substring(0, 10),
-                              style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             Text(inv.totalAmount.toStringAsFixed(2)),
                             const Row(
                               children: [
-                                Icon(Icons.warning, color: Colors.red, size: 16),
+                                Icon(
+                                  Icons.warning,
+                                  color: Colors.red,
+                                  size: 16,
+                                ),
                                 SizedBox(width: 4),
-                                Text('VENCIDO', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                                Text(
+                                  'VENCIDO',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -185,18 +228,36 @@ class _AccountingReportsScreenState extends State<AccountingReportsScreen> {
                       rows: _overdueExpenses.map((exp) {
                         return ExcelGridRow(
                           cells: [
-                            Text(exp.supplierName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            Text(
+                              exp.supplierName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             Text(exp.category),
                             Text(
-                              exp.dueDate?.toString().substring(0, 10) ?? '-',
-                              style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                              exp.date.toString().substring(0, 10),
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             Text(exp.amount.toStringAsFixed(2)),
                             const Row(
                               children: [
-                                Icon(Icons.warning, color: Colors.red, size: 16),
+                                Icon(
+                                  Icons.warning,
+                                  color: Colors.red,
+                                  size: 16,
+                                ),
                                 SizedBox(width: 4),
-                                Text('VENCIDO', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                                Text(
+                                  'VENCIDO',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -216,7 +277,11 @@ class _StatInfo extends StatelessWidget {
   final double value;
   final Color color;
 
-  const _StatInfo({required this.title, required this.value, required this.color});
+  const _StatInfo({
+    required this.title,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -226,7 +291,11 @@ class _StatInfo extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'Bs ${value.toStringAsFixed(2)}',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color),
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
       ],
     );

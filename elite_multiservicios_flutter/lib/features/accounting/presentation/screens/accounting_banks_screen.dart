@@ -48,17 +48,42 @@ class _AccountingBanksScreenState extends State<AccountingBanksScreen> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Nueva Transacción Bancaria'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: amountCtrl, decoration: const InputDecoration(labelText: 'Monto'), keyboardType: TextInputType.number),
-              TextField(controller: typeCtrl, decoration: const InputDecoration(labelText: 'Tipo (Income / Expense)')),
-              TextField(controller: accountCtrl, decoration: const InputDecoration(labelText: 'Cuenta Bancaria')),
-              TextField(controller: notesCtrl, decoration: const InputDecoration(labelText: 'Notas')),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: amountCtrl,
+                  decoration: const InputDecoration(labelText: 'Monto'),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: typeCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Tipo (Income / Expense)',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: accountCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Cuenta Bancaria',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: notesCtrl,
+                  decoration: const InputDecoration(labelText: 'Notas'),
+                ),
+              ],
+            ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
             ElevatedButton(
               onPressed: () async {
                 final amount = double.tryParse(amountCtrl.text);
@@ -102,29 +127,39 @@ class _AccountingBanksScreenState extends State<AccountingBanksScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _transactions.isEmpty
-              ? const Center(child: Text('No hay transacciones registradas.'))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _transactions.length,
-                  itemBuilder: (context, index) {
-                    final txn = _transactions[index];
-                    final isIncome = txn.type == 'Income';
-                    return Card(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: isIncome ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2),
-                          child: Icon(
-                            isIncome ? Icons.arrow_downward : Icons.arrow_upward,
-                            color: isIncome ? Colors.green : Colors.red,
-                          ),
-                        ),
-                        title: Text('Monto: \$${txn.amount.toStringAsFixed(2)}'),
-                        subtitle: Text('Cuenta: ${txn.account ?? "N/A"} | ${txn.date.toLocal().toString().split('.')[0]}'),
-                        trailing: Text(txn.type, style: TextStyle(color: isIncome ? Colors.green : Colors.red, fontWeight: FontWeight.bold)),
+          ? const Center(child: Text('No hay transacciones registradas.'))
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _transactions.length,
+              itemBuilder: (context, index) {
+                final txn = _transactions[index];
+                final isIncome = txn.type == 'Income';
+                return Card(
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: isIncome
+                          ? Colors.green.withValues(alpha: 0.2)
+                          : Colors.red.withValues(alpha: 0.2),
+                      child: Icon(
+                        isIncome ? Icons.arrow_downward : Icons.arrow_upward,
+                        color: isIncome ? Colors.green : Colors.red,
                       ),
-                    );
-                  },
-                ),
+                    ),
+                    title: Text('Monto: \$${txn.amount.toStringAsFixed(2)}'),
+                    subtitle: Text(
+                      'Cuenta: ${txn.account ?? "N/A"} | ${txn.date.toLocal().toString().split('.')[0]}',
+                    ),
+                    trailing: Text(
+                      txn.type,
+                      style: TextStyle(
+                        color: isIncome ? Colors.green : Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }

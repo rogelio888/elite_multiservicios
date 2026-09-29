@@ -47,20 +47,45 @@ class _AccountingTaxesScreenState extends State<AccountingTaxesScreen> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Nuevo Impuesto'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Nombre (ej. IVA)')),
-              TextField(controller: rateCtrl, decoration: const InputDecoration(labelText: 'Tasa (ej. 0.16)'), keyboardType: TextInputType.number),
-              TextField(controller: typeCtrl, decoration: const InputDecoration(labelText: 'Tipo (Venta, Compra, etc)')),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Nombre (ej. IVA)',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: rateCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Tasa (ej. 0.16)',
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: typeCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Tipo (Venta, Compra, etc)',
+                  ),
+                ),
+              ],
+            ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
             ElevatedButton(
               onPressed: () async {
                 final rate = double.tryParse(rateCtrl.text);
-                if (nameCtrl.text.isNotEmpty && rate != null && typeCtrl.text.isNotEmpty) {
+                if (nameCtrl.text.isNotEmpty &&
+                    rate != null &&
+                    typeCtrl.text.isNotEmpty) {
                   final tax = AccountingTax(
                     name: nameCtrl.text,
                     rate: rate,
@@ -97,22 +122,27 @@ class _AccountingTaxesScreenState extends State<AccountingTaxesScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _taxes.isEmpty
-              ? const Center(child: Text('No hay impuestos registrados.'))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _taxes.length,
-                  itemBuilder: (context, index) {
-                    final tax = _taxes[index];
-                    return Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.percent),
-                        title: Text(tax.name),
-                        subtitle: Text('Tipo: ${tax.type} | Tasa: ${(tax.rate * 100).toStringAsFixed(2)}%'),
-                        trailing: Icon(tax.isActive ? Icons.check_circle : Icons.cancel, color: tax.isActive ? Colors.green : Colors.red),
-                      ),
-                    );
-                  },
-                ),
+          ? const Center(child: Text('No hay impuestos registrados.'))
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _taxes.length,
+              itemBuilder: (context, index) {
+                final tax = _taxes[index];
+                return Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.percent),
+                    title: Text(tax.name),
+                    subtitle: Text(
+                      'Tipo: ${tax.type} | Tasa: ${(tax.rate * 100).toStringAsFixed(2)}%',
+                    ),
+                    trailing: Icon(
+                      tax.isActive ? Icons.check_circle : Icons.cancel,
+                      color: tax.isActive ? Colors.green : Colors.red,
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }

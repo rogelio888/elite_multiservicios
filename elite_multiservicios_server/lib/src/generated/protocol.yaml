@@ -30,6 +30,17 @@ accounting:
   - createBudget:
   - updatePettyCashTransaction:
   - deletePettyCashTransaction:
+  - getTransactions:
+  - createTransaction:
+  - getFixedAssets:
+  - createFixedAsset:
+  - runMonthlyDepreciation:
+  - getLedgerAccounts:
+  - createLedgerAccount:
+  - getTaxes:
+  - createTax:
+  - getOverdueInvoices:
+  - getOverdueExpenses:
 crmAgenda:
   - listTasks:
   - getTask:
@@ -109,8 +120,11 @@ ops:
   - createOrUpdateItem:
   - getContracts:
   - createOrUpdateContract:
+  - completeContract:
+  - cancelContract:
   - getWorkOrders:
   - createOrUpdateWorkOrder:
+  - completeWorkOrder:
   - registerUsage:
 rrhhApplicant:
   - listApplicants:

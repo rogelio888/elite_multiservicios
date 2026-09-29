@@ -33,8 +33,9 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -55,7 +56,9 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
               children: [
                 TextField(
                   controller: employeeIdController,
-                  decoration: const InputDecoration(labelText: 'ID del Empleado'),
+                  decoration: const InputDecoration(
+                    labelText: 'ID del Empleado',
+                  ),
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 16),
@@ -64,16 +67,23 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
                   decoration: const InputDecoration(labelText: 'Estado'),
                   items: const [
                     DropdownMenuItem(
-                        value: 'Presente', child: Text('âœ… Presente')),
+                      value: 'Presente',
+                      child: Text('âœ… Presente'),
+                    ),
                     DropdownMenuItem(
-                        value: 'Ausente', child: Text('âŒ Ausente')),
+                      value: 'Ausente',
+                      child: Text('âŒ Ausente'),
+                    ),
                     DropdownMenuItem(
-                        value: 'Tardanza', child: Text('âš ï¸ Tardanza')),
+                      value: 'Tardanza',
+                      child: Text('âš ï¸ Tardanza'),
+                    ),
                     DropdownMenuItem(
-                        value: 'Permiso', child: Text('ðŸ“‹ Permiso')),
+                      value: 'Permiso',
+                      child: Text('ðŸ“‹ Permiso'),
+                    ),
                   ],
-                  onChanged: (val) =>
-                      setDialogState(() => status = val!),
+                  onChanged: (val) => setDialogState(() => status = val!),
                 ),
               ],
             ),
@@ -130,18 +140,15 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
   Widget _buildMobileCard(HrAttendance item, ThemeData theme) {
     final color = _statusColor(item.status);
     final fmt = DateFormat('HH:mm');
-    final checkInStr =
-        item.checkIn != null ? fmt.format(item.checkIn!) : 'â€”';
-    final checkOutStr =
-        item.checkOut != null ? fmt.format(item.checkOut!) : 'â€”';
+    final checkInStr = item.checkIn != null ? fmt.format(item.checkIn!) : 'â€”';
+    final checkOutStr = item.checkOut != null
+        ? fmt.format(item.checkOut!)
+        : 'â€”';
 
     double? hours;
     if (item.checkIn != null && item.checkOut != null) {
-      hours = item.checkOut!
-          .difference(item.checkIn!)
-          .inMinutes
-          .toDouble() /
-          60;
+      hours =
+          item.checkOut!.difference(item.checkIn!).inMinutes.toDouble() / 60;
     }
 
     return Card(
@@ -161,19 +168,26 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.person_outline,
-                        color: theme.colorScheme.primary, size: 20),
+                    Icon(
+                      Icons.person_outline,
+                      color: theme.colorScheme.primary,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Emp #${item.employeeId}',
                       style: GoogleFonts.inter(
-                          fontSize: 15, fontWeight: FontWeight.bold),
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4),
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -182,9 +196,10 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
                   child: Text(
                     item.status,
                     style: TextStyle(
-                        color: color,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12),
+                      color: color,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
@@ -196,14 +211,22 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Entrada',
-                          style: TextStyle(
-                              fontSize: 11,
-                              color: theme.colorScheme.onSurface
-                                  .withValues(alpha: 0.5))),
-                      Text(checkInStr,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600)),
+                      Text(
+                        'Entrada',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        checkInStr,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -211,14 +234,22 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Salida',
-                          style: TextStyle(
-                              fontSize: 11,
-                              color: theme.colorScheme.onSurface
-                                  .withValues(alpha: 0.5))),
-                      Text(checkOutStr,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600)),
+                      Text(
+                        'Salida',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        checkOutStr,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -226,16 +257,23 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('Horas',
-                          style: TextStyle(
-                              fontSize: 11,
-                              color: theme.colorScheme.onSurface
-                                  .withValues(alpha: 0.5))),
-                      Text('${hours.toStringAsFixed(1)}h',
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: hours >= 8 ? Colors.green : Colors.orange)),
+                      Text(
+                        'Horas',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '${hours.toStringAsFixed(1)}h',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: hours >= 8 ? Colors.green : Colors.orange,
+                        ),
+                      ),
                     ],
                   ),
               ],
@@ -244,8 +282,9 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
             Text(
               DateFormat('EEEE, dd MMM yyyy', 'es').format(item.date),
               style: TextStyle(
-                  fontSize: 12,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                fontSize: 12,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
             ),
           ],
         ),
@@ -259,12 +298,9 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
 
     // Stats
     final total = _records.length;
-    final presentes =
-        _records.where((r) => r.status == 'Presente').length;
-    final ausentes =
-        _records.where((r) => r.status == 'Ausente').length;
-    final tardanzas =
-        _records.where((r) => r.status == 'Tardanza').length;
+    final presentes = _records.where((r) => r.status == 'Presente').length;
+    final ausentes = _records.where((r) => r.status == 'Ausente').length;
+    final tardanzas = _records.where((r) => r.status == 'Tardanza').length;
 
     return Scaffold(
       appBar: AppBar(
@@ -289,21 +325,25 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       _StatChip(
-                          label: 'Total',
-                          value: '$total',
-                          color: theme.colorScheme.primary),
+                        label: 'Total',
+                        value: '$total',
+                        color: theme.colorScheme.primary,
+                      ),
                       _StatChip(
-                          label: 'Presentes',
-                          value: '$presentes',
-                          color: Colors.green),
+                        label: 'Presentes',
+                        value: '$presentes',
+                        color: Colors.green,
+                      ),
                       _StatChip(
-                          label: 'Ausentes',
-                          value: '$ausentes',
-                          color: Colors.red),
+                        label: 'Ausentes',
+                        value: '$ausentes',
+                        color: Colors.red,
+                      ),
                       _StatChip(
-                          label: 'Tardanzas',
-                          value: '$tardanzas',
-                          color: Colors.orange),
+                        label: 'Tardanzas',
+                        value: '$tardanzas',
+                        color: Colors.orange,
+                      ),
                     ],
                   ),
                 ),
@@ -313,12 +353,16 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.event_note_outlined,
-                                  size: 64, color: theme.disabledColor),
+                              Icon(
+                                Icons.event_note_outlined,
+                                size: 64,
+                                color: theme.disabledColor,
+                              ),
                               const SizedBox(height: 16),
-                              Text('Sin registros este mes',
-                                  style:
-                                      TextStyle(color: theme.disabledColor)),
+                              Text(
+                                'Sin registros este mes',
+                                style: TextStyle(color: theme.disabledColor),
+                              ),
                               const SizedBox(height: 16),
                               ElevatedButton(
                                 onPressed: _showAddDialog,
@@ -331,8 +375,7 @@ class _HrAttendanceScreenState extends State<HrAttendanceScreen> {
                           padding: const EdgeInsets.all(16),
                           itemCount: _records.length,
                           itemBuilder: (context, index) {
-                            return _buildMobileCard(
-                                _records[index], theme);
+                            return _buildMobileCard(_records[index], theme);
                           },
                         ),
                 ),
@@ -347,23 +390,34 @@ class _StatChip extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _StatChip(
-      {required this.label, required this.value, required this.color});
+  const _StatChip({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(value,
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.bold, color: color)),
-        Text(label,
-            style: TextStyle(
-                fontSize: 12,
-                color:
-                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.6),
+          ),
+        ),
       ],
     );
   }
 }
-

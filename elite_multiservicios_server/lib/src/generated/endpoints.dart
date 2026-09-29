@@ -49,74 +49,82 @@ import 'package:elite_multiservicios_server/src/generated/modules/accounting/mod
     as _i30;
 import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_budget.dart'
     as _i31;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_task.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_transaction.dart'
     as _i32;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_fixed_asset.dart'
     as _i33;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_ledger_account.dart'
     as _i34;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/accounting/models/accounting_tax.dart'
     as _i35;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_task.dart'
     as _i36;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_sector.dart'
     as _i37;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_branch.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_service_line.dart'
     as _i38;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_contract.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item.dart'
     as _i39;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_catalog_item_scope.dart'
     as _i40;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer.dart'
     as _i41;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_branch.dart'
     as _i42;
-import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_customer_contract.dart'
     as _i43;
-import 'package:elite_multiservicios_server/src/generated/modules/hr/models/hr_employee.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_contract_budget_item.dart'
     as _i44;
-import 'package:elite_multiservicios_server/src/generated/modules/hr/models/hr_attendance.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_lead.dart'
     as _i45;
-import 'package:elite_multiservicios_server/src/generated/modules/hr/models/hr_payroll.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_opportunity.dart'
     as _i46;
-import 'package:elite_multiservicios_server/src/generated/modules/ops/models/ops_inventory_item.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/crm/models/crm_quote_item.dart'
     as _i47;
-import 'package:elite_multiservicios_server/src/generated/modules/ops/models/ops_service_contract.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/hr/models/hr_employee.dart'
     as _i48;
-import 'package:elite_multiservicios_server/src/generated/modules/ops/models/ops_work_order.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/hr/models/hr_attendance.dart'
     as _i49;
-import 'package:elite_multiservicios_server/src/generated/modules/ops/models/ops_inventory_usage.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/hr/models/hr_payroll.dart'
     as _i50;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_applicant.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/ops/models/ops_inventory_item.dart'
     as _i51;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_schedule.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/ops/models/ops_service_contract.dart'
     as _i52;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_assignment.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/ops/models/ops_work_order.dart'
     as _i53;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_dossier_document.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/ops/models/ops_inventory_usage.dart'
     as _i54;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_bonus.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_applicant.dart'
     as _i55;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_deduction.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_schedule.dart'
     as _i56;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_area.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_assignment.dart'
     as _i57;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_position.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_dossier_document.dart'
     as _i58;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_specialty.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_bonus.dart'
     as _i59;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_deduction.dart'
     as _i60;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_document.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_area.dart'
     as _i61;
-import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_timeline_event.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_position.dart'
     as _i62;
-import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_specialty.dart'
     as _i63;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee.dart'
     as _i64;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_employee_document.dart'
     as _i65;
+import 'package:elite_multiservicios_server/src/generated/modules/rrhh/models/rrhh_timeline_event.dart'
+    as _i66;
+import 'package:elite_multiservicios_server/src/generated/modules/security/models/app_role.dart'
+    as _i67;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i68;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i69;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -769,6 +777,152 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['transactionId'],
                   ),
         ),
+        'getTransactions': _i1.MethodConnector(
+          name: 'getTransactions',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .getTransactions(session),
+        ),
+        'createTransaction': _i1.MethodConnector(
+          name: 'createTransaction',
+          params: {
+            'transaction': _i1.ParameterDescription(
+              name: 'transaction',
+              type: _i1.getType<_i32.AccountingTransaction>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .createTransaction(
+                    session,
+                    params['transaction'],
+                  ),
+        ),
+        'getFixedAssets': _i1.MethodConnector(
+          name: 'getFixedAssets',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .getFixedAssets(session),
+        ),
+        'createFixedAsset': _i1.MethodConnector(
+          name: 'createFixedAsset',
+          params: {
+            'asset': _i1.ParameterDescription(
+              name: 'asset',
+              type: _i1.getType<_i33.AccountingFixedAsset>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .createFixedAsset(
+                    session,
+                    params['asset'],
+                  ),
+        ),
+        'runMonthlyDepreciation': _i1.MethodConnector(
+          name: 'runMonthlyDepreciation',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .runMonthlyDepreciation(session),
+        ),
+        'getLedgerAccounts': _i1.MethodConnector(
+          name: 'getLedgerAccounts',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .getLedgerAccounts(session),
+        ),
+        'createLedgerAccount': _i1.MethodConnector(
+          name: 'createLedgerAccount',
+          params: {
+            'account': _i1.ParameterDescription(
+              name: 'account',
+              type: _i1.getType<_i34.AccountingLedgerAccount>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .createLedgerAccount(
+                    session,
+                    params['account'],
+                  ),
+        ),
+        'getTaxes': _i1.MethodConnector(
+          name: 'getTaxes',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .getTaxes(session),
+        ),
+        'createTax': _i1.MethodConnector(
+          name: 'createTax',
+          params: {
+            'tax': _i1.ParameterDescription(
+              name: 'tax',
+              type: _i1.getType<_i35.AccountingTax>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['accounting'] as _i5.AccountingEndpoint).createTax(
+                    session,
+                    params['tax'],
+                  ),
+        ),
+        'getOverdueInvoices': _i1.MethodConnector(
+          name: 'getOverdueInvoices',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .getOverdueInvoices(session),
+        ),
+        'getOverdueExpenses': _i1.MethodConnector(
+          name: 'getOverdueExpenses',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['accounting'] as _i5.AccountingEndpoint)
+                  .getOverdueExpenses(session),
+        ),
       },
     );
     connectors['crmAgenda'] = _i1.EndpointConnector(
@@ -905,7 +1059,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'task': _i1.ParameterDescription(
               name: 'task',
-              type: _i1.getType<_i32.CrmTask>(),
+              type: _i1.getType<_i36.CrmTask>(),
               nullable: false,
             ),
           },
@@ -924,7 +1078,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'task': _i1.ParameterDescription(
               name: 'task',
-              type: _i1.getType<_i32.CrmTask>(),
+              type: _i1.getType<_i36.CrmTask>(),
               nullable: false,
             ),
           },
@@ -1163,7 +1317,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'sector': _i1.ParameterDescription(
               name: 'sector',
-              type: _i1.getType<_i33.CrmSector>(),
+              type: _i1.getType<_i37.CrmSector>(),
               nullable: false,
             ),
           },
@@ -1182,7 +1336,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'sector': _i1.ParameterDescription(
               name: 'sector',
-              type: _i1.getType<_i33.CrmSector>(),
+              type: _i1.getType<_i37.CrmSector>(),
               nullable: false,
             ),
           },
@@ -1245,7 +1399,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'line': _i1.ParameterDescription(
               name: 'line',
-              type: _i1.getType<_i34.CrmServiceLine>(),
+              type: _i1.getType<_i38.CrmServiceLine>(),
               nullable: false,
             ),
           },
@@ -1264,7 +1418,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'line': _i1.ParameterDescription(
               name: 'line',
-              type: _i1.getType<_i34.CrmServiceLine>(),
+              type: _i1.getType<_i38.CrmServiceLine>(),
               nullable: false,
             ),
           },
@@ -1358,7 +1512,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'item': _i1.ParameterDescription(
               name: 'item',
-              type: _i1.getType<_i35.CrmCatalogItem>(),
+              type: _i1.getType<_i39.CrmCatalogItem>(),
               nullable: false,
             ),
           },
@@ -1377,7 +1531,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'item': _i1.ParameterDescription(
               name: 'item',
-              type: _i1.getType<_i35.CrmCatalogItem>(),
+              type: _i1.getType<_i39.CrmCatalogItem>(),
               nullable: false,
             ),
           },
@@ -1434,7 +1588,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'scope': _i1.ParameterDescription(
               name: 'scope',
-              type: _i1.getType<_i36.CrmCatalogItemScope>(),
+              type: _i1.getType<_i40.CrmCatalogItemScope>(),
               nullable: false,
             ),
           },
@@ -1540,17 +1694,17 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'customer': _i1.ParameterDescription(
               name: 'customer',
-              type: _i1.getType<_i37.CrmCustomer>(),
+              type: _i1.getType<_i41.CrmCustomer>(),
               nullable: false,
             ),
             'initialBranch': _i1.ParameterDescription(
               name: 'initialBranch',
-              type: _i1.getType<_i38.CrmCustomerBranch?>(),
+              type: _i1.getType<_i42.CrmCustomerBranch?>(),
               nullable: true,
             ),
             'initialContract': _i1.ParameterDescription(
               name: 'initialContract',
-              type: _i1.getType<_i39.CrmCustomerContract?>(),
+              type: _i1.getType<_i43.CrmCustomerContract?>(),
               nullable: true,
             ),
           },
@@ -1571,7 +1725,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'customer': _i1.ParameterDescription(
               name: 'customer',
-              type: _i1.getType<_i37.CrmCustomer>(),
+              type: _i1.getType<_i41.CrmCustomer>(),
               nullable: false,
             ),
           },
@@ -1609,7 +1763,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'branch': _i1.ParameterDescription(
               name: 'branch',
-              type: _i1.getType<_i38.CrmCustomerBranch>(),
+              type: _i1.getType<_i42.CrmCustomerBranch>(),
               nullable: false,
             ),
           },
@@ -1628,7 +1782,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'branch': _i1.ParameterDescription(
               name: 'branch',
-              type: _i1.getType<_i38.CrmCustomerBranch>(),
+              type: _i1.getType<_i42.CrmCustomerBranch>(),
               nullable: false,
             ),
           },
@@ -1666,12 +1820,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'contract': _i1.ParameterDescription(
               name: 'contract',
-              type: _i1.getType<_i39.CrmCustomerContract>(),
+              type: _i1.getType<_i43.CrmCustomerContract>(),
               nullable: false,
             ),
             'budgetItems': _i1.ParameterDescription(
               name: 'budgetItems',
-              type: _i1.getType<List<_i40.CrmContractBudgetItem>?>(),
+              type: _i1.getType<List<_i44.CrmContractBudgetItem>?>(),
               nullable: true,
             ),
           },
@@ -1691,7 +1845,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'contract': _i1.ParameterDescription(
               name: 'contract',
-              type: _i1.getType<_i39.CrmCustomerContract>(),
+              type: _i1.getType<_i43.CrmCustomerContract>(),
               nullable: false,
             ),
           },
@@ -1917,7 +2071,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'lead': _i1.ParameterDescription(
               name: 'lead',
-              type: _i1.getType<_i41.CrmLead>(),
+              type: _i1.getType<_i45.CrmLead>(),
               nullable: false,
             ),
           },
@@ -1936,7 +2090,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'lead': _i1.ParameterDescription(
               name: 'lead',
-              type: _i1.getType<_i41.CrmLead>(),
+              type: _i1.getType<_i45.CrmLead>(),
               nullable: false,
             ),
           },
@@ -2152,12 +2306,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'opp': _i1.ParameterDescription(
               name: 'opp',
-              type: _i1.getType<_i42.CrmOpportunity>(),
+              type: _i1.getType<_i46.CrmOpportunity>(),
               nullable: false,
             ),
             'quoteItems': _i1.ParameterDescription(
               name: 'quoteItems',
-              type: _i1.getType<List<_i43.CrmQuoteItem>?>(),
+              type: _i1.getType<List<_i47.CrmQuoteItem>?>(),
               nullable: true,
             ),
           },
@@ -2177,12 +2331,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'opp': _i1.ParameterDescription(
               name: 'opp',
-              type: _i1.getType<_i42.CrmOpportunity>(),
+              type: _i1.getType<_i46.CrmOpportunity>(),
               nullable: false,
             ),
             'quoteItems': _i1.ParameterDescription(
               name: 'quoteItems',
-              type: _i1.getType<List<_i43.CrmQuoteItem>?>(),
+              type: _i1.getType<List<_i47.CrmQuoteItem>?>(),
               nullable: true,
             ),
           },
@@ -2291,7 +2445,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'employee': _i1.ParameterDescription(
               name: 'employee',
-              type: _i1.getType<_i44.HrEmployee>(),
+              type: _i1.getType<_i48.HrEmployee>(),
               nullable: false,
             ),
           },
@@ -2328,7 +2482,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'attendance': _i1.ParameterDescription(
               name: 'attendance',
-              type: _i1.getType<_i45.HrAttendance>(),
+              type: _i1.getType<_i49.HrAttendance>(),
               nullable: false,
             ),
           },
@@ -2370,7 +2524,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'payroll': _i1.ParameterDescription(
               name: 'payroll',
-              type: _i1.getType<_i46.HrPayroll>(),
+              type: _i1.getType<_i50.HrPayroll>(),
               nullable: false,
             ),
           },
@@ -2422,7 +2576,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'item': _i1.ParameterDescription(
               name: 'item',
-              type: _i1.getType<_i47.OpsInventoryItem>(),
+              type: _i1.getType<_i51.OpsInventoryItem>(),
               nullable: false,
             ),
           },
@@ -2451,7 +2605,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'contract': _i1.ParameterDescription(
               name: 'contract',
-              type: _i1.getType<_i48.OpsServiceContract>(),
+              type: _i1.getType<_i52.OpsServiceContract>(),
               nullable: false,
             ),
           },
@@ -2464,6 +2618,43 @@ class Endpoints extends _i1.EndpointDispatch {
                     session,
                     params['contract'],
                   ),
+        ),
+        'completeContract': _i1.MethodConnector(
+          name: 'completeContract',
+          params: {
+            'contractId': _i1.ParameterDescription(
+              name: 'contractId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['ops'] as _i12.OpsEndpoint).completeContract(
+                    session,
+                    params['contractId'],
+                  ),
+        ),
+        'cancelContract': _i1.MethodConnector(
+          name: 'cancelContract',
+          params: {
+            'contractId': _i1.ParameterDescription(
+              name: 'contractId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ops'] as _i12.OpsEndpoint).cancelContract(
+                session,
+                params['contractId'],
+              ),
         ),
         'getWorkOrders': _i1.MethodConnector(
           name: 'getWorkOrders',
@@ -2488,7 +2679,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'order': _i1.ParameterDescription(
               name: 'order',
-              type: _i1.getType<_i49.OpsWorkOrder>(),
+              type: _i1.getType<_i53.OpsWorkOrder>(),
               nullable: false,
             ),
           },
@@ -2502,12 +2693,31 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['order'],
                   ),
         ),
+        'completeWorkOrder': _i1.MethodConnector(
+          name: 'completeWorkOrder',
+          params: {
+            'orderId': _i1.ParameterDescription(
+              name: 'orderId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['ops'] as _i12.OpsEndpoint).completeWorkOrder(
+                    session,
+                    params['orderId'],
+                  ),
+        ),
         'registerUsage': _i1.MethodConnector(
           name: 'registerUsage',
           params: {
             'usage': _i1.ParameterDescription(
               name: 'usage',
-              type: _i1.getType<_i50.OpsInventoryUsage>(),
+              type: _i1.getType<_i54.OpsInventoryUsage>(),
               nullable: false,
             ),
           },
@@ -2613,7 +2823,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'applicant': _i1.ParameterDescription(
               name: 'applicant',
-              type: _i1.getType<_i51.RrhhApplicant>(),
+              type: _i1.getType<_i55.RrhhApplicant>(),
               nullable: false,
             ),
           },
@@ -2633,7 +2843,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'applicant': _i1.ParameterDescription(
               name: 'applicant',
-              type: _i1.getType<_i51.RrhhApplicant>(),
+              type: _i1.getType<_i55.RrhhApplicant>(),
               nullable: false,
             ),
           },
@@ -2798,7 +3008,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'schedule': _i1.ParameterDescription(
               name: 'schedule',
-              type: _i1.getType<_i52.RrhhSchedule>(),
+              type: _i1.getType<_i56.RrhhSchedule>(),
               nullable: false,
             ),
           },
@@ -2818,7 +3028,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'schedule': _i1.ParameterDescription(
               name: 'schedule',
-              type: _i1.getType<_i52.RrhhSchedule>(),
+              type: _i1.getType<_i56.RrhhSchedule>(),
               nullable: false,
             ),
           },
@@ -2980,7 +3190,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'assignment': _i1.ParameterDescription(
               name: 'assignment',
-              type: _i1.getType<_i53.RrhhAssignment>(),
+              type: _i1.getType<_i57.RrhhAssignment>(),
               nullable: false,
             ),
           },
@@ -3269,7 +3479,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'documentChecklist': _i1.ParameterDescription(
               name: 'documentChecklist',
-              type: _i1.getType<List<_i54.RrhhDossierDocument>>(),
+              type: _i1.getType<List<_i58.RrhhDossierDocument>>(),
               nullable: false,
             ),
             'sectionStatus': _i1.ParameterDescription(
@@ -3441,12 +3651,12 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'bonuses': _i1.ParameterDescription(
               name: 'bonuses',
-              type: _i1.getType<List<_i55.RrhhEmployeeBonus>?>(),
+              type: _i1.getType<List<_i59.RrhhEmployeeBonus>?>(),
               nullable: true,
             ),
             'deductions': _i1.ParameterDescription(
               name: 'deductions',
-              type: _i1.getType<List<_i56.RrhhEmployeeDeduction>?>(),
+              type: _i1.getType<List<_i60.RrhhEmployeeDeduction>?>(),
               nullable: true,
             ),
             'notes': _i1.ParameterDescription(
@@ -4332,7 +4542,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'area': _i1.ParameterDescription(
               name: 'area',
-              type: _i1.getType<_i57.RrhhArea>(),
+              type: _i1.getType<_i61.RrhhArea>(),
               nullable: false,
             ),
           },
@@ -4353,7 +4563,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'area': _i1.ParameterDescription(
               name: 'area',
-              type: _i1.getType<_i57.RrhhArea>(),
+              type: _i1.getType<_i61.RrhhArea>(),
               nullable: false,
             ),
           },
@@ -4455,7 +4665,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'position': _i1.ParameterDescription(
               name: 'position',
-              type: _i1.getType<_i58.RrhhPosition>(),
+              type: _i1.getType<_i62.RrhhPosition>(),
               nullable: false,
             ),
           },
@@ -4476,7 +4686,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'position': _i1.ParameterDescription(
               name: 'position',
-              type: _i1.getType<_i58.RrhhPosition>(),
+              type: _i1.getType<_i62.RrhhPosition>(),
               nullable: false,
             ),
           },
@@ -4566,7 +4776,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'specialty': _i1.ParameterDescription(
               name: 'specialty',
-              type: _i1.getType<_i59.RrhhSpecialty>(),
+              type: _i1.getType<_i63.RrhhSpecialty>(),
               nullable: false,
             ),
           },
@@ -4587,7 +4797,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'specialty': _i1.ParameterDescription(
               name: 'specialty',
-              type: _i1.getType<_i59.RrhhSpecialty>(),
+              type: _i1.getType<_i63.RrhhSpecialty>(),
               nullable: false,
             ),
           },
@@ -4873,7 +5083,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'employee': _i1.ParameterDescription(
               name: 'employee',
-              type: _i1.getType<_i60.RrhhEmployee>(),
+              type: _i1.getType<_i64.RrhhEmployee>(),
               nullable: false,
             ),
           },
@@ -4893,7 +5103,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'employee': _i1.ParameterDescription(
               name: 'employee',
-              type: _i1.getType<_i60.RrhhEmployee>(),
+              type: _i1.getType<_i64.RrhhEmployee>(),
               nullable: false,
             ),
           },
@@ -5263,12 +5473,12 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'bonuses': _i1.ParameterDescription(
               name: 'bonuses',
-              type: _i1.getType<List<_i55.RrhhEmployeeBonus>?>(),
+              type: _i1.getType<List<_i59.RrhhEmployeeBonus>?>(),
               nullable: true,
             ),
             'deductions': _i1.ParameterDescription(
               name: 'deductions',
-              type: _i1.getType<List<_i56.RrhhEmployeeDeduction>?>(),
+              type: _i1.getType<List<_i60.RrhhEmployeeDeduction>?>(),
               nullable: true,
             ),
           },
@@ -5303,7 +5513,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'bonuses': _i1.ParameterDescription(
               name: 'bonuses',
-              type: _i1.getType<List<_i55.RrhhEmployeeBonus>>(),
+              type: _i1.getType<List<_i59.RrhhEmployeeBonus>>(),
               nullable: false,
             ),
           },
@@ -5329,7 +5539,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'deductions': _i1.ParameterDescription(
               name: 'deductions',
-              type: _i1.getType<List<_i56.RrhhEmployeeDeduction>>(),
+              type: _i1.getType<List<_i60.RrhhEmployeeDeduction>>(),
               nullable: false,
             ),
           },
@@ -5393,7 +5603,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'documentChecklist': _i1.ParameterDescription(
               name: 'documentChecklist',
-              type: _i1.getType<List<_i54.RrhhDossierDocument>>(),
+              type: _i1.getType<List<_i58.RrhhDossierDocument>>(),
               nullable: false,
             ),
           },
@@ -5434,7 +5644,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'document': _i1.ParameterDescription(
               name: 'document',
-              type: _i1.getType<_i61.RrhhEmployeeDocument>(),
+              type: _i1.getType<_i65.RrhhEmployeeDocument>(),
               nullable: false,
             ),
           },
@@ -5494,7 +5704,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'event': _i1.ParameterDescription(
               name: 'event',
-              type: _i1.getType<_i62.RrhhTimelineEvent>(),
+              type: _i1.getType<_i66.RrhhTimelineEvent>(),
               nullable: false,
             ),
           },
@@ -5836,7 +6046,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'role': _i1.ParameterDescription(
               name: 'role',
-              type: _i1.getType<_i63.AppRole>(),
+              type: _i1.getType<_i67.AppRole>(),
               nullable: false,
             ),
           },
@@ -5854,7 +6064,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'role': _i1.ParameterDescription(
               name: 'role',
-              type: _i1.getType<_i63.AppRole>(),
+              type: _i1.getType<_i67.AppRole>(),
               nullable: false,
             ),
           },
@@ -6209,9 +6419,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i64.Endpoints()
+    modules['serverpod_auth_idp'] = _i68.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i65.Endpoints()
+    modules['serverpod_auth_core'] = _i69.Endpoints()
       ..initializeEndpoints(server);
   }
 }

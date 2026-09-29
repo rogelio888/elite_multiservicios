@@ -10,7 +10,10 @@ class HrEndpoint extends Endpoint {
     );
   }
 
-  Future<HrEmployee> createOrUpdateEmployee(Session session, HrEmployee employee) async {
+  Future<HrEmployee> createOrUpdateEmployee(
+    Session session,
+    HrEmployee employee,
+  ) async {
     if (employee.id == null) {
       employee.createdAt = DateTime.now();
       employee.updatedAt = DateTime.now();
@@ -22,7 +25,10 @@ class HrEndpoint extends Endpoint {
   }
 
   // --- Attendance ---
-  Future<List<HrAttendance>> getAttendance(Session session, DateTime date) async {
+  Future<List<HrAttendance>> getAttendance(
+    Session session,
+    DateTime date,
+  ) async {
     final start = DateTime(date.year, date.month, date.day);
     final end = start.add(const Duration(days: 1));
     return await HrAttendance.db.find(
@@ -31,7 +37,10 @@ class HrEndpoint extends Endpoint {
     );
   }
 
-  Future<HrAttendance> markAttendance(Session session, HrAttendance attendance) async {
+  Future<HrAttendance> markAttendance(
+    Session session,
+    HrAttendance attendance,
+  ) async {
     if (attendance.id == null) {
       attendance.createdAt = DateTime.now();
       attendance.updatedAt = DateTime.now();
@@ -43,7 +52,11 @@ class HrEndpoint extends Endpoint {
   }
 
   // --- Payroll ---
-  Future<List<HrPayroll>> getPayroll(Session session, int year, int month) async {
+  Future<List<HrPayroll>> getPayroll(
+    Session session,
+    int year,
+    int month,
+  ) async {
     return await HrPayroll.db.find(
       session,
       where: (t) => t.year.equals(year) & t.month.equals(month),

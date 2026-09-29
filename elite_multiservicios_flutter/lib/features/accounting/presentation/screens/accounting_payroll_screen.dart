@@ -54,25 +54,27 @@ class _AccountingPayrollScreenState extends State<AccountingPayrollScreen> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Registrar Estimación Salarial'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: salaryController,
-                decoration: const InputDecoration(
-                  labelText: 'Salario Base (Bs)',
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: salaryController,
+                  decoration: const InputDecoration(
+                    labelText: 'Salario Base (Bs)',
+                  ),
+                  keyboardType: TextInputType.number,
                 ),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: bonusController,
-                decoration: const InputDecoration(
-                  labelText: 'Bonos Estimados (Bs)',
+                const SizedBox(height: 16),
+                TextField(
+                  controller: bonusController,
+                  decoration: const InputDecoration(
+                    labelText: 'Bonos Estimados (Bs)',
+                  ),
+                  keyboardType: TextInputType.number,
                 ),
-                keyboardType: TextInputType.number,
-              ),
-            ],
+              ],
+            ),
           ),
           actions: [
             TextButton(

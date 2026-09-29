@@ -182,35 +182,37 @@ class AccountingExcelGrid extends StatelessWidget {
           if (rows.isEmpty)
             Expanded(
               child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.table_rows_outlined,
-                      size: 48,
-                      color: theme.disabledColor,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'No hay registros aún',
-                      style: TextStyle(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.table_rows_outlined,
+                        size: 48,
                         color: theme.disabledColor,
-                        fontSize: 14,
                       ),
-                    ),
-                    if (onAddRow != null) ...[
-                      const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        onPressed: onAddRow,
-                        icon: const Icon(Icons.add, size: 18),
-                        label: const Text('Agregar primer registro'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green.shade600,
-                          foregroundColor: Colors.white,
+                      const SizedBox(height: 12),
+                      Text(
+                        'No hay registros aún',
+                        style: TextStyle(
+                          color: theme.disabledColor,
+                          fontSize: 14,
                         ),
                       ),
+                      if (onAddRow != null) ...[
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed: onAddRow,
+                          icon: const Icon(Icons.add, size: 18),
+                          label: const Text('Agregar primer registro'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green.shade600,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             )

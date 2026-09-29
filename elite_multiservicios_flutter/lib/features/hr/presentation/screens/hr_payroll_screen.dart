@@ -24,16 +24,16 @@ class _HrPayrollScreenState extends State<HrPayrollScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final payrolls =
-          await client.hr.getPayroll(_now.year, _now.month);
+      final payrolls = await client.hr.getPayroll(_now.year, _now.month);
       if (!mounted) return;
       setState(() {
         _payrolls = payrolls;
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -49,12 +49,9 @@ class _HrPayrollScreenState extends State<HrPayrollScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
-          double base =
-              double.tryParse(baseSalaryController.text) ?? 0;
-          double bonuses =
-              double.tryParse(bonusesController.text) ?? 0;
-          double deductions =
-              double.tryParse(deductionsController.text) ?? 0;
+          double base = double.tryParse(baseSalaryController.text) ?? 0;
+          double bonuses = double.tryParse(bonusesController.text) ?? 0;
+          double deductions = double.tryParse(deductionsController.text) ?? 0;
           double net = base + bonuses - deductions;
 
           return AlertDialog(
@@ -65,28 +62,32 @@ class _HrPayrollScreenState extends State<HrPayrollScreen> {
                 children: [
                   TextField(
                     controller: employeeIdController,
-                    decoration:
-                        const InputDecoration(labelText: 'ID del Empleado'),
+                    decoration: const InputDecoration(
+                      labelText: 'ID del Empleado',
+                    ),
                     keyboardType: TextInputType.number,
                   ),
                   TextField(
                     controller: baseSalaryController,
-                    decoration:
-                        const InputDecoration(labelText: 'Salario Base (Bs)'),
+                    decoration: const InputDecoration(
+                      labelText: 'Salario Base (Bs)',
+                    ),
                     keyboardType: TextInputType.number,
                     onChanged: (_) => setDialogState(() {}),
                   ),
                   TextField(
                     controller: bonusesController,
-                    decoration:
-                        const InputDecoration(labelText: 'Bonificaciones (Bs)'),
+                    decoration: const InputDecoration(
+                      labelText: 'Bonificaciones (Bs)',
+                    ),
                     keyboardType: TextInputType.number,
                     onChanged: (_) => setDialogState(() {}),
                   ),
                   TextField(
                     controller: deductionsController,
-                    decoration:
-                        const InputDecoration(labelText: 'Deducciones (Bs)'),
+                    decoration: const InputDecoration(
+                      labelText: 'Deducciones (Bs)',
+                    ),
                     keyboardType: TextInputType.number,
                     onChanged: (_) => setDialogState(() {}),
                   ),
@@ -96,18 +97,25 @@ class _HrPayrollScreenState extends State<HrPayrollScreen> {
                     decoration: BoxDecoration(
                       color: Colors.green.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: Colors.green.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Pago Neto:',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text('${net.toStringAsFixed(2)} Bs',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
-                                fontSize: 16)),
+                        const Text(
+                          'Pago Neto:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '${net.toStringAsFixed(2)} Bs',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                            fontSize: 16,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -167,8 +175,9 @@ class _HrPayrollScreenState extends State<HrPayrollScreen> {
       _loadData();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -197,35 +206,47 @@ class _HrPayrollScreenState extends State<HrPayrollScreen> {
                   children: [
                     CircleAvatar(
                       radius: 18,
-                      backgroundColor:
-                          theme.colorScheme.primary.withValues(alpha: 0.1),
+                      backgroundColor: theme.colorScheme.primary.withValues(
+                        alpha: 0.1,
+                      ),
                       child: Text(
                         '${item.employeeId}',
                         style: TextStyle(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12),
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Emp #${item.employeeId}',
-                            style: GoogleFonts.inter(
-                                fontSize: 15, fontWeight: FontWeight.bold)),
-                        Text('${item.month}/${item.year}',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.5))),
+                        Text(
+                          'Emp #${item.employeeId}',
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '${item.month}/${item.year}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ],
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4),
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: item.isPaid
                         ? Colors.green.withValues(alpha: 0.1)
@@ -235,9 +256,10 @@ class _HrPayrollScreenState extends State<HrPayrollScreen> {
                   child: Text(
                     item.isPaid ? 'Pagado' : 'Pendiente',
                     style: TextStyle(
-                        color: item.isPaid ? Colors.green : Colors.orange,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12),
+                      color: item.isPaid ? Colors.green : Colors.orange,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
@@ -247,22 +269,26 @@ class _HrPayrollScreenState extends State<HrPayrollScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _PayItem(
-                    label: 'Salario Base',
-                    value: '${item.baseSalary.toStringAsFixed(2)} Bs',
-                    color: theme.colorScheme.onSurface),
+                  label: 'Salario Base',
+                  value: '${item.baseSalary.toStringAsFixed(2)} Bs',
+                  color: theme.colorScheme.onSurface,
+                ),
                 _PayItem(
-                    label: 'Bonif.',
-                    value: '+${item.bonuses.toStringAsFixed(2)} Bs',
-                    color: Colors.green),
+                  label: 'Bonif.',
+                  value: '+${item.bonuses.toStringAsFixed(2)} Bs',
+                  color: Colors.green,
+                ),
                 _PayItem(
-                    label: 'Deduc.',
-                    value: '-${item.deductions.toStringAsFixed(2)} Bs',
-                    color: Colors.red),
+                  label: 'Deduc.',
+                  value: '-${item.deductions.toStringAsFixed(2)} Bs',
+                  color: Colors.red,
+                ),
                 _PayItem(
-                    label: 'NETO',
-                    value: '${item.netPay.toStringAsFixed(2)} Bs',
-                    color: Colors.blue,
-                    isLarge: true),
+                  label: 'NETO',
+                  value: '${item.netPay.toStringAsFixed(2)} Bs',
+                  color: Colors.blue,
+                  isLarge: true,
+                ),
               ],
             ),
             if (!item.isPaid) ...[
@@ -292,14 +318,14 @@ class _HrPayrollScreenState extends State<HrPayrollScreen> {
     final theme = Theme.of(context);
 
     final totalNomina = _payrolls.fold(0.0, (s, p) => s + p.netPay);
-    final pagados =
-        _payrolls.where((p) => p.isPaid).fold(0.0, (s, p) => s + p.netPay);
+    final pagados = _payrolls
+        .where((p) => p.isPaid)
+        .fold(0.0, (s, p) => s + p.netPay);
     final pendientes = totalNomina - pagados;
 
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text('NÃ³mina ${_now.month}/${_now.year}'),
+        title: Text('NÃ³mina ${_now.month}/${_now.year}'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -315,7 +341,9 @@ class _HrPayrollScreenState extends State<HrPayrollScreen> {
                 // Summary header
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 12),
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   color: theme.colorScheme.surfaceContainerHighest,
                   child: Row(
                     children: [
@@ -354,12 +382,16 @@ class _HrPayrollScreenState extends State<HrPayrollScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.payments_outlined,
-                                  size: 64, color: theme.disabledColor),
+                              Icon(
+                                Icons.payments_outlined,
+                                size: 64,
+                                color: theme.disabledColor,
+                              ),
                               const SizedBox(height: 16),
-                              Text('No hay nÃ³mina este mes',
-                                  style:
-                                      TextStyle(color: theme.disabledColor)),
+                              Text(
+                                'No hay nÃ³mina este mes',
+                                style: TextStyle(color: theme.disabledColor),
+                              ),
                               const SizedBox(height: 16),
                               ElevatedButton(
                                 onPressed: _showGenerateDialog,
@@ -372,8 +404,7 @@ class _HrPayrollScreenState extends State<HrPayrollScreen> {
                           padding: const EdgeInsets.all(16),
                           itemCount: _payrolls.length,
                           itemBuilder: (context, index) {
-                            return _buildPayrollCard(
-                                _payrolls[index], theme);
+                            return _buildPayrollCard(_payrolls[index], theme);
                           },
                         ),
                 ),
@@ -401,16 +432,23 @@ class _PayItem extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: TextStyle(
-                fontSize: 11,
-                color:
-                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5))),
-        Text(value,
-            style: TextStyle(
-                fontSize: isLarge ? 15 : 13,
-                fontWeight: FontWeight.bold,
-                color: color)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.5),
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: isLarge ? 15 : 13,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
       ],
     );
   }
@@ -446,20 +484,26 @@ class _SummaryTile extends StatelessWidget {
               Icon(icon, size: 16, color: color),
               const SizedBox(width: 4),
               Expanded(
-                child: Text(label,
-                    style: TextStyle(fontSize: 11, color: color),
-                    overflow: TextOverflow.ellipsis),
+                child: Text(
+                  label,
+                  style: TextStyle(fontSize: 11, color: color),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Text(value,
-              style: TextStyle(
-                  fontSize: 13, fontWeight: FontWeight.bold, color: color),
-              overflow: TextOverflow.ellipsis),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );
   }
 }
-

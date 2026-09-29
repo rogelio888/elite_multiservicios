@@ -1,4 +1,4 @@
-// TODO(DTO): reemplazar por cliente Serverpod cuando el backend lo exponga.
+// NOTE(DTO): pendiente de reemplazar por modelo Serverpod cuando el backend lo exponga.
 
 /// DTO de corte laboral mensual consolidado por RRHH para entrega formal a Contabilidad (PDF Sección 6.1).
 /// NO liquida pagos bancarios ni genera asientos contables.

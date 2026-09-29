@@ -25,29 +25,60 @@ class AccountingProfitabilityScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Proyecto: Condominio Las Palmas', style: Theme.of(context).textTheme.titleLarge),
+                    Text(
+                      'Proyecto: Condominio Las Palmas',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                     const SizedBox(height: 8),
                     const Text('Código CC: CC-001 | Cliente: Las Palmas Admin'),
                     const Divider(),
                     const ListTile(
                       leading: Icon(Icons.monetization_on, color: Colors.green),
                       title: Text('Ingresos (Facturación CRM)'),
-                      trailing: Text('\$5,000.00', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                      trailing: Text(
+                        '\$5,000.00',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     const ListTile(
                       leading: Icon(Icons.people, color: Colors.red),
                       title: Text('Egresos Laborales (Nómina RRHH)'),
-                      trailing: Text('\$2,500.00', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                      trailing: Text(
+                        '\$2,500.00',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     const ListTile(
                       leading: Icon(Icons.shopping_cart, color: Colors.orange),
                       title: Text('Gastos Operativos (Materiales en campo)'),
-                      trailing: Text('\$500.00', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                      trailing: Text(
+                        '\$500.00',
+                        style: TextStyle(
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     const Divider(),
                     const ListTile(
-                      title: Text('Rentabilidad Neta', style: TextStyle(fontWeight: FontWeight.bold)),
-                      trailing: Text('\$2,000.00 (40%)', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 18)),
+                      title: Text(
+                        'Rentabilidad Neta',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      trailing: Text(
+                        '\$2,000.00 (40%)',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -60,7 +91,10 @@ class AccountingProfitabilityScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Catálogo de Cuentas Fiscales', style: Theme.of(context).textTheme.titleLarge),
+                    Text(
+                      'Catálogo de Cuentas Fiscales',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                     const Divider(),
                     const ListTile(
                       leading: Icon(Icons.account_balance),

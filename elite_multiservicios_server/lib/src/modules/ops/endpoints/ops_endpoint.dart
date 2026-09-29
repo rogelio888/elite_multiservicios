@@ -10,7 +10,10 @@ class OpsEndpoint extends Endpoint {
     );
   }
 
-  Future<OpsInventoryItem> createOrUpdateItem(Session session, OpsInventoryItem item) async {
+  Future<OpsInventoryItem> createOrUpdateItem(
+    Session session,
+    OpsInventoryItem item,
+  ) async {
     if (item.id == null) {
       item.createdAt = DateTime.now();
       item.updatedAt = DateTime.now();
@@ -30,7 +33,10 @@ class OpsEndpoint extends Endpoint {
     );
   }
 
-  Future<OpsServiceContract> createOrUpdateContract(Session session, OpsServiceContract contract) async {
+  Future<OpsServiceContract> createOrUpdateContract(
+    Session session,
+    OpsServiceContract contract,
+  ) async {
     if (contract.id == null) {
       contract.createdAt = DateTime.now();
       contract.updatedAt = DateTime.now();
@@ -41,8 +47,31 @@ class OpsEndpoint extends Endpoint {
     }
   }
 
+  Future<void> completeContract(Session session, int contractId) async {
+    final contract = await OpsServiceContract.db.findById(session, contractId);
+    if (contract == null) {
+      throw Exception('Contrato #$contractId no encontrado');
+    }
+    contract.status = 'Completado';
+    contract.updatedAt = DateTime.now();
+    await OpsServiceContract.db.updateRow(session, contract);
+  }
+
+  Future<void> cancelContract(Session session, int contractId) async {
+    final contract = await OpsServiceContract.db.findById(session, contractId);
+    if (contract == null) {
+      throw Exception('Contrato #$contractId no encontrado');
+    }
+    contract.status = 'Cancelado';
+    contract.updatedAt = DateTime.now();
+    await OpsServiceContract.db.updateRow(session, contract);
+  }
+
   // --- Work Orders ---
-  Future<List<OpsWorkOrder>> getWorkOrders(Session session, DateTime date) async {
+  Future<List<OpsWorkOrder>> getWorkOrders(
+    Session session,
+    DateTime date,
+  ) async {
     final start = DateTime(date.year, date.month, date.day);
     final end = start.add(const Duration(days: 1));
     return await OpsWorkOrder.db.find(
@@ -51,7 +80,10 @@ class OpsEndpoint extends Endpoint {
     );
   }
 
-  Future<OpsWorkOrder> createOrUpdateWorkOrder(Session session, OpsWorkOrder order) async {
+  Future<OpsWorkOrder> createOrUpdateWorkOrder(
+    Session session,
+    OpsWorkOrder order,
+  ) async {
     if (order.id == null) {
       order.createdAt = DateTime.now();
       order.updatedAt = DateTime.now();
@@ -62,8 +94,19 @@ class OpsEndpoint extends Endpoint {
     }
   }
 
+  Future<void> completeWorkOrder(Session session, int orderId) async {
+    final order = await OpsWorkOrder.db.findById(session, orderId);
+    if (order == null) throw Exception('Orden #$orderId no encontrada');
+    order.status = 'Completado';
+    order.updatedAt = DateTime.now();
+    await OpsWorkOrder.db.updateRow(session, order);
+  }
+
   // --- Inventory Usage & Accounting Integration ---
-  Future<OpsInventoryUsage> registerUsage(Session session, OpsInventoryUsage usage) async {
+  Future<OpsInventoryUsage> registerUsage(
+    Session session,
+    OpsInventoryUsage usage,
+  ) async {
     // Buscar el item
     final item = await OpsInventoryItem.db.findById(session, usage.itemId);
     if (item == null) throw Exception('Item no encontrado');
@@ -85,7 +128,8 @@ class OpsEndpoint extends Endpoint {
       amount: usage.totalCost,
       category: 'Insumos Operativos',
       status: 'Paid',
-      description: 'Uso en O.T. #${usage.workOrderId}: ${usage.quantityUsed} ${item.unit} de ${item.name}',
+      description:
+          'Uso en O.T. #${usage.workOrderId}: ${usage.quantityUsed} ${item.unit} de ${item.name}',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       isDeleted: false,

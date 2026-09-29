@@ -1,4 +1,4 @@
-// TODO(DTO): reemplazar por cliente Serverpod cuando el backend lo exponga.
+// NOTE(DTO): pendiente de reemplazar por modelo Serverpod cuando el backend lo exponga.
 
 /// DTO ligero de referencia débil hacia cuentas y sedes comerciales administradas por el CRM.
 /// RRHH solo lee esta información para contexto y vinculación; nunca crea clientes comerciales.

@@ -1,34 +1,23 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-// ignore_for_file: avoid_web_libraries_in_flutter, deprecated_member_use
-import 'dart:html' as html;
+import '../utils/accounting_file_helper.dart';
 
 class AccountingBankReconciliationScreen extends StatefulWidget {
   const AccountingBankReconciliationScreen({super.key});
 
   @override
-  State<AccountingBankReconciliationScreen> createState() => _AccountingBankReconciliationScreenState();
+  State<AccountingBankReconciliationScreen> createState() =>
+      _AccountingBankReconciliationScreenState();
 }
 
-class _AccountingBankReconciliationScreenState extends State<AccountingBankReconciliationScreen> {
+class _AccountingBankReconciliationScreenState
+    extends State<AccountingBankReconciliationScreen> {
   List<List<String>> _parsedData = [];
   bool _isProcessing = false;
 
   void _uploadCSV() {
-    final html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
-    uploadInput.accept = '.csv';
-    uploadInput.click();
-
-    uploadInput.onChange.listen((e) {
-      final files = uploadInput.files;
-      if (files != null && files.isNotEmpty) {
-        final reader = html.FileReader();
-        reader.readAsText(files[0]);
-        reader.onLoadEnd.listen((e) {
-          final content = reader.result as String;
-          _parseCSV(content);
-        });
-      }
+    uploadCsvWeb((content) {
+      _parseCSV(content);
     });
   }
 
@@ -49,16 +38,20 @@ class _AccountingBankReconciliationScreenState extends State<AccountingBankRecon
   void _processReconciliation() async {
     // Simularemos el cruce automático con facturas
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Procesando conciliación con Inteligencia Artificial...')),
+      const SnackBar(
+        content: Text('Procesando conciliación con Inteligencia Artificial...'),
+      ),
     );
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Conciliación Exitosa'),
-        content: const Text('El sistema cruzó 15 pagos recibidos con facturas pendientes y registró 3 cargos bancarios automáticamente en el libro de gastos.'),
+        content: const Text(
+          'El sistema cruzó 15 pagos recibidos con facturas pendientes y registró 3 cargos bancarios automáticamente en el libro de gastos.',
+        ),
         actions: [
           ElevatedButton(
             onPressed: () {
@@ -66,7 +59,7 @@ class _AccountingBankReconciliationScreenState extends State<AccountingBankRecon
               setState(() => _parsedData.clear());
             },
             child: const Text('Aceptar'),
-          )
+          ),
         ],
       ),
     );
@@ -90,8 +83,16 @@ class _AccountingBankReconciliationScreenState extends State<AccountingBankRecon
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Sube tu extracto bancario', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          Text('Formato admitido: CSV (Banco Mercantil, BCP, BNB, etc.)'),
+                          Text(
+                            'Sube tu extracto bancario',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Formato admitido: CSV (Banco Mercantil, BCP, BNB, etc.)',
+                          ),
                         ],
                       ),
                     ),
@@ -111,11 +112,17 @@ class _AccountingBankReconciliationScreenState extends State<AccountingBankRecon
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Filas detectadas: ${_parsedData.length}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                    'Filas detectadas: ${_parsedData.length}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   ElevatedButton.icon(
                     onPressed: _processReconciliation,
                     icon: const Icon(Icons.auto_awesome),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.white),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                    ),
                     label: const Text('Cruzar Pagos Automáticamente'),
                   ),
                 ],
@@ -138,7 +145,9 @@ class _AccountingBankReconciliationScreenState extends State<AccountingBankRecon
             ] else
               const Expanded(
                 child: Center(
-                  child: Text('Aún no has subido ningún extracto bancario para conciliar.'),
+                  child: Text(
+                    'Aún no has subido ningún extracto bancario para conciliar.',
+                  ),
                 ),
               ),
           ],

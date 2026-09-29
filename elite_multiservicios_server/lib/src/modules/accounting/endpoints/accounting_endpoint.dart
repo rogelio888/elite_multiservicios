@@ -230,4 +230,118 @@ class AccountingEndpoint extends Endpoint {
       await AccountingPettyCashTransaction.db.deleteRow(session, txn);
     }
   }
+
+  // --- Transacciones Bancarias ---
+
+  Future<List<AccountingTransaction>> getTransactions(Session session) async {
+    return await AccountingTransaction.db.find(
+      session,
+      where: (t) => t.isDeleted.equals(false),
+      orderBy: (t) => t.date,
+      orderDescending: true,
+    );
+  }
+
+  Future<AccountingTransaction> createTransaction(
+    Session session,
+    AccountingTransaction transaction,
+  ) async {
+    transaction.createdAt = DateTime.now();
+    transaction.updatedAt = DateTime.now();
+    return await AccountingTransaction.db.insertRow(session, transaction);
+  }
+
+  // --- Activos Fijos ---
+
+  Future<List<AccountingFixedAsset>> getFixedAssets(Session session) async {
+    return await AccountingFixedAsset.db.find(
+      session,
+      orderBy: (t) => t.name,
+    );
+  }
+
+  Future<AccountingFixedAsset> createFixedAsset(
+    Session session,
+    AccountingFixedAsset asset,
+  ) async {
+    return await AccountingFixedAsset.db.insertRow(session, asset);
+  }
+
+  Future<int> runMonthlyDepreciation(Session session) async {
+    final assets = await AccountingFixedAsset.db.find(
+      session,
+      where: (t) => t.isFullyDepreciated.equals(false),
+    );
+    int processed = 0;
+    for (final asset in assets) {
+      final monthlyDep = asset.purchaseValue / asset.usefulLifeMonths;
+      asset.accumulatedDepreciation += monthlyDep;
+      final maxDep = asset.purchaseValue;
+      if (asset.accumulatedDepreciation >= maxDep) {
+        asset.accumulatedDepreciation = maxDep;
+        asset.isFullyDepreciated = true;
+      }
+      asset.lastDepreciationDate = DateTime.now();
+      await AccountingFixedAsset.db.updateRow(session, asset);
+      processed++;
+    }
+    return processed;
+  }
+
+  // --- Plan de Cuentas (Libro Mayor) ---
+
+  Future<List<AccountingLedgerAccount>> getLedgerAccounts(
+    Session session,
+  ) async {
+    return await AccountingLedgerAccount.db.find(
+      session,
+      where: (t) => t.isActive.equals(true),
+      orderBy: (t) => t.code,
+    );
+  }
+
+  Future<AccountingLedgerAccount> createLedgerAccount(
+    Session session,
+    AccountingLedgerAccount account,
+  ) async {
+    return await AccountingLedgerAccount.db.insertRow(session, account);
+  }
+
+  // --- Impuestos ---
+
+  Future<List<AccountingTax>> getTaxes(Session session) async {
+    return await AccountingTax.db.find(
+      session,
+      where: (t) => t.isActive.equals(true),
+    );
+  }
+
+  Future<AccountingTax> createTax(
+    Session session,
+    AccountingTax tax,
+  ) async {
+    return await AccountingTax.db.insertRow(session, tax);
+  }
+
+  // --- Morosidad (Cuentas Vencidas) ---
+
+  Future<List<AccountingInvoice>> getOverdueInvoices(Session session) async {
+    final now = DateTime.now();
+    return await AccountingInvoice.db.find(
+      session,
+      where: (t) =>
+          t.isDeleted.equals(false) &
+          t.status.equals('Pending') &
+          (t.dueDate < now),
+    );
+  }
+
+  Future<List<AccountingExpense>> getOverdueExpenses(Session session) async {
+    return await AccountingExpense.db.find(
+      session,
+      where: (t) => t.isDeleted.equals(false) & t.status.equals('Pending'),
+      orderBy: (t) => t.date,
+      orderDescending: true,
+    );
+  }
 }

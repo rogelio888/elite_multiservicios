@@ -31,9 +31,90 @@ class _OpsContractsScreenState extends State<OpsContractsScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _completeContract(OpsServiceContract contract) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Finalizar Contrato'),
+        content: Text(
+          '¿Finalizar el contrato #${contract.id}? Esta acción cambiará su estado a Completado.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Finalizar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await client.ops.completeContract(contract.id!);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Contrato finalizado correctamente'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      _loadData();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error al finalizar: $e')));
+    }
+  }
+
+  Future<void> _cancelContract(OpsServiceContract contract) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Cancelar Contrato'),
+        content: Text(
+          '¿Cancelar el contrato #${contract.id}? Esta acción no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Volver'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Cancelar Contrato'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await client.ops.cancelContract(contract.id!);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Contrato cancelado'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      _loadData();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error al cancelar: $e')));
     }
   }
 
@@ -53,24 +134,42 @@ class _OpsContractsScreenState extends State<OpsContractsScreen> {
               children: [
                 TextField(
                   controller: customerIdController,
-                  decoration: const InputDecoration(labelText: 'ID del Cliente'),
+                  decoration: const InputDecoration(
+                    labelText: 'ID del Cliente',
+                  ),
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: serviceType,
-                  decoration: const InputDecoration(labelText: 'Tipo de Servicio'),
+                  decoration: const InputDecoration(
+                    labelText: 'Tipo de Servicio',
+                  ),
                   items: const [
-                    DropdownMenuItem(value: 'Limpieza', child: Text('Limpieza')),
-                    DropdownMenuItem(value: 'Mantenimiento', child: Text('Mantenimiento')),
-                    DropdownMenuItem(value: 'FumigaciÃ³n', child: Text('FumigaciÃ³n')),
-                    DropdownMenuItem(value: 'Seguridad', child: Text('Seguridad')),
+                    DropdownMenuItem(
+                      value: 'Limpieza',
+                      child: Text('Limpieza'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Mantenimiento',
+                      child: Text('Mantenimiento'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'FumigaciÃ³n',
+                      child: Text('FumigaciÃ³n'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Seguridad',
+                      child: Text('Seguridad'),
+                    ),
                   ],
                   onChanged: (val) => setDialogState(() => serviceType = val!),
                 ),
                 TextField(
                   controller: totalAmountController,
-                  decoration: const InputDecoration(labelText: 'Monto Total (Bs)'),
+                  decoration: const InputDecoration(
+                    labelText: 'Monto Total (Bs)',
+                  ),
                   keyboardType: TextInputType.number,
                 ),
               ],
@@ -83,8 +182,10 @@ class _OpsContractsScreenState extends State<OpsContractsScreen> {
             ),
             ElevatedButton(
               onPressed: () async {
-                final customerId = int.tryParse(customerIdController.text.trim()) ?? 0;
-                final amount = double.tryParse(totalAmountController.text.trim()) ?? 0.0;
+                final customerId =
+                    int.tryParse(customerIdController.text.trim()) ?? 0;
+                final amount =
+                    double.tryParse(totalAmountController.text.trim()) ?? 0.0;
                 if (customerId > 0 && amount > 0) {
                   final now = DateTime.now();
                   await client.ops.createOrUpdateContract(
@@ -127,7 +228,11 @@ class _OpsContractsScreenState extends State<OpsContractsScreen> {
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(Icons.assignment_ind, color: theme.colorScheme.primary, size: 20),
+                      Icon(
+                        Icons.assignment_ind,
+                        color: theme.colorScheme.primary,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -143,7 +248,10 @@ class _OpsContractsScreenState extends State<OpsContractsScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: item.status == 'Activo'
                         ? Colors.green.withValues(alpha: 0.1)
@@ -153,7 +261,9 @@ class _OpsContractsScreenState extends State<OpsContractsScreen> {
                   child: Text(
                     item.status,
                     style: TextStyle(
-                      color: item.status == 'Activo' ? Colors.green : Colors.orange,
+                      color: item.status == 'Activo'
+                          ? Colors.green
+                          : Colors.orange,
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
@@ -165,7 +275,10 @@ class _OpsContractsScreenState extends State<OpsContractsScreen> {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(4),
@@ -185,11 +298,19 @@ class _OpsContractsScreenState extends State<OpsContractsScreen> {
                   children: [
                     Text(
                       'Inicio',
-                      style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
                     ),
                     Text(
                       DateFormat('dd/MM/yyyy').format(item.startDate),
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
@@ -204,11 +325,19 @@ class _OpsContractsScreenState extends State<OpsContractsScreen> {
                   children: [
                     Text(
                       'Monto Total',
-                      style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12),
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.5,
+                        ),
+                        fontSize: 12,
+                      ),
                     ),
                     Text(
                       '${item.totalAmount.toStringAsFixed(2)} Bs',
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                 ),
@@ -217,17 +346,17 @@ class _OpsContractsScreenState extends State<OpsContractsScreen> {
                     IconButton(
                       icon: const Icon(Icons.check_circle_outline, size: 20),
                       color: Colors.green,
-                      onPressed: () {
-                        // TODO: Implement Complete
-                      },
+                      onPressed: item.status == 'Completado'
+                          ? null
+                          : () => _completeContract(item),
                       tooltip: 'Finalizar',
                     ),
                     IconButton(
                       icon: const Icon(Icons.cancel_outlined, size: 20),
                       color: Colors.red,
-                      onPressed: () {
-                        // TODO: Implement Cancel
-                      },
+                      onPressed: item.status == 'Cancelado'
+                          ? null
+                          : () => _cancelContract(item),
                       tooltip: 'Cancelar',
                     ),
                   ],
@@ -243,7 +372,7 @@ class _OpsContractsScreenState extends State<OpsContractsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Contratos de Servicios'),
@@ -258,51 +387,57 @@ class _OpsContractsScreenState extends State<OpsContractsScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _contracts.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.assignment_outlined, size: 64, color: theme.disabledColor),
-                      const SizedBox(height: 16),
-                      Text('No hay contratos activos', style: TextStyle(color: theme.disabledColor)),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _showAddDialog,
-                        child: const Text('Crear Primer Contrato'),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.assignment_outlined,
+                    size: 64,
+                    color: theme.disabledColor,
                   ),
-                )
-              : LayoutBuilder(
-                  builder: (context, constraints) {
-                    final isMobile = constraints.maxWidth < 600;
-                    
-                    if (isMobile) {
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _contracts.length,
-                        itemBuilder: (context, index) {
-                          return _buildMobileCard(_contracts[index], theme);
-                        },
-                      );
-                    }
-                    
-                    return GridView.builder(
-                      padding: const EdgeInsets.all(16),
-                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 400,
-                        mainAxisExtent: 180,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                      ),
-                      itemCount: _contracts.length,
-                      itemBuilder: (context, index) {
-                        return _buildMobileCard(_contracts[index], theme);
-                      },
-                    );
+                  const SizedBox(height: 16),
+                  Text(
+                    'No hay contratos activos',
+                    style: TextStyle(color: theme.disabledColor),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _showAddDialog,
+                    child: const Text('Crear Primer Contrato'),
+                  ),
+                ],
+              ),
+            )
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final isMobile = constraints.maxWidth < 600;
+
+                if (isMobile) {
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _contracts.length,
+                    itemBuilder: (context, index) {
+                      return _buildMobileCard(_contracts[index], theme);
+                    },
+                  );
+                }
+
+                return GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 400,
+                    mainAxisExtent: 180,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: _contracts.length,
+                  itemBuilder: (context, index) {
+                    return _buildMobileCard(_contracts[index], theme);
                   },
-                ),
+                );
+              },
+            ),
     );
   }
 }
-

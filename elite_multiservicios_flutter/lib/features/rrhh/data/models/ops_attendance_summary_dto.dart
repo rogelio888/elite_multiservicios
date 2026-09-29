@@ -1,4 +1,4 @@
-// TODO(DTO): reemplazar por cliente Serverpod cuando el backend lo exponga.
+// NOTE(DTO): pendiente de reemplazar por modelo Serverpod cuando el backend lo exponga.
 
 /// DTO de solo lectura que consolida la realidad operativa de campo recibida de la APK de Operaciones (PDF Sección 4.3).
 /// 100% Solo Lectura. RRHH NUNCA modifica marcaciones reales.

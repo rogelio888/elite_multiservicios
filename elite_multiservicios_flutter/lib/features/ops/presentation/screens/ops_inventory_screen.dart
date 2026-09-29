@@ -30,7 +30,9 @@ class _OpsInventoryScreenState extends State<OpsInventoryScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -52,16 +54,22 @@ class _OpsInventoryScreenState extends State<OpsInventoryScreen> {
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Nombre del Artículo'),
+                  decoration: const InputDecoration(
+                    labelText: 'Nombre del Artículo',
+                  ),
                 ),
                 TextField(
                   controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Descripción (Opcional)'),
+                  decoration: const InputDecoration(
+                    labelText: 'Descripción (Opcional)',
+                  ),
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: unit,
-                  decoration: const InputDecoration(labelText: 'Unidad de Medida'),
+                  decoration: const InputDecoration(
+                    labelText: 'Unidad de Medida',
+                  ),
                   items: const [
                     DropdownMenuItem(value: 'Unidad', child: Text('Unidad')),
                     DropdownMenuItem(value: 'Litro', child: Text('Litro')),
@@ -131,7 +139,10 @@ class _OpsInventoryScreenState extends State<OpsInventoryScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: item.quantityInStock <= 5
                         ? Colors.red.withValues(alpha: 0.1)
@@ -141,7 +152,9 @@ class _OpsInventoryScreenState extends State<OpsInventoryScreen> {
                   child: Text(
                     '${item.quantityInStock} ${item.unit}',
                     style: TextStyle(
-                      color: item.quantityInStock <= 5 ? Colors.red : Colors.green,
+                      color: item.quantityInStock <= 5
+                          ? Colors.red
+                          : Colors.green,
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
@@ -154,7 +167,9 @@ class _OpsInventoryScreenState extends State<OpsInventoryScreen> {
               Text(
                 item.description!,
                 style: TextStyle(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  fontSize: 13,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -169,12 +184,18 @@ class _OpsInventoryScreenState extends State<OpsInventoryScreen> {
                     Text(
                       'Costo Promedio',
                       style: TextStyle(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                          fontSize: 12),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.5,
+                        ),
+                        fontSize: 12,
+                      ),
                     ),
                     Text(
                       '${item.averageCost.toStringAsFixed(2)} Bs',
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                 ),
@@ -220,47 +241,53 @@ class _OpsInventoryScreenState extends State<OpsInventoryScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.inventory_2_outlined, size: 64, color: theme.disabledColor),
-                      const SizedBox(height: 16),
-                      Text('No hay artículos en el inventario',
-                          style: TextStyle(color: theme.disabledColor)),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _showAddDialog,
-                        child: const Text('Crear Primer Artículo'),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.inventory_2_outlined,
+                    size: 64,
+                    color: theme.disabledColor,
                   ),
-                )
-              : LayoutBuilder(
-                  builder: (context, constraints) {
-                    final isMobile = constraints.maxWidth < 600;
-                    if (isMobile) {
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _items.length,
-                        itemBuilder: (context, index) =>
-                            _buildMobileCard(_items[index], theme),
-                      );
-                    }
-                    return GridView.builder(
-                      padding: const EdgeInsets.all(16),
-                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 400,
-                        mainAxisExtent: 180,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                      ),
-                      itemCount: _items.length,
-                      itemBuilder: (context, index) =>
-                          _buildMobileCard(_items[index], theme),
-                    );
-                  },
-                ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No hay artículos en el inventario',
+                    style: TextStyle(color: theme.disabledColor),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _showAddDialog,
+                    child: const Text('Crear Primer Artículo'),
+                  ),
+                ],
+              ),
+            )
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final isMobile = constraints.maxWidth < 600;
+                if (isMobile) {
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _items.length,
+                    itemBuilder: (context, index) =>
+                        _buildMobileCard(_items[index], theme),
+                  );
+                }
+                return GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 400,
+                    mainAxisExtent: 180,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: _items.length,
+                  itemBuilder: (context, index) =>
+                      _buildMobileCard(_items[index], theme),
+                );
+              },
+            ),
     );
   }
 }

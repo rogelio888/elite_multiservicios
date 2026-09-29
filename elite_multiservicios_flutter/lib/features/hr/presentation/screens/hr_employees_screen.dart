@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../main.dart';
@@ -31,7 +31,9 @@ class _HrEmployeesScreenState extends State<HrEmployeesScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -53,7 +55,9 @@ class _HrEmployeesScreenState extends State<HrEmployeesScreen> {
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Nombre Completo'),
+                  decoration: const InputDecoration(
+                    labelText: 'Nombre Completo',
+                  ),
                 ),
                 TextField(
                   controller: positionController,
@@ -61,7 +65,9 @@ class _HrEmployeesScreenState extends State<HrEmployeesScreen> {
                 ),
                 TextField(
                   controller: salaryController,
-                  decoration: const InputDecoration(labelText: 'Salario Base (Bs)'),
+                  decoration: const InputDecoration(
+                    labelText: 'Salario Base (Bs)',
+                  ),
                   keyboardType: TextInputType.number,
                 ),
               ],
@@ -76,8 +82,9 @@ class _HrEmployeesScreenState extends State<HrEmployeesScreen> {
               onPressed: () async {
                 final name = nameController.text.trim();
                 final position = positionController.text.trim();
-                final salary = double.tryParse(salaryController.text.trim()) ?? 0.0;
-                
+                final salary =
+                    double.tryParse(salaryController.text.trim()) ?? 0.0;
+
                 if (name.isNotEmpty && position.isNotEmpty && salary >= 0) {
                   final now = DateTime.now();
                   await client.hr.createOrUpdateEmployee(
@@ -117,10 +124,15 @@ class _HrEmployeesScreenState extends State<HrEmployeesScreen> {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  backgroundColor: theme.colorScheme.primary.withValues(
+                    alpha: 0.1,
+                  ),
                   child: Text(
                     item.name.substring(0, 1).toUpperCase(),
-                    style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -140,16 +152,23 @@ class _HrEmployeesScreenState extends State<HrEmployeesScreen> {
                         item.position,
                         style: TextStyle(
                           fontSize: 13,
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.6,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
-                    color: item.isActive ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+                    color: item.isActive
+                        ? Colors.green.withValues(alpha: 0.1)
+                        : Colors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -172,11 +191,19 @@ class _HrEmployeesScreenState extends State<HrEmployeesScreen> {
                   children: [
                     Text(
                       'Salario Base',
-                      style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12),
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.5,
+                        ),
+                        fontSize: 12,
+                      ),
                     ),
                     Text(
                       '${item.baseSalary.toStringAsFixed(2)} Bs',
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                 ),
@@ -185,11 +212,19 @@ class _HrEmployeesScreenState extends State<HrEmployeesScreen> {
                   children: [
                     Text(
                       'Ingreso',
-                      style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12),
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.5,
+                        ),
+                        fontSize: 12,
+                      ),
                     ),
                     Text(
                       DateFormat('dd/MM/yyyy').format(item.joinDate),
-                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
@@ -204,7 +239,7 @@ class _HrEmployeesScreenState extends State<HrEmployeesScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('GestiÃ³n de Personal'),
@@ -219,51 +254,57 @@ class _HrEmployeesScreenState extends State<HrEmployeesScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _employees.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.people_outline, size: 64, color: theme.disabledColor),
-                      const SizedBox(height: 16),
-                      Text('No hay empleados registrados', style: TextStyle(color: theme.disabledColor)),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _showAddDialog,
-                        child: const Text('Registrar Primer Empleado'),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.people_outline,
+                    size: 64,
+                    color: theme.disabledColor,
                   ),
-                )
-              : LayoutBuilder(
-                  builder: (context, constraints) {
-                    final isMobile = constraints.maxWidth < 600;
-                    
-                    if (isMobile) {
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _employees.length,
-                        itemBuilder: (context, index) {
-                          return _buildMobileCard(_employees[index], theme);
-                        },
-                      );
-                    }
-                    
-                    return GridView.builder(
-                      padding: const EdgeInsets.all(16),
-                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 400,
-                        mainAxisExtent: 160,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                      ),
-                      itemCount: _employees.length,
-                      itemBuilder: (context, index) {
-                        return _buildMobileCard(_employees[index], theme);
-                      },
-                    );
+                  const SizedBox(height: 16),
+                  Text(
+                    'No hay empleados registrados',
+                    style: TextStyle(color: theme.disabledColor),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _showAddDialog,
+                    child: const Text('Registrar Primer Empleado'),
+                  ),
+                ],
+              ),
+            )
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final isMobile = constraints.maxWidth < 600;
+
+                if (isMobile) {
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _employees.length,
+                    itemBuilder: (context, index) {
+                      return _buildMobileCard(_employees[index], theme);
+                    },
+                  );
+                }
+
+                return GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 400,
+                    mainAxisExtent: 160,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: _employees.length,
+                  itemBuilder: (context, index) {
+                    return _buildMobileCard(_employees[index], theme);
                   },
-                ),
+                );
+              },
+            ),
     );
   }
 }
-
