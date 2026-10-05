@@ -3,8 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import '../providers/accounting_providers.dart';
 
-class AccountingTaxesScreen extends ConsumerWidget {
+class AccountingTaxesScreen extends ConsumerStatefulWidget {
   const AccountingTaxesScreen({super.key});
+  @override
+  ConsumerState<AccountingTaxesScreen> createState() => _AccountingTaxesScreenState();
+}
+class _AccountingTaxesScreenState extends ConsumerState<AccountingTaxesScreen> {
 
   void _showAddDialog(BuildContext context, WidgetRef ref) {
     final nameCtrl = TextEditingController();
@@ -84,7 +88,7 @@ class AccountingTaxesScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final taxesAsync = ref.watch(taxesProvider);
 
     return Scaffold(

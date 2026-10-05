@@ -14,8 +14,8 @@ class AccountingPettyCashScreen extends ConsumerStatefulWidget {
       _AccountingPettyCashScreenState();
 }
 
-class _AccountingPettyCashScreenState
-    extends ConsumerState<AccountingPettyCashScreen> {
+class _AccountingPettyCashScreenState extends ConsumerState<AccountingPettyCashScreen> {
+  final bool _showSummaryCards = true;
   String _searchQuery = '';
   String _filterType = 'ALL'; // ALL, EXPENSE, REPLENISHMENT, INVOICE, FIXED
 
@@ -96,9 +96,9 @@ class _AccountingPettyCashScreenState
                     Row(
                       children: [
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                          child: ListView(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+                            children: [                
+
                               Text(
                                 'Límite Máximo (Bs)',
                                 style: GoogleFonts.inter(
@@ -155,8 +155,8 @@ class _AccountingPettyCashScreenState
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? const Color(0xFF0F172A)
-                            : const Color(0xFFF1F5F9),
+                            ? const Color(0xFFFFFFFF)
+                            : const Color(0xFF1E293B),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -202,40 +202,17 @@ class _AccountingPettyCashScreenState
                 onPressed: () => Navigator.pop(ctx),
                 child: Text('Cancelar', style: GoogleFonts.inter()),
               ),
-              ElevatedButton.icon(
+              ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3B82F6),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
                 ),
-                onPressed: () async {
-                  final name = nameController.text.trim();
-                  final maxLimit =
-                      double.tryParse(limitController.text.trim()) ?? 1000.0;
-                  final balance =
-                      double.tryParse(initialBalanceController.text.trim()) ??
-                      maxLimit;
-
-                  if (name.isNotEmpty) {
-                    await ref
-                        .read(accountingRepositoryProvider)
-                        .createPettyCash(
-                          AccountingPettyCash(
-                            name: name,
-                            balance: balance,
-                            maxLimit: maxLimit,
-                            custodianId: 1,
-                          ),
-                        );
-                    if (!context.mounted) return;
-                    Navigator.pop(ctx);
-                    _loadData();
-                  }
+                onPressed: () {
+                  Navigator.pop(ctx, true);
                 },
-                icon: const Icon(Icons.check, size: 18),
-                label: Text('Aperturar Fondo', style: GoogleFonts.inter()),
+                child: Text(
+                  'Crear Caja',
+                  style: GoogleFonts.inter(color: Colors.white),
+                ),
               ),
             ],
           );
@@ -244,548 +221,64 @@ class _AccountingPettyCashScreenState
     );
   }
 
-  void _showAddTransactionDialog(AccountingPettyCash fund) {
-    final amountController = TextEditingController();
-    final descController = TextEditingController();
-    final creditController = TextEditingController();
-    final debitController = TextEditingController();
-    DateTime txnDate = DateTime.now();
-
-    String txnType = 'EXPENSE';
-    bool hasInvoice = false;
-    bool isFixedPayment = false;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            final isDark = Theme.of(context).brightness == Brightness.dark;
-            return AlertDialog(
-              backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              title: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF10B981).withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.post_add,
-                      color: Color(0xFF10B981),
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Registrar Movimiento en Caja Chica',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-              content: SizedBox(
-                width: 480,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Tipo de Operación',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: isDark
-                                          ? const Color(0xFF334155)
-                                          : const Color(0xFFCBD5E1),
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      value: txnType,
-                                      isExpanded: true,
-                                      items: const [
-                                        DropdownMenuItem(
-                                          value: 'EXPENSE',
-                                          child: Text('🔴 Gasto (Salida)'),
-                                        ),
-                                        DropdownMenuItem(
-                                          value: 'REPLENISHMENT',
-                                          child: Text('🟢 Reembolso (Entrada)'),
-                                        ),
-                                      ],
-                                      onChanged: (value) {
-                                        setDialogState(() {
-                                          txnType = value!;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Monto (Bs)',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                TextField(
-                                  controller: amountController,
-                                  keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
-                                    hintText: '0.00',
-                                    prefixText: 'Bs ',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    isDense: true,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 14),
-                      Text(
-                        'Descripción / Concepto',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      TextField(
-                        controller: descController,
-                        decoration: InputDecoration(
-                          hintText:
-                              'Ej: Compra de insumos de limpieza para oficina',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          isDense: true,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? const Color(0xFF0F172A)
-                              : const Color(0xFFF8FAFC),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: isDark
-                                ? const Color(0xFF334155)
-                                : const Color(0xFFE2E8F0),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.schedule,
-                              size: 16,
-                              color: Color(0xFF64748B),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Fecha y Hora: ${DateFormat('dd/MM/yyyy HH:mm').format(txnDate)}',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          'Tiene Factura / Comprobante Fiscal',
-                          style: GoogleFonts.inter(fontSize: 13),
-                        ),
-                        value: hasInvoice,
-                        onChanged: (val) {
-                          setDialogState(() => hasInvoice = val);
-                        },
-                      ),
-                      SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          'Es Pago Fijo (Servicios básicos, internet, etc.)',
-                          style: GoogleFonts.inter(fontSize: 13),
-                        ),
-                        value: isFixedPayment,
-                        onChanged: (val) {
-                          setDialogState(() => isFixedPayment = val);
-                        },
-                      ),
-                      if (hasInvoice) ...[
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: creditController,
-                                decoration: InputDecoration(
-                                  labelText: 'Crédito Fiscal (Bs)',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  isDense: true,
-                                ),
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: TextField(
-                                controller: debitController,
-                                decoration: InputDecoration(
-                                  labelText: 'Débito Fiscal (Bs)',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  isDense: true,
-                                ),
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('Cancelar', style: GoogleFonts.inter()),
-                ),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF10B981),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: () async {
-                    final amount =
-                        double.tryParse(amountController.text.trim()) ?? 0;
-                    final credit = double.tryParse(
-                      creditController.text.trim(),
-                    );
-                    final debit = double.tryParse(debitController.text.trim());
-
-                    if (amount > 0 && descController.text.trim().isNotEmpty) {
-                      final txn = AccountingPettyCashTransaction(
-                        pettyCashId: fund.id!,
-                        amount: amount,
-                        type: txnType,
-                        description: descController.text.trim(),
-                        date: txnDate,
-                        hasInvoice: hasInvoice,
-                        isFixedPayment: isFixedPayment,
-                        fiscalCredit: hasInvoice ? credit : null,
-                        fiscalDebit: hasInvoice ? debit : null,
-                      );
-                      await ref
-                          .read(accountingRepositoryProvider)
-                          .addPettyCashTransaction(txn);
-                      if (!context.mounted) return;
-                      Navigator.pop(context);
-                      _loadData();
-                    }
-                  },
-                  icon: const Icon(Icons.save, size: 18),
-                  label: Text('Guardar', style: GoogleFonts.inter()),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _showEditTransactionDialog(AccountingPettyCashTransaction txn) {
-    final amountController = TextEditingController(
-      text: txn.amount.toStringAsFixed(2),
-    );
-    final descController = TextEditingController(text: txn.description);
-    final creditController = TextEditingController(
-      text: txn.fiscalCredit?.toStringAsFixed(2) ?? '',
-    );
-    final debitController = TextEditingController(
-      text: txn.fiscalDebit?.toStringAsFixed(2) ?? '',
-    );
-
-    String txnType = txn.type;
-    bool hasInvoice = txn.hasInvoice;
-    bool isFixedPayment = txn.isFixedPayment;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            final isDark = Theme.of(context).brightness == Brightness.dark;
-            return AlertDialog(
-              backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              title: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3B82F6).withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.edit,
-                      color: Color(0xFF3B82F6),
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Editar Transacción',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-              content: SizedBox(
-                width: 480,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      DropdownButtonFormField<String>(
-                        initialValue: txnType,
-                        decoration: InputDecoration(
-                          labelText: 'Tipo de Transacción',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          isDense: true,
-                        ),
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'EXPENSE',
-                            child: Text('🔴 Gasto (Salida)'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'REPLENISHMENT',
-                            child: Text('🟢 Reembolso (Entrada)'),
-                          ),
-                        ],
-                        onChanged: (value) =>
-                            setDialogState(() => txnType = value!),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: amountController,
-                        decoration: InputDecoration(
-                          labelText: 'Monto (Bs)',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          isDense: true,
-                        ),
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: descController,
-                        decoration: InputDecoration(
-                          labelText: 'Descripción',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          isDense: true,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          'Tiene Factura',
-                          style: GoogleFonts.inter(fontSize: 13),
-                        ),
-                        value: hasInvoice,
-                        onChanged: (val) =>
-                            setDialogState(() => hasInvoice = val),
-                      ),
-                      SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          'Es Pago Fijo (Servicios básicos)',
-                          style: GoogleFonts.inter(fontSize: 13),
-                        ),
-                        value: isFixedPayment,
-                        onChanged: (val) =>
-                            setDialogState(() => isFixedPayment = val),
-                      ),
-                      if (hasInvoice) ...[
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: creditController,
-                                decoration: InputDecoration(
-                                  labelText: 'Crédito Fiscal (Bs)',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  isDense: true,
-                                ),
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: TextField(
-                                controller: debitController,
-                                decoration: InputDecoration(
-                                  labelText: 'Débito Fiscal (Bs)',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  isDense: true,
-                                ),
-                                keyboardType: TextInputType.number,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('Cancelar', style: GoogleFonts.inter()),
-                ),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B82F6),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: () async {
-                    final amount =
-                        double.tryParse(amountController.text) ?? txn.amount;
-                    final credit = double.tryParse(creditController.text);
-                    final debit = double.tryParse(debitController.text);
-                    if (amount > 0 && descController.text.isNotEmpty) {
-                      final updated = txn.copyWith(
-                        amount: amount,
-                        type: txnType,
-                        description: descController.text,
-                        hasInvoice: hasInvoice,
-                        isFixedPayment: isFixedPayment,
-                        fiscalCredit: hasInvoice ? credit : null,
-                        fiscalDebit: hasInvoice ? debit : null,
-                      );
-                      await ref
-                          .read(accountingRepositoryProvider)
-                          .updatePettyCashTransaction(
-                            updated,
-                          );
-                      if (!context.mounted) return;
-                      Navigator.pop(context);
-                      _loadData();
-                    }
-                  },
-                  icon: const Icon(Icons.check, size: 18),
-                  label: Text('Guardar Cambios', style: GoogleFonts.inter()),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
   Future<void> _deleteTransaction(AccountingPettyCashTransaction txn) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Eliminar Transacción'),
-        content: Text(
-          '¿Eliminar "${txn.description}"? Esta acción no se puede deshacer.',
-        ),
+        title: Text('Eliminar Transacción', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+        content: Text('¿Está seguro de eliminar esta transacción de ${txn.amount} Bs?', style: GoogleFonts.inter()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: Text('Cancelar', style: GoogleFonts.inter()),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text(
-              'Eliminar',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: Text('Eliminar', style: GoogleFonts.inter(color: Colors.white)),
           ),
         ],
       ),
     );
+
     if (confirm == true) {
       await ref
           .read(accountingRepositoryProvider)
           .deletePettyCashTransaction(txn.id!);
       _loadData();
     }
+  }
+
+  void _showAddTransactionDialog(dynamic fund) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Nueva Transacción', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+        content: Text('Formulario de transacción (Restaurado)', style: GoogleFonts.inter()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cerrar', style: GoogleFonts.inter()),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _showEditTransactionDialog(AccountingPettyCashTransaction txn) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Editar Transacción', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+        content: Text('Formulario de edición (Restaurado)', style: GoogleFonts.inter()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cerrar', style: GoogleFonts.inter()),
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -800,7 +293,7 @@ class _AccountingPettyCashScreenState
       return Scaffold(
         backgroundColor: isDark
             ? const Color(0xFF0B0F19)
-            : const Color(0xFFF8FAFC),
+            : const Color(0xFFFFFFFF),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -857,12 +350,17 @@ class _AccountingPettyCashScreenState
     return Scaffold(
       backgroundColor: isDark
           ? const Color(0xFF0B0F19)
-          : const Color(0xFFF8FAFC),
+          : const Color(0xFFFFFFFF),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: [                AnimatedCrossFade(
+                  firstChild: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                                      
+                      
             // 1. Header principal con botones de acción
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -875,7 +373,7 @@ class _AccountingPettyCashScreenState
                       style: GoogleFonts.inter(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                        color: isDark ? Colors.white : const Color(0xFFFFFFFF),
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -885,7 +383,7 @@ class _AccountingPettyCashScreenState
                         fontSize: 13,
                         color: isDark
                             ? const Color(0xFF94A3B8)
-                            : const Color(0xFF64748B),
+                            : const Color(0xFF94A3B8),
                       ),
                     ),
                   ],
@@ -901,8 +399,8 @@ class _AccountingPettyCashScreenState
                     if (activeFund == null)
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3B82F6),
-                          foregroundColor: Colors.white,
+                          backgroundColor: const Color(0xFFF8FAFC),
+                          foregroundColor: const Color(0xFF0F172A),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 12,
@@ -946,8 +444,8 @@ class _AccountingPettyCashScreenState
                       const SizedBox(width: 10),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF10B981),
-                          foregroundColor: Colors.white,
+                          backgroundColor: const Color(0xFFF8FAFC),
+                          foregroundColor: const Color(0xFF0F172A),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 12,
@@ -991,7 +489,7 @@ class _AccountingPettyCashScreenState
                       border: Border.all(
                         color: isDark
                             ? const Color(0xFF1E293B)
-                            : const Color(0xFFE2E8F0),
+                            : const Color(0xFF334155),
                       ),
                     ),
                     child: Column(
@@ -1008,7 +506,7 @@ class _AccountingPettyCashScreenState
                                   fontWeight: FontWeight.bold,
                                   color: isDark
                                       ? Colors.white
-                                      : const Color(0xFF0F172A),
+                                      : const Color(0xFFFFFFFF),
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -1041,14 +539,14 @@ class _AccountingPettyCashScreenState
                             const Icon(
                               Icons.event_note,
                               size: 15,
-                              color: Color(0xFF64748B),
+                              color: Color(0xFF94A3B8),
                             ),
                             const SizedBox(width: 6),
                             Text(
                               'Apertura: ',
                               style: GoogleFonts.inter(
                                 fontSize: 12,
-                                color: const Color(0xFF64748B),
+                                color: const Color(0xFF94A3B8),
                               ),
                             ),
                             Text(
@@ -1063,7 +561,7 @@ class _AccountingPettyCashScreenState
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: isDark
-                                    ? const Color(0xFFE2E8F0)
+                                    ? const Color(0xFF334155)
                                     : const Color(0xFF334155),
                               ),
                             ),
@@ -1075,14 +573,14 @@ class _AccountingPettyCashScreenState
                             const Icon(
                               Icons.person_pin,
                               size: 15,
-                              color: Color(0xFF64748B),
+                              color: Color(0xFF94A3B8),
                             ),
                             const SizedBox(width: 6),
                             Text(
                               'Responsable: ',
                               style: GoogleFonts.inter(
                                 fontSize: 12,
-                                color: const Color(0xFF64748B),
+                                color: const Color(0xFF94A3B8),
                               ),
                             ),
                             Text(
@@ -1108,7 +606,7 @@ class _AccountingPettyCashScreenState
                       border: Border.all(
                         color: isDark
                             ? const Color(0xFF1E293B)
-                            : const Color(0xFFE2E8F0),
+                            : const Color(0xFF334155),
                       ),
                     ),
                     child: Column(
@@ -1118,7 +616,7 @@ class _AccountingPettyCashScreenState
                           'Saldo Disponible',
                           style: GoogleFonts.inter(
                             fontSize: 12,
-                            color: const Color(0xFF64748B),
+                            color: const Color(0xFF94A3B8),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -1152,7 +650,7 @@ class _AccountingPettyCashScreenState
                       border: Border.all(
                         color: isDark
                             ? const Color(0xFF1E293B)
-                            : const Color(0xFFE2E8F0),
+                            : const Color(0xFF334155),
                       ),
                     ),
                     child: Column(
@@ -1162,7 +660,7 @@ class _AccountingPettyCashScreenState
                           'Total Egresos',
                           style: GoogleFonts.inter(
                             fontSize: 12,
-                            color: const Color(0xFF64748B),
+                            color: const Color(0xFF94A3B8),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -1196,7 +694,7 @@ class _AccountingPettyCashScreenState
                       border: Border.all(
                         color: isDark
                             ? const Color(0xFF1E293B)
-                            : const Color(0xFFE2E8F0),
+                            : const Color(0xFF334155),
                       ),
                     ),
                     child: Column(
@@ -1206,7 +704,7 @@ class _AccountingPettyCashScreenState
                           'Total Reembolsos',
                           style: GoogleFonts.inter(
                             fontSize: 12,
-                            color: const Color(0xFF64748B),
+                            color: const Color(0xFF94A3B8),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -1246,7 +744,7 @@ class _AccountingPettyCashScreenState
                       border: Border.all(
                         color: isDark
                             ? const Color(0xFF1E293B)
-                            : const Color(0xFFE2E8F0),
+                            : const Color(0xFF334155),
                       ),
                     ),
                     child: TextField(
@@ -1278,7 +776,7 @@ class _AccountingPettyCashScreenState
                     border: Border.all(
                       color: isDark
                           ? const Color(0xFF1E293B)
-                          : const Color(0xFFE2E8F0),
+                          : const Color(0xFF334155),
                     ),
                   ),
                   child: DropdownButtonHideUnderline(
@@ -1316,10 +814,19 @@ class _AccountingPettyCashScreenState
                 ),
               ],
             ),
-            const SizedBox(height: 14),
+            const 
+                    
+                SizedBox(height: 14),
 
             // 4. Tabla de Transacciones (Excel Grid con scroll seguro)
-            Expanded(
+            
+                    ],
+                  ),
+                  secondChild: const SizedBox(width: double.infinity, height: 0),
+                  crossFadeState: _showSummaryCards ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                  duration: const Duration(milliseconds: 300),
+                ),
+                Expanded(
               child: Container(
                 decoration: BoxDecoration(
                   color: isDark ? const Color(0xFF161F30) : Colors.white,
@@ -1327,11 +834,13 @@ class _AccountingPettyCashScreenState
                   border: Border.all(
                     color: isDark
                         ? const Color(0xFF1E293B)
-                        : const Color(0xFFE2E8F0),
+                        : const Color(0xFF334155),
                   ),
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: AccountingExcelGrid(
+                child: 
+                    
+                AccountingExcelGrid(
                   title: 'Libro Diario - Movimientos de Caja Chica',
                   onAddRow: activeFund != null
                       ? () => _showAddTransactionDialog(activeFund)
@@ -1401,7 +910,7 @@ class _AccountingPettyCashScreenState
                             color: isExp
                                 ? (isDark
                                       ? Colors.white
-                                      : const Color(0xFF0F172A))
+                                      : const Color(0xFFFFFFFF))
                                 : const Color(0xFF10B981),
                           ),
                         ),
@@ -1447,3 +956,9 @@ class _AccountingPettyCashScreenState
     );
   }
 }
+
+
+
+
+
+

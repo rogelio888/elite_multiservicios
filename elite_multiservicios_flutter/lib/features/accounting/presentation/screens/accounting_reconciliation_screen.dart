@@ -10,8 +10,7 @@ class AccountingBankReconciliationScreen extends StatefulWidget {
       _AccountingBankReconciliationScreenState();
 }
 
-class _AccountingBankReconciliationScreenState
-    extends State<AccountingBankReconciliationScreen> {
+class _AccountingBankReconciliationScreenState extends State<AccountingBankReconciliationScreen> {
   List<List<String>> _parsedData = [];
   bool _isProcessing = false;
 
@@ -79,9 +78,8 @@ class _AccountingBankReconciliationScreenState
                 padding: const EdgeInsets.all(20.0),
                 child: Row(
                   children: [
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    Expanded(
+                      child: ListView(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
                         children: [
                           Text(
                             'Sube tu extracto bancario',

@@ -3,11 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import '../providers/accounting_providers.dart';
 
-class AccountingProfitabilityScreen extends ConsumerWidget {
+class AccountingProfitabilityScreen extends ConsumerStatefulWidget {
   const AccountingProfitabilityScreen({super.key});
+  @override
+  ConsumerState<AccountingProfitabilityScreen> createState() => _AccountingProfitabilityScreenState();
+}
+class _AccountingProfitabilityScreenState extends ConsumerState<AccountingProfitabilityScreen> {
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final costCentersAsync = ref.watch(costCentersProvider);
 
     return Scaffold(
@@ -60,8 +64,7 @@ class AccountingProfitabilityScreen extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
           children: [
             Text(
               'Proyecto: ${cc.name}',

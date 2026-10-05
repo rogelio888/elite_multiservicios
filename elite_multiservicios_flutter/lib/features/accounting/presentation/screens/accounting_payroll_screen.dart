@@ -3,8 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:elite_multiservicios_client/elite_multiservicios_client.dart';
 import '../providers/accounting_providers.dart';
 
-class AccountingPayrollScreen extends ConsumerWidget {
+class AccountingPayrollScreen extends ConsumerStatefulWidget {
   const AccountingPayrollScreen({super.key});
+  @override
+  ConsumerState<AccountingPayrollScreen> createState() => _AccountingPayrollScreenState();
+}
+class _AccountingPayrollScreenState extends ConsumerState<AccountingPayrollScreen> {
 
   void _showAddDialog(BuildContext context, WidgetRef ref) {
     final salaryController = TextEditingController();
@@ -81,7 +85,7 @@ class AccountingPayrollScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final estimationsAsync = ref.watch(payrollEstimationsProvider);
 
     return Scaffold(

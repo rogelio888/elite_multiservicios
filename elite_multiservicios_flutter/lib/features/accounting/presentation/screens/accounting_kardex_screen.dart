@@ -13,8 +13,8 @@ class AccountingKardexScreen extends ConsumerStatefulWidget {
       _AccountingKardexScreenState();
 }
 
-class _AccountingKardexScreenState
-    extends ConsumerState<AccountingKardexScreen> {
+class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen> {
+  bool _showSummaryCards = true;
   bool _isLoadingInventory = true;
   List<OpsInventoryItem> _inventoryItems = [];
   int? _selectedItemId;
@@ -225,6 +225,7 @@ class _AccountingKardexScreenState
               ),
             ),
             actions: [
+
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
                 child: const Text('Cancelar'),
@@ -315,6 +316,11 @@ class _AccountingKardexScreenState
         title: const Text('Kárdex Valuado e Inventario'),
         actions: [
           IconButton(
+            icon: Icon(_showSummaryCards ? Icons.expand_less : Icons.expand_more, color: Colors.blueAccent),
+            tooltip: _showSummaryCards ? 'Ocultar resumen' : 'Mostrar resumen',
+            onPressed: () { setState(() { _showSummaryCards = !_showSummaryCards; }); },
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
               _loadInventory();
@@ -339,9 +345,14 @@ class _AccountingKardexScreenState
           ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+              child: ListView(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+                children: [                AnimatedCrossFade(
+                  firstChild: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                                      
+                
+                      
                   // KPI Cards
                   Row(
                     children: [
@@ -433,9 +444,17 @@ class _AccountingKardexScreenState
                     ],
                   ),
                   const SizedBox(height: 16),
+                    
 
                   // Tabla Kárdex
-                  Expanded(
+                  
+                    ],
+                  ),
+                  secondChild: const SizedBox(width: double.infinity, height: 0),
+                  crossFadeState: _showSummaryCards ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                  duration: const Duration(milliseconds: 300),
+                ),
+                Expanded(
                     child: kardexAsync.when(
                       loading: () =>
                           const Center(child: CircularProgressIndicator()),
@@ -445,7 +464,9 @@ class _AccountingKardexScreenState
                           style: const TextStyle(color: Colors.red),
                         ),
                       ),
-                      data: (movements) => AccountingExcelGrid(
+                      data: (movements) => 
+                    
+                AccountingExcelGrid(
                         title:
                             'Libro de Kárdex Contable (Costo Promedio Ponderado)',
                         columns: [

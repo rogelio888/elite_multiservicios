@@ -168,22 +168,27 @@ class AccountingEndpoint extends Endpoint {
     AccountingPettyCashTransaction transaction,
   ) async {
     await _assertPeriodNotLocked(session, transaction.date);
-    var pettyCash = await AccountingPettyCash.db.findById(
-      session,
-      transaction.pettyCashId,
-    );
-    if (pettyCash != null) {
-      if (transaction.type == 'EXPENSE') {
-        pettyCash.balance -= transaction.amount;
-      } else if (transaction.type == 'REPLENISHMENT') {
-        pettyCash.balance += transaction.amount;
+
+    return await session.db.transaction((txn) async {
+      var pettyCash = await AccountingPettyCash.db.findById(
+        session,
+        transaction.pettyCashId,
+        transaction: txn,
+      );
+      if (pettyCash != null) {
+        if (transaction.type == 'EXPENSE') {
+          pettyCash.balance -= transaction.amount;
+        } else if (transaction.type == 'REPLENISHMENT') {
+          pettyCash.balance += transaction.amount;
+        }
+        await AccountingPettyCash.db.updateRow(session, pettyCash, transaction: txn);
       }
-      await AccountingPettyCash.db.updateRow(session, pettyCash);
-    }
-    return await AccountingPettyCashTransaction.db.insertRow(
-      session,
-      transaction,
-    );
+      return await AccountingPettyCashTransaction.db.insertRow(
+        session,
+        transaction,
+        transaction: txn,
+      );
+    });
   }
 
   /// Obtener estimaciones de nómina
@@ -235,26 +240,30 @@ class AccountingEndpoint extends Endpoint {
     Session session,
     int transactionId,
   ) async {
-    final txn = await AccountingPettyCashTransaction.db.findById(
-      session,
-      transactionId,
-    );
-    if (txn != null) {
-      await _assertPeriodNotLocked(session, txn.date);
-      final pettyCash = await AccountingPettyCash.db.findById(
+    await session.db.transaction((txn) async {
+      final txnRecord = await AccountingPettyCashTransaction.db.findById(
         session,
-        txn.pettyCashId,
+        transactionId,
+        transaction: txn,
       );
-      if (pettyCash != null) {
-        if (txn.type == 'EXPENSE') {
-          pettyCash.balance += txn.amount;
-        } else if (txn.type == 'REPLENISHMENT') {
-          pettyCash.balance -= txn.amount;
+      if (txnRecord != null) {
+        await _assertPeriodNotLocked(session, txnRecord.date);
+        final pettyCash = await AccountingPettyCash.db.findById(
+          session,
+          txnRecord.pettyCashId,
+          transaction: txn,
+        );
+        if (pettyCash != null) {
+          if (txnRecord.type == 'EXPENSE') {
+            pettyCash.balance += txnRecord.amount;
+          } else if (txnRecord.type == 'REPLENISHMENT') {
+            pettyCash.balance -= txnRecord.amount;
+          }
+          await AccountingPettyCash.db.updateRow(session, pettyCash, transaction: txn);
         }
-        await AccountingPettyCash.db.updateRow(session, pettyCash);
+        await AccountingPettyCashTransaction.db.deleteRow(session, txnRecord, transaction: txn);
       }
-      await AccountingPettyCashTransaction.db.deleteRow(session, txn);
-    }
+    });
   }
 
   // --- Transacciones Bancarias / Libro Diario ---

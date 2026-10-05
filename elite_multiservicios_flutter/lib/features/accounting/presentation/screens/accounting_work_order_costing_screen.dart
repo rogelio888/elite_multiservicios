@@ -11,8 +11,8 @@ class AccountingWorkOrderCostingScreen extends StatefulWidget {
       _AccountingWorkOrderCostingScreenState();
 }
 
-class _AccountingWorkOrderCostingScreenState
-    extends State<AccountingWorkOrderCostingScreen> {
+class _AccountingWorkOrderCostingScreenState extends State<AccountingWorkOrderCostingScreen> {
+  bool _showSummaryCards = true;
   bool _isLoading = true;
   List<AccountingWorkOrderCostSummary> _costSummaries = [];
 
@@ -238,6 +238,11 @@ class _AccountingWorkOrderCostingScreenState
         title: const Text('Costeo de Órdenes de Trabajo (OT)'),
         actions: [
           IconButton(
+            icon: Icon(_showSummaryCards ? Icons.expand_less : Icons.expand_more, color: Colors.blueAccent),
+            tooltip: _showSummaryCards ? 'Ocultar resumen' : 'Mostrar resumen',
+            onPressed: () { setState(() { _showSummaryCards = !_showSummaryCards; }); },
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadCostingData,
           ),
@@ -247,9 +252,14 @@ class _AccountingWorkOrderCostingScreenState
           ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+              child: ListView(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+                children: [                AnimatedCrossFade(
+                  firstChild: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                                      
+                
+                      
                   // KPI Cards
                   Row(
                     children: [
@@ -293,8 +303,18 @@ class _AccountingWorkOrderCostingScreenState
                   const SizedBox(height: 24),
 
                   // Tabla de Costeo
-                  Expanded(
-                    child: AccountingExcelGrid(
+                  
+                    
+                
+                    
+                
+                    ],
+                  ),
+                  secondChild: const SizedBox(width: double.infinity, height: 0),
+                  crossFadeState: _showSummaryCards ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                  duration: const Duration(milliseconds: 300),
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.7, child: AccountingExcelGrid(
                       title:
                           'Desglose de Costos y Rentabilidad por Servicio / OT',
                       columns: [
