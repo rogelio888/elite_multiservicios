@@ -1,47 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'accounting_payables_modal.dart';
-
-class AccountingExpensesScreen extends StatefulWidget {
-  const AccountingExpensesScreen({super.key});
+class AccountingReceivablesScreen extends StatefulWidget {
+  const AccountingReceivablesScreen({super.key});
 
   @override
-  State<AccountingExpensesScreen> createState() =>
-      _AccountingExpensesScreenState();
+  State<AccountingReceivablesScreen> createState() =>
+      _AccountingReceivablesScreenState();
 }
 
-class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
+class _AccountingReceivablesScreenState
+    extends State<AccountingReceivablesScreen> {
   int _activeTab = 0;
+  bool _showPaymentPanel = true;
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 24),
-            _buildTabBar(),
-            const SizedBox(height: 24),
-            if (_activeTab == 0) ...[
-              _buildKpiCards(),
-              const SizedBox(height: 24),
-              _buildAgingSchedule(),
-              const SizedBox(height: 24),
-              _buildFilterBar(),
-              const SizedBox(height: 16),
-              _buildDataTable(),
-            ] else if (_activeTab == 1) ...[
-              _buildLibroCompras(),
-            ] else if (_activeTab == 2) ...[
-              _buildHistorialPagos(),
-            ],
-          ],
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Main Content Area
+        Expanded(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 24),
+                  _buildTabBar(),
+                  const SizedBox(height: 24),
+                  if (_activeTab == 0) ...[
+                    _buildKpiCards(),
+                    const SizedBox(height: 24),
+                    _buildAgingSchedule(),
+                    const SizedBox(height: 24),
+                    _buildFilterBar(),
+                    const SizedBox(height: 16),
+                    _buildDataTable(),
+                  ] else if (_activeTab == 1) ...[
+                    _buildLibroVentas(),
+                  ] else if (_activeTab == 2) ...[
+                    _buildHistorialCobros(),
+                  ],
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
+
+        // Right Side Panel (Payment Registration)
+        if (_showPaymentPanel)
+          Container(
+            width: 450,
+            decoration: const BoxDecoration(
+              color: Color(0xFF1E293B),
+              border: Border(left: BorderSide(color: Color(0xFF334155))),
+            ),
+            child: _buildPaymentPanel(),
+          ),
+      ],
     );
   }
 
@@ -55,7 +74,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Egresos y Cuentas por\nPagar a Proveedores (CxP)',
+                'Facturación a Clientes y\nGestión de Cobranzas (CxC)',
                 style: GoogleFonts.inter(
                   color: Colors.white,
                   fontSize: 24,
@@ -65,7 +84,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Control de cartera de proveedores, programación de pagos por\ntramos de vencimiento (Aging) y emisión de comprobantes de egreso.',
+                'Control de cartera por cobrar, análisis de morosidad por\ntramos de vencimiento (Aging) y registro de recibos oficiales\nsegún normativa contable boliviana.',
                 style: GoogleFonts.inter(
                   color: Colors.grey[400],
                   fontSize: 13,
@@ -87,7 +106,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
           ),
           icon: const Icon(Icons.download_outlined, size: 16),
           label: Text(
-            'Exportar Libro de Compras',
+            'Exportar Libro IVA (Excel/PDF)',
             style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 12),
           ),
         ),
@@ -109,22 +128,22 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
               decoration: _activeTab == 0
                   ? const BoxDecoration(
                       border: Border(
-                        bottom: BorderSide(color: Color(0xFFEF4444), width: 2),
+                        bottom: BorderSide(color: Color(0xFF6366F1), width: 2),
                       ),
                     )
                   : null,
               child: Row(
                 children: [
                   Icon(
-                    Icons.hourglass_bottom,
+                    Icons.hourglass_empty,
                     color: _activeTab == 0
-                        ? const Color(0xFFFCA5A5)
+                        ? const Color(0xFF818CF8)
                         : Colors.grey[500],
                     size: 16,
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Cartera de Proveedores\n& Aging',
+                    'Cartera de Cuentas\npor Cobrar & Aging',
                     style: GoogleFonts.inter(
                       color: _activeTab == 0 ? Colors.white : Colors.grey[400],
                       fontSize: 12,
@@ -141,14 +160,14 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF7F1D1D),
+                        color: const Color(0xFF312E81),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        '24\nActivas',
+                        '18\nActivas',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.inter(
-                          color: const Color(0xFFFCA5A5),
+                          color: const Color(0xFF818CF8),
                           fontSize: 9,
                           fontWeight: FontWeight.bold,
                         ),
@@ -167,22 +186,22 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
               decoration: _activeTab == 1
                   ? const BoxDecoration(
                       border: Border(
-                        bottom: BorderSide(color: Color(0xFFEF4444), width: 2),
+                        bottom: BorderSide(color: Color(0xFF6366F1), width: 2),
                       ),
                     )
                   : null,
               child: Row(
                 children: [
                   Icon(
-                    Icons.receipt_outlined,
+                    Icons.receipt_long_outlined,
                     color: _activeTab == 1
-                        ? const Color(0xFFFCA5A5)
+                        ? const Color(0xFF818CF8)
                         : Colors.grey[500],
                     size: 16,
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Libro de Compras\n(RC-IVA)',
+                    'Libro de Facturas\nEmitidas (Ventas)',
                     style: GoogleFonts.inter(
                       color: _activeTab == 1 ? Colors.white : Colors.grey[400],
                       fontSize: 12,
@@ -203,7 +222,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
               decoration: _activeTab == 2
                   ? const BoxDecoration(
                       border: Border(
-                        bottom: BorderSide(color: Color(0xFFEF4444), width: 2),
+                        bottom: BorderSide(color: Color(0xFF6366F1), width: 2),
                       ),
                     )
                   : null,
@@ -212,13 +231,13 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                   Icon(
                     Icons.history,
                     color: _activeTab == 2
-                        ? const Color(0xFFFCA5A5)
+                        ? const Color(0xFF818CF8)
                         : Colors.grey[500],
                     size: 16,
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Historial de Pagos y\nComprobantes',
+                    'Historial de Cobros y\nRecibos Oficiales',
                     style: GoogleFonts.inter(
                       color: _activeTab == 2 ? Colors.white : Colors.grey[400],
                       fontSize: 12,
@@ -240,16 +259,16 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
     return Row(
       children: [
         _buildKpiCard(
-          title: 'TOTAL\nPASIVO\nCIRCULANTE',
-          icon: Icons.account_balance_wallet,
-          value: '185,200',
+          title: 'TOTAL\nCARTERA\nVIGENTE\n(CxC)',
+          icon: Icons.account_balance,
+          value: '241,600',
           valuePrefix: 'Bs.',
           valueColor: Colors.white,
           footerWidget: Text.rich(
             TextSpan(
               children: [
                 TextSpan(
-                  text: '24\nFacturas ',
+                  text: '18\nFacturas ',
                   style: GoogleFonts.inter(
                     color: Colors.grey[400],
                     fontSize: 9,
@@ -258,7 +277,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                 TextSpan(
                   text: '100%\n',
                   style: GoogleFonts.inter(
-                    color: const Color(0xFFFCA5A5),
+                    color: const Color(0xFF818CF8),
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
                   ),
@@ -271,9 +290,9 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                   ),
                 ),
                 TextSpan(
-                  text: 'Obligaciones',
+                  text: 'Cartera\nde cobro',
                   style: GoogleFonts.inter(
-                    color: const Color(0xFFFCA5A5),
+                    color: const Color(0xFF818CF8),
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
                   ),
@@ -284,10 +303,10 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
         ),
         const SizedBox(width: 16),
         _buildKpiCard(
-          title: 'PAGADO\nESTE MES\n(Q3)',
+          title: 'COBRADO\nESTE MES\n(Q3)',
           icon: Icons.check_circle_outline,
           iconColor: const Color(0xFF34D399),
-          value: '95,400',
+          value: '185,400',
           valuePrefix: 'Bs.',
           valueColor: const Color(0xFF34D399),
           footerWidget: Row(
@@ -299,7 +318,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  'Tasa de\ncumplimiento\n92%',
+                  'Tasa de\nrecuperación\n84%',
                   style: GoogleFonts.inter(
                     color: const Color(0xFF34D399),
                     fontSize: 9,
@@ -310,7 +329,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  '+5%\nvs .',
+                  '+12%\nvs .',
                   style: GoogleFonts.inter(
                     color: Colors.grey[400],
                     fontSize: 9,
@@ -322,24 +341,24 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
         ),
         const SizedBox(width: 16),
         _buildKpiCard(
-          title: 'OBLIGACIONES\nVENCIDAS (>\n30 DÍAS)',
+          title: 'CARTERA\nVENCIDA (>\n30 DÍAS)',
           icon: Icons.warning_amber_rounded,
-          iconColor: const Color(0xFFEF4444), // Red for payables
-          value: '42,100',
+          iconColor: const Color(0xFFFBBF24),
+          value: '32,800',
           valuePrefix: 'Bs.',
-          valueColor: const Color(0xFFFCA5A5),
+          valueColor: const Color(0xFFFBBF24),
           footerWidget: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF7F1D1D).withValues(alpha: 0.3),
+                  color: const Color(0xFFB45309).withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  '5\nfacturas\nen mora',
+                  '3\nfacturas\nen mora',
                   style: GoogleFonts.inter(
-                    color: const Color(0xFFFCA5A5),
+                    color: const Color(0xFFFBBF24),
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
                   ),
@@ -348,7 +367,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  '22.7%\nen\nriesgo',
+                  '13.6%\nen\nriesgo',
                   style: GoogleFonts.inter(
                     color: Colors.grey[400],
                     fontSize: 9,
@@ -360,38 +379,38 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
         ),
         const SizedBox(width: 16),
         _buildKpiCard(
-          title: 'RETENCIONES\nFISCALES\nPOR PAGAR',
-          icon: Icons.account_balance,
-          iconColor: const Color(0xFFFBBF24),
-          value: '12,500.',
+          title: 'PROVISIÓN\nINCOBRABILIDAD\n(NIC 9)',
+          icon: Icons.report_problem_outlined,
+          iconColor: const Color(0xFFFCA5A5),
+          value: '4,200.',
           valuePrefix: 'Bs.',
-          valueColor: const Color(0xFFFBBF24),
+          valueColor: const Color(0xFFFCA5A5),
           footerWidget: Text.rich(
             TextSpan(
               children: [
                 TextSpan(
-                  text: 'IUE / IT\n',
+                  text: 'Estimación\n',
                   style: GoogleFonts.inter(
                     color: Colors.grey[400],
                     fontSize: 9,
                   ),
                 ),
                 TextSpan(
-                  text: 'declaraciones\n',
+                  text: 'por riesgo\n',
                   style: GoogleFonts.inter(
                     color: Colors.grey[400],
                     fontSize: 9,
                   ),
                 ),
                 TextSpan(
-                  text: 'pendientes\n',
+                  text: 'crediticio\n',
                   style: GoogleFonts.inter(
                     color: Colors.grey[400],
                     fontSize: 9,
                   ),
                 ),
                 TextSpan(
-                  text: 'Oct 2026',
+                  text: 'Auditori\n2026',
                   style: GoogleFonts.inter(
                     color: Colors.grey[500],
                     fontSize: 8,
@@ -443,26 +462,30 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  valuePrefix,
-                  style: GoogleFonts.robotoMono(
-                    color: Colors.grey[400],
-                    fontSize: 12,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    valuePrefix,
+                    style: GoogleFonts.robotoMono(
+                      color: Colors.grey[400],
+                      fontSize: 12,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  value,
-                  style: GoogleFonts.robotoMono(
-                    color: valueColor,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                  const SizedBox(width: 4),
+                  Text(
+                    value,
+                    style: GoogleFonts.robotoMono(
+                      color: valueColor,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: 16),
             footerWidget,
@@ -491,7 +514,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'DISTRIBUCIÓN DE OBLIGACIONES POR VENCER Y VENCIDAS',
+                      'DISTRIBUCIÓN DE ANTIGÜEDAD DE SALDOS (AGING\nSCHEDULE)',
                       style: GoogleFonts.inter(
                         color: Colors.white,
                         fontSize: 12,
@@ -500,7 +523,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Desglose de cartera de proveedores por exigibilidad legal',
+                      'Desglose de cartera total por tramos temporales de exigibilidad\nlegal y financiera',
                       style: GoogleFonts.inter(
                         color: Colors.grey[400],
                         fontSize: 11,
@@ -520,7 +543,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                     ),
                   ),
                   Text(
-                    '185,200.00',
+                    '241,600.00',
                     style: GoogleFonts.robotoMono(
                       color: Colors.white,
                       fontSize: 14,
@@ -541,19 +564,19 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
             child: Row(
               children: [
                 Expanded(
-                  flex: 55,
+                  flex: 73,
                   child: Container(color: const Color(0xFF34D399)),
                 ),
                 Expanded(
-                  flex: 22,
+                  flex: 14,
                   child: Container(color: const Color(0xFFFBBF24)),
                 ),
                 Expanded(
-                  flex: 15,
+                  flex: 9,
                   child: Container(color: const Color(0xFFF97316)),
                 ),
                 Expanded(
-                  flex: 8,
+                  flex: 5,
                   child: Container(color: const Color(0xFFEF4444)),
                 ),
               ],
@@ -565,29 +588,29 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
             children: [
               _buildAgingBucket(
                 'AL DÍA / NO\nVENCIDO',
-                '101,860.00',
-                '55.0%',
+                '176,000.00',
+                '72.8%',
                 const Color(0xFF34D399),
               ),
               const SizedBox(width: 12),
               _buildAgingBucket(
                 'VENCIDO 1 - 30\nDÍAS',
-                '40,744.00',
-                '22.0%',
+                '32,800.00',
+                '13.6%',
                 const Color(0xFFFBBF24),
               ),
               const SizedBox(width: 12),
               _buildAgingBucket(
                 'VENCIDO 31 - 60\nDÍAS',
-                '27,780.00',
-                '15.0%',
+                '21,500.00',
+                '8.9%',
                 const Color(0xFFF97316),
               ),
               const SizedBox(width: 12),
               _buildAgingBucket(
                 'VENCIDO > 90\nDÍAS',
-                '14,816.00',
-                '8.0%',
+                '11,300.00',
+                '4.7%',
                 const Color(0xFFEF4444),
               ),
             ],
@@ -773,7 +796,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                 Expanded(
                   flex: 2,
                   child: Text(
-                    'PROVEEDOR &\nRAZÓN\nSOCIAL',
+                    'CLIENTE &\nRAZÓN\nSOCIAL',
                     style: GoogleFonts.inter(
                       color: Colors.grey[400],
                       fontSize: 10,
@@ -784,7 +807,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    'RECEPCIÓN /\nVENCIMIENTO',
+                    'EMISIÓN /\nVENCIMIENTO',
                     style: GoogleFonts.inter(
                       color: Colors.grey[400],
                       fontSize: 10,
@@ -795,7 +818,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    'IMPORTE\nADEUDADO',
+                    'IMPORTE\nFACTURADO',
                     textAlign: TextAlign.right,
                     style: GoogleFonts.inter(
                       color: Colors.grey[400],
@@ -816,16 +839,15 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 120), // Action button space
               ],
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             decoration: BoxDecoration(
-              color: const Color(0xFFEF4444).withValues(alpha: 0.1),
+              color: const Color(0xFF6366F1).withValues(alpha: 0.1),
               border: const Border(
-                left: BorderSide(color: Color(0xFFEF4444), width: 4),
+                left: BorderSide(color: Color(0xFF6366F1), width: 4),
               ),
             ),
             child: Row(
@@ -836,9 +858,9 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'FCV-88392',
+                        'FAC-2026-089',
                         style: GoogleFonts.robotoMono(
-                          color: const Color(0xFFFCA5A5),
+                          color: const Color(0xFF818CF8),
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
                         ),
@@ -852,7 +874,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Imcruz Maquinaria S.A.',
+                        'Constructora Santa Cruz S.R.L.',
                         style: GoogleFonts.inter(
                           color: Colors.white,
                           fontSize: 11,
@@ -861,7 +883,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'NIT: 1028492019',
+                        'NIT: 1029384021',
                         style: GoogleFonts.robotoMono(
                           color: Colors.grey[500],
                           fontSize: 10,
@@ -876,7 +898,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '10/01/2026',
+                        '15/01/2026',
                         style: GoogleFonts.robotoMono(
                           color: Colors.white,
                           fontSize: 11,
@@ -884,7 +906,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Vence: 09/02/2026',
+                        'Vence: 14/02/2026',
                         style: GoogleFonts.robotoMono(
                           color: Colors.grey[500],
                           fontSize: 10,
@@ -899,7 +921,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        'Bs. 14,000.00',
+                        'Bs. 85,000.00',
                         style: GoogleFonts.robotoMono(
                           color: Colors.white,
                           fontSize: 12,
@@ -914,7 +936,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        'Bs. 14,000.00',
+                        'Bs. 35,000.00',
                         style: GoogleFonts.robotoMono(
                           color: const Color(0xFFFCA5A5),
                           fontSize: 12,
@@ -943,38 +965,6 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                     ],
                   ),
                 ),
-                SizedBox(
-                  width: 120,
-                  child: Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          barrierColor: Colors.black87,
-                          builder: (context) => const AccountingPayablesModal(),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEF4444),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                      ),
-                      child: Text(
-                        'Liquidar',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -984,7 +974,626 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
     );
   }
 
-  Widget _buildLibroCompras() {
+  Widget _buildPaymentPanel() {
+    return Column(
+      children: [
+        // Panel Header
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: Color(0xFF334155))),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF064E3B),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.attach_money,
+                  color: Color(0xFF34D399),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Registrar Cobranza de Factura',
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF312E81),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'FAC-2026-089',
+                            style: GoogleFonts.robotoMono(
+                              color: const Color(0xFF818CF8),
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Libro de Ventas SIN',
+                          style: GoogleFonts.inter(
+                            color: Colors.grey[500],
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.grey, size: 20),
+                onPressed: () => setState(() => _showPaymentPanel = false),
+              ),
+            ],
+          ),
+        ),
+
+        // Panel Body
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'CLIENTE EMISIÓN',
+                      style: GoogleFonts.inter(
+                        color: Colors.grey[400],
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'NIT: 1029384021',
+                      style: GoogleFonts.robotoMono(
+                        color: Colors.grey[400],
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Constructora Santa Cruz S.R.L.',
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Divider(color: Color(0xFF334155)),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Total Facturado',
+                            style: GoogleFonts.inter(
+                              color: Colors.grey[400],
+                              fontSize: 10,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Bs. 85,000.00',
+                            style: GoogleFonts.robotoMono(
+                              color: Colors.white,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Saldo Pendiente Actual',
+                            style: GoogleFonts.inter(
+                              color: Colors.grey[400],
+                              fontSize: 10,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Bs. 35,000.00',
+                            style: GoogleFonts.robotoMono(
+                              color: const Color(0xFF34D399),
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Monto a Cobrar (Bs.) *',
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          'Pago Total (100%)',
+                          style: GoogleFonts.inter(
+                            color: const Color(0xFF818CF8),
+                            fontSize: 10,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        Text(
+                          ' · Parcial',
+                          style: GoogleFonts.inter(
+                            color: Colors.grey[500],
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F172A),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: const Color(0xFF064E3B)),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Bs.',
+                        style: GoogleFonts.robotoMono(
+                          color: Colors.grey[400],
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '35,000.00',
+                        style: GoogleFonts.robotoMono(
+                          color: const Color(0xFF34D399),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                Text(
+                  'Cuenta Bancaria o Caja Destino *',
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F172A),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: const Color(0xFF334155)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Banco Nacional de Bolivia - BNB Cta. Cte. BOB (1.1.01.02)',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 11,
+                        ),
+                      ),
+                      const Icon(
+                        Icons.keyboard_arrow_down,
+                        color: Colors.grey,
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Método de Pago',
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF0F172A),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: const Color(0xFF334155),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Transferencia Electrónica / QF',
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Fecha de Ingreso',
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF0F172A),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: const Color(0xFF334155),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '10/02/2026',
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.calendar_today,
+                                  color: Colors.grey,
+                                  size: 14,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                Text(
+                  'N° Comprobante / Referencia Bancaria',
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F172A),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: const Color(0xFF334155)),
+                  ),
+                  child: Text(
+                    'TRANSF-BNB-994821',
+                    style: GoogleFonts.robotoMono(
+                      color: Colors.white,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF090D16),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFF334155)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: Color(0xFF334155)),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.auto_awesome,
+                                  color: Color(0xFF818CF8),
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'ASIENTO CONTABLE AUTOMÁTICO (PREVIEW)',
+                                  style: GoogleFonts.inter(
+                                    color: const Color(0xFF818CF8),
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              'Cód: AS-2026-8911',
+                              style: GoogleFonts.robotoMono(
+                                color: Colors.grey[500],
+                                fontSize: 9,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 2,
+                                  height: 30,
+                                  color: const Color(0xFF34D399),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '1.1.01.02 BNB Cta. Cte. BOB',
+                                        style: GoogleFonts.robotoMono(
+                                          color: Colors.white,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'Débito (+) Ingreso Bancario',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.grey[500],
+                                          fontSize: 9,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Text(
+                                  'Bs. 35,000.00',
+                                  style: GoogleFonts.robotoMono(
+                                    color: const Color(0xFF34D399),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 2,
+                                  height: 30,
+                                  color: const Color(0xFFFCA5A5),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '1.1.02.01 CxC Comerciales',
+                                        style: GoogleFonts.robotoMono(
+                                          color: Colors.white,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'Crédito (-) Extinción de Deuda',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.grey[500],
+                                          fontSize: 9,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Text(
+                                  'Bs. 35,000.00',
+                                  style: GoogleFonts.robotoMono(
+                                    color: const Color(0xFFFCA5A5),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Glosa: Cobro de Factura FAC-2026-089 Cliente Constructora Santa Cruz S.R.L. mediante BNB Transf. #994821.',
+                              style: GoogleFonts.inter(
+                                color: Colors.grey[400],
+                                fontSize: 10,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // Panel Footer
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: const BoxDecoration(
+            color: Color(0xFF0F172A),
+            border: Border(top: BorderSide(color: Color(0xFF334155))),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () => setState(() => _showPaymentPanel = false),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.grey[400],
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                    side: const BorderSide(color: Color(0xFF334155)),
+                  ),
+                ),
+                child: Text(
+                  'Cancelar',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              ElevatedButton.icon(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF059669),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                icon: const Icon(Icons.check_circle_outline, size: 16),
+                label: Text(
+                  'Confirmar Cobro y Generar Recibo',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLibroVentas() {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
@@ -1002,7 +1611,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Registro de Compras (Formato LCV - SIN)',
+                  'Libro de Ventas (Formato LCV - SIN)',
                   style: GoogleFonts.inter(
                     color: Colors.white,
                     fontSize: 14,
@@ -1051,7 +1660,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                 Expanded(
                   flex: 2,
                   child: Text(
-                    'PROVEEDOR',
+                    'CLIENTE / RAZÓN SOCIAL',
                     style: GoogleFonts.inter(
                       color: Colors.grey[400],
                       fontSize: 10,
@@ -1062,7 +1671,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    'NIT',
+                    'NIT/CI',
                     style: GoogleFonts.inter(
                       color: Colors.grey[400],
                       fontSize: 10,
@@ -1096,7 +1705,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    'SUJETO A CRÉDITO',
+                    'CÓD. CONTROL',
                     textAlign: TextAlign.right,
                     style: GoogleFonts.inter(
                       color: Colors.grey[400],
@@ -1108,7 +1717,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    'CRÉDITO FISCAL',
+                    'DÉBITO FISCAL',
                     textAlign: TextAlign.right,
                     style: GoogleFonts.inter(
                       color: Colors.grey[400],
@@ -1120,46 +1729,46 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
               ],
             ),
           ),
-          _buildLcvRow(
-            '05/10/2026',
-            'Entel S.A.',
-            '1020492023',
-            '90342',
-            'Bs. 500.00',
-            'Bs. 500.00',
-            'Bs. 65.00',
+          _buildSalesRow(
+            '02/10/2026',
+            'Constructora Cimentar SRL',
+            '1029384029',
+            '10045',
+            'Bs. 45,000.00',
+            'A1-B2-C3-D4',
+            'Bs. 5,850.00',
           ),
-          _buildLcvRow(
-            '10/10/2026',
-            'Imcruz Maquinaria S.A.',
-            '1028492019',
-            '88392',
-            'Bs. 14,000.00',
-            'Bs. 14,000.00',
-            'Bs. 1,820.00',
+          _buildSalesRow(
+            '06/10/2026',
+            'Inversiones del Sur SA',
+            '4059683021',
+            '10046',
+            'Bs. 12,500.00',
+            'E5-F6-G7-H8',
+            'Bs. 1,625.00',
           ),
-          _buildLcvRow(
-            '12/10/2026',
-            'Papelería La Escolar',
-            '2039485012',
-            '1023',
-            'Bs. 250.00',
-            'Bs. 250.00',
-            'Bs. 32.50',
+          _buildSalesRow(
+            '09/10/2026',
+            'Juan Pérez',
+            '6892019',
+            '10047',
+            'Bs. 1,200.00',
+            'J9-K0-L1-M2',
+            'Bs. 156.00',
           ),
         ],
       ),
     );
   }
 
-  Widget _buildLcvRow(
+  Widget _buildSalesRow(
     String fecha,
-    String proveedor,
+    String cliente,
     String nit,
     String nFactura,
     String total,
-    String sujeto,
-    String credito,
+    String control,
+    String debito,
   ) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -1181,7 +1790,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
           Expanded(
             flex: 2,
             child: Text(
-              proveedor,
+              cliente,
               style: GoogleFonts.inter(
                 color: Colors.white,
                 fontSize: 11,
@@ -1220,18 +1829,21 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
           Expanded(
             flex: 1,
             child: Text(
-              sujeto,
+              control,
               textAlign: TextAlign.right,
-              style: GoogleFonts.robotoMono(color: Colors.white, fontSize: 11),
+              style: GoogleFonts.robotoMono(
+                color: Colors.grey[400],
+                fontSize: 11,
+              ),
             ),
           ),
           Expanded(
             flex: 1,
             child: Text(
-              credito,
+              debito,
               textAlign: TextAlign.right,
               style: GoogleFonts.robotoMono(
-                color: const Color(0xFF34D399),
+                color: const Color(0xFFFCA5A5),
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
               ),
@@ -1242,7 +1854,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
     );
   }
 
-  Widget _buildHistorialPagos() {
+  Widget _buildHistorialCobros() {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
@@ -1260,7 +1872,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Historial de Pagos y Egresos (Comprobantes)',
+                  'Historial de Cobros y Recibos Oficiales',
                   style: GoogleFonts.inter(
                     color: Colors.white,
                     fontSize: 14,
@@ -1278,7 +1890,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                     border: Border.all(color: const Color(0xFF334155)),
                   ),
                   child: Text(
-                    'Filtro: Últimos 30 días',
+                    'Filtro: Todos',
                     style: GoogleFonts.inter(
                       color: Colors.grey[400],
                       fontSize: 11,
@@ -1298,7 +1910,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    'N° COMPROBANTE',
+                    'N° RECIBO',
                     style: GoogleFonts.inter(
                       color: Colors.grey[400],
                       fontSize: 10,
@@ -1320,7 +1932,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                 Expanded(
                   flex: 2,
                   child: Text(
-                    'PROVEEDOR / BENEFICIARIO',
+                    'CLIENTE',
                     style: GoogleFonts.inter(
                       color: Colors.grey[400],
                       fontSize: 10,
@@ -1331,7 +1943,7 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    'MÉTODO DE PAGO',
+                    'FACTURA REF.',
                     style: GoogleFonts.inter(
                       color: Colors.grey[400],
                       fontSize: 10,
@@ -1342,7 +1954,18 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    'MONTO PAGADO',
+                    'MEDIO DE PAGO',
+                    style: GoogleFonts.inter(
+                      color: Colors.grey[400],
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    'MONTO COBRADO',
                     textAlign: TextAlign.right,
                     style: GoogleFonts.inter(
                       color: Colors.grey[400],
@@ -1366,28 +1989,31 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
               ],
             ),
           ),
-          _buildPaymentHistoryRow(
-            'CE-2026-0391',
+          _buildReceiptHistoryRow(
+            'RC-2026-0891',
             '01/10/2026',
-            'Servicios de Impuestos Nacionales',
+            'Constructora Cimentar SRL',
+            '10040',
             'Transf. BNB Cta. Cte.',
-            'Bs. 21,500.00',
+            'Bs. 15,000.00',
             true,
           ),
-          _buildPaymentHistoryRow(
-            'CE-2026-0392',
-            '03/10/2026',
-            'Entel S.A.',
-            'Transf. BNB Cta. Cte.',
-            'Bs. 500.00',
+          _buildReceiptHistoryRow(
+            'RC-2026-0892',
+            '04/10/2026',
+            'Edificio Los Pinos',
+            '10042',
+            'Cheque BMSC #020',
+            'Bs. 4,500.00',
             true,
           ),
-          _buildPaymentHistoryRow(
-            'CE-2026-0393',
-            '05/10/2026',
-            'Caja de Salud (CNS)',
-            'Cheque BMSC #0991',
-            'Bs. 18,200.00',
+          _buildReceiptHistoryRow(
+            'RC-2026-0893',
+            '08/10/2026',
+            'Hotel Central',
+            '10044',
+            'Efectivo',
+            'Bs. 2,100.00',
             true,
           ),
         ],
@@ -1395,13 +2021,14 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
     );
   }
 
-  Widget _buildPaymentHistoryRow(
-    String nComp,
+  Widget _buildReceiptHistoryRow(
+    String nRecibo,
     String fecha,
-    String proveedor,
+    String cliente,
+    String factura,
     String metodo,
     String monto,
-    bool completado,
+    bool validado,
   ) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -1413,9 +2040,9 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
           Expanded(
             flex: 1,
             child: Text(
-              nComp,
+              nRecibo,
               style: GoogleFonts.robotoMono(
-                color: const Color(0xFFFCA5A5),
+                color: const Color(0xFF818CF8),
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
               ),
@@ -1434,11 +2061,21 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
           Expanded(
             flex: 2,
             child: Text(
-              proveedor,
+              cliente,
               style: GoogleFonts.inter(
                 color: Colors.white,
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              factura,
+              style: GoogleFonts.robotoMono(
+                color: Colors.grey[400],
+                fontSize: 11,
               ),
             ),
           ),
@@ -1467,15 +2104,15 @@ class _AccountingExpensesScreenState extends State<AccountingExpensesScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: completado
+                  color: validado
                       ? const Color(0xFF064E3B).withValues(alpha: 0.3)
                       : const Color(0xFFB45309).withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  completado ? 'LIQUIDADO' : 'PENDIENTE',
+                  validado ? 'CONCILIADO' : 'EN TRÁNSITO',
                   style: GoogleFonts.inter(
-                    color: completado
+                    color: validado
                         ? const Color(0xFF34D399)
                         : const Color(0xFFFBBF24),
                     fontSize: 9,

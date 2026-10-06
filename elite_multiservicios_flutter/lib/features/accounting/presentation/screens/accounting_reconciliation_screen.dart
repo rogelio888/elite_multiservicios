@@ -79,9 +79,10 @@ class _AccountingBankReconciliationScreenState
                 padding: const EdgeInsets.all(20.0),
                 child: Row(
                   children: [
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    Expanded(
+                      child: ListView(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
                         children: [
                           Text(
                             'Sube tu extracto bancario',

@@ -30,7 +30,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Inicialización obligatoria de credenciales y tokens JWT antes de resolver la vista
-  await client.auth.initialize();
+  try {
+    await client.auth.initialize();
+  } catch (e) {
+    if (kDebugMode) {
+      print(
+        'Error al inicializar sesión (posible token obsoleto). Limpiando...',
+      );
+    }
+    try {
+      await client.auth.signOutDevice();
+    } catch (_) {}
+  }
 
   runApp(const ProviderScope(child: EliteMultiserviciosApp()));
 }

@@ -32,7 +32,7 @@ class ExcelGridRow {
   });
 }
 
-class AccountingExcelGrid extends StatelessWidget {
+class AccountingExcelGrid extends StatefulWidget {
   final List<ExcelGridColumn> columns;
   final List<ExcelGridRow> rows;
   final String title;
@@ -47,13 +47,30 @@ class AccountingExcelGrid extends StatelessWidget {
   });
 
   @override
+  State<AccountingExcelGrid> createState() => _AccountingExcelGridState();
+}
+
+class _AccountingExcelGridState extends State<AccountingExcelGrid> {
+  final ScrollController _verticalController = ScrollController();
+  final ScrollController _horizontalController = ScrollController();
+
+  @override
+  void dispose() {
+    _verticalController.dispose();
+    _horizontalController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final divider = theme.dividerColor;
 
     // Determina si alguna fila tiene acciones (editar/eliminar)
-    final hasActions = rows.any((r) => r.onEdit != null || r.onDelete != null);
+    final hasActions = widget.rows.any(
+      (r) => r.onEdit != null || r.onDelete != null,
+    );
 
     // Columnas: "Acciones" PRIMERO para que sea siempre visible, luego las definidas
     final allColumns = [
@@ -64,7 +81,7 @@ class AccountingExcelGrid extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
-      ...columns.map(
+      ...widget.columns.map(
         (col) => DataColumn(
           label: Text(
             col.title,
@@ -76,7 +93,7 @@ class AccountingExcelGrid extends StatelessWidget {
     ];
 
     // Filas con celdas de acciones añadidas al final
-    final allRows = rows.map((row) {
+    final allRows = widget.rows.map((row) {
       final actionCell = DataCell(
         Row(
           mainAxisSize: MainAxisSize.min,
@@ -155,15 +172,15 @@ class AccountingExcelGrid extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  title,
+                  widget.title,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                if (onAddRow != null)
+                if (widget.onAddRow != null)
                   ElevatedButton.icon(
-                    onPressed: onAddRow,
+                    onPressed: widget.onAddRow,
                     icon: const Icon(Icons.add, size: 18),
                     label: const Text('Nueva Fila'),
                     style: ElevatedButton.styleFrom(
@@ -179,7 +196,7 @@ class AccountingExcelGrid extends StatelessWidget {
             ),
           ),
           // ── Tabla ─────────────────────────────────────────────
-          if (rows.isEmpty)
+          if (widget.rows.isEmpty)
             Expanded(
               child: Center(
                 child: SingleChildScrollView(
@@ -199,10 +216,10 @@ class AccountingExcelGrid extends StatelessWidget {
                           fontSize: 14,
                         ),
                       ),
-                      if (onAddRow != null) ...[
+                      if (widget.onAddRow != null) ...[
                         const SizedBox(height: 16),
                         ElevatedButton.icon(
-                          onPressed: onAddRow,
+                          onPressed: widget.onAddRow,
                           icon: const Icon(Icons.add, size: 18),
                           label: const Text('Agregar primer registro'),
                           style: ElevatedButton.styleFrom(
@@ -218,28 +235,55 @@ class AccountingExcelGrid extends StatelessWidget {
             )
           else
             Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
+              child: Scrollbar(
+                controller: _verticalController,
+                thumbVisibility: true,
+                trackVisibility: true,
                 child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Theme(
-                    data: theme.copyWith(dividerColor: divider),
-                    child: DataTable(
-                      headingRowColor: WidgetStateProperty.all(
-                        primary.withValues(alpha: 0.1),
+                  controller: _verticalController,
+                  scrollDirection: Axis.vertical,
+                  child: Scrollbar(
+                    controller: _horizontalController,
+                    thumbVisibility: true,
+                    trackVisibility: true,
+                    child: SingleChildScrollView(
+                      controller: _horizontalController,
+                      scrollDirection: Axis.horizontal,
+                      child: Theme(
+                        data: theme.copyWith(dividerColor: divider),
+                        child: DataTable(
+                          headingRowColor: WidgetStateProperty.all(
+                            primary.withValues(alpha: 0.1),
+                          ),
+                          headingTextStyle: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          dataTextStyle: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 13,
+                          ),
+                          dataRowMinHeight: 48,
+                          dataRowMaxHeight: 56,
+                          border: TableBorder(
+                            verticalInside: BorderSide(
+                              color: divider,
+                              width: 1,
+                            ),
+                            horizontalInside: BorderSide(
+                              color: divider,
+                              width: 1,
+                            ),
+                            top: BorderSide(color: divider, width: 1),
+                            bottom: BorderSide(color: divider, width: 1),
+                            left: BorderSide(color: divider, width: 1),
+                            right: BorderSide(color: divider, width: 1),
+                          ),
+                          columns: allColumns,
+                          rows: allRows,
+                        ),
                       ),
-                      dataRowMinHeight: 48,
-                      dataRowMaxHeight: 56,
-                      border: TableBorder(
-                        verticalInside: BorderSide(color: divider, width: 1),
-                        horizontalInside: BorderSide(color: divider, width: 1),
-                        top: BorderSide(color: divider, width: 1),
-                        bottom: BorderSide(color: divider, width: 1),
-                        left: BorderSide(color: divider, width: 1),
-                        right: BorderSide(color: divider, width: 1),
-                      ),
-                      columns: allColumns,
-                      rows: allRows,
                     ),
                   ),
                 ),

@@ -15,6 +15,7 @@ class AccountingKardexScreen extends ConsumerStatefulWidget {
 
 class _AccountingKardexScreenState
     extends ConsumerState<AccountingKardexScreen> {
+  bool _showSummaryCards = true;
   bool _isLoadingInventory = true;
   List<OpsInventoryItem> _inventoryItems = [];
   int? _selectedItemId;
@@ -315,6 +316,18 @@ class _AccountingKardexScreenState
         title: const Text('Kárdex Valuado e Inventario'),
         actions: [
           IconButton(
+            icon: Icon(
+              _showSummaryCards ? Icons.expand_less : Icons.expand_more,
+              color: Colors.blueAccent,
+            ),
+            tooltip: _showSummaryCards ? 'Ocultar resumen' : 'Mostrar resumen',
+            onPressed: () {
+              setState(() {
+                _showSummaryCards = !_showSummaryCards;
+              });
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
               _loadInventory();
@@ -337,212 +350,238 @@ class _AccountingKardexScreenState
       ),
       body: _isLoadingInventory
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+          : Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: ListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 children: [
-                  // KPI Cards
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildMetricCard(
-                          'Valoración Total Inventario',
-                          '\$${totalInventoryValuation.toStringAsFixed(2)}',
-                          Icons.account_balance_wallet,
-                          Colors.indigo,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildMetricCard(
-                          'Unidades en Existencia',
-                          totalStockUnits.toStringAsFixed(1),
-                          Icons.inventory_2,
-                          Colors.teal,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildMetricCard(
-                          'Artículos Registrados',
-                          '${_inventoryItems.length}',
-                          Icons.category,
-                          Colors.blueGrey,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: kardexAsync.when(
-                          data: (movements) => _buildMetricCard(
-                            'Movimientos Kárdex',
-                            '${movements.length}',
-                            Icons.history,
-                            Colors.orange,
-                          ),
-                          loading: () => _buildMetricCard(
-                            'Movimientos Kárdex',
-                            '...',
-                            Icons.history,
-                            Colors.orange,
-                          ),
-                          error: (err, stack) => _buildMetricCard(
-                            'Movimientos Kárdex',
-                            'Error',
-                            Icons.history,
-                            Colors.orange,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Filtro por Item
-                  Row(
-                    children: [
-                      const Text(
-                        'Filtrar por Artículo:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: DropdownButton<int?>(
-                          value: _selectedItemId,
-                          isExpanded: true,
-                          hint: const Text('Todos los artículos de inventario'),
-                          items: [
-                            const DropdownMenuItem<int?>(
-                              value: null,
-                              child: Text('Todos los artículos (General)'),
-                            ),
-                            ..._inventoryItems.map((item) {
-                              return DropdownMenuItem<int?>(
-                                value: item.id,
-                                child: Text(
-                                  '${item.name} — Stock: ${item.quantityInStock} ${item.unit} | CPP: \$${item.averageCost.toStringAsFixed(2)}',
-                                ),
-                              );
-                            }),
-                          ],
-                          onChanged: (val) {
-                            setState(() => _selectedItemId = val);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Tabla Kárdex
-                  kardexAsync.when(
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
-                    error: (err, stack) => Center(
-                      child: Text(
-                        'Error cargando movimientos: $err',
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    ),
-                    data: (movements) => AccountingExcelGrid(
-                      title:
-                          'Libro de Kárdex Contable (Costo Promedio Ponderado)',
-                      columns: [
-                        ExcelGridColumn(title: 'Fecha'),
-                        ExcelGridColumn(title: 'Artículo'),
-                        ExcelGridColumn(title: 'Tipo'),
-                        ExcelGridColumn(title: 'Doc. Referencia'),
-                        ExcelGridColumn(title: 'O.T.'),
-                        ExcelGridColumn(title: 'Cantidad', isNumeric: true),
-                        ExcelGridColumn(
-                          title: 'Costo Unit. Ponderado (\$)',
-                          isNumeric: true,
-                        ),
-                        ExcelGridColumn(
-                          title: 'Total Movimiento (\$)',
-                          isNumeric: true,
-                        ),
-                        ExcelGridColumn(
-                          title: 'Saldo Unidades',
-                          isNumeric: true,
-                        ),
-                        ExcelGridColumn(
-                          title: 'Valoración Total (\$)',
-                          isNumeric: true,
-                        ),
-                      ],
-                      rows: movements.map((m) {
-                        final isEntry =
-                            m.movementType == 'IN_PURCHASE' ||
-                            m.movementType == 'IN_ADJUSTMENT';
-                        return ExcelGridRow(
-                          cells: [
-                            Text(
-                              '${m.date.day.toString().padLeft(2, '0')}/${m.date.month.toString().padLeft(2, '0')}/${m.date.year}',
-                            ),
-                            Text(
-                              m.itemName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
+                  AnimatedCrossFade(
+                    firstChild: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // KPI Cards
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildMetricCard(
+                                'Valoración Total Inventario',
+                                '\$${totalInventoryValuation.toStringAsFixed(2)}',
+                                Icons.account_balance_wallet,
+                                Colors.indigo,
                               ),
                             ),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  isEntry
-                                      ? Icons.arrow_downward
-                                      : Icons.arrow_upward,
-                                  size: 14,
-                                  color: isEntry ? Colors.green : Colors.red,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildMetricCard(
+                                'Unidades en Existencia',
+                                totalStockUnits.toStringAsFixed(1),
+                                Icons.inventory_2,
+                                Colors.teal,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildMetricCard(
+                                'Artículos Registrados',
+                                '${_inventoryItems.length}',
+                                Icons.category,
+                                Colors.blueGrey,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: kardexAsync.when(
+                                data: (movements) => _buildMetricCard(
+                                  'Movimientos Kárdex',
+                                  '${movements.length}',
+                                  Icons.history,
+                                  Colors.orange,
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  isEntry ? 'ENTRADA' : 'SALIDA',
-                                  style: TextStyle(
-                                    color: isEntry ? Colors.green : Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 11,
+                                loading: () => _buildMetricCard(
+                                  'Movimientos Kárdex',
+                                  '...',
+                                  Icons.history,
+                                  Colors.orange,
+                                ),
+                                error: (err, stack) => _buildMetricCard(
+                                  'Movimientos Kárdex',
+                                  'Error',
+                                  Icons.history,
+                                  Colors.orange,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Filtro por Item
+                        Row(
+                          children: [
+                            const Text(
+                              'Filtrar por Artículo:',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: DropdownButton<int?>(
+                                value: _selectedItemId,
+                                isExpanded: true,
+                                hint: const Text(
+                                  'Todos los artículos de inventario',
+                                ),
+                                items: [
+                                  const DropdownMenuItem<int?>(
+                                    value: null,
+                                    child: Text(
+                                      'Todos los artículos (General)',
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Text(m.referenceDoc),
-                            Text(
-                              m.workOrderId != null ? '#${m.workOrderId}' : '-',
-                            ),
-                            Text(
-                              m.quantity.toStringAsFixed(2),
-                              style: TextStyle(
-                                color: isEntry ? Colors.green : Colors.red,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text('\$${m.unitCost.toStringAsFixed(2)}'),
-                            Text(
-                              '\$${m.totalCost.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              m.balanceQuantity.toStringAsFixed(2),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              '\$${m.balanceTotalCost.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue,
+                                  ..._inventoryItems.map((item) {
+                                    return DropdownMenuItem<int?>(
+                                      value: item.id,
+                                      child: Text(
+                                        '${item.name} — Stock: ${item.quantityInStock} ${item.unit} | CPP: \$${item.averageCost.toStringAsFixed(2)}',
+                                      ),
+                                    );
+                                  }),
+                                ],
+                                onChanged: (val) {
+                                  setState(() => _selectedItemId = val);
+                                },
                               ),
                             ),
                           ],
-                        );
-                      }).toList(),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Tabla Kárdex
+                      ],
                     ),
+                    secondChild: const SizedBox(
+                      width: double.infinity,
+                      height: 0,
+                    ),
+                    crossFadeState: _showSummaryCards
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    duration: const Duration(milliseconds: 300),
                   ),
+                  Expanded(
+                    child: kardexAsync.when(
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (err, stack) => Center(
+                        child: Text(
+                          'Error cargando movimientos: $err',
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      data: (movements) => AccountingExcelGrid(
+                        title:
+                            'Libro de Kárdex Contable (Costo Promedio Ponderado)',
+                        columns: [
+                          ExcelGridColumn(title: 'Fecha'),
+                          ExcelGridColumn(title: 'Artículo'),
+                          ExcelGridColumn(title: 'Tipo'),
+                          ExcelGridColumn(title: 'Doc. Referencia'),
+                          ExcelGridColumn(title: 'O.T.'),
+                          ExcelGridColumn(title: 'Cantidad', isNumeric: true),
+                          ExcelGridColumn(
+                            title: 'Costo Unit. Ponderado (\$)',
+                            isNumeric: true,
+                          ),
+                          ExcelGridColumn(
+                            title: 'Total Movimiento (\$)',
+                            isNumeric: true,
+                          ),
+                          ExcelGridColumn(
+                            title: 'Saldo Unidades',
+                            isNumeric: true,
+                          ),
+                          ExcelGridColumn(
+                            title: 'Valoración Total (\$)',
+                            isNumeric: true,
+                          ),
+                        ],
+                        rows: movements.map((m) {
+                          final isEntry =
+                              m.movementType == 'IN_PURCHASE' ||
+                              m.movementType == 'IN_ADJUSTMENT';
+                          return ExcelGridRow(
+                            cells: [
+                              Text(
+                                '${m.date.day.toString().padLeft(2, '0')}/${m.date.month.toString().padLeft(2, '0')}/${m.date.year}',
+                              ),
+                              Text(
+                                m.itemName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    isEntry
+                                        ? Icons.arrow_downward
+                                        : Icons.arrow_upward,
+                                    size: 14,
+                                    color: isEntry ? Colors.green : Colors.red,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    isEntry ? 'ENTRADA' : 'SALIDA',
+                                    style: TextStyle(
+                                      color: isEntry
+                                          ? Colors.green
+                                          : Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Text(m.referenceDoc),
+                              Text(
+                                m.workOrderId != null
+                                    ? '#${m.workOrderId}'
+                                    : '-',
+                              ),
+                              Text(
+                                m.quantity.toStringAsFixed(2),
+                                style: TextStyle(
+                                  color: isEntry ? Colors.green : Colors.red,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text('\$${m.unitCost.toStringAsFixed(2)}'),
+                              Text(
+                                '\$${m.totalCost.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                m.balanceQuantity.toStringAsFixed(2),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                '\$${m.balanceTotalCost.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ), // Cierre de Expanded
                 ],
               ),
             ),

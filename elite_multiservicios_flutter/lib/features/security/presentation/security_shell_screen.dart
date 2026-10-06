@@ -16,7 +16,7 @@ import 'views/roles_rbac_view.dart';
 import 'views/audit_log_view.dart';
 import 'views/active_sessions_view.dart';
 import '../../accounting/presentation/screens/accounting_dashboard_screen.dart';
-import '../../accounting/presentation/screens/accounting_invoices_screen.dart';
+import '../../accounting/presentation/screens/accounting_receivables_screen.dart';
 import '../../accounting/presentation/screens/accounting_expenses_screen.dart';
 import '../../accounting/presentation/screens/accounting_petty_cash_screen.dart';
 import '../../accounting/presentation/screens/accounting_payroll_screen.dart';
@@ -24,10 +24,14 @@ import '../../accounting/presentation/screens/accounting_budgets_screen.dart';
 import '../../accounting/presentation/screens/accounting_banks_screen.dart';
 import '../../accounting/presentation/screens/accounting_reconciliation_screen.dart';
 import '../../accounting/presentation/screens/accounting_fixed_assets_screen.dart';
+import '../../accounting/presentation/screens/accounting_fixed_assets_depreciation_batch_screen.dart';
+import '../../accounting/presentation/screens/accounting_fixed_assets_revaluation_screen.dart';
+import '../../accounting/presentation/screens/accounting_fixed_assets_disposals_screen.dart';
+import '../../accounting/presentation/screens/accounting_fixed_assets_config_screen.dart';
 import '../../accounting/presentation/screens/accounting_ledger_screen.dart';
 import '../../accounting/presentation/screens/accounting_taxes_screen.dart';
 import '../../accounting/presentation/screens/accounting_profitability_screen.dart';
-import '../../accounting/presentation/screens/accounting_reports_screen.dart';
+import '../../accounting/presentation/screens/accounting_financial_statements_screen.dart';
 import '../../accounting/presentation/screens/accounting_period_closure_screen.dart';
 import '../../accounting/presentation/screens/accounting_kardex_screen.dart';
 import '../../accounting/presentation/screens/accounting_work_order_costing_screen.dart';
@@ -282,6 +286,17 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       case 'costeo':
         return 34;
 
+      case 'bajas-y-retiros':
+      case 'bajas-activos':
+      case 'retiros-activos':
+      case 'accounting-disposals':
+        return 39;
+
+      case 'configuracion-contable':
+      case 'configuracion-activos':
+      case 'accounting-config':
+        return 37;
+
       case 'ops-inventory':
       case 'inventario':
       case 'almacen':
@@ -313,7 +328,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
   bool _isCrmExpanded = true;
   bool _isRrhhExpanded = true;
   bool _isAccountingExpanded = true;
-  bool _isOpsExpanded = true;
+  bool _isFixedAssetsExpanded = false;
 
   @override
   void initState() {
@@ -346,10 +361,13 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       _isCrmExpanded = true;
     } else if (initialIndex >= 9 && initialIndex <= 14) {
       _isRrhhExpanded = true;
-    } else if (initialIndex >= 16 && initialIndex <= 28) {
+    } else if ((initialIndex >= 16 && initialIndex <= 28) ||
+        (initialIndex >= 32 && initialIndex <= 39)) {
       _isAccountingExpanded = true;
+      if (initialIndex == 25 || (initialIndex >= 35 && initialIndex <= 39))
+        _isFixedAssetsExpanded = true;
     } else if (initialIndex >= 29 && initialIndex <= 31) {
-      _isOpsExpanded = true;
+      // _isOpsExpanded = true;
     }
 
     // Sincronizar URL del navegador con el slug activo
@@ -367,8 +385,15 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
               _isCrmExpanded = true;
             }
             if (newIndex >= 9 && newIndex <= 14) _isRrhhExpanded = true;
-            if (newIndex >= 16 && newIndex <= 28) _isAccountingExpanded = true;
-            if (newIndex >= 29 && newIndex <= 31) _isOpsExpanded = true;
+            if ((newIndex >= 16 && newIndex <= 28) ||
+                (newIndex >= 32 && newIndex <= 39)) {
+              _isAccountingExpanded = true;
+              if (newIndex == 25 || (newIndex >= 35 && newIndex <= 39))
+                _isFixedAssetsExpanded = true;
+            }
+            if (newIndex >= 29 && newIndex <= 31) {
+              // _isOpsExpanded = true;
+            }
           });
           _loadSidebarMetrics();
         }
@@ -402,10 +427,13 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
           _isCrmExpanded = true;
         } else if (index >= 9 && index <= 14) {
           _isRrhhExpanded = true;
-        } else if (index >= 16 && index <= 28) {
+        } else if ((index >= 16 && index <= 28) ||
+            (index >= 32 && index <= 39)) {
           _isAccountingExpanded = true;
+          if (index == 25 || (index >= 35 && index <= 39))
+            _isFixedAssetsExpanded = true;
         } else if (index >= 29 && index <= 31) {
-          _isOpsExpanded = true;
+          // _isOpsExpanded = true;
         }
       });
       // Sincronizar URL visible en la barra de direcciones del navegador
@@ -557,7 +585,8 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
 
     final isCrmItem = (index >= 5 && index <= 8) || index == 15;
     final isRrhhItem = index >= 9 && index <= 14;
-    final isAccountingItem = index >= 16 && index <= 28;
+    final isAccountingItem =
+        (index >= 16 && index <= 28) || (index >= 32 && index <= 39);
     final isOpsItem = index >= 29 && index <= 31;
 
     final Color activeAccent = isCrmItem
@@ -863,7 +892,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
 
     final isAnyAccountingActive =
         (_selectedIndex >= 16 && _selectedIndex <= 28) ||
-        (_selectedIndex >= 32 && _selectedIndex <= 34);
+        (_selectedIndex >= 32 && _selectedIndex <= 39);
     final accountingItems = [
       (
         icon: Icons.space_dashboard_outlined,
@@ -934,6 +963,20 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         label: 'Activos Fijos',
         badge: null,
         index: 25,
+      ),
+      (
+        icon: Icons.delete_outline,
+        selectedIcon: Icons.delete,
+        label: 'Bajas y Retiros',
+        badge: null,
+        index: 39,
+      ),
+      (
+        icon: Icons.settings_outlined,
+        selectedIcon: Icons.settings,
+        label: 'Configuración Contable',
+        badge: null,
+        index: 37,
       ),
       (
         icon: Icons.pie_chart_outline,
@@ -1080,7 +1123,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         currentView = const AccountingDashboardScreen();
         break;
       case 17:
-        currentView = const AccountingInvoicesScreen();
+        currentView = const AccountingReceivablesScreen();
         break;
       case 18:
         currentView = const AccountingExpensesScreen();
@@ -1107,7 +1150,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         currentView = const AccountingFixedAssetsScreen();
         break;
       case 26:
-        currentView = const AccountingReportsScreen();
+        currentView = const AccountingFinancialStatementsScreen();
         break;
       case 27:
         currentView = const AccountingBudgetsScreen();
@@ -1132,6 +1175,18 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
         break;
       case 34:
         currentView = const AccountingWorkOrderCostingScreen();
+        break;
+      case 35:
+        currentView = const AccountingFixedAssetsDepreciationBatchScreen();
+        break;
+      case 36:
+        currentView = const AccountingFixedAssetsRevaluationScreen();
+        break;
+      case 37:
+        currentView = const AccountingFixedAssetsConfigScreen();
+        break;
+      case 39:
+        currentView = const AccountingFixedAssetsDisposalsScreen();
         break;
       default:
         currentView = const Center(child: Text('Vista no encontrada'));
@@ -2535,27 +2590,206 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                         left: collapsed ? 0 : 6,
                       ),
                       child: Column(
-                        children: accountingItems.map((item) {
-                          return Padding(
+                        children: [
+                          Padding(
                             padding: const EdgeInsets.only(bottom: 2),
                             child: _buildNavItem(
-                              icon: item.icon,
-                              selectedIcon: item.selectedIcon,
-                              label: item.label,
-                              index: item.index,
-                              badge: item.badge,
+                              icon: Icons.dashboard_outlined,
+                              selectedIcon: Icons.dashboard,
+                              label: 'Dashboard Contable',
+                              index: 16,
                               isSubItem: true,
                               isDrawer: isDrawer,
                             ),
-                          );
-                        }).toList(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: Icons.receipt_long_outlined,
+                              selectedIcon: Icons.receipt_long,
+                              label: 'Facturación y CxC',
+                              index: 17,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: Icons.money_off_outlined,
+                              selectedIcon: Icons.money_off,
+                              label: 'Egresos y CxP',
+                              index: 18,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: Icons.account_balance_outlined,
+                              selectedIcon: Icons.account_balance,
+                              label: 'Bancos & Tesorería',
+                              index: 24,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          ),
+
+                          // Activos Fijos Accordion
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                _isFixedAssetsExpanded =
+                                    !_isFixedAssetsExpanded;
+                              });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 6,
+                                horizontal: 8,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.domain_outlined,
+                                    size: 16,
+                                    color: isDark
+                                        ? const Color(0xFF94A3B8)
+                                        : const Color(0xFF64748B),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Activos Fijos',
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? const Color(0xFF94A3B8)
+                                            : const Color(0xFF64748B),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(
+                                    _isFixedAssetsExpanded
+                                        ? Icons.keyboard_arrow_down
+                                        : Icons.keyboard_arrow_right,
+                                    size: 16,
+                                    color: isDark
+                                        ? const Color(0xFF94A3B8)
+                                        : const Color(0xFF64748B),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (_isFixedAssetsExpanded)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16),
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2),
+                                    child: _buildNavItem(
+                                      icon: Icons.inventory_2_outlined,
+                                      selectedIcon: Icons.inventory_2,
+                                      label: 'Catálogo de Activos',
+                                      index: 25,
+                                      isSubItem: true,
+                                      isDrawer: isDrawer,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2),
+                                    child: _buildNavItem(
+                                      icon: Icons.calculate_outlined,
+                                      selectedIcon: Icons.calculate,
+                                      label: 'Cálculo de Depreciaciones',
+                                      index: 35,
+                                      isSubItem: true,
+                                      isDrawer: isDrawer,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2),
+                                    child: _buildNavItem(
+                                      icon: Icons.price_change_outlined,
+                                      selectedIcon: Icons.price_change,
+                                      label: 'Revalúos Técnicos',
+                                      index: 36,
+                                      isSubItem: true,
+                                      isDrawer: isDrawer,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2),
+                                    child: _buildNavItem(
+                                      icon: Icons.delete_outline,
+                                      selectedIcon: Icons.delete,
+                                      label: 'Bajas y Retiros',
+                                      index: 39,
+                                      isSubItem: true,
+                                      isDrawer: isDrawer,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2),
+                                    child: _buildNavItem(
+                                      icon: Icons.settings_outlined,
+                                      selectedIcon: Icons.settings,
+                                      label: 'Configuración Contable',
+                                      index: 37,
+                                      isSubItem: true,
+                                      isDrawer: isDrawer,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: Icons.bar_chart_outlined,
+                              selectedIcon: Icons.bar_chart,
+                              label: 'Presupuestos & Flujo',
+                              index: 27,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: Icons.insert_chart_outlined,
+                              selectedIcon: Icons.insert_chart,
+                              label: 'Estados Financieros',
+                              index: 26,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: Icons.account_tree_outlined,
+                              selectedIcon: Icons.account_tree,
+                              label: 'Catálogo de Cuentas',
+                              index: 22,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 const SizedBox(height: 6),
 
                 // 9. Acordeón Colapsable "Operaciones"
-                Material(
+                /* Material(
                   color: Colors.transparent,
                   child: InkWell(
                     key: const Key('nav_accordion_ops'),
@@ -2688,7 +2922,7 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                         }).toList(),
                       ),
                     ),
-                  ),
+                  ), */
               ],
             ),
           ),

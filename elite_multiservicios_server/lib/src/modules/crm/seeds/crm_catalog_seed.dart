@@ -54,22 +54,32 @@ class CrmCatalogSeed {
     for (final s in sectorsData) {
       final existing = await CrmSector.db.findFirstRow(
         session,
-        where: (t) => t.code.equals(s['code']!),
+        where: (t) => t.code.equals(s['code']!) | t.name.ilike(s['name']!),
       );
       if (existing != null) {
         sectorIdByCode[s['code']!] = existing.id!;
       } else {
-        final inserted = await repo.createSector(
-          CrmSector(
-            code: s['code']!,
-            name: s['name']!,
-            description: s['desc'],
-            isActive: true,
-            createdAt: DateTime.now().toUtc(),
-            updatedAt: DateTime.now().toUtc(),
-          ),
-        );
-        sectorIdByCode[s['code']!] = inserted.id!;
+        try {
+          final inserted = await repo.createSector(
+            CrmSector(
+              code: s['code']!,
+              name: s['name']!,
+              description: s['desc'],
+              isActive: true,
+              createdAt: DateTime.now().toUtc(),
+              updatedAt: DateTime.now().toUtc(),
+            ),
+          );
+          sectorIdByCode[s['code']!] = inserted.id!;
+        } catch (_) {
+          final fallback = await CrmSector.db.findFirstRow(
+            session,
+            where: (t) => t.name.ilike(s['name']!),
+          );
+          if (fallback != null) {
+            sectorIdByCode[s['code']!] = fallback.id!;
+          }
+        }
       }
     }
 
@@ -118,23 +128,33 @@ class CrmCatalogSeed {
     for (final l in serviceLinesData) {
       final existing = await CrmServiceLine.db.findFirstRow(
         session,
-        where: (t) => t.code.equals(l['code']!),
+        where: (t) => t.code.equals(l['code']!) | t.name.ilike(l['name']!),
       );
       if (existing != null) {
         lineIdByCode[l['code']!] = existing.id!;
       } else {
-        final inserted = await repo.createServiceLine(
-          CrmServiceLine(
-            code: l['code']!,
-            name: l['name']!,
-            category: l['cat']!,
-            description: 'Línea de servicio especializada en ${l['name']}',
-            isActive: true,
-            createdAt: DateTime.now().toUtc(),
-            updatedAt: DateTime.now().toUtc(),
-          ),
-        );
-        lineIdByCode[l['code']!] = inserted.id!;
+        try {
+          final inserted = await repo.createServiceLine(
+            CrmServiceLine(
+              code: l['code']!,
+              name: l['name']!,
+              category: l['cat']!,
+              description: 'Línea de servicio especializada en ${l['name']}',
+              isActive: true,
+              createdAt: DateTime.now().toUtc(),
+              updatedAt: DateTime.now().toUtc(),
+            ),
+          );
+          lineIdByCode[l['code']!] = inserted.id!;
+        } catch (_) {
+          final fallback = await CrmServiceLine.db.findFirstRow(
+            session,
+            where: (t) => t.name.ilike(l['name']!),
+          );
+          if (fallback != null) {
+            lineIdByCode[l['code']!] = fallback.id!;
+          }
+        }
       }
     }
 
@@ -290,7 +310,9 @@ class CrmCatalogSeed {
     for (final item in catalogData) {
       final existing = await CrmCatalogItem.db.findFirstRow(
         session,
-        where: (t) => t.code.equals(item['code'] as String),
+        where: (t) =>
+            t.code.equals(item['code'] as String) |
+            t.concept.ilike(item['concept'] as String),
       );
 
       if (existing != null) {
@@ -300,24 +322,34 @@ class CrmCatalogSeed {
             lineIdByCode[item['lineCode'] as String] ??
             lineIdByCode.values.first;
 
-        final inserted = await repo.createCatalogItem(
-          CrmCatalogItem(
-            code: item['code'] as String,
-            serviceLineId: lineId,
-            category: item['cat'] as String,
-            concept: item['concept'] as String,
-            calculationType: item['calc'] as String,
-            unitType: item['unit'] as String,
-            basePrice: item['price'] as double,
-            minQuantity: item['minQty'] as double,
-            version: 1,
-            metadata: item['meta'] as String?,
-            isActive: true,
-            createdAt: DateTime.now().toUtc(),
-            updatedAt: DateTime.now().toUtc(),
-          ),
-        );
-        catalogIdByCode[item['code'] as String] = inserted.id!;
+        try {
+          final inserted = await repo.createCatalogItem(
+            CrmCatalogItem(
+              code: item['code'] as String,
+              serviceLineId: lineId,
+              category: item['cat'] as String,
+              concept: item['concept'] as String,
+              calculationType: item['calc'] as String,
+              unitType: item['unit'] as String,
+              basePrice: item['price'] as double,
+              minQuantity: item['minQty'] as double,
+              version: 1,
+              metadata: item['meta'] as String?,
+              isActive: true,
+              createdAt: DateTime.now().toUtc(),
+              updatedAt: DateTime.now().toUtc(),
+            ),
+          );
+          catalogIdByCode[item['code'] as String] = inserted.id!;
+        } catch (_) {
+          final fallback = await CrmCatalogItem.db.findFirstRow(
+            session,
+            where: (t) => t.concept.ilike(item['concept'] as String),
+          );
+          if (fallback != null) {
+            catalogIdByCode[item['code'] as String] = fallback.id!;
+          }
+        }
       }
     }
 
