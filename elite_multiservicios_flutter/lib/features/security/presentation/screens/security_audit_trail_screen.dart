@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../accounting/presentation/widgets/accounting_excel_grid.dart';
 
-final auditTrailProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final auditTrailProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
   await Future.delayed(const Duration(milliseconds: 600));
   return [
     {
@@ -12,9 +14,10 @@ final auditTrailProvider = FutureProvider<List<Map<String, dynamic>>>((ref) asyn
       'ip': '192.168.1.105',
       'module': 'CONTABILIDAD - LIBRO MAYOR',
       'action': 'EDICIÓN ASIENTO MANUAL',
-      'details': 'Modificó monto de depreciación de Bs 1,200 a Bs 1,500 en Asiento AST-0442.',
+      'details':
+          'Modificó monto de depreciación de Bs 1,200 a Bs 1,500 en Asiento AST-0442.',
       'hash': 'a7x9...8b2f',
-      'severity': 'ALTA'
+      'severity': 'ALTA',
     },
     {
       'id': 'LOG-9920',
@@ -25,7 +28,7 @@ final auditTrailProvider = FutureProvider<List<Map<String, dynamic>>>((ref) asyn
       'action': 'SALIDA DE ALMACÉN',
       'details': 'Consumo Técnico de 5 Lts. Aceite Motor para OT-102.',
       'hash': 'c3p1...9j4q',
-      'severity': 'MEDIA'
+      'severity': 'MEDIA',
     },
     {
       'id': 'LOG-9919',
@@ -34,9 +37,10 @@ final auditTrailProvider = FutureProvider<List<Map<String, dynamic>>>((ref) asyn
       'ip': 'localhost',
       'module': 'CONTABILIDAD - FACTURACIÓN',
       'action': 'EJECUCIÓN LOTE RECURRENTE',
-      'details': 'Generación de 14 facturas de mantenimiento preventivo (Lote BATCH-001).',
+      'details':
+          'Generación de 14 facturas de mantenimiento preventivo (Lote BATCH-001).',
       'hash': 'k9m2...0z1a',
-      'severity': 'INFO'
+      'severity': 'INFO',
     },
   ];
 });
@@ -50,13 +54,21 @@ class SecurityAuditTrailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Libro Mayor de Auditoría Inalterable (Audit Trail)', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Libro Mayor de Auditoría Inalterable (Audit Trail)',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         elevation: 0,
         actions: [
           ElevatedButton.icon(
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Exportando registro inalterable (Hash AES-256) a PDF...'), backgroundColor: Colors.indigo),
+                const SnackBar(
+                  content: Text(
+                    'Exportando registro inalterable (Hash AES-256) a PDF...',
+                  ),
+                  backgroundColor: Colors.indigo,
+                ),
               );
             },
             icon: const Icon(Icons.picture_as_pdf, size: 18),
@@ -86,24 +98,45 @@ class SecurityAuditTrailScreen extends ConsumerWidget {
                     color: Colors.black87,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 10, offset: const Offset(0, 4))
-                    ]
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1), shape: BoxShape.circle),
-                        child: const Icon(Icons.security, color: Colors.greenAccent, size: 32),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.security,
+                          color: Colors.greenAccent,
+                          size: 32,
+                        ),
                       ),
                       const SizedBox(width: 24),
                       const Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Trazabilidad Estricta (ISO 27001)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                            Text(
+                              'Trazabilidad Estricta (ISO 27001)',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                             SizedBox(height: 8),
-                            Text('Todo evento de modificación, borrado o creación de registros contables y operativos está protegido por Blockchain Hash. No puede ser alterado ni por administradores de base de datos.', style: TextStyle(color: Colors.white70)),
+                            Text(
+                              'Todo evento de modificación, borrado o creación de registros contables y operativos está protegido por Blockchain Hash. No puede ser alterado ni por administradores de base de datos.',
+                              style: TextStyle(color: Colors.white70),
+                            ),
                           ],
                         ),
                       ),
@@ -111,7 +144,7 @@ class SecurityAuditTrailScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 32),
-                
+
                 Expanded(
                   child: AccountingExcelGrid(
                     title: 'Eventos del Sistema',
@@ -132,22 +165,65 @@ class SecurityAuditTrailScreen extends ConsumerWidget {
                         cells: [
                           Row(
                             children: [
-                              Icon(Icons.fingerprint, size: 14, color: isHigh ? Colors.red : Colors.blueGrey),
+                              Icon(
+                                Icons.fingerprint,
+                                size: 14,
+                                color: isHigh ? Colors.red : Colors.blueGrey,
+                              ),
                               const SizedBox(width: 4),
-                              Text(log['id'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isHigh ? Colors.red : Colors.indigo)),
+                              Text(
+                                log['id'],
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: isHigh ? Colors.red : Colors.indigo,
+                                ),
+                              ),
                             ],
                           ),
-                          Text('${t.day.toString().padLeft(2,'0')}/${t.month.toString().padLeft(2,'0')}/${t.year} ${t.hour.toString().padLeft(2,'0')}:${t.minute.toString().padLeft(2,'0')}'),
-                          Text(log['user'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(4)),
-                            child: Text(log['module'], style: const TextStyle(fontSize: 11)),
+                          Text(
+                            '${t.day.toString().padLeft(2, '0')}/${t.month.toString().padLeft(2, '0')}/${t.year} ${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}',
                           ),
-                          Text(log['action'], style: TextStyle(fontWeight: FontWeight.bold, color: isHigh ? Colors.red.shade700 : Colors.black87)),
-                          Text(log['details'], style: const TextStyle(fontSize: 12)),
-                          Text(log['hash'], style: const TextStyle(fontFamily: 'Courier', color: Colors.blueGrey, fontSize: 11)),
-                        ]
+                          Text(
+                            log['user'],
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              log['module'],
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                          ),
+                          Text(
+                            log['action'],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isHigh
+                                  ? Colors.red.shade700
+                                  : Colors.black87,
+                            ),
+                          ),
+                          Text(
+                            log['details'],
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          Text(
+                            log['hash'],
+                            style: const TextStyle(
+                              fontFamily: 'Courier',
+                              color: Colors.blueGrey,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
                       );
                     }).toList(),
                   ),
@@ -155,8 +231,8 @@ class SecurityAuditTrailScreen extends ConsumerWidget {
               ],
             ),
           );
-        }
-      )
+        },
+      ),
     );
   }
 }

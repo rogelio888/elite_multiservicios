@@ -7,9 +7,12 @@ import '../providers/accounting_providers.dart';
 class AccountingPeriodClosureScreen extends ConsumerStatefulWidget {
   const AccountingPeriodClosureScreen({super.key});
   @override
-  ConsumerState<AccountingPeriodClosureScreen> createState() => _AccountingPeriodClosureScreenState();
+  ConsumerState<AccountingPeriodClosureScreen> createState() =>
+      _AccountingPeriodClosureScreenState();
 }
-class _AccountingPeriodClosureScreenState extends ConsumerState<AccountingPeriodClosureScreen> {
+
+class _AccountingPeriodClosureScreenState
+    extends ConsumerState<AccountingPeriodClosureScreen> {
   bool _showSummaryCards = true;
 
   Future<void> _showNewClosureDialog(
@@ -279,9 +282,16 @@ class _AccountingPeriodClosureScreenState extends ConsumerState<AccountingPeriod
         title: const Text('Cierres de Periodo y Bloqueo'),
         actions: [
           IconButton(
-            icon: Icon(_showSummaryCards ? Icons.expand_less : Icons.expand_more, color: Colors.blueAccent),
+            icon: Icon(
+              _showSummaryCards ? Icons.expand_less : Icons.expand_more,
+              color: Colors.blueAccent,
+            ),
             tooltip: _showSummaryCards ? 'Ocultar resumen' : 'Mostrar resumen',
-            onPressed: () { setState(() { _showSummaryCards = !_showSummaryCards; }); },
+            onPressed: () {
+              setState(() {
+                _showSummaryCards = !_showSummaryCards;
+              });
+            },
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -319,97 +329,102 @@ class _AccountingPeriodClosureScreenState extends ConsumerState<AccountingPeriod
 
           return Padding(
             padding: const EdgeInsets.all(16.0),
-            child: ListView(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
-              children: [                AnimatedCrossFade(
+            child: ListView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                AnimatedCrossFade(
                   firstChild: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                                      
-                
-                      
-                // Banner de seguridad
-                Card(
-                  color: Colors.blue.shade50,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(color: Colors.blue.shade200),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.shield_outlined, color: Colors.blue),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Los periodos cerrados protegen la integridad contable. Queda estrictamente bloqueada la creación, edición o anulación de facturas y egresos en fechas de periodos bloqueados.',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.blue.shade900,
-                            ),
+                      // Banner de seguridad
+                      Card(
+                        color: Colors.blue.shade50,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(color: Colors.blue.shade200),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.shield_outlined,
+                                color: Colors.blue,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'Los periodos cerrados protegen la integridad contable. Queda estrictamente bloqueada la creación, edición o anulación de facturas y egresos en fechas de periodos bloqueados.',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.blue.shade900,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                      ),
+                      const SizedBox(height: 16),
 
-                // KPIs
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildMetricCard(
-                        'Periodos Cerrados',
-                        '${closures.where((c) => c.isLocked).length}',
-                        Icons.lock,
-                        Colors.indigo,
+                      // KPIs
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildMetricCard(
+                              'Periodos Cerrados',
+                              '${closures.where((c) => c.isLocked).length}',
+                              Icons.lock,
+                              Colors.indigo,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildMetricCard(
+                              'Ingresos Consolidados',
+                              '\$${totalIncomeSum.toStringAsFixed(2)}',
+                              Icons.arrow_upward,
+                              Colors.green,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildMetricCard(
+                              'Egresos Consolidados',
+                              '\$${totalExpenseSum.toStringAsFixed(2)}',
+                              Icons.arrow_downward,
+                              Colors.red,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildMetricCard(
+                              'Resultado Neto',
+                              '\$${netResultSum.toStringAsFixed(2)}',
+                              Icons.account_balance,
+                              netResultSum >= 0 ? Colors.teal : Colors.orange,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildMetricCard(
-                        'Ingresos Consolidados',
-                        '\$${totalIncomeSum.toStringAsFixed(2)}',
-                        Icons.arrow_upward,
-                        Colors.green,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildMetricCard(
-                        'Egresos Consolidados',
-                        '\$${totalExpenseSum.toStringAsFixed(2)}',
-                        Icons.arrow_downward,
-                        Colors.red,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildMetricCard(
-                        'Resultado Neto',
-                        '\$${netResultSum.toStringAsFixed(2)}',
-                        Icons.account_balance,
-                        netResultSum >= 0 ? Colors.teal : Colors.orange,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
-                // Tabla de Cierres
-                
-                    
-                
-                    
-                
+                      // Tabla de Cierres
                     ],
                   ),
-                  secondChild: const SizedBox(width: double.infinity, height: 0),
-                  crossFadeState: _showSummaryCards ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                  secondChild: const SizedBox(
+                    width: double.infinity,
+                    height: 0,
+                  ),
+                  crossFadeState: _showSummaryCards
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond,
                   duration: const Duration(milliseconds: 300),
                 ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.7, child: AccountingExcelGrid(
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: AccountingExcelGrid(
                     title: 'Historial de Cierres Contables y Bloqueos',
                     columns: [
                       ExcelGridColumn(title: 'Estado / Candado'),

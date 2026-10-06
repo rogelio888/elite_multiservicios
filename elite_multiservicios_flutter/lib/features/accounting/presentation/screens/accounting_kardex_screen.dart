@@ -13,7 +13,8 @@ class AccountingKardexScreen extends ConsumerStatefulWidget {
       _AccountingKardexScreenState();
 }
 
-class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen> {
+class _AccountingKardexScreenState
+    extends ConsumerState<AccountingKardexScreen> {
   bool _showSummaryCards = true;
   bool _isLoadingInventory = true;
   List<OpsInventoryItem> _inventoryItems = [];
@@ -225,7 +226,6 @@ class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen>
               ),
             ),
             actions: [
-
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
                 child: const Text('Cancelar'),
@@ -316,9 +316,16 @@ class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen>
         title: const Text('Kárdex Valuado e Inventario'),
         actions: [
           IconButton(
-            icon: Icon(_showSummaryCards ? Icons.expand_less : Icons.expand_more, color: Colors.blueAccent),
+            icon: Icon(
+              _showSummaryCards ? Icons.expand_less : Icons.expand_more,
+              color: Colors.blueAccent,
+            ),
             tooltip: _showSummaryCards ? 'Ocultar resumen' : 'Mostrar resumen',
-            onPressed: () { setState(() { _showSummaryCards = !_showSummaryCards; }); },
+            onPressed: () {
+              setState(() {
+                _showSummaryCards = !_showSummaryCards;
+              });
+            },
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -345,116 +352,123 @@ class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen>
           ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
-              child: ListView(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
-                children: [                AnimatedCrossFade(
-                  firstChild: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                                      
-                
-                      
-                  // KPI Cards
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildMetricCard(
-                          'Valoración Total Inventario',
-                          '\$${totalInventoryValuation.toStringAsFixed(2)}',
-                          Icons.account_balance_wallet,
-                          Colors.indigo,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildMetricCard(
-                          'Unidades en Existencia',
-                          totalStockUnits.toStringAsFixed(1),
-                          Icons.inventory_2,
-                          Colors.teal,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildMetricCard(
-                          'Artículos Registrados',
-                          '${_inventoryItems.length}',
-                          Icons.category,
-                          Colors.blueGrey,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: kardexAsync.when(
-                          data: (movements) => _buildMetricCard(
-                            'Movimientos Kárdex',
-                            '${movements.length}',
-                            Icons.history,
-                            Colors.orange,
-                          ),
-                          loading: () => _buildMetricCard(
-                            'Movimientos Kárdex',
-                            '...',
-                            Icons.history,
-                            Colors.orange,
-                          ),
-                          error: (err, stack) => _buildMetricCard(
-                            'Movimientos Kárdex',
-                            'Error',
-                            Icons.history,
-                            Colors.orange,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Filtro por Item
-                  Row(
-                    children: [
-                      const Text(
-                        'Filtrar por Artículo:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: DropdownButton<int?>(
-                          value: _selectedItemId,
-                          isExpanded: true,
-                          hint: const Text('Todos los artículos de inventario'),
-                          items: [
-                            const DropdownMenuItem<int?>(
-                              value: null,
-                              child: Text('Todos los artículos (General)'),
+              child: ListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  AnimatedCrossFade(
+                    firstChild: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // KPI Cards
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildMetricCard(
+                                'Valoración Total Inventario',
+                                '\$${totalInventoryValuation.toStringAsFixed(2)}',
+                                Icons.account_balance_wallet,
+                                Colors.indigo,
+                              ),
                             ),
-                            ..._inventoryItems.map((item) {
-                              return DropdownMenuItem<int?>(
-                                value: item.id,
-                                child: Text(
-                                  '${item.name} — Stock: ${item.quantityInStock} ${item.unit} | CPP: \$${item.averageCost.toStringAsFixed(2)}',
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildMetricCard(
+                                'Unidades en Existencia',
+                                totalStockUnits.toStringAsFixed(1),
+                                Icons.inventory_2,
+                                Colors.teal,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildMetricCard(
+                                'Artículos Registrados',
+                                '${_inventoryItems.length}',
+                                Icons.category,
+                                Colors.blueGrey,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: kardexAsync.when(
+                                data: (movements) => _buildMetricCard(
+                                  'Movimientos Kárdex',
+                                  '${movements.length}',
+                                  Icons.history,
+                                  Colors.orange,
                                 ),
-                              );
-                            }),
+                                loading: () => _buildMetricCard(
+                                  'Movimientos Kárdex',
+                                  '...',
+                                  Icons.history,
+                                  Colors.orange,
+                                ),
+                                error: (err, stack) => _buildMetricCard(
+                                  'Movimientos Kárdex',
+                                  'Error',
+                                  Icons.history,
+                                  Colors.orange,
+                                ),
+                              ),
+                            ),
                           ],
-                          onChanged: (val) {
-                            setState(() => _selectedItemId = val);
-                          },
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                    
+                        const SizedBox(height: 20),
 
-                  // Tabla Kárdex
-                  
-                    ],
+                        // Filtro por Item
+                        Row(
+                          children: [
+                            const Text(
+                              'Filtrar por Artículo:',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: DropdownButton<int?>(
+                                value: _selectedItemId,
+                                isExpanded: true,
+                                hint: const Text(
+                                  'Todos los artículos de inventario',
+                                ),
+                                items: [
+                                  const DropdownMenuItem<int?>(
+                                    value: null,
+                                    child: Text(
+                                      'Todos los artículos (General)',
+                                    ),
+                                  ),
+                                  ..._inventoryItems.map((item) {
+                                    return DropdownMenuItem<int?>(
+                                      value: item.id,
+                                      child: Text(
+                                        '${item.name} — Stock: ${item.quantityInStock} ${item.unit} | CPP: \$${item.averageCost.toStringAsFixed(2)}',
+                                      ),
+                                    );
+                                  }),
+                                ],
+                                onChanged: (val) {
+                                  setState(() => _selectedItemId = val);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Tabla Kárdex
+                      ],
+                    ),
+                    secondChild: const SizedBox(
+                      width: double.infinity,
+                      height: 0,
+                    ),
+                    crossFadeState: _showSummaryCards
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    duration: const Duration(milliseconds: 300),
                   ),
-                  secondChild: const SizedBox(width: double.infinity, height: 0),
-                  crossFadeState: _showSummaryCards ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-                  duration: const Duration(milliseconds: 300),
-                ),
-                Expanded(
+                  Expanded(
                     child: kardexAsync.when(
                       loading: () =>
                           const Center(child: CircularProgressIndicator()),
@@ -464,9 +478,7 @@ class _AccountingKardexScreenState extends ConsumerState<AccountingKardexScreen>
                           style: const TextStyle(color: Colors.red),
                         ),
                       ),
-                      data: (movements) => 
-                    
-                AccountingExcelGrid(
+                      data: (movements) => AccountingExcelGrid(
                         title:
                             'Libro de Kárdex Contable (Costo Promedio Ponderado)',
                         columns: [

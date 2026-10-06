@@ -60,8 +60,11 @@ class _AccountingFixedAssetsDisposalModalState
               color: const Color(0xFFFEE2E2),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.shopping_cart_checkout,
-                color: Color(0xFFDC2626), size: 24),
+            child: const Icon(
+              Icons.shopping_cart_checkout,
+              color: Color(0xFFDC2626),
+              size: 24,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -72,7 +75,9 @@ class _AccountingFixedAssetsDisposalModalState
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFEE2E2),
                         borderRadius: BorderRadius.circular(4),
@@ -195,8 +200,11 @@ class _AccountingFixedAssetsDisposalModalState
                   color: const Color(0xFF0F172A),
                 ),
               ),
-              const Icon(Icons.keyboard_arrow_down,
-                  color: Color(0xFF64748B), size: 16),
+              const Icon(
+                Icons.keyboard_arrow_down,
+                color: Color(0xFF64748B),
+                size: 16,
+              ),
             ],
           ),
         ),
@@ -245,16 +253,22 @@ class _AccountingFixedAssetsDisposalModalState
     );
   }
 
-  Widget _buildInfoCard(String title, String value, String subtitle,
-      {required Color textColor, bool isHighlighted = false}) {
+  Widget _buildInfoCard(
+    String title,
+    String value,
+    String subtitle, {
+    required Color textColor,
+    bool isHighlighted = false,
+  }) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isHighlighted ? const Color(0xFFEFF6FF) : Colors.white,
         border: Border.all(
-            color: isHighlighted
-                ? const Color(0xFFBFDBFE)
-                : const Color(0xFFE2E8F0)),
+          color: isHighlighted
+              ? const Color(0xFFBFDBFE)
+              : const Color(0xFFE2E8F0),
+        ),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -335,17 +349,26 @@ class _AccountingFixedAssetsDisposalModalState
           children: [
             Expanded(
               flex: 2,
-              child: _buildInputLabel('MOTIVO DE LA BAJA', _buildDropdown('Venta a Terceros (Enajenación a Título On...')),
+              child: _buildInputLabel(
+                'MOTIVO DE LA BAJA',
+                _buildDropdown('Venta a Terceros (Enajenación a Título On...'),
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
               flex: 1,
-              child: _buildInputLabel('FECHA EFECTIVA DE BAJA', _buildDateField('10/31/2024')),
+              child: _buildInputLabel(
+                'FECHA EFECTIVA DE BAJA',
+                _buildDateField('10/31/2024'),
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
               flex: 1,
-              child: _buildInputLabel('PRECIO DE VENTA / RECUPERACIÓN (\$)', _buildTextField('\$ 7,200.00')),
+              child: _buildInputLabel(
+                'PRECIO DE VENTA / RECUPERACIÓN (\$)',
+                _buildTextField('\$ 7,200.00'),
+              ),
             ),
           ],
         ),
@@ -354,12 +377,20 @@ class _AccountingFixedAssetsDisposalModalState
           children: [
             Expanded(
               flex: 2,
-              child: _buildInputLabel('CUENTA DESTINO DE FONDOS', _buildDropdown('Banco Nacional de Bolivia - Cta Cte USD #04-891-229')),
+              child: _buildInputLabel(
+                'CUENTA DESTINO DE FONDOS',
+                _buildDropdown(
+                  'Banco Nacional de Bolivia - Cta Cte USD #04-891-229',
+                ),
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
               flex: 2,
-              child: _buildInputLabel('N° FACTURA / COMPROBANTE DE VENTA', _buildTextField('FAC-VTA-2024-089')),
+              child: _buildInputLabel(
+                'N° FACTURA / COMPROBANTE DE VENTA',
+                _buildTextField('FAC-VTA-2024-089'),
+              ),
             ),
           ],
         ),
@@ -480,7 +511,7 @@ class _AccountingFixedAssetsDisposalModalState
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
         const SizedBox(height: 16),
@@ -493,27 +524,84 @@ class _AccountingFixedAssetsDisposalModalState
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: Row(
                   children: [
-                    Expanded(flex: 2, child: Text('CUENTA CONTABLE', style: _tableHeaderStyle())),
-                    Expanded(flex: 5, child: Text('DENOMINACIÓN DE CUENTA', style: _tableHeaderStyle())),
-                    Expanded(flex: 2, child: Text('DÉBITO (USD)', textAlign: TextAlign.right, style: _tableHeaderStyle())),
-                    Expanded(flex: 2, child: Text('HABER (USD)', textAlign: TextAlign.right, style: _tableHeaderStyle())),
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        'CUENTA CONTABLE',
+                        style: _tableHeaderStyle(),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: Text(
+                        'DENOMINACIÓN DE CUENTA',
+                        style: _tableHeaderStyle(),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        'DÉBITO (USD)',
+                        textAlign: TextAlign.right,
+                        style: _tableHeaderStyle(),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        'HABER (USD)',
+                        textAlign: TextAlign.right,
+                        style: _tableHeaderStyle(),
+                      ),
+                    ),
                   ],
                 ),
               ),
               const Divider(height: 1, color: Color(0xFFE2E8F0)),
-              _buildTableRow('1.1.01.02', 'Bancos Moneda Extranjera (BNB USD) - Ingreso por Cobro', '\$ 7,200.00', '-', isDebit: true),
+              _buildTableRow(
+                '1.1.01.02',
+                'Bancos Moneda Extranjera (BNB USD) - Ingreso por Cobro',
+                '\$ 7,200.00',
+                '-',
+                isDebit: true,
+              ),
               const Divider(height: 1, color: Color(0xFFE2E8F0)),
-              _buildTableRow('1.2.04.02', 'Depreciación Acumulada Vehículos Automotores (Reversión Total)', '\$ 29,750.00', '-', isDebit: true),
+              _buildTableRow(
+                '1.2.04.02',
+                'Depreciación Acumulada Vehículos Automotores (Reversión Total)',
+                '\$ 29,750.00',
+                '-',
+                isDebit: true,
+              ),
               const Divider(height: 1, color: Color(0xFFE2E8F0)),
-              _buildTableRow('1.2.01.02', 'Vehículos Automotores (Baja de Costo Histórico de Activo)', '-', '\$ 35,000.00', isDebit: false),
+              _buildTableRow(
+                '1.2.01.02',
+                'Vehículos Automotores (Baja de Costo Histórico de Activo)',
+                '-',
+                '\$ 35,000.00',
+                isDebit: false,
+              ),
               const Divider(height: 1, color: Color(0xFFE2E8F0)),
-              _buildTableRow('4.2.01.05', 'Ganancia en Venta de Activos Fijos (P&L Otros Ingresos Operativos)', '-', '\$ 1,950.00', isDebit: false, isGain: true),
+              _buildTableRow(
+                '4.2.01.05',
+                'Ganancia en Venta de Activos Fijos (P&L Otros Ingresos Operativos)',
+                '-',
+                '\$ 1,950.00',
+                isDebit: false,
+                isGain: true,
+              ),
               const Divider(height: 1, color: Color(0xFFCBD5E1)),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: Row(
                   children: [
                     Expanded(
@@ -561,7 +649,14 @@ class _AccountingFixedAssetsDisposalModalState
     );
   }
 
-  Widget _buildTableRow(String account, String name, String debit, String credit, {required bool isDebit, bool isGain = false}) {
+  Widget _buildTableRow(
+    String account,
+    String name,
+    String debit,
+    String credit, {
+    required bool isDebit,
+    bool isGain = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -573,7 +668,9 @@ class _AccountingFixedAssetsDisposalModalState
               style: GoogleFonts.jetBrainsMono(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: isGain ? const Color(0xFF059669) : const Color(0xFF2563EB),
+                color: isGain
+                    ? const Color(0xFF059669)
+                    : const Color(0xFF2563EB),
               ),
             ),
           ),
@@ -584,7 +681,9 @@ class _AccountingFixedAssetsDisposalModalState
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: isGain ? FontWeight.w600 : FontWeight.w500,
-                color: isGain ? const Color(0xFF059669) : const Color(0xFF334155),
+                color: isGain
+                    ? const Color(0xFF059669)
+                    : const Color(0xFF334155),
               ),
             ),
           ),
@@ -596,7 +695,9 @@ class _AccountingFixedAssetsDisposalModalState
               style: GoogleFonts.jetBrainsMono(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: isDebit ? const Color(0xFF0F172A) : const Color(0xFF94A3B8),
+                color: isDebit
+                    ? const Color(0xFF0F172A)
+                    : const Color(0xFF94A3B8),
               ),
             ),
           ),
@@ -608,7 +709,11 @@ class _AccountingFixedAssetsDisposalModalState
               style: GoogleFonts.jetBrainsMono(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: !isDebit ? (isGain ? const Color(0xFF059669) : const Color(0xFF0F172A)) : const Color(0xFF94A3B8),
+                color: !isDebit
+                    ? (isGain
+                          ? const Color(0xFF059669)
+                          : const Color(0xFF0F172A))
+                    : const Color(0xFF94A3B8),
               ),
             ),
           ),
@@ -677,7 +782,11 @@ class _AccountingFixedAssetsDisposalModalState
                   color: const Color(0xFFFEE2E2),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Icon(Icons.picture_as_pdf, color: Color(0xFFDC2626), size: 20),
+                child: const Icon(
+                  Icons.picture_as_pdf,
+                  color: Color(0xFFDC2626),
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -708,7 +817,11 @@ class _AccountingFixedAssetsDisposalModalState
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.check_circle, color: Color(0xFF10B981), size: 12),
+                        const Icon(
+                          Icons.check_circle,
+                          color: Color(0xFF10B981),
+                          size: 12,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           'Verificado con firma notarial de fe pública • Notaría Nº 44 La Paz',
@@ -724,7 +837,10 @@ class _AccountingFixedAssetsDisposalModalState
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   border: Border.all(color: const Color(0xFFCBD5E1)),
                   borderRadius: BorderRadius.circular(4),
@@ -741,7 +857,10 @@ class _AccountingFixedAssetsDisposalModalState
               const SizedBox(width: 8),
               IconButton(
                 onPressed: () {},
-                icon: const Icon(Icons.delete_outline, color: Color(0xFF94A3B8)),
+                icon: const Icon(
+                  Icons.delete_outline,
+                  color: Color(0xFF94A3B8),
+                ),
               ),
             ],
           ),
@@ -790,7 +909,11 @@ class _AccountingFixedAssetsDisposalModalState
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          const Icon(Icons.keyboard_arrow_down, color: Color(0xFF64748B), size: 16),
+          const Icon(
+            Icons.keyboard_arrow_down,
+            color: Color(0xFF64748B),
+            size: 16,
+          ),
         ],
       ),
     );
@@ -815,7 +938,11 @@ class _AccountingFixedAssetsDisposalModalState
               color: const Color(0xFF0F172A),
             ),
           ),
-          const Icon(Icons.calendar_today_outlined, color: Color(0xFF64748B), size: 16),
+          const Icon(
+            Icons.calendar_today_outlined,
+            color: Color(0xFF64748B),
+            size: 16,
+          ),
         ],
       ),
     );
@@ -855,7 +982,11 @@ class _AccountingFixedAssetsDisposalModalState
         children: [
           Row(
             children: [
-              const Icon(Icons.lock_outline, size: 16, color: Color(0xFF94A3B8)),
+              const Icon(
+                Icons.lock_outline,
+                size: 16,
+                color: Color(0xFF94A3B8),
+              ),
               const SizedBox(width: 8),
               Text(
                 'Aprobación Token: HE-CFO-904128-SHA256',
@@ -872,7 +1003,10 @@ class _AccountingFixedAssetsDisposalModalState
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
                     side: const BorderSide(color: Color(0xFFCBD5E1)),
@@ -890,7 +1024,11 @@ class _AccountingFixedAssetsDisposalModalState
               const SizedBox(width: 12),
               OutlinedButton.icon(
                 onPressed: () {},
-                icon: const Icon(Icons.save_outlined, size: 16, color: Color(0xFF334155)),
+                icon: const Icon(
+                  Icons.save_outlined,
+                  size: 16,
+                  color: Color(0xFF334155),
+                ),
                 label: Text(
                   'Guardar como\nBorrador',
                   textAlign: TextAlign.center,
@@ -901,7 +1039,10 @@ class _AccountingFixedAssetsDisposalModalState
                   ),
                 ),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   side: const BorderSide(color: Color(0xFFCBD5E1)),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
@@ -911,7 +1052,11 @@ class _AccountingFixedAssetsDisposalModalState
               const SizedBox(width: 12),
               ElevatedButton.icon(
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.lock_outline, size: 16, color: Colors.white),
+                icon: const Icon(
+                  Icons.lock_outline,
+                  size: 16,
+                  color: Colors.white,
+                ),
                 label: Text(
                   'Ejecutar Baja y Asentar en Libro\nMayor',
                   textAlign: TextAlign.center,
@@ -923,7 +1068,10 @@ class _AccountingFixedAssetsDisposalModalState
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFDC2626),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),

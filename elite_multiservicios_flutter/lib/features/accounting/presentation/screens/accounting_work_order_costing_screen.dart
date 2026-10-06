@@ -11,7 +11,8 @@ class AccountingWorkOrderCostingScreen extends StatefulWidget {
       _AccountingWorkOrderCostingScreenState();
 }
 
-class _AccountingWorkOrderCostingScreenState extends State<AccountingWorkOrderCostingScreen> {
+class _AccountingWorkOrderCostingScreenState
+    extends State<AccountingWorkOrderCostingScreen> {
   bool _showSummaryCards = true;
   bool _isLoading = true;
   List<AccountingWorkOrderCostSummary> _costSummaries = [];
@@ -238,9 +239,16 @@ class _AccountingWorkOrderCostingScreenState extends State<AccountingWorkOrderCo
         title: const Text('Costeo de Órdenes de Trabajo (OT)'),
         actions: [
           IconButton(
-            icon: Icon(_showSummaryCards ? Icons.expand_less : Icons.expand_more, color: Colors.blueAccent),
+            icon: Icon(
+              _showSummaryCards ? Icons.expand_less : Icons.expand_more,
+              color: Colors.blueAccent,
+            ),
             tooltip: _showSummaryCards ? 'Ocultar resumen' : 'Mostrar resumen',
-            onPressed: () { setState(() { _showSummaryCards = !_showSummaryCards; }); },
+            onPressed: () {
+              setState(() {
+                _showSummaryCards = !_showSummaryCards;
+              });
+            },
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -252,69 +260,71 @@ class _AccountingWorkOrderCostingScreenState extends State<AccountingWorkOrderCo
           ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
-              child: ListView(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
-                children: [                AnimatedCrossFade(
-                  firstChild: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                                      
-                
-                      
-                  // KPI Cards
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildMetricCard(
-                          'Facturación Órdenes',
-                          '\$${totalBilled.toStringAsFixed(2)}',
-                          Icons.receipt,
-                          Colors.green,
+              child: ListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  AnimatedCrossFade(
+                    firstChild: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // KPI Cards
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildMetricCard(
+                                'Facturación Órdenes',
+                                '\$${totalBilled.toStringAsFixed(2)}',
+                                Icons.receipt,
+                                Colors.green,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildMetricCard(
+                                'Costos Directos Totales',
+                                '\$${totalCosts.toStringAsFixed(2)}',
+                                Icons.shopping_cart,
+                                Colors.redAccent,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildMetricCard(
+                                'Margen Bruto Total',
+                                '\$${totalProfit.toStringAsFixed(2)}',
+                                Icons.trending_up,
+                                totalProfit >= 0 ? Colors.teal : Colors.red,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildMetricCard(
+                                'Rentabilidad Media',
+                                '${avgMargin.toStringAsFixed(1)}%',
+                                Icons.pie_chart,
+                                avgMargin >= 25 ? Colors.blue : Colors.orange,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildMetricCard(
-                          'Costos Directos Totales',
-                          '\$${totalCosts.toStringAsFixed(2)}',
-                          Icons.shopping_cart,
-                          Colors.redAccent,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildMetricCard(
-                          'Margen Bruto Total',
-                          '\$${totalProfit.toStringAsFixed(2)}',
-                          Icons.trending_up,
-                          totalProfit >= 0 ? Colors.teal : Colors.red,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildMetricCard(
-                          'Rentabilidad Media',
-                          '${avgMargin.toStringAsFixed(1)}%',
-                          Icons.pie_chart,
-                          avgMargin >= 25 ? Colors.blue : Colors.orange,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                  // Tabla de Costeo
-                  
-                    
-                
-                    
-                
-                    ],
+                        // Tabla de Costeo
+                      ],
+                    ),
+                    secondChild: const SizedBox(
+                      width: double.infinity,
+                      height: 0,
+                    ),
+                    crossFadeState: _showSummaryCards
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    duration: const Duration(milliseconds: 300),
                   ),
-                  secondChild: const SizedBox(width: double.infinity, height: 0),
-                  crossFadeState: _showSummaryCards ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-                  duration: const Duration(milliseconds: 300),
-                ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.7, child: AccountingExcelGrid(
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: AccountingExcelGrid(
                       title:
                           'Desglose de Costos y Rentabilidad por Servicio / OT',
                       columns: [

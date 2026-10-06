@@ -6,10 +6,12 @@ import '../providers/accounting_providers.dart';
 class AccountingProfitabilityScreen extends ConsumerStatefulWidget {
   const AccountingProfitabilityScreen({super.key});
   @override
-  ConsumerState<AccountingProfitabilityScreen> createState() => _AccountingProfitabilityScreenState();
+  ConsumerState<AccountingProfitabilityScreen> createState() =>
+      _AccountingProfitabilityScreenState();
 }
-class _AccountingProfitabilityScreenState extends ConsumerState<AccountingProfitabilityScreen> {
 
+class _AccountingProfitabilityScreenState
+    extends ConsumerState<AccountingProfitabilityScreen> {
   @override
   Widget build(BuildContext context) {
     final costCentersAsync = ref.watch(costCentersProvider);
@@ -64,7 +66,9 @@ class _AccountingProfitabilityScreenState extends ConsumerState<AccountingProfit
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+        child: ListView(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           children: [
             Text(
               'Proyecto: ${cc.name}',

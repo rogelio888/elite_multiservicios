@@ -95,7 +95,9 @@ class _AccountingDepreciationConfirmationModalState
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFEE2E2),
                         borderRadius: BorderRadius.circular(4),
@@ -138,10 +140,16 @@ class _AccountingDepreciationConfirmationModalState
                       color: const Color(0xFF475569),
                     ),
                     children: [
-                      const TextSpan(text: 'Cierre y Contabilización de Depreciación Mensual ('),
+                      const TextSpan(
+                        text:
+                            'Cierre y Contabilización de Depreciación Mensual (',
+                      ),
                       TextSpan(
                         text: 'Periodo ${widget.period}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF334155)),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF334155),
+                        ),
                       ),
                       const TextSpan(text: ')'),
                     ],
@@ -172,7 +180,11 @@ class _AccountingDepreciationConfirmationModalState
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.warning_amber_rounded, color: Color(0xFFE11D48), size: 24),
+          const Icon(
+            Icons.warning_amber_rounded,
+            color: Color(0xFFE11D48),
+            size: 24,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: RichText(
@@ -183,12 +195,20 @@ class _AccountingDepreciationConfirmationModalState
                   height: 1.5,
                 ),
                 children: [
-                  const TextSpan(text: 'Al confirmar, se generará el asiento contable definitivo en el Libro Mayor por un valor de '),
+                  const TextSpan(
+                    text:
+                        'Al confirmar, se generará el asiento contable definitivo en el Libro Mayor por un valor de ',
+                  ),
                   TextSpan(
                     text: widget.amount,
-                    style: GoogleFonts.jetBrainsMono(fontWeight: FontWeight.bold),
+                    style: GoogleFonts.jetBrainsMono(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const TextSpan(text: '. Una vez registrado, los libros del periodo quedarán bloqueados contra modificaciones manuales y se generará hash inmutable SHA-256 en WORM storage.'),
+                  const TextSpan(
+                    text:
+                        '. Una vez registrado, los libros del periodo quedarán bloqueados contra modificaciones manuales y se generará hash inmutable SHA-256 en WORM storage.',
+                  ),
                 ],
               ),
             ),
@@ -288,7 +308,12 @@ class _AccountingDepreciationConfirmationModalState
     );
   }
 
-  Widget _buildSummaryItem(String label, String value, Color valueColor, {bool isMono = false}) {
+  Widget _buildSummaryItem(
+    String label,
+    String value,
+    Color valueColor, {
+    bool isMono = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -350,7 +375,10 @@ class _AccountingDepreciationConfirmationModalState
                   color: const Color(0xFF334155),
                 ),
                 children: const [
-                  TextSpan(text: 'Comprendo que este proceso es irreversible y afectará los estados financieros oficiales ('),
+                  TextSpan(
+                    text:
+                        'Comprendo que este proceso es irreversible y afectará los estados financieros oficiales (',
+                  ),
                   TextSpan(
                     text: 'Balance General y P&L',
                     style: TextStyle(fontWeight: FontWeight.bold),
@@ -402,18 +430,25 @@ class _AccountingDepreciationConfirmationModalState
             color: const Color(0xFF0F172A),
           ),
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
               borderSide: BorderSide(
-                color: isCorrect ? const Color(0xFF10B981) : const Color(0xFFCBD5E1),
+                color: isCorrect
+                    ? const Color(0xFF10B981)
+                    : const Color(0xFFCBD5E1),
                 width: isCorrect ? 2 : 1,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
               borderSide: BorderSide(
-                color: isCorrect ? const Color(0xFF10B981) : const Color(0xFF4F46E5),
+                color: isCorrect
+                    ? const Color(0xFF10B981)
+                    : const Color(0xFF4F46E5),
                 width: 2,
               ),
             ),
@@ -457,7 +492,11 @@ class _AccountingDepreciationConfirmationModalState
         children: [
           Row(
             children: [
-              const Icon(Icons.verified_user_outlined, color: Color(0xFF3B82F6), size: 16),
+              const Icon(
+                Icons.verified_user_outlined,
+                color: Color(0xFF3B82F6),
+                size: 16,
+              ),
               const SizedBox(width: 8),
               RichText(
                 text: TextSpan(
@@ -469,7 +508,10 @@ class _AccountingDepreciationConfirmationModalState
                     TextSpan(text: 'Aprobación Requerida: '),
                     TextSpan(
                       text: 'HAROLD EASTMAN (CFO)',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1E293B),
+                      ),
                     ),
                   ],
                 ),
@@ -477,7 +519,7 @@ class _AccountingDepreciationConfirmationModalState
             ],
           ),
           Text(
-            'TOKEN: HE-DEP-202609-WORM',
+            'CÓDIGO: HE-DEP-202609-WORM',
             style: GoogleFonts.jetBrainsMono(
               fontSize: 11,
               fontWeight: FontWeight.bold,
@@ -522,9 +564,11 @@ class _AccountingDepreciationConfirmationModalState
             ),
           ),
           ElevatedButton.icon(
-            onPressed: _isUnlocked ? () {
-              Navigator.of(context).pop(true);
-            } : null,
+            onPressed: _isUnlocked
+                ? () {
+                    Navigator.of(context).pop(true);
+                  }
+                : null,
             icon: const Icon(Icons.lock_outline, size: 18, color: Colors.white),
             label: Text(
               'Asentar en Libro Mayor',

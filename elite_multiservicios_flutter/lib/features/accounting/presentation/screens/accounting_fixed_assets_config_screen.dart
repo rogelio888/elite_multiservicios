@@ -12,8 +12,9 @@ class AccountingFixedAssetsConfigScreen extends StatefulWidget {
 
 class _AccountingFixedAssetsConfigScreenState
     extends State<AccountingFixedAssetsConfigScreen> {
-  final _nombreCtrl =
-      TextEditingController(text: 'Equipos de Computación y Periféricos');
+  final _nombreCtrl = TextEditingController(
+    text: 'Equipos de Computación y Periféricos',
+  );
   final _codigoCtrl = TextEditingController(text: 'CAT-IT-01');
   final _vidaUtilCtrl = TextEditingController(text: '48 meses (4 años)');
   final _dsCtrl = TextEditingController(text: 'DS 24051');
@@ -86,11 +87,14 @@ class _AccountingFixedAssetsConfigScreenState
           borderRadius: BorderRadius.circular(6),
         ),
         child: const Center(
-          child: Text('IT',
-              style: TextStyle(
-                  color: Color(0xFF0F172A),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12)),
+          child: Text(
+            'IT',
+            style: TextStyle(
+              color: Color(0xFF0F172A),
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
         ),
       ),
       title: Padding(
@@ -101,24 +105,34 @@ class _AccountingFixedAssetsConfigScreenState
             Text(
               'Configurar Reglas Contables de Categoria',
               style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: _textDark),
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: _textDark,
+              ),
             ),
             const SizedBox(height: 2),
             Wrap(
               spacing: 6,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Text('Codigo: CAT-IT-01',
-                    style: GoogleFonts.inter(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: _textMid)),
-                _badge('Activa', const Color(0xFF10B981),
-                    const Color(0xFFD1FAE5)),
-                _badge('Mapeada', const Color(0xFF6366F1),
-                    const Color(0xFFEDE9FE)),
+                Text(
+                  'Codigo: CAT-IT-01',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: _textMid,
+                  ),
+                ),
+                _badge(
+                  'Activa',
+                  const Color(0xFF10B981),
+                  const Color(0xFFD1FAE5),
+                ),
+                _badge(
+                  'Mapeada',
+                  const Color(0xFF6366F1),
+                  const Color(0xFFEDE9FE),
+                ),
               ],
             ),
           ],
@@ -137,10 +151,17 @@ class _AccountingFixedAssetsConfigScreenState
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-          color: bg, borderRadius: BorderRadius.circular(4)),
-      child: Text(label,
-          style: GoogleFonts.inter(
-              fontSize: 10, fontWeight: FontWeight.w600, color: fg)),
+        color: bg,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.inter(
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+          color: fg,
+        ),
+      ),
     );
   }
 
@@ -234,9 +255,10 @@ class _AccountingFixedAssetsConfigScreenState
           Text(
             'Base no amortizable sujeta a valor de rescate fijado por política contable institucional.',
             style: GoogleFonts.inter(
-                fontSize: 11,
-                color: const Color(0xFF4F46E5),
-                fontStyle: FontStyle.italic),
+              fontSize: 11,
+              color: const Color(0xFF4F46E5),
+              fontStyle: FontStyle.italic,
+            ),
           ),
         ],
       ),
@@ -311,27 +333,35 @@ class _AccountingFixedAssetsConfigScreenState
         Row(
           children: [
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
               decoration: BoxDecoration(
-                  color: tipoBg, borderRadius: BorderRadius.circular(4)),
-              child: Text(tipo,
-                  style: GoogleFonts.inter(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: tipoFg)),
+                color: tipoBg,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                tipo,
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: tipoFg,
+                ),
+              ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(label,
-                  style:
-                      GoogleFonts.inter(fontSize: 12, color: _textMid)),
+              child: Text(
+                label,
+                style: GoogleFonts.inter(fontSize: 12, color: _textMid),
+              ),
             ),
-            Text('Verificada',
-                style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF10B981))),
+            Text(
+              'Verificada',
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF10B981),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 6),
@@ -388,15 +418,23 @@ class _AccountingFixedAssetsConfigScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: _textDark)),
+              Text(
+                label,
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: _textDark,
+                ),
+              ),
               const SizedBox(height: 3),
-              Text(description,
-                  style: GoogleFonts.inter(
-                      fontSize: 12, color: _textMid, height: 1.4)),
+              Text(
+                description,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: _textMid,
+                  height: 1.4,
+                ),
+              ),
             ],
           ),
         ),
@@ -406,7 +444,11 @@ class _AccountingFixedAssetsConfigScreenState
 
   // -----------------------------------------------------
 
-  Widget _sectionCard({required String number, required String title, required Widget child}) {
+  Widget _sectionCard({
+    required String number,
+    required String title,
+    required Widget child,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -417,7 +459,7 @@ class _AccountingFixedAssetsConfigScreenState
             color: const Color(0xFF0F172A).withValues(alpha: 0.04),
             blurRadius: 15,
             offset: const Offset(0, 4),
-          )
+          ),
         ],
       ),
       child: Column(
@@ -496,37 +538,54 @@ class _AccountingFixedAssetsConfigScreenState
             style: OutlinedButton.styleFrom(
               side: const BorderSide(color: Color(0xFF94A3B8)),
               foregroundColor: const Color(0xFF64748B),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-            child: Text('Cancelar',
-                style: GoogleFonts.inter(
-                    fontSize: 13, fontWeight: FontWeight.w500)),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
           OutlinedButton(
             onPressed: _onGuardarPlantilla,
             style: OutlinedButton.styleFrom(
               side: const BorderSide(color: Color(0xFF94A3B8)),
               foregroundColor: const Color(0xFF64748B),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-            child: Text('Guardar como Plantilla',
-                style: GoogleFonts.inter(
-                    fontSize: 13, fontWeight: FontWeight.w500)),
+            child: Text(
+              'Guardar como Plantilla',
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: _onGuardarCambios,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF3B82F6),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-            child: Text('Guardar Configuración', style: GoogleFonts.inter(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
+            child: Text(
+              'Guardar Configuración',
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ],
       ),
@@ -534,17 +593,19 @@ class _AccountingFixedAssetsConfigScreenState
   }
 
   Widget _fieldLabel(String text) {
-    return Text(text,
-        style: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: _textMid));
+    return Text(
+      text,
+      style: GoogleFonts.inter(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: _textMid,
+      ),
+    );
   }
 
   InputDecoration _inputDecoration({String? suffix}) {
     return InputDecoration(
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       suffixText: suffix,
       suffixStyle: GoogleFonts.inter(fontSize: 11, color: _textLight),
       border: OutlineInputBorder(
@@ -595,25 +656,25 @@ class _AccountingFixedAssetsConfigScreenState
       value: value,
       isExpanded: true,
       style: GoogleFonts.inter(fontSize: 12.5, color: _textDark),
-      icon: const Icon(Icons.keyboard_arrow_down,
-          size: 18, color: Color(0xFF94A3B8)),
+      icon: const Icon(
+        Icons.keyboard_arrow_down,
+        size: 18,
+        color: Color(0xFF94A3B8),
+      ),
       decoration: _inputDecoration(),
       items: items
-          .map((e) => DropdownMenuItem<String>(
-                value: e,
-                child: Text(e,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
-                        fontSize: 12.5, color: _textDark)),
-              ))
+          .map(
+            (e) => DropdownMenuItem<String>(
+              value: e,
+              child: Text(
+                e,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.inter(fontSize: 12.5, color: _textDark),
+              ),
+            ),
+          )
           .toList(),
       onChanged: onChanged,
     );
   }
 }
-
-
-
-
-
-

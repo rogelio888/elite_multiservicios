@@ -181,7 +181,11 @@ class AccountingEndpoint extends Endpoint {
         } else if (transaction.type == 'REPLENISHMENT') {
           pettyCash.balance += transaction.amount;
         }
-        await AccountingPettyCash.db.updateRow(session, pettyCash, transaction: txn);
+        await AccountingPettyCash.db.updateRow(
+          session,
+          pettyCash,
+          transaction: txn,
+        );
       }
       return await AccountingPettyCashTransaction.db.insertRow(
         session,
@@ -259,9 +263,17 @@ class AccountingEndpoint extends Endpoint {
           } else if (txnRecord.type == 'REPLENISHMENT') {
             pettyCash.balance -= txnRecord.amount;
           }
-          await AccountingPettyCash.db.updateRow(session, pettyCash, transaction: txn);
+          await AccountingPettyCash.db.updateRow(
+            session,
+            pettyCash,
+            transaction: txn,
+          );
         }
-        await AccountingPettyCashTransaction.db.deleteRow(session, txnRecord, transaction: txn);
+        await AccountingPettyCashTransaction.db.deleteRow(
+          session,
+          txnRecord,
+          transaction: txn,
+        );
       }
     });
   }

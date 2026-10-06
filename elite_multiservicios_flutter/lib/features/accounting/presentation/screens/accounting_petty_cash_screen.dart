@@ -14,7 +14,8 @@ class AccountingPettyCashScreen extends ConsumerStatefulWidget {
       _AccountingPettyCashScreenState();
 }
 
-class _AccountingPettyCashScreenState extends ConsumerState<AccountingPettyCashScreen> {
+class _AccountingPettyCashScreenState
+    extends ConsumerState<AccountingPettyCashScreen> {
   final bool _showSummaryCards = true;
   String _searchQuery = '';
   String _filterType = 'ALL'; // ALL, EXPENSE, REPLENISHMENT, INVOICE, FIXED
@@ -96,9 +97,10 @@ class _AccountingPettyCashScreenState extends ConsumerState<AccountingPettyCashS
                     Row(
                       children: [
                         Expanded(
-                          child: ListView(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
-                            children: [                
-
+                          child: ListView(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: [
                               Text(
                                 'Límite Máximo (Bs)',
                                 style: GoogleFonts.inter(
@@ -225,17 +227,28 @@ class _AccountingPettyCashScreenState extends ConsumerState<AccountingPettyCashS
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Eliminar Transacción', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
-        content: Text('¿Está seguro de eliminar esta transacción de ${txn.amount} Bs?', style: GoogleFonts.inter()),
+        title: Text(
+          'Eliminar Transacción',
+          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          '¿Está seguro de eliminar esta transacción de ${txn.amount} Bs?',
+          style: GoogleFonts.inter(),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text('Cancelar', style: GoogleFonts.inter()),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+            ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Eliminar', style: GoogleFonts.inter(color: Colors.white)),
+            child: Text(
+              'Eliminar',
+              style: GoogleFonts.inter(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -253,13 +266,19 @@ class _AccountingPettyCashScreenState extends ConsumerState<AccountingPettyCashS
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Nueva Transacción', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
-        content: Text('Formulario de transacción (Restaurado)', style: GoogleFonts.inter()),
+        title: Text(
+          'Nueva Transacción',
+          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          'Formulario de transacción (Restaurado)',
+          style: GoogleFonts.inter(),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text('Cerrar', style: GoogleFonts.inter()),
-          )
+          ),
         ],
       ),
     );
@@ -269,13 +288,19 @@ class _AccountingPettyCashScreenState extends ConsumerState<AccountingPettyCashS
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Editar Transacción', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
-        content: Text('Formulario de edición (Restaurado)', style: GoogleFonts.inter()),
+        title: Text(
+          'Editar Transacción',
+          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          'Formulario de edición (Restaurado)',
+          style: GoogleFonts.inter(),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text('Cerrar', style: GoogleFonts.inter()),
-          )
+          ),
         ],
       ),
     );
@@ -355,478 +380,492 @@ class _AccountingPettyCashScreenState extends ConsumerState<AccountingPettyCashS
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [                AnimatedCrossFade(
-                  firstChild: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                                      
-                      
-            // 1. Header principal con botones de acción
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Control de Caja Chica',
-                      style: GoogleFonts.inter(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : const Color(0xFFFFFFFF),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Administración de fondos fijos, comprobantes, créditos fiscales y rendiciones.',
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: isDark
-                            ? const Color(0xFF94A3B8)
-                            : const Color(0xFF94A3B8),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.refresh, size: 20),
-                      tooltip: 'Actualizar datos',
-                      onPressed: _loadData,
-                    ),
-                    const SizedBox(width: 8),
-                    if (activeFund == null)
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF8FAFC),
-                          foregroundColor: const Color(0xFF0F172A),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: _showCreatePettyCashDialog,
-                        icon: const Icon(Icons.add, size: 18),
-                        label: Text(
-                          'Aperturar Caja Chica',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      )
-                    else ...[
-                      OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: _showCreatePettyCashDialog,
-                        icon: const Icon(
-                          Icons.account_balance_wallet,
-                          size: 16,
-                        ),
-                        label: Text(
-                          'Nueva Caja',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF8FAFC),
-                          foregroundColor: const Color(0xFF0F172A),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: () => _showAddTransactionDialog(activeFund),
-                        icon: const Icon(
-                          Icons.add_circle_outline,
-                          size: 18,
-                        ),
-                        label: Text(
-                          'Nueva Transacción',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-
-            // 2. Tarjetas de Resumen & KPIs
-            if (activeFund != null) ...[
-              Wrap(
-                spacing: 16,
-                runSpacing: 12,
+          children: [
+            AnimatedCrossFade(
+              firstChild: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Tarjeta Principal: Estado y Fecha de Apertura
-                  Container(
-                    width: 320,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF161F30) : Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : const Color(0xFF334155),
+                  // 1. Header principal con botones de acción
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Control de Caja Chica',
+                            style: GoogleFonts.inter(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFFFFFFFF),
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Administración de fondos fijos, comprobantes, créditos fiscales y rendiciones.',
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              color: isDark
+                                  ? const Color(0xFF94A3B8)
+                                  : const Color(0xFF94A3B8),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                activeFund.name,
-                                style: GoogleFonts.inter(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark
-                                      ? Colors.white
-                                      : const Color(0xFFFFFFFF),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.refresh, size: 20),
+                            tooltip: 'Actualizar datos',
+                            onPressed: _loadData,
+                          ),
+                          const SizedBox(width: 8),
+                          if (activeFund == null)
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFF8FAFC),
+                                foregroundColor: const Color(0xFF0F172A),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
                                 ),
-                                overflow: TextOverflow.ellipsis,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: _showCreatePettyCashDialog,
+                              icon: const Icon(Icons.add, size: 18),
+                              label: Text(
+                                'Aperturar Caja Chica',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            )
+                          else ...[
+                            OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: _showCreatePettyCashDialog,
+                              icon: const Icon(
+                                Icons.account_balance_wallet,
+                                size: 16,
+                              ),
+                              label: Text(
+                                'Nueva Caja',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
+                            const SizedBox(width: 10),
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFF8FAFC),
+                                foregroundColor: const Color(0xFF0F172A),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
-                              decoration: BoxDecoration(
-                                color: const Color(
-                                  0xFF10B981,
-                                ).withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(20),
+                              onPressed: () =>
+                                  _showAddTransactionDialog(activeFund),
+                              icon: const Icon(
+                                Icons.add_circle_outline,
+                                size: 18,
                               ),
-                              child: Text(
-                                'ABIERTA',
+                              label: Text(
+                                'Nueva Transacción',
                                 style: GoogleFonts.inter(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w800,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+
+                  // 2. Tarjetas de Resumen & KPIs
+                  if (activeFund != null) ...[
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 12,
+                      children: [
+                        // Tarjeta Principal: Estado y Fecha de Apertura
+                        Container(
+                          width: 320,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF161F30)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFF334155),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      activeFund.name,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFFFFFFFF),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(
+                                        0xFF10B981,
+                                      ).withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      'ABIERTA',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w800,
+                                        color: const Color(0xFF10B981),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.event_note,
+                                    size: 15,
+                                    color: Color(0xFF94A3B8),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Apertura: ',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: const Color(0xFF94A3B8),
+                                    ),
+                                  ),
+                                  Text(
+                                    transactions.isNotEmpty
+                                        ? DateFormat(
+                                            'dd/MM/yyyy HH:mm',
+                                          ).format(transactions.first.date)
+                                        : DateFormat(
+                                            'dd/MM/yyyy HH:mm',
+                                          ).format(DateTime.now()),
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: isDark
+                                          ? const Color(0xFF334155)
+                                          : const Color(0xFF334155),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.person_pin,
+                                    size: 15,
+                                    color: Color(0xFF94A3B8),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Responsable: ',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: const Color(0xFF94A3B8),
+                                    ),
+                                  ),
+                                  Text(
+                                    'Super Admin (ID #${activeFund.custodianId})',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Tarjeta de Saldo Disponible
+                        Container(
+                          width: 240,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF161F30)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFF334155),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Saldo Disponible',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: const Color(0xFF94A3B8),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Bs ${activeFund.balance.toStringAsFixed(2)}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF3B82F6),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Límite Máximo: Bs ${activeFund.maxLimit.toStringAsFixed(2)}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: const Color(0xFF94A3B8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Tarjeta Total Gastos
+                        Container(
+                          width: 220,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF161F30)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFF334155),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Total Egresos',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: const Color(0xFF94A3B8),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Bs ${totalExpenses.toStringAsFixed(2)}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFFEF4444),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${transactions.where((t) => t.type == "EXPENSE").length} movimientos',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: const Color(0xFF94A3B8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Tarjeta Total Reembolsos
+                        Container(
+                          width: 220,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF161F30)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFF334155),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Total Reembolsos',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: const Color(0xFF94A3B8),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Bs ${totalReplenishments.toStringAsFixed(2)}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                   color: const Color(0xFF10B981),
                                 ),
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 4),
+                              Text(
+                                '${transactions.where((t) => t.type == "REPLENISHMENT").length} ingresos',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: const Color(0xFF94A3B8),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.event_note,
-                              size: 15,
-                              color: Color(0xFF94A3B8),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // 3. Barra de búsqueda y Filtros
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF161F30)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFF334155),
                             ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Apertura: ',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: const Color(0xFF94A3B8),
+                          ),
+                          child: TextField(
+                            onChanged: (val) {
+                              setState(() {
+                                _searchQuery = val;
+                              });
+                            },
+                            decoration: const InputDecoration(
+                              hintText:
+                                  'Buscar transacción por concepto o descripción...',
+                              hintStyle: TextStyle(fontSize: 13),
+                              prefixIcon: Icon(Icons.search, size: 18),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: 10,
                               ),
                             ),
-                            Text(
-                              transactions.isNotEmpty
-                                  ? DateFormat(
-                                      'dd/MM/yyyy HH:mm',
-                                    ).format(transactions.first.date)
-                                  : DateFormat(
-                                      'dd/MM/yyyy HH:mm',
-                                    ).format(DateTime.now()),
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: isDark
-                                    ? const Color(0xFF334155)
-                                    : const Color(0xFF334155),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Container(
+                        height: 40,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF161F30)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFF334155),
+                          ),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _filterType,
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'ALL',
+                                child: Text('Todos los Registros'),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.person_pin,
-                              size: 15,
-                              color: Color(0xFF94A3B8),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Responsable: ',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: const Color(0xFF94A3B8),
+                              DropdownMenuItem(
+                                value: 'EXPENSE',
+                                child: Text('Solo Gastos'),
                               ),
-                            ),
-                            Text(
-                              'Super Admin (ID #${activeFund.custodianId})',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
+                              DropdownMenuItem(
+                                value: 'REPLENISHMENT',
+                                child: Text('Solo Reembolsos'),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Tarjeta de Saldo Disponible
-                  Container(
-                    width: 240,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF161F30) : Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : const Color(0xFF334155),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Saldo Disponible',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: const Color(0xFF94A3B8),
+                              DropdownMenuItem(
+                                value: 'INVOICE',
+                                child: Text('Con Factura'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'FIXED',
+                                child: Text('Pagos Fijos'),
+                              ),
+                            ],
+                            onChanged: (val) {
+                              setState(() {
+                                _filterType = val ?? 'ALL';
+                              });
+                            },
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Bs ${activeFund.balance.toStringAsFixed(2)}',
-                          style: GoogleFonts.inter(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF3B82F6),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Límite Máximo: Bs ${activeFund.maxLimit.toStringAsFixed(2)}',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            color: const Color(0xFF94A3B8),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Tarjeta Total Gastos
-                  Container(
-                    width: 220,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF161F30) : Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : const Color(0xFF334155),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Total Egresos',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: const Color(0xFF94A3B8),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Bs ${totalExpenses.toStringAsFixed(2)}',
-                          style: GoogleFonts.inter(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFFEF4444),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${transactions.where((t) => t.type == "EXPENSE").length} movimientos',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            color: const Color(0xFF94A3B8),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Tarjeta Total Reembolsos
-                  Container(
-                    width: 220,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF161F30) : Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : const Color(0xFF334155),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Total Reembolsos',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: const Color(0xFF94A3B8),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Bs ${totalReplenishments.toStringAsFixed(2)}',
-                          style: GoogleFonts.inter(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF10B981),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${transactions.where((t) => t.type == "REPLENISHMENT").length} ingresos',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            color: const Color(0xFF94A3B8),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-            ],
-
-            // 3. Barra de búsqueda y Filtros
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF161F30) : Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : const Color(0xFF334155),
-                      ),
-                    ),
-                    child: TextField(
-                      onChanged: (val) {
-                        setState(() {
-                          _searchQuery = val;
-                        });
-                      },
-                      decoration: const InputDecoration(
-                        hintText:
-                            'Buscar transacción por concepto o descripción...',
-                        hintStyle: TextStyle(fontSize: 13),
-                        prefixIcon: Icon(Icons.search, size: 18),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                          vertical: 10,
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Container(
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF161F30) : Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: isDark
-                          ? const Color(0xFF1E293B)
-                          : const Color(0xFF334155),
-                    ),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: _filterType,
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'ALL',
-                          child: Text('Todos los Registros'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'EXPENSE',
-                          child: Text('Solo Gastos'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'REPLENISHMENT',
-                          child: Text('Solo Reembolsos'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'INVOICE',
-                          child: Text('Con Factura'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'FIXED',
-                          child: Text('Pagos Fijos'),
-                        ),
-                      ],
-                      onChanged: (val) {
-                        setState(() {
-                          _filterType = val ?? 'ALL';
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const 
-                    
-                SizedBox(height: 14),
-
-            // 4. Tabla de Transacciones (Excel Grid con scroll seguro)
-            
                     ],
                   ),
-                  secondChild: const SizedBox(width: double.infinity, height: 0),
-                  crossFadeState: _showSummaryCards ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-                  duration: const Duration(milliseconds: 300),
-                ),
-                Expanded(
+                  const SizedBox(height: 14),
+
+                  // 4. Tabla de Transacciones (Excel Grid con scroll seguro)
+                ],
+              ),
+              secondChild: const SizedBox(width: double.infinity, height: 0),
+              crossFadeState: _showSummaryCards
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
+              duration: const Duration(milliseconds: 300),
+            ),
+            Expanded(
               child: Container(
                 decoration: BoxDecoration(
                   color: isDark ? const Color(0xFF161F30) : Colors.white,
@@ -838,9 +877,7 @@ class _AccountingPettyCashScreenState extends ConsumerState<AccountingPettyCashS
                   ),
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: 
-                    
-                AccountingExcelGrid(
+                child: AccountingExcelGrid(
                   title: 'Libro Diario - Movimientos de Caja Chica',
                   onAddRow: activeFund != null
                       ? () => _showAddTransactionDialog(activeFund)
@@ -956,9 +993,3 @@ class _AccountingPettyCashScreenState extends ConsumerState<AccountingPettyCashS
     );
   }
 }
-
-
-
-
-
-

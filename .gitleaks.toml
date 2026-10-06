@@ -11,6 +11,7 @@ regexes = [
   '''tu_password_[a-z_]+''',
   '''your-google-cloud-project-id''',
   '''550e8400-e29b-41d4-a716-[0-9a-f]{12}''',
+  '''HE-DEP-202609-WORM''',
 ]
 paths = [
   '''.env.example''',

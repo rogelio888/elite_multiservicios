@@ -59,7 +59,8 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
       'action': 'Intento de edición denegado\nPermiso denegado sobre asiento',
       'severity': 'advertencia',
       'eventId': 'EVT-2024-1031-9840',
-      'description': 'Intento de modificación de asiento contable sin permiso RLS',
+      'description':
+          'Intento de modificación de asiento contable sin permiso RLS',
       'asset': 'Asiento #4521-B',
     },
     {
@@ -101,7 +102,8 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
       'action': 'Revaluación técnica aprobada\nIncremento de valor contable',
       'severity': 'normal',
       'eventId': 'EVT-2024-1030-9837',
-      'description': 'Aprobación de revaluación técnica de maquinaria industrial',
+      'description':
+          'Aprobación de revaluación técnica de maquinaria industrial',
       'asset': 'Compresor Industrial CI-2022-003',
     },
     {
@@ -115,7 +117,8 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
       'action': 'Modificación de política RLS\nTabla: fixed_assets',
       'severity': 'critico',
       'eventId': 'EVT-2024-1030-9836',
-      'description': 'Cambio en reglas de seguridad a nivel de fila en tabla crítica',
+      'description':
+          'Cambio en reglas de seguridad a nivel de fila en tabla crítica',
       'asset': 'Tabla: public.fixed_assets',
     },
   ];
@@ -202,21 +205,28 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
                           child: Text(
                             'Bitácora de Auditoría &\nTrazabilidad Contable',
                             style: GoogleFonts.inter(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800,
-                                color: _dark,
-                                height: 1.2),
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: _dark,
+                              height: 1.2,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _badge('INMUTABLE\n(WORM)', const Color(0xFF1E293B),
-                                Colors.white),
+                            _badge(
+                              'INMUTABLE\n(WORM)',
+                              const Color(0xFF1E293B),
+                              Colors.white,
+                            ),
                             const SizedBox(height: 4),
-                            _badge('Supabase Audit\nLog v2.4',
-                                const Color(0xFFDBEAFE), const Color(0xFF2563EB)),
+                            _badge(
+                              'Supabase Audit\nLog v2.4',
+                              const Color(0xFFDBEAFE),
+                              const Color(0xFF2563EB),
+                            ),
                           ],
                         ),
                       ],
@@ -226,9 +236,10 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
                       'Registro criptográfico de transacciones, modificaciones de estados contables, '
                       'accesos y firmas digitales bajo estricto cumplimiento Sarbanes-Oxley (SOX Act §404) y NIIF / IAS 8.',
                       style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: const Color(0xFF94A3B8),
-                          height: 1.4),
+                        fontSize: 12,
+                        color: const Color(0xFF94A3B8),
+                        height: 1.4,
+                      ),
                     ),
                   ],
                 ),
@@ -240,9 +251,16 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _actionBtn(Icons.download_outlined,
-                  'Exportar Log Firmado (SHA-256)', false),
-              _actionBtn(Icons.shield_outlined, 'Configurar Políticas RLS', false),
+              _actionBtn(
+                Icons.download_outlined,
+                'Exportar Log Firmado (SHA-256)',
+                false,
+              ),
+              _actionBtn(
+                Icons.shield_outlined,
+                'Configurar Políticas RLS',
+                false,
+              ),
               _actionBtn(Icons.add, '+ Generar Reporte de Cumplimiento', true),
             ],
           ),
@@ -252,46 +270,56 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
   }
 
   Widget _badge(String text, Color bg, Color fg) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration:
-            BoxDecoration(color: bg, borderRadius: BorderRadius.circular(5)),
-        child: Text(text,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-                fontSize: 9, fontWeight: FontWeight.w700, color: fg)),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    decoration: BoxDecoration(
+      color: bg,
+      borderRadius: BorderRadius.circular(5),
+    ),
+    child: Text(
+      text,
+      textAlign: TextAlign.center,
+      style: GoogleFonts.inter(
+        fontSize: 9,
+        fontWeight: FontWeight.w700,
+        color: fg,
+      ),
+    ),
+  );
 
   Widget _actionBtn(IconData icon, String label, bool filled) => Material(
-        color: filled ? _indigo : Colors.white,
-        borderRadius: BorderRadius.circular(7),
-        child: InkWell(
-          onTap: () {},
+    color: filled ? _indigo : Colors.white,
+    borderRadius: BorderRadius.circular(7),
+    child: InkWell(
+      onTap: () {},
+      borderRadius: BorderRadius.circular(7),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(7),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(7),
-              border:
-                  filled ? null : Border.all(color: const Color(0xFFE2E8F0)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon,
-                    size: 14,
-                    color: filled ? Colors.white : const Color(0xFF94A3B8)),
-                const SizedBox(width: 6),
-                Text(label,
-                    style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color:
-                            filled ? Colors.white : const Color(0xFF94A3B8))),
-              ],
-            ),
-          ),
+          border: filled ? null : Border.all(color: const Color(0xFFE2E8F0)),
         ),
-      );
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 14,
+              color: filled ? Colors.white : const Color(0xFF94A3B8),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: filled ? Colors.white : const Color(0xFF94A3B8),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 
   // ─── METRIC CARDS ────────────────────────────────────────────────────────────
   Widget _buildMetricCards(bool isMobile) {
@@ -350,14 +378,15 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
           width: isMobile ? double.infinity : 220,
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
             border: Border.all(color: Color(0xFFE2E8F0)),
             boxShadow: [
               BoxShadow(
-                  color: const Color(0xFF0F172A).withValues(alpha: 0.03),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2))
+                color: const Color(0xFF0F172A).withValues(alpha: 0.03),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
             ],
           ),
           child: Column(
@@ -367,44 +396,63 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Text(c['title'] as String,
-                        style: GoogleFonts.inter(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF94A3B8),
-                            letterSpacing: 0.5)),
+                    child: Text(
+                      c['title'] as String,
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF94A3B8),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 6),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
-                        color: c['badgeBg'] as Color,
-                        borderRadius: BorderRadius.circular(4)),
-                    child: Text(c['badgeText'] as String,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: c['badgeFg'] as Color)),
+                      color: c['badgeBg'] as Color,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      c['badgeText'] as String,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.inter(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: c['badgeFg'] as Color,
+                      ),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 10),
-              Text(c['value'] as String,
-                  style: GoogleFonts.inter(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: c['valueColor'] as Color)),
-              Text(c['unit'] as String,
-                  style: GoogleFonts.inter(
-                      fontSize: 11, color: const Color(0xFF94A3B8))),
+              Text(
+                c['value'] as String,
+                style: GoogleFonts.inter(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: c['valueColor'] as Color,
+                ),
+              ),
+              Text(
+                c['unit'] as String,
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  color: const Color(0xFF94A3B8),
+                ),
+              ),
               const SizedBox(height: 8),
-              Text(c['sub'] as String,
-                  style: GoogleFonts.inter(
-                      fontSize: 10.5,
-                      color: c['subColor'] as Color,
-                      height: 1.3)),
+              Text(
+                c['sub'] as String,
+                style: GoogleFonts.inter(
+                  fontSize: 10.5,
+                  color: c['subColor'] as Color,
+                  height: 1.3,
+                ),
+              ),
             ],
           ),
         );
@@ -419,76 +467,84 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
       runSpacing: 8,
       children: [
         _filterChip(
-            Icons.calendar_today_outlined, '01/10/2024 – 31/10/2024  Mes'),
-        _filterDrop(
-            'Módulo: $_selectedModule',
-            [
-              'Todos los Módulos',
-              'Activos Fijos',
-              'Cuentas por Pagar',
-              'Asientos Contables'
-            ],
-            (v) => setState(() => _selectedModule = v!)),
-        _filterDrop(
-            'Severidad: $_selectedSeverity',
-            ['Todas las Severidades', 'Crítico', 'Advertencia', 'Normal'],
-            (v) => setState(() => _selectedSeverity = v!)),
-        _filterDrop(
-            'Usuario: $_selectedUser',
-            [
-              'Todos los Usuarios',
-              'Harold Eastman',
-              'Lucía Vega',
-              'Carlos Mendoza'
-            ],
-            (v) => setState(() => _selectedUser = v!)),
+          Icons.calendar_today_outlined,
+          '01/10/2024 – 31/10/2024  Mes',
+        ),
+        _filterDrop('Módulo: $_selectedModule', [
+          'Todos los Módulos',
+          'Activos Fijos',
+          'Cuentas por Pagar',
+          'Asientos Contables',
+        ], (v) => setState(() => _selectedModule = v!)),
+        _filterDrop('Severidad: $_selectedSeverity', [
+          'Todas las Severidades',
+          'Crítico',
+          'Advertencia',
+          'Normal',
+        ], (v) => setState(() => _selectedSeverity = v!)),
+        _filterDrop('Usuario: $_selectedUser', [
+          'Todos los Usuarios',
+          'Harold Eastman',
+          'Lucía Vega',
+          'Carlos Mendoza',
+        ], (v) => setState(() => _selectedUser = v!)),
         _filterChip(Icons.filter_list, 'Filtrar por IP, UUID o Tag...'),
       ],
     );
   }
 
   Widget _filterChip(IconData icon, String label) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-        decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Color(0xFFE2E8F0)),
-          borderRadius: BorderRadius.circular(7),
-        ),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(icon, size: 13, color: const Color(0xFF94A3B8)),
-          const SizedBox(width: 5),
-          Text(label,
-              style: GoogleFonts.inter(
-                  fontSize: 12, color: const Color(0xFF94A3B8))),
-        ]),
-      );
-
-  Widget _filterDrop(
-          String label, List<String> items, ValueChanged<String?> onChanged) =>
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-        decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Color(0xFFE2E8F0)),
-          borderRadius: BorderRadius.circular(7),
-        ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            value: items.first,
-            items: items
-                .map((e) => DropdownMenuItem(
-                    value: e,
-                    child:
-                        Text(e, style: GoogleFonts.inter(fontSize: 12))))
-                .toList(),
-            onChanged: onChanged,
-            icon: const Icon(Icons.keyboard_arrow_down, size: 14),
-            style: GoogleFonts.inter(
-                fontSize: 12, color: const Color(0xFF94A3B8)),
-            isDense: true,
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      border: Border.all(color: Color(0xFFE2E8F0)),
+      borderRadius: BorderRadius.circular(7),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 13, color: const Color(0xFF94A3B8)),
+        const SizedBox(width: 5),
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            color: const Color(0xFF94A3B8),
           ),
         ),
-      );
+      ],
+    ),
+  );
+
+  Widget _filterDrop(
+    String label,
+    List<String> items,
+    ValueChanged<String?> onChanged,
+  ) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      border: Border.all(color: Color(0xFFE2E8F0)),
+      borderRadius: BorderRadius.circular(7),
+    ),
+    child: DropdownButtonHideUnderline(
+      child: DropdownButton<String>(
+        value: items.first,
+        items: items
+            .map(
+              (e) => DropdownMenuItem(
+                value: e,
+                child: Text(e, style: GoogleFonts.inter(fontSize: 12)),
+              ),
+            )
+            .toList(),
+        onChanged: onChanged,
+        icon: const Icon(Icons.keyboard_arrow_down, size: 14),
+        style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+        isDense: true,
+      ),
+    ),
+  );
 
   // ─── QUICK VIEWS ─────────────────────────────────────────────────────────────
   Widget _buildQuickViews() {
@@ -498,25 +554,25 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
         'criticos',
         'Críticos & Reversiones',
         _events.where((e) => e['severity'] == 'critico').length,
-        const Color(0xFFEF4444) as Color?
+        const Color(0xFFEF4444) as Color?,
       ),
       (
         'activos',
         'Activos Fijos',
         _events.where((e) => e['module'] == 'Activos Fijos').length,
-        null
+        null,
       ),
       (
         'asientos',
         'Asientos Contables',
         _events.where((e) => e['module'] == 'Asientos Contables').length,
-        null
+        null,
       ),
       (
         'rls',
         'RLS Violations (Bloqueados)',
         1,
-        const Color(0xFFF59E0B) as Color?
+        const Color(0xFFF59E0B) as Color?,
       ),
     ];
 
@@ -524,12 +580,15 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          Text('VISTAS RÁPIDAS:',
-              style: GoogleFonts.inter(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF94A3B8),
-                  letterSpacing: 0.5)),
+          Text(
+            'VISTAS RÁPIDAS:',
+            style: GoogleFonts.inter(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF94A3B8),
+              letterSpacing: 0.5,
+            ),
+          ),
           const SizedBox(width: 10),
           ...tabs.map((t) {
             final isSelected = _quickView == t.$1;
@@ -542,49 +601,63 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
                 }),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected ? _indigo : Colors.white,
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                        color: isSelected ? _indigo : const Color(0xFF334155)),
+                      color: isSelected ? _indigo : const Color(0xFF334155),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (t.$4 != null) ...[
                         Container(
-                            width: 7,
-                            height: 7,
-                            decoration: BoxDecoration(
-                                color: t.$4, shape: BoxShape.circle)),
+                          width: 7,
+                          height: 7,
+                          decoration: BoxDecoration(
+                            color: t.$4,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
                         const SizedBox(width: 5),
                       ],
-                      Text(t.$2,
-                          style: GoogleFonts.inter(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w600,
-                              color: isSelected
-                                  ? Colors.white
-                                  : const Color(0xFF94A3B8))),
+                      Text(
+                        t.$2,
+                        style: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: isSelected
+                              ? Colors.white
+                              : const Color(0xFF94A3B8),
+                        ),
+                      ),
                       const SizedBox(width: 5),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 5, vertical: 1),
+                          horizontal: 5,
+                          vertical: 1,
+                        ),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? Colors.white.withValues(alpha: 0.2)
                               : const Color(0xFF1E293B),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Text('${t.$3}',
-                            style: GoogleFonts.inter(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                color: isSelected
-                                    ? Colors.white
-                                    : const Color(0xFF94A3B8))),
+                        child: Text(
+                          '${t.$3}',
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: isSelected
+                                ? Colors.white
+                                : const Color(0xFF94A3B8),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -607,9 +680,10 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
         border: Border.all(color: Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
-              color: const Color(0xFF0F172A).withValues(alpha: 0.03),
-              blurRadius: 4,
-              offset: const Offset(0, 2))
+            color: const Color(0xFF0F172A).withValues(alpha: 0.03),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -620,38 +694,51 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
             decoration: const BoxDecoration(
               color: Color(0xFFFFFFFF),
               borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10)),
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
               border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
             ),
             child: Row(
               children: [
-                Text('Transacciones Registradas en Ledger',
-                    style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: _dark)),
+                Text(
+                  'Transacciones Registradas en Ledger',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: _dark,
+                  ),
+                ),
                 const SizedBox(width: 8),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF10B981).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: Color(0xFF10B981).withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: Color(0xFF10B981).withValues(alpha: 0.3),
+                    ),
                   ),
-                  child: Text('CADENA ACTIVA',
-                      style: GoogleFonts.jetBrainsMono(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF10B981))),
+                  child: Text(
+                    'CADENA ACTIVA',
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF10B981),
+                    ),
+                  ),
                 ),
                 const Spacer(),
-                const Icon(Icons.refresh,
-                    size: 16, color: Color(0xFF94A3B8)),
+                const Icon(Icons.refresh, size: 16, color: Color(0xFF94A3B8)),
                 const SizedBox(width: 8),
-                const Icon(Icons.open_in_full,
-                    size: 16, color: Color(0xFF94A3B8)),
+                const Icon(
+                  Icons.open_in_full,
+                  size: 16,
+                  color: Color(0xFF94A3B8),
+                ),
               ],
             ),
           ),
@@ -681,47 +768,68 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
             decoration: const BoxDecoration(
               border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
               borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(10),
-                  bottomRight: Radius.circular(10)),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+              ),
             ),
             child: Row(
               children: [
-                Text('Filas por página:',
-                    style: GoogleFonts.inter(
-                        fontSize: 12, color: const Color(0xFF94A3B8))),
+                Text(
+                  'Filas por página:',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ),
                 const SizedBox(width: 6),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xFFE2E8F0)),
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Text('7',
-                      style: GoogleFonts.inter(
-                          fontSize: 12, color: const Color(0xFF94A3B8))),
+                    border: Border.all(color: Color(0xFFE2E8F0)),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    '7',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: const Color(0xFF94A3B8),
+                    ),
+                  ),
                 ),
                 const Spacer(),
-                Text('1 de 572',
-                    style: GoogleFonts.inter(
-                        fontSize: 12, color: const Color(0xFF94A3B8))),
+                Text(
+                  '1 de 572',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                ),
                 const SizedBox(width: 8),
                 ...[
                   Icons.first_page,
                   Icons.chevron_left,
                   Icons.chevron_right,
-                  Icons.last_page
-                ].map((ic) => Padding(
-                      padding: const EdgeInsets.only(left: 4),
-                      child: InkWell(
-                        onTap: () {},
-                        borderRadius: BorderRadius.circular(4),
-                        child: Padding(
-                          padding: const EdgeInsets.all(3),
-                          child: Icon(ic,
-                              size: 16, color: const Color(0xFF94A3B8)),
+                  Icons.last_page,
+                ].map(
+                  (ic) => Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: InkWell(
+                      onTap: () {},
+                      borderRadius: BorderRadius.circular(4),
+                      child: Padding(
+                        padding: const EdgeInsets.all(3),
+                        child: Icon(
+                          ic,
+                          size: 16,
+                          color: const Color(0xFF94A3B8),
                         ),
                       ),
-                    )),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -730,20 +838,27 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
     );
   }
 
-  Widget _colHdr(String label) => Text(label,
-      style: GoogleFonts.inter(
-          fontSize: 10,
-          fontWeight: FontWeight.w700,
-          color: const Color(0xFF94A3B8),
-          letterSpacing: 0.5));
+  Widget _colHdr(String label) => Text(
+    label,
+    style: GoogleFonts.inter(
+      fontSize: 10,
+      fontWeight: FontWeight.w700,
+      color: const Color(0xFF94A3B8),
+      letterSpacing: 0.5,
+    ),
+  );
 
   Widget _buildRow(
-      Map<String, dynamic> e, int i, bool isSelected, bool isMobile) {
+    Map<String, dynamic> e,
+    int i,
+    bool isSelected,
+    bool isMobile,
+  ) {
     final Color dot = e['severity'] == 'critico'
         ? const Color(0xFFEF4444)
         : (e['severity'] == 'advertencia'
-            ? const Color(0xFFF59E0B)
-            : const Color(0xFF10B981));
+              ? const Color(0xFFF59E0B)
+              : const Color(0xFF10B981));
 
     return GestureDetector(
       onTap: () => setState(() => _selectedRowIndex = isSelected ? null : i),
@@ -767,126 +882,162 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
   }
 
   Widget _rowDesktop(Map<String, dynamic> e, Color dot) => Row(
-        children: [
-          SizedBox(
-            width: 115,
-            child: Text(e['timestamp'] as String,
-                style: GoogleFonts.jetBrainsMono(
-                    fontSize: 10.5, color: const Color(0xFF94A3B8))),
+    children: [
+      SizedBox(
+        width: 115,
+        child: Text(
+          e['timestamp'] as String,
+          style: GoogleFonts.jetBrainsMono(
+            fontSize: 10.5,
+            color: const Color(0xFF94A3B8),
           ),
-          SizedBox(
-            width: 185,
-            child: Row(
-              children: [
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                      color: _indigo,
-                      borderRadius: BorderRadius.circular(6)),
-                  child: Center(
-                      child: Text(e['initials'] as String,
-                          style: GoogleFonts.inter(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF0F172A)))),
-                ),
-                const SizedBox(width: 7),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(e['user'] as String,
-                          style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: _dark)),
-                      Text('${e['role']}  •  ${e['ip']}',
-                          style: GoogleFonts.inter(
-                              fontSize: 10,
-                              color: const Color(0xFF94A3B8)),
-                          overflow: TextOverflow.ellipsis),
-                    ],
+        ),
+      ),
+      SizedBox(
+        width: 185,
+        child: Row(
+          children: [
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: _indigo,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Center(
+                child: Text(
+                  e['initials'] as String,
+                  style: GoogleFonts.inter(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF0F172A),
                   ),
                 ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width: 140,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: (e['moduleColor'] as Color).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(4),
               ),
-              child: Text(e['module'] as String,
-                  style: GoogleFonts.inter(
-                      fontSize: 10.5,
+            ),
+            const SizedBox(width: 7),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    e['user'] as String,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: e['moduleColor'] as Color),
-                  overflow: TextOverflow.ellipsis),
+                      color: _dark,
+                    ),
+                  ),
+                  Text(
+                    '${e['role']}  •  ${e['ip']}',
+                    style: GoogleFonts.inter(
+                      fontSize: 10,
+                      color: const Color(0xFF94A3B8),
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
+          ],
+        ),
+      ),
+      SizedBox(
+        width: 140,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: BoxDecoration(
+            color: (e['moduleColor'] as Color).withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(4),
           ),
-          Expanded(
-            child: Row(
-              children: [
-                Container(
-                    width: 7,
-                    height: 7,
-                    decoration:
-                        BoxDecoration(color: dot, shape: BoxShape.circle)),
-                const SizedBox(width: 7),
-                Expanded(
-                    child: Text(e['action'] as String,
-                        style: GoogleFonts.inter(
-                            fontSize: 12, color: _dark, height: 1.3))),
-              ],
+          child: Text(
+            e['module'] as String,
+            style: GoogleFonts.inter(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+              color: e['moduleColor'] as Color,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
-        ],
-      );
+        ),
+      ),
+      Expanded(
+        child: Row(
+          children: [
+            Container(
+              width: 7,
+              height: 7,
+              decoration: BoxDecoration(color: dot, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 7),
+            Expanded(
+              child: Text(
+                e['action'] as String,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: _dark,
+                  height: 1.3,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 
   Widget _rowMobile(Map<String, dynamic> e, Color dot) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
         children: [
-          Row(
-            children: [
-              Container(
-                  width: 8,
-                  height: 8,
-                  decoration:
-                      BoxDecoration(color: dot, shape: BoxShape.circle)),
-              const SizedBox(width: 6),
-              Text(e['user'] as String,
-                  style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: _dark)),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                decoration: BoxDecoration(
-                    color: (e['moduleColor'] as Color).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4)),
-                child: Text(e['module'] as String,
-                    style: GoogleFonts.inter(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: e['moduleColor'] as Color)),
-              ),
-            ],
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(color: dot, shape: BoxShape.circle),
           ),
-          const SizedBox(height: 4),
-          Text(e['action'] as String,
+          const SizedBox(width: 6),
+          Text(
+            e['user'] as String,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: _dark,
+            ),
+          ),
+          const Spacer(),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+            decoration: BoxDecoration(
+              color: (e['moduleColor'] as Color).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              e['module'] as String,
               style: GoogleFonts.inter(
-                  fontSize: 12, color: const Color(0xFF94A3B8))),
-          const SizedBox(height: 2),
-          Text(e['timestamp'] as String,
-              style: GoogleFonts.jetBrainsMono(
-                  fontSize: 10, color: const Color(0xFF94A3B8))),
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: e['moduleColor'] as Color,
+              ),
+            ),
+          ),
         ],
-      );
+      ),
+      const SizedBox(height: 4),
+      Text(
+        e['action'] as String,
+        style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF94A3B8)),
+      ),
+      const SizedBox(height: 2),
+      Text(
+        e['timestamp'] as String,
+        style: GoogleFonts.jetBrainsMono(
+          fontSize: 10,
+          color: const Color(0xFF94A3B8),
+        ),
+      ),
+    ],
+  );
 
   // ─── INSPECTION PANEL ────────────────────────────────────────────────────────
   Widget _buildInspectionPanel(Map<String, dynamic> e) {
@@ -902,30 +1053,40 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
           Container(
             padding: const EdgeInsets.all(14),
             decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0)))),
+              border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
+            ),
             child: Row(
               children: [
                 Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                        color: Color(0xFFEF4444), shape: BoxShape.circle)),
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFEF4444),
+                    shape: BoxShape.circle,
+                  ),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Inspección de Modificación Contable',
-                          style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: _dark)),
+                      Text(
+                        'Inspección de Modificación Contable',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: _dark,
+                        ),
+                      ),
                       const SizedBox(height: 2),
-                      Text('EVENTO ID: ${e['eventId']} (CRÍTICO)',
-                          style: GoogleFonts.jetBrainsMono(
-                              fontSize: 9,
-                              color: const Color(0xFFEF4444),
-                              fontWeight: FontWeight.w600)),
+                      Text(
+                        'EVENTO ID: ${e['eventId']} (CRÍTICO)',
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 9,
+                          color: const Color(0xFFEF4444),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -946,30 +1107,43 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
                 children: [
                   Row(
                     children: [
-                      Text('METADATOS DEL EVENTO',
-                          style: GoogleFonts.inter(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF94A3B8),
-                              letterSpacing: 0.5)),
+                      Text(
+                        'METADATOS DEL EVENTO',
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF94A3B8),
+                          letterSpacing: 0.5,
+                        ),
+                      ),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 3),
+                          horizontal: 6,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF10B981).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Row(children: [
-                          const Icon(Icons.lock_outline,
-                              size: 10, color: Color(0xFF10B981)),
-                          const SizedBox(width: 3),
-                          Text('WORM Validado',
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.lock_outline,
+                              size: 10,
+                              color: Color(0xFF10B981),
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              'WORM Validado',
                               style: GoogleFonts.inter(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFF10B981))),
-                        ]),
+                                fontSize: 9,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF10B981),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -982,25 +1156,31 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(color: Color(0xFFFED7AA)),
                     ),
-                    child: Text(e['description'] as String,
-                        style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF92400E))),
+                    child: Text(
+                      e['description'] as String,
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF92400E),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   RichText(
                     text: TextSpan(
                       style: GoogleFonts.inter(
-                          fontSize: 11.5, color: const Color(0xFF94A3B8)),
+                        fontSize: 11.5,
+                        color: const Color(0xFF94A3B8),
+                      ),
                       children: [
                         const TextSpan(
-                            text: 'Activo: ',
-                            style: TextStyle(fontWeight: FontWeight.w700)),
+                          text: 'Activo: ',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
                         TextSpan(
-                            text: e['asset'] as String,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.w600)),
+                          text: e['asset'] as String,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ],
                     ),
                   ),
@@ -1015,21 +1195,29 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('31 Oct 2024  •  14:18:02  UTC-4',
-                            style: GoogleFonts.jetBrainsMono(
-                                fontSize: 10,
-                                color: const Color(0xFF94A3B8))),
+                        Text(
+                          '31 Oct 2024  •  14:18:02  UTC-4',
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 10,
+                            color: const Color(0xFF94A3B8),
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text('Harold Eastman (CFO)',
-                            style: GoogleFonts.inter(
-                                fontSize: 11,
-                                color: const Color(0xFF94A3B8))),
+                        Text(
+                          'Harold Eastman (CFO)',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: const Color(0xFF94A3B8),
+                          ),
+                        ),
                         const SizedBox(height: 2),
                         Text(
-                            'IP Origen: 190.181.42.12\n(VPN Corporativa Sucursal La Paz)',
-                            style: GoogleFonts.inter(
-                                fontSize: 10.5,
-                                color: const Color(0xFF94A3B8))),
+                          'IP Origen: 190.181.42.12\n(VPN Corporativa Sucursal La Paz)',
+                          style: GoogleFonts.inter(
+                            fontSize: 10.5,
+                            color: const Color(0xFF94A3B8),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -1037,17 +1225,28 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
                   Row(
                     children: [
                       Expanded(
-                          child: _panelBtn(Icons.download_outlined,
-                              'Descargar Certificado', false)),
+                        child: _panelBtn(
+                          Icons.download_outlined,
+                          'Descargar Certificado',
+                          false,
+                        ),
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
-                          child: _panelBtn(Icons.account_tree_outlined,
-                              'Auditar Cadena', false)),
+                        child: _panelBtn(
+                          Icons.account_tree_outlined,
+                          'Auditar Cadena',
+                          false,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  _panelBtn(Icons.undo,
-                      'Revertir Cambio (Rollback Seguro Asistido)', true),
+                  _panelBtn(
+                    Icons.undo,
+                    'Revertir Cambio (Rollback Seguro Asistido)',
+                    true,
+                  ),
                 ],
               ),
             ),
@@ -1058,49 +1257,47 @@ class _AccountingAuditLogScreenState extends State<AccountingAuditLogScreen> {
   }
 
   Widget _panelBtn(IconData icon, String label, bool isDanger) => Material(
-        color: isDanger ? const Color(0xFFFEF2F2) : Colors.white,
-        borderRadius: BorderRadius.circular(7),
-        child: InkWell(
-          onTap: () {},
+    color: isDanger ? const Color(0xFFFEF2F2) : Colors.white,
+    borderRadius: BorderRadius.circular(7),
+    child: InkWell(
+      onTap: () {},
+      borderRadius: BorderRadius.circular(7),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 10),
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(7),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(7),
-              border: Border.all(
-                  color: isDanger
-                      ? const Color(0xFFFCA5A5)
-                      : const Color(0xFF334155)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(icon,
-                    size: 13,
-                    color: isDanger
-                        ? const Color(0xFFEF4444)
-                        : const Color(0xFF94A3B8)),
-                const SizedBox(width: 5),
-                Flexible(
-                  child: Text(label,
-                      style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: isDanger
-                              ? const Color(0xFFEF4444)
-                              : const Color(0xFF94A3B8)),
-                      textAlign: TextAlign.center),
-                ),
-              ],
-            ),
+          border: Border.all(
+            color: isDanger ? const Color(0xFFFCA5A5) : const Color(0xFF334155),
           ),
         ),
-      );
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 13,
+              color: isDanger
+                  ? const Color(0xFFEF4444)
+                  : const Color(0xFF94A3B8),
+            ),
+            const SizedBox(width: 5),
+            Flexible(
+              child: Text(
+                label,
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: isDanger
+                      ? const Color(0xFFEF4444)
+                      : const Color(0xFF94A3B8),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
-
-
-
-
-
-

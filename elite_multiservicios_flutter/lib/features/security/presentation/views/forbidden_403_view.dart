@@ -27,7 +27,7 @@ class Forbidden403View extends StatelessWidget {
               color: Colors.black.withValues(alpha: 0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
-            )
+            ),
           ],
         ),
         child: Stack(
@@ -44,7 +44,11 @@ class Forbidden403View extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: Colors.red.withValues(alpha: 0.1),
                   boxShadow: [
-                    BoxShadow(color: Colors.red.withValues(alpha: 0.2), blurRadius: 40, spreadRadius: 20)
+                    BoxShadow(
+                      color: Colors.red.withValues(alpha: 0.2),
+                      blurRadius: 40,
+                      spreadRadius: 20,
+                    ),
                   ],
                 ),
               ),
@@ -59,38 +63,71 @@ class Forbidden403View extends StatelessWidget {
                     height: 56,
                     decoration: BoxDecoration(
                       color: Colors.red.withValues(alpha: 0.1),
-                      border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
+                      border: Border.all(
+                        color: Colors.red.withValues(alpha: 0.2),
+                      ),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Icon(Icons.security, color: Colors.redAccent, size: 28),
+                    child: const Icon(
+                      Icons.security,
+                      color: Colors.redAccent,
+                      size: 28,
+                    ),
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.red.shade900.withValues(alpha: 0.3),
-                      border: Border.all(color: Colors.red.shade900.withValues(alpha: 0.5)),
+                      border: Border.all(
+                        color: Colors.red.shade900.withValues(alpha: 0.5),
+                      ),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Text(
                       'HTTP 403: ACCESO RESTRINGIDO',
-                      style: TextStyle(color: Colors.redAccent, fontSize: 10, fontFamily: 'monospace', letterSpacing: 1.5),
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: 10,
+                        fontFamily: 'monospace',
+                        letterSpacing: 1.5,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
                   const Text(
                     'Privilegios Insuficientes',
-                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
-                      style: const TextStyle(color: Colors.white54, fontSize: 12, height: 1.5),
+                      style: const TextStyle(
+                        color: Colors.white54,
+                        fontSize: 12,
+                        height: 1.5,
+                      ),
                       children: [
                         const TextSpan(text: 'El módulo '),
-                        TextSpan(text: '"$moduleName"', style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
-                        const TextSpan(text: ' requiere nivel de autorización contable avanzado. Tu rol actual no cuenta con los permisos necesarios.'),
+                        TextSpan(
+                          text: '"$moduleName"',
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const TextSpan(
+                          text:
+                              ' requiere nivel de autorización contable avanzado. Tu rol actual no cuenta con los permisos necesarios.',
+                        ),
                       ],
                     ),
                   ),
@@ -107,30 +144,78 @@ class Forbidden403View extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Rol Activo:', style: TextStyle(color: Colors.white54, fontSize: 12, fontFamily: 'monospace')),
-                            Text(currentRole, style: const TextStyle(color: Colors.amberAccent, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.bold)),
+                            const Text(
+                              'Rol Activo:',
+                              style: TextStyle(
+                                color: Colors.white54,
+                                fontSize: 12,
+                                fontFamily: 'monospace',
+                              ),
+                            ),
+                            Text(
+                              currentRole,
+                              style: const TextStyle(
+                                color: Colors.amberAccent,
+                                fontSize: 12,
+                                fontFamily: 'monospace',
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 8),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Roles Permitidos:', style: TextStyle(color: Colors.white54, fontSize: 12, fontFamily: 'monospace')),
-                            Text(requiredRoles.join(' / '), style: const TextStyle(color: Colors.greenAccent, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.bold)),
+                            const Text(
+                              'Roles Permitidos:',
+                              style: TextStyle(
+                                color: Colors.white54,
+                                fontSize: 12,
+                                fontFamily: 'monospace',
+                              ),
+                            ),
+                            Text(
+                              requiredRoles.join(' / '),
+                              style: const TextStyle(
+                                color: Colors.greenAccent,
+                                fontSize: 12,
+                                fontFamily: 'monospace',
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 8),
                         const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Protocolo:', style: TextStyle(color: Colors.white54, fontSize: 12, fontFamily: 'monospace')),
+                            Text(
+                              'Protocolo:',
+                              style: TextStyle(
+                                color: Colors.white54,
+                                fontSize: 12,
+                                fontFamily: 'monospace',
+                              ),
+                            ),
                             Row(
                               children: [
-                                Icon(Icons.lock, color: Colors.white54, size: 12),
+                                Icon(
+                                  Icons.lock,
+                                  color: Colors.white54,
+                                  size: 12,
+                                ),
                                 SizedBox(width: 4),
-                                Text('RBAC_PROTECTED', style: TextStyle(color: Colors.white54, fontSize: 12, fontFamily: 'monospace')),
+                                Text(
+                                  'RBAC_PROTECTED',
+                                  style: TextStyle(
+                                    color: Colors.white54,
+                                    fontSize: 12,
+                                    fontFamily: 'monospace',
+                                  ),
+                                ),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ],
@@ -141,15 +226,28 @@ class Forbidden403View extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back, size: 16, color: Colors.white),
-                      label: const Text('Volver al Tablero', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                      label: const Text(
+                        'Volver al Tablero',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF4F46E5),
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

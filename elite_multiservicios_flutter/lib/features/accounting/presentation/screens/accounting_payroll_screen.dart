@@ -6,10 +6,12 @@ import '../providers/accounting_providers.dart';
 class AccountingPayrollScreen extends ConsumerStatefulWidget {
   const AccountingPayrollScreen({super.key});
   @override
-  ConsumerState<AccountingPayrollScreen> createState() => _AccountingPayrollScreenState();
+  ConsumerState<AccountingPayrollScreen> createState() =>
+      _AccountingPayrollScreenState();
 }
-class _AccountingPayrollScreenState extends ConsumerState<AccountingPayrollScreen> {
 
+class _AccountingPayrollScreenState
+    extends ConsumerState<AccountingPayrollScreen> {
   void _showAddDialog(BuildContext context, WidgetRef ref) {
     final salaryController = TextEditingController();
     final bonusController = TextEditingController();

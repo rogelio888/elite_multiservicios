@@ -34,7 +34,9 @@ void main() async {
     await client.auth.initialize();
   } catch (e) {
     if (kDebugMode) {
-      print('Error al inicializar sesión (posible token obsoleto). Limpiando...');
+      print(
+        'Error al inicializar sesión (posible token obsoleto). Limpiando...',
+      );
     }
     try {
       await client.auth.signOutDevice();

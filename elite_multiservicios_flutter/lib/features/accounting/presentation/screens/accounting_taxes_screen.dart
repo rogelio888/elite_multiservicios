@@ -6,10 +6,11 @@ import '../providers/accounting_providers.dart';
 class AccountingTaxesScreen extends ConsumerStatefulWidget {
   const AccountingTaxesScreen({super.key});
   @override
-  ConsumerState<AccountingTaxesScreen> createState() => _AccountingTaxesScreenState();
+  ConsumerState<AccountingTaxesScreen> createState() =>
+      _AccountingTaxesScreenState();
 }
-class _AccountingTaxesScreenState extends ConsumerState<AccountingTaxesScreen> {
 
+class _AccountingTaxesScreenState extends ConsumerState<AccountingTaxesScreen> {
   void _showAddDialog(BuildContext context, WidgetRef ref) {
     final nameCtrl = TextEditingController();
     final rateCtrl = TextEditingController();

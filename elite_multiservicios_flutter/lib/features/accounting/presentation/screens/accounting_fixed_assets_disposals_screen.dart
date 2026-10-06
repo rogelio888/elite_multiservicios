@@ -5,10 +5,12 @@ class AccountingFixedAssetsDisposalsScreen extends StatefulWidget {
   const AccountingFixedAssetsDisposalsScreen({super.key});
 
   @override
-  State<AccountingFixedAssetsDisposalsScreen> createState() => _AccountingFixedAssetsDisposalsScreenState();
+  State<AccountingFixedAssetsDisposalsScreen> createState() =>
+      _AccountingFixedAssetsDisposalsScreenState();
 }
 
-class _AccountingFixedAssetsDisposalsScreenState extends State<AccountingFixedAssetsDisposalsScreen> {
+class _AccountingFixedAssetsDisposalsScreenState
+    extends State<AccountingFixedAssetsDisposalsScreen> {
   final List<Map<String, dynamic>> _disposals = [
     {
       'folio': 'BAJ-2024-001',
@@ -69,9 +71,23 @@ class _AccountingFixedAssetsDisposalsScreenState extends State<AccountingFixedAs
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: GoogleFonts.inter(color: Colors.grey[400], fontSize: 12, fontWeight: FontWeight.w500)),
+            Text(
+              title,
+              style: GoogleFonts.inter(
+                color: Colors.grey[400],
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(value, style: GoogleFonts.inter(color: color, fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(
+              value,
+              style: GoogleFonts.inter(
+                color: color,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
       ),
@@ -84,7 +100,13 @@ class _AccountingFixedAssetsDisposalsScreenState extends State<AccountingFixedAs
       backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
         backgroundColor: const Color(0xFF1E293B),
-        title: Text('Bajas y Retiros de Activos Fijos', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w600)),
+        title: Text(
+          'Bajas y Retiros de Activos Fijos',
+          style: GoogleFonts.inter(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
@@ -96,10 +118,38 @@ class _AccountingFixedAssetsDisposalsScreenState extends State<AccountingFixedAs
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  SizedBox(width: 260, child: _buildMetricCard('Costo Bruto Retirado', 'Bs. 340,500.00', Colors.white)),
-                  SizedBox(width: 260, child: _buildMetricCard('Depreciación Revertida', 'Bs. -208,900.00', Colors.orangeAccent)),
-                  SizedBox(width: 260, child: _buildMetricCard('Ingreso por Enajenación', 'Bs. 140,000.00', Colors.greenAccent)),
-                  SizedBox(width: 260, child: _buildMetricCard('Efecto Neto en P&L', 'Bs. 8,400.00', Colors.greenAccent)),
+                  SizedBox(
+                    width: 260,
+                    child: _buildMetricCard(
+                      'Costo Bruto Retirado',
+                      'Bs. 340,500.00',
+                      Colors.white,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 260,
+                    child: _buildMetricCard(
+                      'Depreciación Revertida',
+                      'Bs. -208,900.00',
+                      Colors.orangeAccent,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 260,
+                    child: _buildMetricCard(
+                      'Ingreso por Enajenación',
+                      'Bs. 140,000.00',
+                      Colors.greenAccent,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 260,
+                    child: _buildMetricCard(
+                      'Efecto Neto en P&L',
+                      'Bs. 8,400.00',
+                      Colors.greenAccent,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -107,11 +157,26 @@ class _AccountingFixedAssetsDisposalsScreenState extends State<AccountingFixedAs
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Historial de Bajas', style: GoogleFonts.inter(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+                Text(
+                  'Historial de Bajas',
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.add, color: Colors.white),
-                  label: const Text('Procesar Baja de Activo', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6366F1)),
+                  label: const Text(
+                    'Procesar Baja de Activo',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6366F1),
+                  ),
                   onPressed: _showDisposalModal,
                 ),
               ],
@@ -127,7 +192,10 @@ class _AccountingFixedAssetsDisposalsScreenState extends State<AccountingFixedAs
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: DataTable(
-                  headingTextStyle: GoogleFonts.inter(color: Colors.grey[400], fontWeight: FontWeight.w600),
+                  headingTextStyle: GoogleFonts.inter(
+                    color: Colors.grey[400],
+                    fontWeight: FontWeight.w600,
+                  ),
                   dataTextStyle: GoogleFonts.inter(color: Colors.white),
                   columns: const [
                     DataColumn(label: Text('Folio')),
@@ -147,27 +215,55 @@ class _AccountingFixedAssetsDisposalsScreenState extends State<AccountingFixedAs
                         DataCell(Text(d['activo'] as String)),
                         DataCell(Text(d['fecha'] as String)),
                         DataCell(Text(d['causa'] as String)),
-                        DataCell(Text('Bs. ${(d['libros'] as double).toStringAsFixed(2)}')),
-                        DataCell(Text('Bs. ${(d['venta'] as double).toStringAsFixed(2)}')),
+                        DataCell(
+                          Text(
+                            'Bs. ${(d['libros'] as double).toStringAsFixed(2)}',
+                          ),
+                        ),
+                        DataCell(
+                          Text(
+                            'Bs. ${(d['venta'] as double).toStringAsFixed(2)}',
+                          ),
+                        ),
                         DataCell(
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
-                              color: pnl >= 0 ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2),
+                              color: pnl >= 0
+                                  ? Colors.green.withValues(alpha: 0.2)
+                                  : Colors.red.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               'Bs. ${pnl.toStringAsFixed(2)}',
-                              style: TextStyle(color: pnl >= 0 ? Colors.greenAccent : Colors.redAccent, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                color: pnl >= 0
+                                    ? Colors.greenAccent
+                                    : Colors.redAccent,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
                         DataCell(
                           Row(
                             children: [
-                              const Icon(Icons.picture_as_pdf, color: Colors.redAccent, size: 20),
+                              const Icon(
+                                Icons.picture_as_pdf,
+                                color: Colors.redAccent,
+                                size: 20,
+                              ),
                               const SizedBox(width: 8),
-                              Text(d['pdf'] as String, style: const TextStyle(color: Colors.blueAccent, decoration: TextDecoration.underline)),
+                              Text(
+                                d['pdf'] as String,
+                                style: const TextStyle(
+                                  color: Colors.blueAccent,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -191,7 +287,8 @@ class DisposalLiquidationModal extends StatefulWidget {
   const DisposalLiquidationModal({super.key, required this.onDisposalAdded});
 
   @override
-  State<DisposalLiquidationModal> createState() => _DisposalLiquidationModalState();
+  State<DisposalLiquidationModal> createState() =>
+      _DisposalLiquidationModalState();
 }
 
 class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
@@ -228,7 +325,9 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
   String _causaLegal = 'venta';
   final _precioVentaCtrl = TextEditingController(text: '145000.00');
   final _nroActaCtrl = TextEditingController(text: 'ACT-2024-089');
-  final _observacionesCtrl = TextEditingController(text: 'Aviso previo al SIN enviado conforme Art. 24 D.S. 24051.');
+  final _observacionesCtrl = TextEditingController(
+    text: 'Aviso previo al SIN enviado conforme Art. 24 D.S. 24051.',
+  );
 
   @override
   void initState() {
@@ -250,7 +349,8 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
     super.dispose();
   }
 
-  double get _precioVenta => double.tryParse(_precioVentaCtrl.text.replaceAll(',', '.')) ?? 0.0;
+  double get _precioVenta =>
+      double.tryParse(_precioVentaCtrl.text.replaceAll(',', '.')) ?? 0.0;
   double get _costoBruto => _selectedAsset['costoBruto'] as double;
   double get _deprecAcum => _selectedAsset['deprecAcum'] as double;
   double get _valorLibros => _selectedAsset['valorLibros'] as double;
@@ -306,7 +406,10 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSectionTitle('1', 'SELECCIÓN DEL ACTIVO Y CAUSA DE SALIDA'),
+                      _buildSectionTitle(
+                        '1',
+                        'SELECCIÓN DEL ACTIVO Y CAUSA DE SALIDA',
+                      ),
                       const SizedBox(height: 16),
                       _buildAssetSelector(),
                       const SizedBox(height: 16),
@@ -320,17 +423,34 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
                       const SizedBox(height: 16),
                       Row(
                         children: [
-                          Expanded(child: _buildTextField(_nroActaCtrl, 'Nro. Acta / Resolución Legal')),
+                          Expanded(
+                            child: _buildTextField(
+                              _nroActaCtrl,
+                              'Nro. Acta / Resolución Legal',
+                            ),
+                          ),
                           const SizedBox(width: 16),
-                          Expanded(child: _buildTextField(_observacionesCtrl, 'Observaciones D.S. 24051 / Notaría')),
+                          Expanded(
+                            child: _buildTextField(
+                              _observacionesCtrl,
+                              'Observaciones D.S. 24051 / Notaría',
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 24),
-                      _buildSectionTitle('2', 'LIQUIDACIÓN Y EFECTO EN RESULTADOS (P&L)'),
+                      _buildSectionTitle(
+                        '2',
+                        'LIQUIDACIÓN Y EFECTO EN RESULTADOS (P&L)',
+                      ),
                       const SizedBox(height: 16),
                       _buildPnlSummaryBox(pnl, isGanancia),
                       const SizedBox(height: 24),
-                      _buildSectionTitle('3', 'PREVISUALIZACIÓN ASIENTO AUTOMÁTICO (VOUCHER CD-BAJ)', trailing: 'Partida Doble Cuadrada'),
+                      _buildSectionTitle(
+                        '3',
+                        'PREVISUALIZACIÓN ASIENTO AUTOMÁTICO (VOUCHER CD-BAJ)',
+                        trailing: 'Partida Doble Cuadrada',
+                      ),
                       const SizedBox(height: 16),
                       _buildVoucherTable(pnl, isGanancia),
                       const SizedBox(height: 20),
@@ -360,9 +480,15 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
             decoration: BoxDecoration(
               color: const Color(0xFF6366F1).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFF6366F1).withValues(alpha: 0.3)),
+              border: Border.all(
+                color: const Color(0xFF6366F1).withValues(alpha: 0.3),
+              ),
             ),
-            child: const Icon(Icons.remove_circle_outline, color: Color(0xFF818CF8), size: 24),
+            child: const Icon(
+              Icons.remove_circle_outline,
+              color: Color(0xFF818CF8),
+              size: 24,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -373,24 +499,41 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
                   children: [
                     Text(
                       'Desincorporación Definitiva & Liquidación Contable',
-                      style: GoogleFonts.inter(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: GoogleFonts.inter(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(width: 10),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF312E81),
                         borderRadius: BorderRadius.circular(4),
                         border: Border.all(color: const Color(0xFF4338CA)),
                       ),
-                      child: Text('D.S. 24051', style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFFA5B4FC), fontWeight: FontWeight.bold)),
+                      child: Text(
+                        'D.S. 24051',
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          color: const Color(0xFFA5B4FC),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Extinción de bien patrimonial, reversión de depreciación y determinación de Ganancia/Pérdida en Disposición (NIC 16).',
-                  style: GoogleFonts.inter(fontSize: 12, color: Colors.grey[400]),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: Colors.grey[400],
+                  ),
                 ),
               ],
             ),
@@ -410,16 +553,40 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
         Container(
           width: 22,
           height: 22,
-          decoration: const BoxDecoration(color: Color(0xFF6366F1), shape: BoxShape.circle),
+          decoration: const BoxDecoration(
+            color: Color(0xFF6366F1),
+            shape: BoxShape.circle,
+          ),
           child: Center(
-            child: Text(num, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white)),
+            child: Text(
+              num,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
         const SizedBox(width: 10),
-        Text(title, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
+        Text(
+          title,
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const Spacer(),
         if (trailing != null)
-          Text(trailing, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF34D399))),
+          Text(
+            trailing,
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF34D399),
+            ),
+          ),
       ],
     );
   }
@@ -428,23 +595,41 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Seleccionar Activo Fijo a Dar de Baja', style: GoogleFonts.inter(color: Colors.grey[300], fontSize: 12, fontWeight: FontWeight.w500)),
+        Text(
+          'Seleccionar Activo Fijo a Dar de Baja',
+          style: GoogleFonts.inter(
+            color: Colors.grey[300],
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         const SizedBox(height: 6),
         DropdownButtonFormField<Map<String, dynamic>>(
           initialValue: _selectedAsset,
           dropdownColor: const Color(0xFF0F172A),
           style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
           decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF334155))),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF334155))),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF334155)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF334155)),
+            ),
             filled: true,
             fillColor: const Color(0xFF0F172A),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 12,
+            ),
           ),
           items: _sampleAssets.map((asset) {
             return DropdownMenuItem<Map<String, dynamic>>(
               value: asset,
-              child: Text('${asset['code']} — ${asset['name']} (Libros: Bs. ${(asset['valorLibros'] as double).toStringAsFixed(2)})'),
+              child: Text(
+                '${asset['code']} — ${asset['name']} (Libros: Bs. ${(asset['valorLibros'] as double).toStringAsFixed(2)})',
+              ),
             );
           }).toList(),
           onChanged: (val) {
@@ -461,24 +646,52 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Causa Legal de Salida (D.S. 24051)', style: GoogleFonts.inter(color: Colors.grey[300], fontSize: 12, fontWeight: FontWeight.w500)),
+        Text(
+          'Causa Legal de Salida (D.S. 24051)',
+          style: GoogleFonts.inter(
+            color: Colors.grey[300],
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
           initialValue: _causaLegal,
           dropdownColor: const Color(0xFF0F172A),
           style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
           decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF334155))),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF334155))),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF334155)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF334155)),
+            ),
             filled: true,
             fillColor: const Color(0xFF0F172A),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 12,
+            ),
           ),
           items: const [
-            DropdownMenuItem(value: 'venta', child: Text('Venta / Enajenación Pactada')),
-            DropdownMenuItem(value: 'obsolescencia', child: Text('Obsolescencia Técnica / Chatarra')),
-            DropdownMenuItem(value: 'siniestro', child: Text('Siniestro / Destrucción / Robo')),
-            DropdownMenuItem(value: 'donacion', child: Text('Donación Institucional')),
+            DropdownMenuItem(
+              value: 'venta',
+              child: Text('Venta / Enajenación Pactada'),
+            ),
+            DropdownMenuItem(
+              value: 'obsolescencia',
+              child: Text('Obsolescencia Técnica / Chatarra'),
+            ),
+            DropdownMenuItem(
+              value: 'siniestro',
+              child: Text('Siniestro / Destrucción / Robo'),
+            ),
+            DropdownMenuItem(
+              value: 'donacion',
+              child: Text('Donación Institucional'),
+            ),
           ],
           onChanged: (val) {
             if (val != null) {
@@ -499,20 +712,43 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Precio de Rescate / Venta Pactado (Bs.)', style: GoogleFonts.inter(color: Colors.grey[300], fontSize: 12, fontWeight: FontWeight.w500)),
+        Text(
+          'Precio de Rescate / Venta Pactado (Bs.)',
+          style: GoogleFonts.inter(
+            color: Colors.grey[300],
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         const SizedBox(height: 6),
         TextFormField(
           controller: _precioVentaCtrl,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          style: GoogleFonts.inter(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+          style: GoogleFonts.inter(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
           decoration: InputDecoration(
             prefixText: 'Bs. ',
-            prefixStyle: GoogleFonts.inter(color: Colors.white70, fontWeight: FontWeight.bold),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF334155))),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF334155))),
+            prefixStyle: GoogleFonts.inter(
+              color: Colors.white70,
+              fontWeight: FontWeight.bold,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF334155)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF334155)),
+            ),
             filled: true,
             fillColor: const Color(0xFF0F172A),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 12,
+            ),
           ),
         ),
       ],
@@ -523,17 +759,33 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: GoogleFonts.inter(color: Colors.grey[300], fontSize: 12, fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            color: Colors.grey[300],
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         const SizedBox(height: 6),
         TextFormField(
           controller: ctrl,
           style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
           decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF334155))),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF334155))),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF334155)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF334155)),
+            ),
             filled: true,
             fillColor: const Color(0xFF0F172A),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 12,
+            ),
           ),
         ),
       ],
@@ -555,19 +807,35 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
       child: Row(
         children: [
           Expanded(
-            child: _buildMetricItem('COSTO ADQUISICIÓN BRUTO', 'Bs. ${_costoBruto.toStringAsFixed(2)}', Colors.white70),
+            child: _buildMetricItem(
+              'COSTO ADQUISICIÓN BRUTO',
+              'Bs. ${_costoBruto.toStringAsFixed(2)}',
+              Colors.white70,
+            ),
           ),
           Container(width: 1, height: 40, color: const Color(0xFF334155)),
           Expanded(
-            child: _buildMetricItem('DEPRECIACIÓN REVERTIDA', 'Bs. -${_deprecAcum.toStringAsFixed(2)}', const Color(0xFFFBBF24)),
+            child: _buildMetricItem(
+              'DEPRECIACIÓN REVERTIDA',
+              'Bs. -${_deprecAcum.toStringAsFixed(2)}',
+              const Color(0xFFFBBF24),
+            ),
           ),
           Container(width: 1, height: 40, color: const Color(0xFF334155)),
           Expanded(
-            child: _buildMetricItem('VALOR NETO EN LIBROS', 'Bs. ${_valorLibros.toStringAsFixed(2)}', Colors.white),
+            child: _buildMetricItem(
+              'VALOR NETO EN LIBROS',
+              'Bs. ${_valorLibros.toStringAsFixed(2)}',
+              Colors.white,
+            ),
           ),
           Container(width: 1, height: 40, color: const Color(0xFF334155)),
           Expanded(
-            child: _buildMetricItem('PRECIO DE VENTA / RESCATE', 'Bs. ${_precioVenta.toStringAsFixed(2)}', const Color(0xFF60A5FA)),
+            child: _buildMetricItem(
+              'PRECIO DE VENTA / RESCATE',
+              'Bs. ${_precioVenta.toStringAsFixed(2)}',
+              const Color(0xFF60A5FA),
+            ),
           ),
           Container(width: 1, height: 40, color: const Color(0xFF334155)),
           Expanded(
@@ -583,22 +851,42 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
     );
   }
 
-  Widget _buildMetricItem(String label, String val, Color valColor, {bool isBold = false}) {
+  Widget _buildMetricItem(
+    String label,
+    String val,
+    Color valColor, {
+    bool isBold = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: GoogleFonts.inter(fontSize: 10, color: Colors.grey[400], fontWeight: FontWeight.bold)),
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 10,
+              color: Colors.grey[400],
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 6),
-          Text(val, style: GoogleFonts.inter(fontSize: 14, color: valColor, fontWeight: isBold ? FontWeight.bold : FontWeight.w600)),
+          Text(
+            val,
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              color: valColor,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildVoucherTable(double pnl, bool isGanancia) {
-    final double debeTotal = _precioVenta + _deprecAcum + (pnl < 0 ? pnl.abs() : 0.0);
+    final double debeTotal =
+        _precioVenta + _deprecAcum + (pnl < 0 ? pnl.abs() : 0.0);
     final double haberTotal = _costoBruto + (pnl > 0 ? pnl : 0.0);
 
     return Container(
@@ -625,45 +913,75 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
             ],
           ),
           if (_precioVenta > 0)
-            TableRow(children: [
-              _cell('1.1.01.01', isCode: true),
-              _cell('Caja / Bancos (Cobro enajenación)'),
-              _cell(_precioVenta.toStringAsFixed(2), alignRight: true),
+            TableRow(
+              children: [
+                _cell('1.1.01.01', isCode: true),
+                _cell('Caja / Bancos (Cobro enajenación)'),
+                _cell(_precioVenta.toStringAsFixed(2), alignRight: true),
+                _cell('0.00', alignRight: true),
+              ],
+            ),
+          TableRow(
+            children: [
+              _cell('1.2.04.01', isCode: true),
+              _cell('Depreciación Acumulada Revertida'),
+              _cell(_deprecAcum.toStringAsFixed(2), alignRight: true),
               _cell('0.00', alignRight: true),
-            ]),
-          TableRow(children: [
-            _cell('1.2.04.01', isCode: true),
-            _cell('Depreciación Acumulada Revertida'),
-            _cell(_deprecAcum.toStringAsFixed(2), alignRight: true),
-            _cell('0.00', alignRight: true),
-          ]),
+            ],
+          ),
           if (pnl < 0)
-            TableRow(children: [
-              _cell('5.1.08.01', isCode: true),
-              _cell('Pérdida por Baja de Activos Fijos (D.S. 24051)'),
-              _cell(pnl.abs().toStringAsFixed(2), alignRight: true, textColor: const Color(0xFFF87171)),
-              _cell('0.00', alignRight: true),
-            ]),
+            TableRow(
+              children: [
+                _cell('5.1.08.01', isCode: true),
+                _cell('Pérdida por Baja de Activos Fijos (D.S. 24051)'),
+                _cell(
+                  pnl.abs().toStringAsFixed(2),
+                  alignRight: true,
+                  textColor: const Color(0xFFF87171),
+                ),
+                _cell('0.00', alignRight: true),
+              ],
+            ),
           if (pnl > 0)
-            TableRow(children: [
-              _cell('4.2.03.01', isCode: true),
-              _cell('Ganancia en Venta de Activos Fijos'),
+            TableRow(
+              children: [
+                _cell('4.2.03.01', isCode: true),
+                _cell('Ganancia en Venta de Activos Fijos'),
+                _cell('0.00', alignRight: true),
+                _cell(
+                  pnl.toStringAsFixed(2),
+                  alignRight: true,
+                  textColor: const Color(0xFF34D399),
+                ),
+              ],
+            ),
+          TableRow(
+            children: [
+              _cell(_selectedAsset['cuentaActivo'] as String, isCode: true),
+              _cell('Extinción de ${_selectedAsset['name']}'),
               _cell('0.00', alignRight: true),
-              _cell(pnl.toStringAsFixed(2), alignRight: true, textColor: const Color(0xFF34D399)),
-            ]),
-          TableRow(children: [
-            _cell(_selectedAsset['cuentaActivo'] as String, isCode: true),
-            _cell('Extinción de ${_selectedAsset['name']}'),
-            _cell('0.00', alignRight: true),
-            _cell(_costoBruto.toStringAsFixed(2), alignRight: true),
-          ]),
+              _cell(_costoBruto.toStringAsFixed(2), alignRight: true),
+            ],
+          ),
           TableRow(
             decoration: const BoxDecoration(color: Color(0xFF1E293B)),
             children: [
               _cell('TOTALES', isBold: true),
-              _cell('Partida Doble Verificada', isBold: true, textColor: const Color(0xFF34D399)),
-              _cell(debeTotal.toStringAsFixed(2), alignRight: true, isBold: true),
-              _cell(haberTotal.toStringAsFixed(2), alignRight: true, isBold: true),
+              _cell(
+                'Partida Doble Verificada',
+                isBold: true,
+                textColor: const Color(0xFF34D399),
+              ),
+              _cell(
+                debeTotal.toStringAsFixed(2),
+                alignRight: true,
+                isBold: true,
+              ),
+              _cell(
+                haberTotal.toStringAsFixed(2),
+                alignRight: true,
+                isBold: true,
+              ),
             ],
           ),
         ],
@@ -676,13 +994,23 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Text(
         text,
-        style: GoogleFonts.inter(color: Colors.grey[400], fontSize: 11, fontWeight: FontWeight.bold),
+        style: GoogleFonts.inter(
+          color: Colors.grey[400],
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+        ),
         textAlign: alignRight ? TextAlign.right : TextAlign.left,
       ),
     );
   }
 
-  Widget _cell(String text, {bool isCode = false, bool alignRight = false, bool isBold = false, Color? textColor}) {
+  Widget _cell(
+    String text, {
+    bool isCode = false,
+    bool alignRight = false,
+    bool isBold = false,
+    Color? textColor,
+  }) {
     final style = isCode
         ? GoogleFonts.jetBrainsMono(
             color: textColor ?? (isBold ? Colors.white : Colors.white70),
@@ -719,7 +1047,11 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
           Expanded(
             child: Text(
               'Validación D.S. 24051 (Art. 24): Para bajas por obsolescencia o siniestro, se exige aviso previo al SIN (10 días) e informe de laboratorio / notario para deducibilidad fiscal.',
-              style: GoogleFonts.inter(color: const Color(0xFFC7D2FE), fontSize: 11.5, height: 1.4),
+              style: GoogleFonts.inter(
+                color: const Color(0xFFC7D2FE),
+                fontSize: 11.5,
+                height: 1.4,
+              ),
             ),
           ),
         ],
@@ -742,12 +1074,25 @@ class _DisposalLiquidationModalState extends State<DisposalLiquidationModal> {
               side: const BorderSide(color: Color(0xFF475569)),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             ),
-            child: Text('Cancelar', style: GoogleFonts.inter(color: Colors.white70)),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.inter(color: Colors.white70),
+            ),
           ),
           const SizedBox(width: 12),
           ElevatedButton.icon(
-            icon: const Icon(Icons.check_circle_outline, color: Colors.white, size: 18),
-            label: Text('Asentar Baja & Liquidación', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold)),
+            icon: const Icon(
+              Icons.check_circle_outline,
+              color: Colors.white,
+              size: 18,
+            ),
+            label: Text(
+              'Asentar Baja & Liquidación',
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF6366F1),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),

@@ -41,7 +41,10 @@ class AccountingBanksScreen extends StatelessWidget {
                     maxLines: 2,
                   ),
                 ),
-                if (rightBadge != null) rightBadge else Icon(icon, color: iconColor, size: 20),
+                if (rightBadge != null)
+                  rightBadge
+                else
+                  Icon(icon, color: iconColor, size: 20),
               ],
             ),
             const SizedBox(height: 12),
@@ -131,11 +134,16 @@ class AccountingBanksScreen extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: badgeColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: badgeColor.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: badgeColor.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -175,11 +183,18 @@ class AccountingBanksScreen extends StatelessWidget {
                       children: [
                         Text(
                           e.key,
-                          style: GoogleFonts.robotoMono(color: Colors.grey[400], fontSize: 11),
+                          style: GoogleFonts.robotoMono(
+                            color: Colors.grey[400],
+                            fontSize: 11,
+                          ),
                         ),
                         Text(
                           e.value,
-                          style: GoogleFonts.robotoMono(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w500),
+                          style: GoogleFonts.robotoMono(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
@@ -206,7 +221,11 @@ class AccountingBanksScreen extends StatelessWidget {
                     children: [
                       Text(
                         balanceLabel,
-                        style: GoogleFonts.inter(color: Colors.grey[500], fontSize: 10, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.inter(
+                          color: Colors.grey[500],
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Row(
@@ -215,12 +234,19 @@ class AccountingBanksScreen extends StatelessWidget {
                         children: [
                           Text(
                             balanceValue,
-                            style: GoogleFonts.inter(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(width: 8),
                           Text(
                             balanceSub,
-                            style: GoogleFonts.inter(color: Colors.grey[500], fontSize: 11),
+                            style: GoogleFonts.inter(
+                              color: Colors.grey[500],
+                              fontSize: 11,
+                            ),
                           ),
                         ],
                       ),
@@ -228,14 +254,21 @@ class AccountingBanksScreen extends StatelessWidget {
                   ),
                   if (showButton)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF334155),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         'Rendir Caja',
-                        style: GoogleFonts.inter(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                 ],
@@ -263,7 +296,9 @@ class AccountingBanksScreen extends StatelessWidget {
         color: isChecked ? const Color(0xFF1E293B) : const Color(0xFF0F172A),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: isChecked ? const Color(0xFF6366F1).withValues(alpha: 0.5) : const Color(0xFF334155),
+          color: isChecked
+              ? const Color(0xFF6366F1).withValues(alpha: 0.5)
+              : const Color(0xFF334155),
         ),
       ),
       child: Row(
@@ -271,7 +306,9 @@ class AccountingBanksScreen extends StatelessWidget {
         children: [
           Icon(
             isChecked ? Icons.check_box : Icons.check_box_outline_blank,
-            color: isChecked ? const Color(0xFF6366F1) : const Color(0xFF475569),
+            color: isChecked
+                ? const Color(0xFF6366F1)
+                : const Color(0xFF475569),
             size: 20,
           ),
           const SizedBox(width: 12),
@@ -283,13 +320,20 @@ class AccountingBanksScreen extends StatelessWidget {
                   children: [
                     Text(
                       date,
-                      style: GoogleFonts.inter(color: Colors.grey[500], fontSize: 11),
+                      style: GoogleFonts.inter(
+                        color: Colors.grey[500],
+                        fontSize: 11,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         title,
-                        style: GoogleFonts.inter(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -299,26 +343,40 @@ class AccountingBanksScreen extends StatelessWidget {
                   children: [
                     Text(
                       'REF: $ref',
-                      style: GoogleFonts.robotoMono(color: Colors.grey[500], fontSize: 10),
+                      style: GoogleFonts.robotoMono(
+                        color: Colors.grey[500],
+                        fontSize: 10,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     if (subtitle.contains('Asiento'))
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFB45309).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           subtitle,
-                          style: GoogleFonts.inter(color: const Color(0xFFF59E0B), fontSize: 10, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.inter(
+                            color: const Color(0xFFF59E0B),
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       )
                     else
                       Text(
                         subtitle,
                         style: GoogleFonts.inter(
-                            color: subtitle.contains('Crédito') ? Colors.greenAccent : Colors.redAccent, fontSize: 11),
+                          color: subtitle.contains('Crédito')
+                              ? Colors.greenAccent
+                              : Colors.redAccent,
+                          fontSize: 11,
+                        ),
                       ),
                   ],
                 ),
@@ -330,20 +388,30 @@ class AccountingBanksScreen extends StatelessWidget {
             children: [
               Text(
                 amount,
-                style: GoogleFonts.inter(color: amountColor, fontSize: 14, fontWeight: FontWeight.bold),
+                style: GoogleFonts.inter(
+                  color: amountColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               if (isChecked) ...[
                 const SizedBox(height: 4),
                 Text(
                   'Coincidencia 100%',
-                  style: GoogleFonts.inter(color: Colors.grey[500], fontSize: 10),
+                  style: GoogleFonts.inter(
+                    color: Colors.grey[500],
+                    fontSize: 10,
+                  ),
                 ),
               ],
               if (!isChecked) ...[
                 const SizedBox(height: 4),
                 Text(
                   '+ Auto-generar\nAsiento',
-                  style: GoogleFonts.inter(color: const Color(0xFF6366F1), fontSize: 10),
+                  style: GoogleFonts.inter(
+                    color: const Color(0xFF6366F1),
+                    fontSize: 10,
+                  ),
                   textAlign: TextAlign.right,
                 ),
               ],
@@ -370,7 +438,9 @@ class AccountingBanksScreen extends StatelessWidget {
         color: isChecked ? const Color(0xFF1E293B) : const Color(0xFF0F172A),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: isChecked ? const Color(0xFF6366F1).withValues(alpha: 0.5) : const Color(0xFF334155),
+          color: isChecked
+              ? const Color(0xFF6366F1).withValues(alpha: 0.5)
+              : const Color(0xFF334155),
         ),
       ),
       child: Row(
@@ -378,7 +448,9 @@ class AccountingBanksScreen extends StatelessWidget {
         children: [
           Icon(
             isChecked ? Icons.check_box : Icons.check_box_outline_blank,
-            color: isChecked ? const Color(0xFF6366F1) : const Color(0xFF475569),
+            color: isChecked
+                ? const Color(0xFF6366F1)
+                : const Color(0xFF475569),
             size: 20,
           ),
           const SizedBox(width: 12),
@@ -391,9 +463,22 @@ class AccountingBanksScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(comp, style: GoogleFonts.robotoMono(color: Colors.orangeAccent, fontSize: 9, fontWeight: FontWeight.bold)),
+                Text(
+                  comp,
+                  style: GoogleFonts.robotoMono(
+                    color: Colors.orangeAccent,
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text('Cta: $account', style: GoogleFonts.robotoMono(color: Colors.grey[400], fontSize: 9)),
+                Text(
+                  'Cta: $account',
+                  style: GoogleFonts.robotoMono(
+                    color: Colors.grey[400],
+                    fontSize: 9,
+                  ),
+                ),
               ],
             ),
           ),
@@ -404,12 +489,19 @@ class AccountingBanksScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.inter(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: GoogleFonts.inter(color: Colors.grey[400], fontSize: 11),
+                  style: GoogleFonts.inter(
+                    color: Colors.grey[400],
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
@@ -419,7 +511,11 @@ class AccountingBanksScreen extends StatelessWidget {
             children: [
               Text(
                 amount,
-                style: GoogleFonts.inter(color: amountColor, fontSize: 14, fontWeight: FontWeight.bold),
+                style: GoogleFonts.inter(
+                  color: amountColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 4),
               Row(
@@ -428,7 +524,10 @@ class AccountingBanksScreen extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     'Verificado',
-                    style: GoogleFonts.inter(color: Colors.greenAccent, fontSize: 10),
+                    style: GoogleFonts.inter(
+                      color: Colors.greenAccent,
+                      fontSize: 10,
+                    ),
                   ),
                 ],
               ),
@@ -469,15 +568,24 @@ class AccountingBanksScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 16),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF064E3B).withValues(alpha: 0.3),
+                            color: const Color(
+                              0xFF064E3B,
+                            ).withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(color: const Color(0xFF059669)),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.verified_user_outlined, color: Color(0xFF10B981), size: 16),
+                              const Icon(
+                                Icons.verified_user_outlined,
+                                color: Color(0xFF10B981),
+                                size: 16,
+                              ),
                               const SizedBox(width: 8),
                               Text(
                                 'ASFI-\nCOMPLIANT',
@@ -495,7 +603,10 @@ class AccountingBanksScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       'Control de Flujo de Fondos, Posición de Liquidez & Conciliación Automática',
-                      style: GoogleFonts.inter(color: Colors.grey[400], fontSize: 13),
+                      style: GoogleFonts.inter(
+                        color: Colors.grey[400],
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
@@ -503,47 +614,100 @@ class AccountingBanksScreen extends StatelessWidget {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF6366F1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
-                          Text('Cuentas Bancarias\n& Cajas Chicas', style: GoogleFonts.inter(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                          Text(
+                            'Cuentas Bancarias\n& Cajas Chicas',
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: const Text('3', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                            child: const Text(
+                              '3',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(width: 12),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       child: Row(
                         children: [
-                          Text('Mesa de\nConciliación Bancaria', style: GoogleFonts.inter(color: Colors.grey[400], fontSize: 12), textAlign: TextAlign.center),
+                          Text(
+                            'Mesa de\nConciliación Bancaria',
+                            style: GoogleFonts.inter(
+                              color: Colors.grey[400],
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFB45309).withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: const Color(0xFFF59E0B)),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
                             ),
-                            child: const Text('2\npendientes', style: TextStyle(color: Color(0xFFF59E0B), fontSize: 10, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFFB45309,
+                              ).withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                color: const Color(0xFFF59E0B),
+                              ),
+                            ),
+                            child: const Text(
+                              '2\npendientes',
+                              style: TextStyle(
+                                color: Color(0xFFF59E0B),
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Text('Historial de\nTransferencias\nInternas', style: GoogleFonts.inter(color: Colors.grey[400], fontSize: 12), textAlign: TextAlign.center),
+                    Text(
+                      'Historial de\nTransferencias\nInternas',
+                      style: GoogleFonts.inter(
+                        color: Colors.grey[400],
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ],
                 ),
               ],
@@ -564,14 +728,37 @@ class AccountingBanksScreen extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.trending_up, color: Colors.greenAccent, size: 14),
+                          const Icon(
+                            Icons.trending_up,
+                            color: Colors.greenAccent,
+                            size: 14,
+                          ),
                           const SizedBox(width: 4),
-                          Text('+4.2%', style: GoogleFonts.inter(color: Colors.greenAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+                          Text(
+                            '+4.2%',
+                            style: GoogleFonts.inter(
+                              color: Colors.greenAccent,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           const SizedBox(width: 8),
-                          Text('flujo semanal\nneto', style: GoogleFonts.inter(color: Colors.grey[500], fontSize: 10)),
+                          Text(
+                            'flujo semanal\nneto',
+                            style: GoogleFonts.inter(
+                              color: Colors.grey[500],
+                              fontSize: 10,
+                            ),
+                          ),
                         ],
                       ),
-                      Text('Consolidado', style: GoogleFonts.inter(color: Colors.grey[500], fontSize: 11)),
+                      Text(
+                        'Consolidado',
+                        style: GoogleFonts.inter(
+                          color: Colors.grey[500],
+                          fontSize: 11,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -582,24 +769,53 @@ class AccountingBanksScreen extends StatelessWidget {
                   icon: Icons.account_balance,
                   iconColor: Colors.grey,
                   rightBadge: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF064E3B).withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Row(
                       children: [
-                        Container(width: 6, height: 6, decoration: const BoxDecoration(color: Color(0xFF10B981), shape: BoxShape.circle)),
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF10B981),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
                         const SizedBox(width: 4),
-                        const Text('En\nLínea', style: TextStyle(color: Color(0xFF10B981), fontSize: 10)),
+                        const Text(
+                          'En\nLínea',
+                          style: TextStyle(
+                            color: Color(0xFF10B981),
+                            fontSize: 10,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   extraSubtitleWidget: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('N° 1000-84920-BOB', style: GoogleFonts.robotoMono(color: Colors.grey[400], fontSize: 10)),
-                      Text('64.7% Liquidez', style: GoogleFonts.inter(color: const Color(0xFF6366F1), fontSize: 11, fontWeight: FontWeight.bold)),
+                      Text(
+                        'N° 1000-84920-BOB',
+                        style: GoogleFonts.robotoMono(
+                          color: Colors.grey[400],
+                          fontSize: 10,
+                        ),
+                      ),
+                      Text(
+                        '64.7% Liquidez',
+                        style: GoogleFonts.inter(
+                          color: const Color(0xFF6366F1),
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -611,10 +827,29 @@ class AccountingBanksScreen extends StatelessWidget {
                   iconColor: const Color(0xFF3B82F6),
                   extraSubtitleWidget: Row(
                     children: [
-                      Text('Equiv: ', style: GoogleFonts.inter(color: Colors.grey[500], fontSize: 11)),
-                      Text('Bs. 170,520.00', style: GoogleFonts.inter(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                      Text(
+                        'Equiv: ',
+                        style: GoogleFonts.inter(
+                          color: Colors.grey[500],
+                          fontSize: 11,
+                        ),
+                      ),
+                      Text(
+                        'Bs. 170,520.00',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(width: 8),
-                      Text('T/C: 6.96', style: GoogleFonts.inter(color: Colors.grey[500], fontSize: 11)),
+                      Text(
+                        'T/C: 6.96',
+                        style: GoogleFonts.inter(
+                          color: Colors.grey[500],
+                          fontSize: 11,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -627,8 +862,22 @@ class AccountingBanksScreen extends StatelessWidget {
                   extraSubtitleWidget: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Límite: Bs.\n15,000.00', style: GoogleFonts.inter(color: Colors.grey[400], fontSize: 10)),
-                      Text('56.6%\ndisponible', style: GoogleFonts.inter(color: const Color(0xFF10B981), fontSize: 10, fontWeight: FontWeight.bold), textAlign: TextAlign.right),
+                      Text(
+                        'Límite: Bs.\n15,000.00',
+                        style: GoogleFonts.inter(
+                          color: Colors.grey[400],
+                          fontSize: 10,
+                        ),
+                      ),
+                      Text(
+                        '56.6%\ndisponible',
+                        style: GoogleFonts.inter(
+                          color: const Color(0xFF10B981),
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
                     ],
                   ),
                 ),
@@ -642,17 +891,29 @@ class AccountingBanksScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.credit_card, color: Color(0xFF6366F1), size: 20),
+                    const Icon(
+                      Icons.credit_card,
+                      color: Color(0xFF6366F1),
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Posición por Entidad & Bóveda',
-                      style: GoogleFonts.inter(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
                 Text(
                   'Gestionar Cuentas Bancarias →',
-                  style: GoogleFonts.inter(color: const Color(0xFF6366F1), fontSize: 12, fontWeight: FontWeight.w500),
+                  style: GoogleFonts.inter(
+                    color: const Color(0xFF6366F1),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
@@ -733,10 +994,16 @@ class AccountingBanksScreen extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF6366F1).withValues(alpha: 0.1),
+                                color: const Color(
+                                  0xFF6366F1,
+                                ).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Icon(Icons.compare_arrows, color: Color(0xFF6366F1), size: 20),
+                              child: const Icon(
+                                Icons.compare_arrows,
+                                color: Color(0xFF6366F1),
+                                size: 20,
+                              ),
                             ),
                             const SizedBox(width: 12),
                             Column(
@@ -744,11 +1011,18 @@ class AccountingBanksScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   'Mesa de Conciliación Bancaria Automática',
-                                  style: GoogleFonts.inter(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 Text(
                                   'Cruce de Comprobantes vs. Extracto Bancario BNB\n(Período: Septiembre 2026)',
-                                  style: GoogleFonts.inter(color: Colors.grey[500], fontSize: 12),
+                                  style: GoogleFonts.inter(
+                                    color: Colors.grey[500],
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ],
                             ),
@@ -757,21 +1031,46 @@ class AccountingBanksScreen extends StatelessWidget {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF064E3B).withValues(alpha: 0.2),
+                                color: const Color(
+                                  0xFF064E3B,
+                                ).withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: const Color(0xFF059669)),
+                                border: Border.all(
+                                  color: const Color(0xFF059669),
+                                ),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.link, color: Color(0xFF10B981), size: 16),
+                                  const Icon(
+                                    Icons.link,
+                                    color: Color(0xFF10B981),
+                                    size: 16,
+                                  ),
                                   const SizedBox(width: 8),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text('Diferencia de Cruce:', style: GoogleFonts.inter(color: const Color(0xFF10B981), fontSize: 10)),
-                                      Text('Bs. 0.00', style: GoogleFonts.inter(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                                      Text(
+                                        'Diferencia de Cruce:',
+                                        style: GoogleFonts.inter(
+                                          color: const Color(0xFF10B981),
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Bs. 0.00',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -782,23 +1081,44 @@ class AccountingBanksScreen extends StatelessWidget {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF6366F1),
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
                               icon: const Icon(Icons.playlist_add_check),
-                              label: const Text('Conciliar Partidas\nSeleccionadas', textAlign: TextAlign.center),
+                              label: const Text(
+                                'Conciliar Partidas\nSeleccionadas',
+                                textAlign: TextAlign.center,
+                              ),
                               onPressed: () {},
                             ),
                             const SizedBox(width: 12),
                             OutlinedButton.icon(
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.white,
-                                side: const BorderSide(color: Color(0xFF334155)),
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                side: const BorderSide(
+                                  color: Color(0xFF334155),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
-                              icon: const Icon(Icons.auto_awesome, color: Color(0xFF8B5CF6)),
-                              label: const Text('Cruzar por IA /\nAlgoritmo', textAlign: TextAlign.center),
+                              icon: const Icon(
+                                Icons.auto_awesome,
+                                color: Color(0xFF8B5CF6),
+                              ),
+                              label: const Text(
+                                'Cruzar por IA /\nAlgoritmo',
+                                textAlign: TextAlign.center,
+                              ),
                               onPressed: () {},
                             ),
                           ],
@@ -820,18 +1140,39 @@ class AccountingBanksScreen extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF3B82F6), shape: BoxShape.circle)),
+                                    Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFF3B82F6),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
                                     const SizedBox(width: 8),
-                                    Text('EXTRACTO BANCARIO IMPORTADO (BNB 1000-84920)', style: GoogleFonts.inter(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                                    Text(
+                                      'EXTRACTO BANCARIO IMPORTADO (BNB 1000-84920)',
+                                      style: GoogleFonts.inter(
+                                        color: Colors.white,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     const Spacer(),
-                                    Text('3 partidas activas', style: GoogleFonts.inter(color: Colors.grey[500], fontSize: 11)),
+                                    Text(
+                                      '3 partidas activas',
+                                      style: GoogleFonts.inter(
+                                        color: Colors.grey[500],
+                                        fontSize: 11,
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 16),
                                 _buildExtractItem(
                                   isChecked: true,
                                   date: '24/Sep 09:12',
-                                  title: 'Depósito Transf. Minera San Cristóbal',
+                                  title:
+                                      'Depósito Transf. Minera San Cristóbal',
                                   ref: 'BNB-TRF-994012',
                                   amount: '+Bs. 45,000.00',
                                   amountColor: Colors.greenAccent,
@@ -859,7 +1200,10 @@ class AccountingBanksScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const VerticalDivider(color: Color(0xFF334155), width: 1),
+                        const VerticalDivider(
+                          color: Color(0xFF334155),
+                          width: 1,
+                        ),
                         // Right Column
                         Expanded(
                           child: Padding(
@@ -869,11 +1213,31 @@ class AccountingBanksScreen extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF10B981), shape: BoxShape.circle)),
+                                    Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFF10B981),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
                                     const SizedBox(width: 8),
-                                    Text('LIBRO MAYOR DE TESORERÍA (ASIENTOS\nINTERNOS)', style: GoogleFonts.inter(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                                    Text(
+                                      'LIBRO MAYOR DE TESORERÍA (ASIENTOS\nINTERNOS)',
+                                      style: GoogleFonts.inter(
+                                        color: Colors.white,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     const Spacer(),
-                                    Text('2 seleccionados para\ncruce', style: GoogleFonts.inter(color: Colors.grey[500], fontSize: 11)),
+                                    Text(
+                                      '2 seleccionados para\ncruce',
+                                      style: GoogleFonts.inter(
+                                        color: Colors.grey[500],
+                                        fontSize: 11,
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 16),
@@ -890,7 +1254,8 @@ class AccountingBanksScreen extends StatelessWidget {
                                   isChecked: true,
                                   comp: 'COMP-EGR-2026-\n112',
                                   account: '111-01 BNB',
-                                  title: 'Pago Factura 9012 Yacimientos\nPetrolíferos',
+                                  title:
+                                      'Pago Factura 9012 Yacimientos\nPetrolíferos',
                                   subtitle: 'Prov: YPFB Refinación',
                                   amount: '-Bs.\n18,200.00',
                                   amountColor: Colors.redAccent,
@@ -904,22 +1269,37 @@ class AccountingBanksScreen extends StatelessWidget {
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.info_outline, color: Colors.grey, size: 20),
+                                      const Icon(
+                                        Icons.info_outline,
+                                        color: Colors.grey,
+                                        size: 20,
+                                      ),
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: Text(
                                           'Sin voucher registrado para conciliar la comisión\nbancaria de Bs.150.00',
-                                          style: GoogleFonts.inter(color: Colors.grey[400], fontSize: 11),
+                                          style: GoogleFonts.inter(
+                                            color: Colors.grey[400],
+                                            fontSize: 11,
+                                          ),
                                         ),
                                       ),
                                       OutlinedButton(
                                         onPressed: () {},
                                         style: OutlinedButton.styleFrom(
                                           foregroundColor: Colors.white,
-                                          side: const BorderSide(color: Color(0xFF334155)),
-                                          backgroundColor: const Color(0xFF334155),
+                                          side: const BorderSide(
+                                            color: Color(0xFF334155),
+                                          ),
+                                          backgroundColor: const Color(
+                                            0xFF334155,
+                                          ),
                                         ),
-                                        child: const Text('Crear Asiento\nRápido', textAlign: TextAlign.center, style: TextStyle(fontSize: 11)),
+                                        child: const Text(
+                                          'Crear Asiento\nRápido',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(fontSize: 11),
+                                        ),
                                       ),
                                     ],
                                   ),

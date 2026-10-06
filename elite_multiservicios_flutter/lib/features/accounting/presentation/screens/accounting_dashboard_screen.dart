@@ -7,10 +7,12 @@ import 'accounting_reconciliation_screen.dart';
 class AccountingDashboardScreen extends ConsumerStatefulWidget {
   const AccountingDashboardScreen({super.key});
   @override
-  ConsumerState<AccountingDashboardScreen> createState() => _AccountingDashboardScreenState();
+  ConsumerState<AccountingDashboardScreen> createState() =>
+      _AccountingDashboardScreenState();
 }
 
-class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardScreen> {
+class _AccountingDashboardScreenState
+    extends ConsumerState<AccountingDashboardScreen> {
   String _currency = 'BOB';
   final double _exchangeRate = 6.96;
 
@@ -113,7 +115,10 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
                       ),
                       const SizedBox(width: 12),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFE5E7EB),
                           borderRadius: BorderRadius.circular(4),
@@ -143,7 +148,11 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () {},
-                          icon: const Icon(Icons.calendar_today, size: 16, color: Colors.blueAccent),
+                          icon: const Icon(
+                            Icons.calendar_today,
+                            size: 16,
+                            color: Colors.blueAccent,
+                          ),
                           label: const Text(
                             'Hoy, 24 Octubre 2024',
                             style: TextStyle(color: Color(0xFF111827)),
@@ -153,14 +162,21 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       OutlinedButton.icon(
                         onPressed: () {},
-                        icon: const Icon(Icons.download, size: 16, color: Color(0xFF4B5563)),
+                        icon: const Icon(
+                          Icons.download,
+                          size: 16,
+                          color: Color(0xFF4B5563),
+                        ),
                         label: const Text(
                           'Exportar',
                           style: TextStyle(color: Color(0xFF111827)),
@@ -169,7 +185,10 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ],
@@ -202,7 +221,8 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
                     pillText: '8 pendientes',
                     pillColor: const Color(0xFFDBEAFE),
                     pillTextColor: const Color(0xFF1E40AF),
-                    trailingText: 'Próx. vto: 28 Oct (${_formatCompact(18500.0)})',
+                    trailingText:
+                        'Próx. vto: 28 Oct (${_formatCompact(18500.0)})',
                     icon: Icons.receipt_long,
                     iconColor: const Color(0xFF2563EB),
                   ),
@@ -219,7 +239,12 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountingFixedAssetsScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AccountingFixedAssetsScreen(),
+                        ),
+                      );
                     },
                     child: _buildMetricCard(
                       title: 'NET FIXED ASSETS BOOK VALUE',
@@ -227,7 +252,8 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
                       pillText: 'CAPEX Tracked',
                       pillColor: const Color(0xFFEEF2FF),
                       pillTextColor: const Color(0xFF4F46E5),
-                      trailingText: 'Deprec. Mensual: ${_formatCurrency(12450.00)}',
+                      trailingText:
+                          'Deprec. Mensual: ${_formatCurrency(12450.00)}',
                       icon: Icons.domain,
                       iconColor: const Color(0xFF4F46E5),
                     ),
@@ -285,7 +311,11 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
         children: [
           Row(
             children: [
-              const Icon(Icons.warning_amber_rounded, color: Color(0xFFD97706), size: 20),
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: Color(0xFFD97706),
+                size: 20,
+              ),
               const SizedBox(width: 8),
               const Text(
                 'ACCIONES URGENTES REQUERIDAS (2)',
@@ -308,19 +338,45 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
             ),
           ),
           const SizedBox(height: 12),
-          _buildActionItem('Ejecución por lote de Depreciación ...', 'Ejecutar', true, () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountingFixedAssetsDepreciationBatchScreen()));
-          }),
+          _buildActionItem(
+            'Ejecución por lote de Depreciación ...',
+            'Ejecutar',
+            true,
+            () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      const AccountingFixedAssetsDepreciationBatchScreen(),
+                ),
+              );
+            },
+          ),
           const SizedBox(height: 8),
-          _buildActionItem('2 transacciones bancarias sin con...', 'Conciliar', false, () {
-             Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountingBankReconciliationScreen()));
-          }),
+          _buildActionItem(
+            '2 transacciones bancarias sin con...',
+            'Conciliar',
+            false,
+            () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AccountingBankReconciliationScreen(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildActionItem(String title, String buttonText, bool primary, VoidCallback onTap) {
+  Widget _buildActionItem(
+    String title,
+    String buttonText,
+    bool primary,
+    VoidCallback onTap,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -343,12 +399,20 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
             child: ElevatedButton(
               onPressed: onTap,
               style: ElevatedButton.styleFrom(
-                backgroundColor: primary ? const Color(0xFFD97706) : Colors.white,
-                foregroundColor: primary ? Colors.white : const Color(0xFF92400E),
+                backgroundColor: primary
+                    ? const Color(0xFFD97706)
+                    : Colors.white,
+                foregroundColor: primary
+                    ? Colors.white
+                    : const Color(0xFF92400E),
                 elevation: 0,
-                side: primary ? BorderSide.none : const BorderSide(color: Color(0xFFD1D5DB)),
+                side: primary
+                    ? BorderSide.none
+                    : const BorderSide(color: Color(0xFFD1D5DB)),
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
               child: Text(buttonText, style: const TextStyle(fontSize: 12)),
             ),
@@ -422,7 +486,9 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
                 decoration: BoxDecoration(
                   color: pillColor,
                   borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: pillTextColor.withValues(alpha: 0.2)),
+                  border: Border.all(
+                    color: pillTextColor.withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Text(
                   pillText,
@@ -487,11 +553,17 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
             children: [
               Container(width: 12, height: 2, color: const Color(0xFF4F46E5)),
               const SizedBox(width: 4),
-              const Text('Flujo Real', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+              const Text(
+                'Flujo Real',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              ),
               const SizedBox(width: 16),
               Container(width: 12, height: 1, color: const Color(0xFF9CA3AF)),
               const SizedBox(width: 4),
-              const Text('Flujo Proyectado', style: TextStyle(fontSize: 12, color: Color(0xFF6B7280))),
+              const Text(
+                'Flujo Proyectado',
+                style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -510,12 +582,34 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
           const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Mayo', style: TextStyle(fontSize: 10, color: Color(0xFF6B7280))),
-              Text('Junio', style: TextStyle(fontSize: 10, color: Color(0xFF6B7280))),
-              Text('Julio', style: TextStyle(fontSize: 10, color: Color(0xFF6B7280))),
-              Text('Agosto', style: TextStyle(fontSize: 10, color: Color(0xFF6B7280))),
-              Text('Septiembre', style: TextStyle(fontSize: 10, color: Color(0xFF6B7280))),
-              Text('Octubre', style: TextStyle(fontSize: 10, color: Color(0xFF4F46E5), fontWeight: FontWeight.bold)),
+              Text(
+                'Mayo',
+                style: TextStyle(fontSize: 10, color: Color(0xFF6B7280)),
+              ),
+              Text(
+                'Junio',
+                style: TextStyle(fontSize: 10, color: Color(0xFF6B7280)),
+              ),
+              Text(
+                'Julio',
+                style: TextStyle(fontSize: 10, color: Color(0xFF6B7280)),
+              ),
+              Text(
+                'Agosto',
+                style: TextStyle(fontSize: 10, color: Color(0xFF6B7280)),
+              ),
+              Text(
+                'Septiembre',
+                style: TextStyle(fontSize: 10, color: Color(0xFF6B7280)),
+              ),
+              Text(
+                'Octubre',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Color(0xFF4F46E5),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -529,15 +623,35 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Punto Máximo (Sep):', style: TextStyle(fontSize: 12, color: Color(0xFF6B7280))),
-                  Text(_formatCurrency(510200.00), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF111827))),
+                  const Text(
+                    'Punto Máximo (Sep):',
+                    style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                  ),
+                  Text(
+                    _formatCurrency(510200.00),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF111827),
+                    ),
+                  ),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text('Desviación Promedio:', style: TextStyle(fontSize: 12, color: Color(0xFF6B7280))),
-                  const Text('±3.1%', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF059669))),
+                  const Text(
+                    'Desviación Promedio:',
+                    style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                  ),
+                  const Text(
+                    '±3.1%',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF059669),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -611,13 +725,37 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
             ),
           ),
           const SizedBox(height: 16),
-          _buildAgingRow('0-30 días (Vigente)', _formatCurrency(78200.00), '62.9%', const Color(0xFF10B981), 0.629),
+          _buildAgingRow(
+            '0-30 días (Vigente)',
+            _formatCurrency(78200.00),
+            '62.9%',
+            const Color(0xFF10B981),
+            0.629,
+          ),
           const SizedBox(height: 12),
-          _buildAgingRow('31-60 días', _formatCurrency(31150.00), '25.0%', const Color(0xFF4F46E5), 0.25),
+          _buildAgingRow(
+            '31-60 días',
+            _formatCurrency(31150.00),
+            '25.0%',
+            const Color(0xFF4F46E5),
+            0.25,
+          ),
           const SizedBox(height: 12),
-          _buildAgingRow('61-90 días (Alerta)', _formatCurrency(11000.00), '8.8%', const Color(0xFFF59E0B), 0.088),
+          _buildAgingRow(
+            '61-90 días (Alerta)',
+            _formatCurrency(11000.00),
+            '8.8%',
+            const Color(0xFFF59E0B),
+            0.088,
+          ),
           const SizedBox(height: 12),
-          _buildAgingRow('>90 días (Mora crítica)', _formatCurrency(4000.00), '3.3%', const Color(0xFFEF4444), 0.033),
+          _buildAgingRow(
+            '>90 días (Mora crítica)',
+            _formatCurrency(4000.00),
+            '3.3%',
+            const Color(0xFFEF4444),
+            0.033,
+          ),
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(12),
@@ -633,17 +771,29 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.verified_outlined, color: Color(0xFF4F46E5), size: 16),
+                    const Icon(
+                      Icons.verified_outlined,
+                      color: Color(0xFF4F46E5),
+                      size: 16,
+                    ),
                     const SizedBox(width: 8),
                     const Text(
                       'Total Cobranzas Activas',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF111827)),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF111827),
+                      ),
                     ),
                   ],
                 ),
                 Text(
                   _formatCurrency(124350.00),
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF111827)),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF111827),
+                  ),
                 ),
               ],
             ),
@@ -652,8 +802,18 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
           const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Auditoría de cartera automatizada', style: TextStyle(fontSize: 12, color: Color(0xFF6B7280))),
-              Text('Gestionar Cobros', style: TextStyle(fontSize: 12, color: Color(0xFF4F46E5), fontWeight: FontWeight.w500)),
+              Text(
+                'Auditoría de cartera automatizada',
+                style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+              ),
+              Text(
+                'Gestionar Cobros',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF4F46E5),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
           ),
         ],
@@ -661,7 +821,13 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
     );
   }
 
-  Widget _buildAgingRow(String label, String amount, String percentage, Color color, double factor) {
+  Widget _buildAgingRow(
+    String label,
+    String amount,
+    String percentage,
+    Color color,
+    double factor,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -675,17 +841,37 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
               children: [
                 Icon(Icons.circle, size: 8, color: color),
                 const SizedBox(width: 6),
-                Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF111827))),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF111827),
+                  ),
+                ),
               ],
             ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(amount, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF111827))),
+                Text(
+                  amount,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF111827),
+                  ),
+                ),
                 const SizedBox(width: 4),
-                Text('($percentage)', style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280))),
+                Text(
+                  '($percentage)',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF6B7280),
+                  ),
+                ),
               ],
-            )
+            ),
           ],
         ),
         const SizedBox(height: 6),
@@ -737,7 +923,11 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
               children: [
                 Text(
                   'ÚLTIMOS MOVIMIENTOS DE\nTESORERÍA',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF374151)),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF374151),
+                  ),
                 ),
                 Text(
                   'Sucursal\nCentral',
@@ -745,7 +935,15 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
                 ),
                 Row(
                   children: [
-                    Text('Ver Libro\nMayor', style: TextStyle(fontSize: 12, color: Color(0xFF4F46E5), fontWeight: FontWeight.w500), textAlign: TextAlign.center),
+                    Text(
+                      'Ver Libro\nMayor',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF4F46E5),
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                     SizedBox(width: 4),
                     Icon(Icons.open_in_new, size: 14, color: Color(0xFF4F46E5)),
                   ],
@@ -758,10 +956,50 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: const Row(
               children: [
-                Expanded(flex: 2, child: Text('REFERENCIA\n/ FOLIO', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF6B7280)))),
-                Expanded(flex: 3, child: Text('CONCEPTO\n& ENTIDAD', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF6B7280)))),
-                Expanded(flex: 2, child: Text('CUENTA\nORIGEN /\nDESTINO', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF6B7280)))),
-                Expanded(flex: 1, child: Text('FECHA\nVALOR', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF6B7280)))),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'REFERENCIA\n/ FOLIO',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF6B7280),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    'CONCEPTO\n& ENTIDAD',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF6B7280),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'CUENTA\nORIGEN /\nDESTINO',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF6B7280),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    'FECHA\nVALOR',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF6B7280),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -805,20 +1043,51 @@ class _AccountingDashboardScreenState extends ConsumerState<AccountingDashboardS
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(flex: 2, child: Text(ref, style: const TextStyle(fontSize: 12, color: Color(0xFF374151)))),
+          Expanded(
+            flex: 2,
+            child: Text(
+              ref,
+              style: const TextStyle(fontSize: 12, color: Color(0xFF374151)),
+            ),
+          ),
           Expanded(
             flex: 3,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(concept, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF111827))),
+                Text(
+                  concept,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF111827),
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text(type, style: const TextStyle(fontSize: 10, color: Color(0xFF6B7280))),
+                Text(
+                  type,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Color(0xFF6B7280),
+                  ),
+                ),
               ],
             ),
           ),
-          Expanded(flex: 2, child: Text(account, style: const TextStyle(fontSize: 12, color: Color(0xFF374151)))),
-          Expanded(flex: 1, child: Text(date, style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)))),
+          Expanded(
+            flex: 2,
+            child: Text(
+              account,
+              style: const TextStyle(fontSize: 12, color: Color(0xFF374151)),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              date,
+              style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+            ),
+          ),
         ],
       ),
     );
@@ -843,25 +1112,76 @@ class _ChartPainter extends CustomPainter {
     final projPath = Path();
 
     realPath.moveTo(0, size.height * 0.8);
-    realPath.quadraticBezierTo(size.width * 0.2, size.height * 0.6, size.width * 0.4, size.height * 0.5);
-    realPath.quadraticBezierTo(size.width * 0.6, size.height * 0.4, size.width * 0.8, size.height * 0.1);
-    realPath.quadraticBezierTo(size.width * 0.9, size.height * 0.05, size.width, size.height * 0.2);
+    realPath.quadraticBezierTo(
+      size.width * 0.2,
+      size.height * 0.6,
+      size.width * 0.4,
+      size.height * 0.5,
+    );
+    realPath.quadraticBezierTo(
+      size.width * 0.6,
+      size.height * 0.4,
+      size.width * 0.8,
+      size.height * 0.1,
+    );
+    realPath.quadraticBezierTo(
+      size.width * 0.9,
+      size.height * 0.05,
+      size.width,
+      size.height * 0.2,
+    );
 
     projPath.moveTo(0, size.height * 0.7);
-    projPath.quadraticBezierTo(size.width * 0.3, size.height * 0.4, size.width * 0.6, size.height * 0.3);
-    projPath.quadraticBezierTo(size.width * 0.8, size.height * 0.2, size.width, size.height * 0.15);
+    projPath.quadraticBezierTo(
+      size.width * 0.3,
+      size.height * 0.4,
+      size.width * 0.6,
+      size.height * 0.3,
+    );
+    projPath.quadraticBezierTo(
+      size.width * 0.8,
+      size.height * 0.2,
+      size.width,
+      size.height * 0.15,
+    );
 
     _drawDashedLine(canvas, projPath, projPaint);
     canvas.drawPath(realPath, realPaint);
 
-    final dotPaint = Paint()..color = const Color(0xFF4F46E5)..style = PaintingStyle.fill;
-    final whitePaint = Paint()..color = Colors.white..style = PaintingStyle.fill;
-    final dotGreenPaint = Paint()..color = const Color(0xFF10B981)..style = PaintingStyle.fill;
+    final dotPaint = Paint()
+      ..color = const Color(0xFF4F46E5)
+      ..style = PaintingStyle.fill;
+    final whitePaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+    final dotGreenPaint = Paint()
+      ..color = const Color(0xFF10B981)
+      ..style = PaintingStyle.fill;
 
-    _drawDot(canvas, Offset(size.width * 0.4, size.height * 0.5), dotPaint, whitePaint);
-    _drawDot(canvas, Offset(size.width * 0.6, size.height * 0.42), dotPaint, whitePaint);
-    _drawDot(canvas, Offset(size.width * 0.8, size.height * 0.12), dotPaint, whitePaint);
-    _drawDot(canvas, Offset(size.width, size.height * 0.2), dotGreenPaint, whitePaint);
+    _drawDot(
+      canvas,
+      Offset(size.width * 0.4, size.height * 0.5),
+      dotPaint,
+      whitePaint,
+    );
+    _drawDot(
+      canvas,
+      Offset(size.width * 0.6, size.height * 0.42),
+      dotPaint,
+      whitePaint,
+    );
+    _drawDot(
+      canvas,
+      Offset(size.width * 0.8, size.height * 0.12),
+      dotPaint,
+      whitePaint,
+    );
+    _drawDot(
+      canvas,
+      Offset(size.width, size.height * 0.2),
+      dotGreenPaint,
+      whitePaint,
+    );
   }
 
   void _drawDot(Canvas canvas, Offset offset, Paint paint, Paint bgPaint) {

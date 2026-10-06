@@ -361,9 +361,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
       _isCrmExpanded = true;
     } else if (initialIndex >= 9 && initialIndex <= 14) {
       _isRrhhExpanded = true;
-    } else if ((initialIndex >= 16 && initialIndex <= 28) || (initialIndex >= 32 && initialIndex <= 39)) {
+    } else if ((initialIndex >= 16 && initialIndex <= 28) ||
+        (initialIndex >= 32 && initialIndex <= 39)) {
       _isAccountingExpanded = true;
-      if (initialIndex == 25 || (initialIndex >= 35 && initialIndex <= 39)) _isFixedAssetsExpanded = true;
+      if (initialIndex == 25 || (initialIndex >= 35 && initialIndex <= 39))
+        _isFixedAssetsExpanded = true;
     } else if (initialIndex >= 29 && initialIndex <= 31) {
       // _isOpsExpanded = true;
     }
@@ -383,9 +385,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
               _isCrmExpanded = true;
             }
             if (newIndex >= 9 && newIndex <= 14) _isRrhhExpanded = true;
-            if ((newIndex >= 16 && newIndex <= 28) || (newIndex >= 32 && newIndex <= 39)) {
+            if ((newIndex >= 16 && newIndex <= 28) ||
+                (newIndex >= 32 && newIndex <= 39)) {
               _isAccountingExpanded = true;
-              if (newIndex == 25 || (newIndex >= 35 && newIndex <= 39)) _isFixedAssetsExpanded = true;
+              if (newIndex == 25 || (newIndex >= 35 && newIndex <= 39))
+                _isFixedAssetsExpanded = true;
             }
             if (newIndex >= 29 && newIndex <= 31) {
               // _isOpsExpanded = true;
@@ -423,9 +427,11 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
           _isCrmExpanded = true;
         } else if (index >= 9 && index <= 14) {
           _isRrhhExpanded = true;
-        } else if ((index >= 16 && index <= 28) || (index >= 32 && index <= 39)) {
+        } else if ((index >= 16 && index <= 28) ||
+            (index >= 32 && index <= 39)) {
           _isAccountingExpanded = true;
-          if (index == 25 || (index >= 35 && index <= 39)) _isFixedAssetsExpanded = true;
+          if (index == 25 || (index >= 35 && index <= 39))
+            _isFixedAssetsExpanded = true;
         } else if (index >= 29 && index <= 31) {
           // _isOpsExpanded = true;
         }
@@ -2585,27 +2591,96 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                       ),
                       child: Column(
                         children: [
-                          Padding(padding: const EdgeInsets.only(bottom: 2), child: _buildNavItem(icon: Icons.dashboard_outlined, selectedIcon: Icons.dashboard, label: 'Dashboard Contable', index: 16, isSubItem: true, isDrawer: isDrawer)),
-                          Padding(padding: const EdgeInsets.only(bottom: 2), child: _buildNavItem(icon: Icons.receipt_long_outlined, selectedIcon: Icons.receipt_long, label: 'Facturación y CxC', index: 17, isSubItem: true, isDrawer: isDrawer)),
-                          Padding(padding: const EdgeInsets.only(bottom: 2), child: _buildNavItem(icon: Icons.money_off_outlined, selectedIcon: Icons.money_off, label: 'Egresos y CxP', index: 18, isSubItem: true, isDrawer: isDrawer)),
-                          
-                          Padding(padding: const EdgeInsets.only(bottom: 2), child: _buildNavItem(icon: Icons.account_balance_outlined, selectedIcon: Icons.account_balance, label: 'Bancos & Tesorería', index: 24, isSubItem: true, isDrawer: isDrawer)),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: Icons.dashboard_outlined,
+                              selectedIcon: Icons.dashboard,
+                              label: 'Dashboard Contable',
+                              index: 16,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: Icons.receipt_long_outlined,
+                              selectedIcon: Icons.receipt_long,
+                              label: 'Facturación y CxC',
+                              index: 17,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: Icons.money_off_outlined,
+                              selectedIcon: Icons.money_off,
+                              label: 'Egresos y CxP',
+                              index: 18,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: Icons.account_balance_outlined,
+                              selectedIcon: Icons.account_balance,
+                              label: 'Bancos & Tesorería',
+                              index: 24,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          ),
 
                           // Activos Fijos Accordion
                           InkWell(
                             onTap: () {
                               setState(() {
-                                _isFixedAssetsExpanded = !_isFixedAssetsExpanded;
+                                _isFixedAssetsExpanded =
+                                    !_isFixedAssetsExpanded;
                               });
                             },
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 6,
+                                horizontal: 8,
+                              ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.domain_outlined, size: 16, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                                  Icon(
+                                    Icons.domain_outlined,
+                                    size: 16,
+                                    color: isDark
+                                        ? const Color(0xFF94A3B8)
+                                        : const Color(0xFF64748B),
+                                  ),
                                   const SizedBox(width: 8),
-                                  Expanded(child: Text('Activos Fijos', style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B), fontSize: 13, fontWeight: FontWeight.w500))),
-                                  Icon(_isFixedAssetsExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right, size: 16, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                                  Expanded(
+                                    child: Text(
+                                      'Activos Fijos',
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? const Color(0xFF94A3B8)
+                                            : const Color(0xFF64748B),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(
+                                    _isFixedAssetsExpanded
+                                        ? Icons.keyboard_arrow_down
+                                        : Icons.keyboard_arrow_right,
+                                    size: 16,
+                                    color: isDark
+                                        ? const Color(0xFF94A3B8)
+                                        : const Color(0xFF64748B),
+                                  ),
                                 ],
                               ),
                             ),
@@ -2615,18 +2690,98 @@ class _SecurityShellScreenState extends State<SecurityShellScreen> {
                               padding: const EdgeInsets.only(left: 16),
                               child: Column(
                                 children: [
-                                  Padding(padding: const EdgeInsets.only(bottom: 2), child: _buildNavItem(icon: Icons.inventory_2_outlined, selectedIcon: Icons.inventory_2, label: 'Catálogo de Activos', index: 25, isSubItem: true, isDrawer: isDrawer)),
-                                  Padding(padding: const EdgeInsets.only(bottom: 2), child: _buildNavItem(icon: Icons.calculate_outlined, selectedIcon: Icons.calculate, label: 'Cálculo de Depreciaciones', index: 35, isSubItem: true, isDrawer: isDrawer)),
-                                  Padding(padding: const EdgeInsets.only(bottom: 2), child: _buildNavItem(icon: Icons.price_change_outlined, selectedIcon: Icons.price_change, label: 'Revalúos Técnicos', index: 36, isSubItem: true, isDrawer: isDrawer)),
-                                  Padding(padding: const EdgeInsets.only(bottom: 2), child: _buildNavItem(icon: Icons.delete_outline, selectedIcon: Icons.delete, label: 'Bajas y Retiros', index: 39, isSubItem: true, isDrawer: isDrawer)),
-                                  Padding(padding: const EdgeInsets.only(bottom: 2), child: _buildNavItem(icon: Icons.settings_outlined, selectedIcon: Icons.settings, label: 'Configuración Contable', index: 37, isSubItem: true, isDrawer: isDrawer)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2),
+                                    child: _buildNavItem(
+                                      icon: Icons.inventory_2_outlined,
+                                      selectedIcon: Icons.inventory_2,
+                                      label: 'Catálogo de Activos',
+                                      index: 25,
+                                      isSubItem: true,
+                                      isDrawer: isDrawer,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2),
+                                    child: _buildNavItem(
+                                      icon: Icons.calculate_outlined,
+                                      selectedIcon: Icons.calculate,
+                                      label: 'Cálculo de Depreciaciones',
+                                      index: 35,
+                                      isSubItem: true,
+                                      isDrawer: isDrawer,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2),
+                                    child: _buildNavItem(
+                                      icon: Icons.price_change_outlined,
+                                      selectedIcon: Icons.price_change,
+                                      label: 'Revalúos Técnicos',
+                                      index: 36,
+                                      isSubItem: true,
+                                      isDrawer: isDrawer,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2),
+                                    child: _buildNavItem(
+                                      icon: Icons.delete_outline,
+                                      selectedIcon: Icons.delete,
+                                      label: 'Bajas y Retiros',
+                                      index: 39,
+                                      isSubItem: true,
+                                      isDrawer: isDrawer,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2),
+                                    child: _buildNavItem(
+                                      icon: Icons.settings_outlined,
+                                      selectedIcon: Icons.settings,
+                                      label: 'Configuración Contable',
+                                      index: 37,
+                                      isSubItem: true,
+                                      isDrawer: isDrawer,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
 
-                          Padding(padding: const EdgeInsets.only(bottom: 2), child: _buildNavItem(icon: Icons.bar_chart_outlined, selectedIcon: Icons.bar_chart, label: 'Presupuestos & Flujo', index: 27, isSubItem: true, isDrawer: isDrawer)),
-                          Padding(padding: const EdgeInsets.only(bottom: 2), child: _buildNavItem(icon: Icons.insert_chart_outlined, selectedIcon: Icons.insert_chart, label: 'Estados Financieros', index: 26, isSubItem: true, isDrawer: isDrawer)),
-                          Padding(padding: const EdgeInsets.only(bottom: 2), child: _buildNavItem(icon: Icons.account_tree_outlined, selectedIcon: Icons.account_tree, label: 'Catálogo de Cuentas', index: 22, isSubItem: true, isDrawer: isDrawer)),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: Icons.bar_chart_outlined,
+                              selectedIcon: Icons.bar_chart,
+                              label: 'Presupuestos & Flujo',
+                              index: 27,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: Icons.insert_chart_outlined,
+                              selectedIcon: Icons.insert_chart,
+                              label: 'Estados Financieros',
+                              index: 26,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: _buildNavItem(
+                              icon: Icons.account_tree_outlined,
+                              selectedIcon: Icons.account_tree,
+                              label: 'Catálogo de Cuentas',
+                              index: 22,
+                              isSubItem: true,
+                              isDrawer: isDrawer,
+                            ),
+                          ),
                         ],
                       ),
                     ),

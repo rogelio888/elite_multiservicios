@@ -61,7 +61,6 @@ class _AccountingExcelGridState extends State<AccountingExcelGrid> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -69,7 +68,9 @@ class _AccountingExcelGridState extends State<AccountingExcelGrid> {
     final divider = theme.dividerColor;
 
     // Determina si alguna fila tiene acciones (editar/eliminar)
-    final hasActions = widget.rows.any((r) => r.onEdit != null || r.onDelete != null);
+    final hasActions = widget.rows.any(
+      (r) => r.onEdit != null || r.onDelete != null,
+    );
 
     // Columnas: "Acciones" PRIMERO para que sea siempre visible, luego las definidas
     final allColumns = [
@@ -254,13 +255,26 @@ class _AccountingExcelGridState extends State<AccountingExcelGrid> {
                           headingRowColor: WidgetStateProperty.all(
                             primary.withValues(alpha: 0.1),
                           ),
-                          headingTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-                          dataTextStyle: const TextStyle(color: Colors.white70, fontSize: 13),
+                          headingTextStyle: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          dataTextStyle: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 13,
+                          ),
                           dataRowMinHeight: 48,
                           dataRowMaxHeight: 56,
                           border: TableBorder(
-                            verticalInside: BorderSide(color: divider, width: 1),
-                            horizontalInside: BorderSide(color: divider, width: 1),
+                            verticalInside: BorderSide(
+                              color: divider,
+                              width: 1,
+                            ),
+                            horizontalInside: BorderSide(
+                              color: divider,
+                              width: 1,
+                            ),
                             top: BorderSide(color: divider, width: 1),
                             bottom: BorderSide(color: divider, width: 1),
                             left: BorderSide(color: divider, width: 1),

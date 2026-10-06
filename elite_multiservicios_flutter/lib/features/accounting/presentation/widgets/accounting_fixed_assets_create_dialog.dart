@@ -11,8 +11,6 @@ class AccountingFixedAssetsCreateDialog extends StatefulWidget {
 
 class _AccountingFixedAssetsCreateDialogState
     extends State<AccountingFixedAssetsCreateDialog> {
-
-
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -73,7 +71,9 @@ class _AccountingFixedAssetsCreateDialogState
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 4),
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFEEF2FF),
                       borderRadius: BorderRadius.circular(4),
@@ -162,7 +162,11 @@ class _AccountingFixedAssetsCreateDialogState
   }
 
   Widget _buildStepItem(
-      int stepNumber, String title, bool isCompleted, bool isCurrent) {
+    int stepNumber,
+    String title,
+    bool isCompleted,
+    bool isCurrent,
+  ) {
     Color color;
     if (isCompleted) {
       color = const Color(0xFF10B981);
@@ -217,8 +221,7 @@ class _AccountingFixedAssetsCreateDialogState
       child: Container(
         height: 1,
         margin: const EdgeInsets.symmetric(horizontal: 16),
-        color:
-            isCompleted ? const Color(0xFF10B981) : const Color(0xFFE2E8F0),
+        color: isCompleted ? const Color(0xFF10B981) : const Color(0xFFE2E8F0),
       ),
     );
   }
@@ -268,8 +271,11 @@ class _AccountingFixedAssetsCreateDialogState
     return _buildSectionContainer(
       title: Row(
         children: [
-          const Icon(Icons.archive_outlined,
-              size: 20, color: Color(0xFF6366F1)),
+          const Icon(
+            Icons.archive_outlined,
+            size: 20,
+            color: Color(0xFF6366F1),
+          ),
           const SizedBox(width: 8),
           Text(
             '1. Información General del Activo',
@@ -322,8 +328,11 @@ class _AccountingFixedAssetsCreateDialogState
     return _buildSectionContainer(
       title: Row(
         children: [
-          const Icon(Icons.account_balance_wallet_outlined,
-              size: 20, color: Color(0xFF6366F1)),
+          const Icon(
+            Icons.account_balance_wallet_outlined,
+            size: 20,
+            color: Color(0xFF6366F1),
+          ),
           const SizedBox(width: 8),
           Text(
             '2. Contabilidad, Valuación & Reglas',
@@ -370,7 +379,9 @@ class _AccountingFixedAssetsCreateDialogState
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(6),
@@ -378,8 +389,11 @@ class _AccountingFixedAssetsCreateDialogState
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.receipt_long,
-                              size: 16, color: Color(0xFF10B981)),
+                          const Icon(
+                            Icons.receipt_long,
+                            size: 16,
+                            color: Color(0xFF10B981),
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -399,7 +413,9 @@ class _AccountingFixedAssetsCreateDialogState
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 10),
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFEEF2FF),
                       borderRadius: BorderRadius.circular(6),
@@ -407,8 +423,11 @@ class _AccountingFixedAssetsCreateDialogState
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.insert_drive_file_outlined,
-                            size: 16, color: Color(0xFF4F46E5)),
+                        const Icon(
+                          Icons.insert_drive_file_outlined,
+                          size: 16,
+                          color: Color(0xFF4F46E5),
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           'Ver XML',
@@ -480,7 +499,9 @@ class _AccountingFixedAssetsCreateDialogState
                     const SizedBox(height: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(6),
@@ -499,8 +520,11 @@ class _AccountingFixedAssetsCreateDialogState
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          const Icon(Icons.keyboard_arrow_down,
-                              size: 16, color: Color(0xFF64748B)),
+                          const Icon(
+                            Icons.keyboard_arrow_down,
+                            size: 16,
+                            color: Color(0xFF64748B),
+                          ),
                         ],
                       ),
                     ),
@@ -526,8 +550,11 @@ class _AccountingFixedAssetsCreateDialogState
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.radio_button_checked,
-                                size: 18, color: Color(0xFF4F46E5)),
+                            const Icon(
+                              Icons.radio_button_checked,
+                              size: 18,
+                              color: Color(0xFF4F46E5),
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Línea Recta / Constante',
@@ -541,8 +568,11 @@ class _AccountingFixedAssetsCreateDialogState
                         const SizedBox(width: 24),
                         Row(
                           children: [
-                            const Icon(Icons.radio_button_off,
-                                size: 18, color: Color(0xFFCBD5E1)),
+                            const Icon(
+                              Icons.radio_button_off,
+                              size: 18,
+                              color: Color(0xFFCBD5E1),
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Saldos Decrecientes',
@@ -573,8 +603,11 @@ class _AccountingFixedAssetsCreateDialogState
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.trending_down,
-                        size: 16, color: Color(0xFF4F46E5)),
+                    const Icon(
+                      Icons.trending_down,
+                      size: 16,
+                      color: Color(0xFF4F46E5),
+                    ),
                     const SizedBox(width: 8),
                     Text.rich(
                       TextSpan(
@@ -675,8 +708,10 @@ class _AccountingFixedAssetsCreateDialogState
                 ),
                 const SizedBox(height: 6),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(6),
@@ -695,8 +730,11 @@ class _AccountingFixedAssetsCreateDialogState
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const Icon(Icons.keyboard_arrow_down,
-                          size: 16, color: Color(0xFF64748B)),
+                      const Icon(
+                        Icons.keyboard_arrow_down,
+                        size: 16,
+                        color: Color(0xFF64748B),
+                      ),
                     ],
                   ),
                 ),
@@ -718,8 +756,10 @@ class _AccountingFixedAssetsCreateDialogState
                 ),
                 const SizedBox(height: 6),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(6),
@@ -738,8 +778,11 @@ class _AccountingFixedAssetsCreateDialogState
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const Icon(Icons.keyboard_arrow_down,
-                          size: 16, color: Color(0xFF64748B)),
+                      const Icon(
+                        Icons.keyboard_arrow_down,
+                        size: 16,
+                        color: Color(0xFF64748B),
+                      ),
                     ],
                   ),
                 ),
@@ -827,8 +870,11 @@ class _AccountingFixedAssetsCreateDialogState
         children: [
           Row(
             children: [
-              const Icon(Icons.save_outlined,
-                  size: 18, color: Color(0xFF64748B)),
+              const Icon(
+                Icons.save_outlined,
+                size: 18,
+                color: Color(0xFF64748B),
+              ),
               const SizedBox(width: 8),
               Text(
                 'Guardar como Borrador',
@@ -843,8 +889,10 @@ class _AccountingFixedAssetsCreateDialogState
           Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(6),
@@ -861,8 +909,10 @@ class _AccountingFixedAssetsCreateDialogState
               ),
               const SizedBox(width: 12),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(6),
@@ -875,8 +925,11 @@ class _AccountingFixedAssetsCreateDialogState
                         border: Border.all(color: const Color(0xFF10B981)),
                         borderRadius: BorderRadius.circular(2),
                       ),
-                      child: const Icon(Icons.add,
-                          size: 12, color: Color(0xFF10B981)),
+                      child: const Icon(
+                        Icons.add,
+                        size: 12,
+                        color: Color(0xFF10B981),
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Text(

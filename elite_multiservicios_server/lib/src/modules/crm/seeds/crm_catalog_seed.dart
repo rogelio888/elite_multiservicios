@@ -310,7 +310,9 @@ class CrmCatalogSeed {
     for (final item in catalogData) {
       final existing = await CrmCatalogItem.db.findFirstRow(
         session,
-        where: (t) => t.code.equals(item['code'] as String) | t.concept.ilike(item['concept'] as String),
+        where: (t) =>
+            t.code.equals(item['code'] as String) |
+            t.concept.ilike(item['concept'] as String),
       );
 
       if (existing != null) {
